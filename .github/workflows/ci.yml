@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  lockfile-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fail if any unauthorized lockfile exists
+        run: |
+          for f in package-lock.json yarn.lock bun.lock bun.lockb; do
+            if [ -f "$f" ]; then
+              echo "::error::Unauthorized lockfile found: $f. This repository uses pnpm ONLY -- see PLATFORM_FOUNDATION.md."
+              exit 1
+            fi
+          done
+          echo "OK - only pnpm-lock.yaml present."
+
+  build:
+    runs-on: ubuntu-latest
+    needs: lockfile-check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm exec tsc --noEmit
+      - run: pnpm build
