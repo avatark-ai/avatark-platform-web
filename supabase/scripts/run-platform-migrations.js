@@ -46,6 +46,8 @@ const MIGRATION_ORDER = [
   '005_rls.sql',
   '006_auth_bootstrap.sql',
   '007_grants.sql',
+  '008_privacy_consent_columns.sql',
+  '009_privacy_bootstrap_fix.sql',
 ]
 
 async function main() {

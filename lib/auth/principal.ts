@@ -1,13 +1,11 @@
 import { createClient } from '@/lib/supabase/server'
+import type { AccountPrincipal } from '@avatark/account'
 
-// Real principal shape @avatark/account's contract expects (mirrored
-// here rather than imported, since the package isn't installed yet at
-// this checkpoint -- Checkpoint 4's job, per the explicit stop
-// condition for this checkpoint).
-export type AccountPrincipal =
-  | { status: 'loading' }
-  | { status: 'signed_out' }
-  | { status: 'signed_in'; id: string; displayName: string; email: string }
+// Real fix: now imports the package's own actual AccountPrincipal type
+// (available since Checkpoint 4 installed the package), rather than the
+// standalone, mirrored type this file used before the package existed
+// in this repo. Same shape, but now the genuine, single source of truth.
+export type { AccountPrincipal }
 
 export async function resolvePrincipal(): Promise<AccountPrincipal> {
   const supabase = await createClient()

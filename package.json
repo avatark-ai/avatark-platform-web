@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@avatark/account": "file:avatark-account-0.1.1.tgz",
     "@supabase/ssr": "^0.12.1",
     "@supabase/supabase-js": "^2.110.5",
     "next": "16.2.10",
