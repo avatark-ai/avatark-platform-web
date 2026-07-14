@@ -45,6 +45,7 @@ const MIGRATION_ORDER = [
   '004_privacy_settings.sql',
   '005_rls.sql',
   '006_auth_bootstrap.sql',
+  '007_grants.sql',
 ]
 
 async function main() {
@@ -52,6 +53,17 @@ async function main() {
   const migrationsDir = path.join(__dirname, '..', 'migrations')
   const client = new Client({ connectionString: dbUrl, ssl: { rejectUnauthorized: false } })
   await client.connect()
+  // Defensive fix: Supabase's Transaction Pooler (PgBouncer, transaction
+  // mode) can reuse an underlying server-side connection across
+  // different logical client connections. A prior script that ran
+  // SET ROLE and exited early (before its own cleanup) left that role
+  // active on a connection this runner then inherited -- causing a real
+  // 'permission denied for schema public' failure on a later run, since
+  // GRANT statements require postgres/superuser, not the inherited
+  // 'authenticated' role. Resetting explicitly, unconditionally, as the
+  // very first statement on every connection this runner makes.
+  await client.query('RESET ROLE')
+  await client.query('RESET ALL')
   try {
     await client.query(`
       CREATE TABLE IF NOT EXISTS schema_migrations (
