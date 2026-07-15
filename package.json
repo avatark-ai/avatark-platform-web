@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --experimental-strip-types --test lib/onboarding/receipt.test.ts"
   },
   "dependencies": {
     "@avatark/account": "file:avatark-account-0.1.1.tgz",

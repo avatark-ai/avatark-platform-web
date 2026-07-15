@@ -30,6 +30,8 @@ global rule to preserve every RC1 stop condition.
 
 **Reported, not implemented** — would require new cross-domain auth (a stop condition on its own) *and* new PrometheusK-side plumbing to wire up the unused `UserJourneyStage` type, neither of which this session can build from Platform's side alone.
 
+**RC5 reclassification (2026-07-15): deferred beyond minimal RC5 completion receipt.** RC5 (`docs/RC5_HANDOFF_CONTRACT.md`) added a narrow `practiceCompletedAt` flag, recorded only after a signed PrometheusK completion receipt verifies — that is the full extent of cross-product journey state Platform now records. The richer synchronization scoped here (progress feed, streaks, session history) remains undone and still requires the cross-domain auth this audit found missing.
+
 ## 3. Practice continuation — IMPLEMENTED
 
 **Verdict: no dedicated route, but an existing one already does the job with zero params.**
@@ -63,12 +65,14 @@ global rule to preserve every RC1 stop condition.
 
 **Reported, not implemented** — building this would require either a new public route in `prometheusk-web` (out of this session's mandate) or full cross-domain auth (a stop condition on its own).
 
+**RC5 reclassification (2026-07-15): deferred; authenticated-only today.** RC5 (`docs/RC5_HANDOFF_CONTRACT.md`) deliberately did not build a public share-slug preview — see that spec's "Living Echo Decision." The authenticated `/my/echo` route in `prometheusk-web` is unaffected and remains the only real Living Echo surface.
+
 ## Summary
 
 | Deliverable | Status |
 |---|---|
 | Canonical return contract | Stop condition — reported, not built |
-| Journey synchronization | Stop condition — reported, not built |
+| Journey synchronization | Stop condition — reported, not built; RC5 deferred a narrow `practiceCompletedAt` flag instead (see `docs/RC5_HANDOFF_CONTRACT.md`) |
 | Practice continuation | Implemented via existing `/` |
 | Recommendation entry | Implemented via existing `/` (same change as above) |
-| Living Echo preview | Stop condition — reported, not built |
+| Living Echo preview | Stop condition — reported, not built; RC5 deferred, authenticated-only today |

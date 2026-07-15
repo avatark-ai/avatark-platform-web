@@ -92,6 +92,11 @@ export function TodayView({
               </p>
             </div>
           ) : null}
+          {context.practiceCompletedAt ? (
+            <p className="text-sm" style={{ color: 'var(--gold)' }}>
+              ✓ Completion verified by Prometheus
+            </p>
+          ) : null}
         </div>
       ) : null}
 

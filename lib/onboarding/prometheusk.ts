@@ -7,7 +7,10 @@ export const PROMETHEUSK_ORIGIN = "https://prometheusk.avatark.io";
 // direct request (2026-07-15):
 // https://prometheusk.avatark.io/my/borrow/builder-journey/practice/aad2380d-8d13-4499-8ac9-eb37d9f41cbb
 const BUILDER_JOURNEY_ID = "builder-journey";
-const DRIFT_PRACTICE_ID = "aad2380d-8d13-4499-8ac9-eb37d9f41cbb";
+// Exported so lib/onboarding/receipt.ts has one source of truth for the
+// single RC5 receipt-eligible practice, instead of a second copy of
+// this literal.
+export const DRIFT_PRACTICE_ID = "aad2380d-8d13-4499-8ac9-eb37d9f41cbb";
 
 export interface OnboardingHandoffContext {
   intention?: string | null;
@@ -18,13 +21,15 @@ export interface OnboardingHandoffContext {
   returnTo: string;
 }
 
-// IMPORTANT: as of the RC1 Phase 1 audit (docs/ONBOARDING_ROUTE_CONTRACT.md),
-// no route in prometheusk-web reads any query parameters on its practice
-// runtime, and no route can redirect back to an external caller after
-// completion. Every parameter appended here is inert until PrometheusK
-// adds a returnTo contract -- this function still builds them (forward
-// compatible, and useful for PrometheusK-side analytics/log inspection
-// even unread) but callers must not assume a return trip will happen.
+// UPDATED for RC5 (docs/RC5_HANDOFF_CONTRACT.md): the practice runtime
+// itself still doesn't read these as a generic contract, but RC5 added
+// specific, narrow support for exactly this shape -- BorrowedPracticePage
+// now reads `source`/`state`/`returnTo` to decide whether to offer a
+// receipt-backed "Return to AvatarK" CTA once the practice/reflection/
+// echo chain completes. `returnTo` is never auto-redirected to (no open
+// redirect); it's only ever handed to the signed completion receipt as
+// the destination for a user-initiated click. `witness`/`intention`/
+// `invitation`/`cohort` remain unread breadcrumbs, same as before RC5.
 export function buildBorrowUrl(context: OnboardingHandoffContext): string {
   const url = new URL(
     `/my/borrow/${BUILDER_JOURNEY_ID}/practice/${DRIFT_PRACTICE_ID}`,

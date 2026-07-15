@@ -302,6 +302,14 @@ Do not begin full cross-product journey synchronization or public Living Echo sh
 
 ## Status
 
-Spec recorded 2026-07-15. Implementation in progress — see this
-repo's commit log and `docs/RC5_HANDOFF_CONTRACT.md` (to be completed
-once implementation concludes or a stop condition is hit) for outcome.
+Spec recorded 2026-07-15. Implemented — see `docs/RC5_HANDOFF_CONTRACT.md`
+for the completion-receipt architecture actually built, and this repo's
+and `prometheusk-web`'s commit logs for the code.
+
+No stop condition was hit. Lint, typecheck, unit tests, and production
+builds pass in both repos (spec test items 17–20). Hosted cross-domain
+verification (test item 21) has not been performed — these changes are
+not yet deployed to either environment as of this writing, so this
+status deliberately does not claim hosted verification from local
+fixtures alone. Verify the real cross-domain round trip once both repos
+are deployed.

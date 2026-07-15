@@ -6,6 +6,10 @@ export interface JourneyContext {
   witness: string | null;
   startedAt: string | null;
   lastSeenAt: string | null;
+  // RC5 -- set only after a signed completion receipt from PrometheusK
+  // has been verified server-side (see lib/onboarding/receipt.ts and
+  // app/continue/page.tsx). Never set from a client-supplied flag.
+  practiceCompletedAt: string | null;
 }
 
 export const EMPTY_JOURNEY_CONTEXT: JourneyContext = {
@@ -13,6 +17,7 @@ export const EMPTY_JOURNEY_CONTEXT: JourneyContext = {
   witness: null,
   startedAt: null,
   lastSeenAt: null,
+  practiceCompletedAt: null,
 };
 
 // auth.users.user_metadata is Supabase's own existing, always-present
@@ -35,6 +40,7 @@ export function readJourneyContext(metadata: unknown): JourneyContext {
     witness: typeof raw.witness === "string" ? raw.witness : null,
     startedAt: typeof raw.startedAt === "string" ? raw.startedAt : null,
     lastSeenAt: typeof raw.lastSeenAt === "string" ? raw.lastSeenAt : null,
+    practiceCompletedAt: typeof raw.practiceCompletedAt === "string" ? raw.practiceCompletedAt : null,
   };
 }
 
@@ -73,6 +79,7 @@ export async function recordIntentionContext(
     witness,
     startedAt: current.startedAt ?? new Date().toISOString(),
     lastSeenAt: current.lastSeenAt,
+    practiceCompletedAt: current.practiceCompletedAt,
   };
 
   await withTimeout(
@@ -93,6 +100,27 @@ export async function touchLastSeen(
     supabase.auth.updateUser({ data: { journey: merged } }),
     10000,
     "saving your visit"
+  );
+  return merged;
+}
+
+// RC5 -- called server-side from app/continue/page.tsx, only after a
+// signed PrometheusK completion receipt has been verified
+// (lib/onboarding/receipt.ts). `completedAt` is the receipt's own
+// completed_at claim, not the current time, so the recorded fact
+// reflects when PrometheusK actually observed completion. Idempotent
+// by design: re-verifying the same still-valid receipt (e.g. a second
+// /continue hit before it expires) just re-writes the same value.
+export async function recordPracticeCompletion(
+  supabase: SupabaseAuthClient,
+  current: JourneyContext,
+  completedAt: string
+): Promise<JourneyContext> {
+  const merged: JourneyContext = { ...current, practiceCompletedAt: completedAt };
+  await withTimeout(
+    supabase.auth.updateUser({ data: { journey: merged } }),
+    10000,
+    "saving your completed practice"
   );
   return merged;
 }

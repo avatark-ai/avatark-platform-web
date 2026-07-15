@@ -1,6 +1,4 @@
 import { notFound } from "next/navigation";
-import { headers } from "next/headers";
-import { buildBorrowUrl } from "@/lib/onboarding/prometheusk";
 import OrbReveal from "@/components/OrbReveal";
 
 // RC1 ships exactly one witness experience -- an AvatarK archetype, not
@@ -22,23 +20,16 @@ export default async function WitnessPage({
   const invitation = typeof search.invitation === "string" ? search.invitation : null;
   const cohort = typeof search.cohort === "string" ? search.cohort : null;
 
-  // Encode the context directly into the returnTo URL itself, so if
-  // PrometheusK ever does honor returnTo, the round trip needs no
-  // extra plumbing -- landing on this URL is already enough for
-  // /continue to read intention/witness back out.
-  const host = (await headers()).get("host");
-  const returnUrl = new URL("/continue", `https://${host}`);
-  returnUrl.searchParams.set("witness", WITNESS_SLUG);
-  if (intention) returnUrl.searchParams.set("intention", intention);
-  const returnTo = returnUrl.toString();
-
-  const borrowUrl = buildBorrowUrl({
-    intention,
-    witness: WITNESS_SLUG,
-    invitation,
-    cohort,
-    returnTo,
-  });
+  // RC5 -- routes through /api/onboarding/begin (a Route Handler, not a
+  // direct PrometheusK link) so the onboarding state/nonce can be
+  // generated and cookied server-side before the redirect. See
+  // docs/RC5_HANDOFF_CONTRACT.md.
+  const beginUrl = new URL("/api/onboarding/begin", "https://placeholder.invalid");
+  beginUrl.searchParams.set("witness", WITNESS_SLUG);
+  if (intention) beginUrl.searchParams.set("intention", intention);
+  if (invitation) beginUrl.searchParams.set("invitation", invitation);
+  if (cohort) beginUrl.searchParams.set("cohort", cohort);
+  const borrowUrl = `${beginUrl.pathname}${beginUrl.search}`;
 
   return (
     <main
