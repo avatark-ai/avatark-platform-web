@@ -1,8 +1,18 @@
 'use client'
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
-export default function SignInPage() {
+function SignInForm() {
+  const searchParams = useSearchParams()
+  // Real fix: this `return` param was previously read by /account and
+  // /journey's redirect-to-sign-in links, but silently dropped here --
+  // the magic link always called back to a bare /auth/callback with no
+  // `return`, which only happened to work for /account because its
+  // desired destination matches the callback's own default. Anything
+  // else (e.g. /continue) needs it actually threaded through.
+  const returnParam = searchParams.get('return')
+
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
 
@@ -10,9 +20,11 @@ export default function SignInPage() {
     if (!email.trim()) return
     setStatus('sending')
     const supabase = createClient()
+    const callbackUrl = new URL('/auth/callback', window.location.origin)
+    if (returnParam) callbackUrl.searchParams.set('return', returnParam)
     const { error } = await supabase.auth.signInWithOtp({
       email: email.trim(),
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      options: { emailRedirectTo: callbackUrl.toString() },
     })
     setStatus(error ? 'error' : 'sent')
   }
@@ -42,5 +54,13 @@ export default function SignInPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignInForm />
+    </Suspense>
   )
 }

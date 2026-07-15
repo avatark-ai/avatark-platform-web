@@ -21,8 +21,15 @@ export default async function WitnessPage({
   const invitation = typeof search.invitation === "string" ? search.invitation : null;
   const cohort = typeof search.cohort === "string" ? search.cohort : null;
 
+  // Encode the context directly into the returnTo URL itself, so if
+  // PrometheusK ever does honor returnTo, the round trip needs no
+  // extra plumbing -- landing on this URL is already enough for
+  // /continue to read intention/witness back out.
   const host = (await headers()).get("host");
-  const returnTo = `https://${host}/continue`;
+  const returnUrl = new URL("/continue", `https://${host}`);
+  returnUrl.searchParams.set("witness", WITNESS_SLUG);
+  if (intention) returnUrl.searchParams.set("intention", intention);
+  const returnTo = returnUrl.toString();
 
   const borrowUrl = buildBorrowUrl({
     intention,
