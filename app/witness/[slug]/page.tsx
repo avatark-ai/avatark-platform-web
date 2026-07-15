@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import { buildBorrowUrl } from "@/lib/onboarding/prometheusk";
+import OrbReveal from "@/components/OrbReveal";
 
 // RC1 ships exactly one witness experience -- an AvatarK archetype, not
 // a real practitioner (no consent/status has been verified for one).
@@ -101,13 +102,15 @@ export default async function WitnessPage({
           manage.
         </p>
 
-        <a
-          href={borrowUrl}
-          className="mt-2 rounded-md px-8 py-3 text-center text-base font-semibold transition-opacity hover:opacity-90"
-          style={{ background: "var(--gold)", color: "var(--midnight)" }}
-        >
-          Borrow This Practice
-        </a>
+        <OrbReveal>
+          <a
+            href={borrowUrl}
+            className="mt-2 rounded-md px-8 py-3 text-center text-base font-semibold transition-opacity hover:opacity-90"
+            style={{ background: "var(--gold)", color: "var(--midnight)" }}
+          >
+            Borrow This Practice
+          </a>
+        </OrbReveal>
       </div>
     </main>
   );
