@@ -24,6 +24,11 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* AvatarK brand tokens, shared with the dark-card language already
+     shipped in /account -- reused here, not reinvented, so onboarding
+     and account feel like one continuous brand. */
+  --paper: #f5f2ea;
+  --midnight: var(--aka-bg-base, #0a0a0f);
 }
 
 @theme inline {

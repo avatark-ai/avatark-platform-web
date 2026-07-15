@@ -1,65 +1,59 @@
-import Image from "next/image";
+import Link from "next/link";
+
+const WATCH_FIRST_URL = "https://prometheusk.avatark.io/watch-first";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main
+      className="flex flex-1 flex-col items-center justify-center px-6 py-20 text-center"
+      style={{ background: "var(--midnight)", color: "var(--paper)" }}
+    >
+      <div className="flex max-w-xl flex-col items-center gap-8">
+        <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
+          Every life leaves an Echo.
+          <br />
+          Build yours intentionally.
+        </h1>
+
+        <p className="text-lg leading-8" style={{ color: "var(--text-dim)" }}>
+          Learn from people. Practice what works.
+          <br />
+          Carry forward what changes you.
+        </p>
+
+        <div className="flex flex-col items-center gap-4 sm:flex-row">
+          <Link
+            href="/start"
+            className="rounded-md px-8 py-3 text-base font-semibold transition-opacity hover:opacity-90"
+            style={{ background: "var(--gold)", color: "var(--midnight)" }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Begin with an Echo
+          </Link>
+          <Link
+            href="/enter"
+            className="rounded-md border px-8 py-3 text-base font-semibold transition-colors hover:border-[var(--gold)]"
+            style={{ borderColor: "var(--surface-line)", color: "var(--paper)" }}
           >
-            Documentation
-          </a>
+            Enter an Invitation
+          </Link>
         </div>
-      </main>
-    </div>
+
+        <nav
+          aria-label="Other ways to begin"
+          className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-4 text-sm"
+          style={{ color: "var(--text-dim)" }}
+        >
+          <a href={WATCH_FIRST_URL} className="underline-offset-4 hover:underline hover:text-[var(--paper)]">
+            Watch First
+          </a>
+          <Link href="/continue" className="underline-offset-4 hover:underline hover:text-[var(--paper)]">
+            Continue Your Journey
+          </Link>
+          <Link href="/auth/sign-in" className="underline-offset-4 hover:underline hover:text-[var(--paper)]">
+            Sign In
+          </Link>
+        </nav>
+      </div>
+    </main>
   );
 }
