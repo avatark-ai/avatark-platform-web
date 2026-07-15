@@ -53,7 +53,10 @@ RC4 integration report, route contracts, hosted Playwright verification results 
 
 ## Status
 
-Spec recorded 2026-07-15. Implementation not yet started — see this
-document's revision history / the repo's commit log for progress, and
-the integration report (to be added under this same `docs/` directory
-once RC4 work concludes or stops) for outcomes per deliverable.
+Spec recorded 2026-07-15. RC4 is complete as of the same day: two of
+five deliverables (practice continuation, recommendation entry) were
+implemented; three (canonical return contract, journey synchronization,
+Living Echo preview) hit real stop conditions and were reported rather
+than worked around. See `docs/RC4_ROUTE_CONTRACT.md` for the audit and
+`docs/RC4_INTEGRATION_REPORT.md` for the full outcome, commit list, and
+hosted verification results.
