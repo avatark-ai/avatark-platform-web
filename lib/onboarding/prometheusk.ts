@@ -38,3 +38,23 @@ export function buildBorrowUrl(context: OnboardingHandoffContext): string {
   if (context.cohort) url.searchParams.set("cohort", context.cohort);
   return url.toString();
 }
+
+// RC4 integration point: for a user who already has an active practice,
+// PrometheusK's own homepage (`/`) already resumes the right practice
+// for a signed-in visitor (`lib/home/useNextAction.ts`) and renders a
+// personalized recommendation alongside it (`TodaysRecommendationCard`)
+// -- with zero query params. Confirmed via a prometheusk-web code audit
+// (2026-07-15, docs/RC4_ROUTE_CONTRACT.md): no dedicated "continue" or
+// "recommend" route exists, but this shared dashboard already does
+// both, so this repo does not need to guess a practice ID for returning
+// users the way buildBorrowUrl above does for first-time ones.
+//
+// `source` is appended only for PrometheusK-side log inspection, same
+// as buildBorrowUrl's inert params -- the homepage reads no query
+// params today (confirmed by the same audit), so this is not a real
+// integration surface, just a breadcrumb.
+export function buildContinueUrl(): string {
+  const url = new URL("/", PROMETHEUSK_ORIGIN);
+  url.searchParams.set("source", "avatark-platform");
+  return url.toString();
+}

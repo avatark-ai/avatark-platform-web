@@ -1,12 +1,12 @@
 'use client'
 
-import { Suspense, useEffect, useSyncExternalStore } from 'react'
+import { Suspense, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useJourneySession } from '@/lib/journey/session'
 import { INTENTIONS } from '@/lib/onboarding/intentions'
 import { WITNESS_SLUG, WITNESS_LABEL, PRACTICE_LABEL } from '@/lib/onboarding/witness'
-import { buildBorrowUrl } from '@/lib/onboarding/prometheusk'
+import { buildContinueUrl } from '@/lib/onboarding/prometheusk'
 import type { JourneyContext } from '@/lib/journey/state'
 
 const ctaStyle = {
@@ -14,34 +14,14 @@ const ctaStyle = {
   color: 'var(--midnight)',
 } as const
 
-// Origin never changes after load, so there's nothing to subscribe to
-// -- this is just useSyncExternalStore's standard trick for reading a
-// browser-only value without a server/first-render mismatch (the
-// server snapshot is null, same as before hydration on the client).
-function subscribeNoop() {
-  return () => {}
-}
-function getOriginSnapshot() {
-  return window.location.origin
-}
-function getServerOriginSnapshot() {
-  return null
-}
-
 // Pure by design -- every branch is fully determined by its props, so
 // it can be rendered with fixture data with no Supabase session at all.
-// `origin` is passed in rather than read from `window` here so this
-// component never has a browser-only branch of its own -- the caller
-// (TodayContent below) is responsible for resolving it in a way that's
-// safe across the server/first-client-render boundary.
 export function TodayView({
   context,
   displayName,
-  origin,
 }: {
   context: JourneyContext
   displayName: string | null
-  origin: string | null
 }) {
   const intentionLabel = INTENTIONS.find((i) => i.id === context.intention)?.label
   const greeting = displayName ? `Welcome back, ${displayName}.` : 'Welcome back.'
@@ -65,11 +45,10 @@ export function TodayView({
       external: false,
     }
   } else {
-    const returnTo = origin ? `${origin}/journey/today` : '/journey/today'
     recommendation = {
-      body: 'Your practice is right where you left it, on Prometheus.',
+      body: 'Your practice is right where you left it, on Prometheus -- pick up where you left off, or see what it recommends next.',
       ctaLabel: 'Return to your practice',
-      href: buildBorrowUrl({ intention: context.intention, witness: context.witness, returnTo }),
+      href: buildContinueUrl(),
       external: true,
     }
   }
@@ -152,8 +131,6 @@ function TodayContent() {
   const witnessParam = searchParams.get('witness')
   const { principal, context, displayName, absorbIntentionParams } = useJourneySession()
 
-  const origin = useSyncExternalStore(subscribeNoop, getOriginSnapshot, getServerOriginSnapshot)
-
   // Absorb query params carried in from the onboarding chain into the
   // canonical (user_metadata-backed) context, then drop them from the
   // URL -- a returning visit to this exact page should look identical
@@ -166,7 +143,7 @@ function TodayContent() {
     })
   }, [principal.status, intentionParam, witnessParam, absorbIntentionParams, router])
 
-  return <TodayView context={context} displayName={displayName} origin={origin} />
+  return <TodayView context={context} displayName={displayName} />
 }
 
 export default function JourneyTodayPage() {
