@@ -1,5 +1,25 @@
 @import "tailwindcss";
+@source "../node_modules/@avatark/account/dist/**/*.js";
 @import "@avatark/account/styles.css";
+
+/* Bridge: @avatark/account's compiled components read unprefixed
+   CSS variable names (--text-primary, --text-dim, --gold, --surface,
+   --surface-line), but the package's own styles.css only defines
+   --aka-prefixed names. This mismatch left every card/text element
+   falling through to its inline fallback -- and since .aka-card's
+   background was resolving from --aka-surface correctly while text
+   colors weren't inheriting the light fallback as expected, the net
+   result was near-invisible text on dark cards. Bridging here unblocks
+   RC0 without forking the package; the real fix (pick one naming
+   convention and align styles.css with the compiled components)
+   belongs in @avatark/account itself, tracked separately. */
+:root {
+  --text-primary: var(--aka-text-primary);
+  --text-dim: var(--aka-text-dim);
+  --gold: var(--aka-accent);
+  --surface: var(--aka-surface);
+  --surface-line: var(--aka-surface-line);
+}
 
 :root {
   --background: #ffffff;

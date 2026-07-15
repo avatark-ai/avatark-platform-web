@@ -77,7 +77,16 @@ function AccountClientGate() {
         ])
         const { data: { user }, error } = result
         if (cancelled) return
-        if (error) { setLoadError(error.message); return }
+        // Real fix: AuthSessionMissingError is Supabase's normal,
+        // expected response when no one is signed in yet -- not a
+        // failure. Treating it as a genuine error meant every
+        // first-time visitor saw a red error screen instead of the
+        // sign-in flow. Only a *different* error should surface as
+        // status: 'error'.
+        if (error && error.name !== 'AuthSessionMissingError' && !error.message?.includes('Auth session missing')) {
+          setLoadError(error.message)
+          return
+        }
         if (!user) { setPrincipal({ status: 'signed_out' }); return }
         const res = await fetch('/api/account/profile')
         const profile = res.ok ? await res.json() : null
