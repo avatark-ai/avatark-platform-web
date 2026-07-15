@@ -1,20 +1,36 @@
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
+import { buildBorrowUrl } from "@/lib/onboarding/prometheusk";
 
 // RC1 ships exactly one witness experience -- an AvatarK archetype, not
 // a real practitioner (no consent/status has been verified for one).
 const WITNESS_SLUG = "the-promise-to-myself";
 
-// Confirmed live: https://prometheusk.avatark.io/my/borrow/builder-journey/practice/aad2380d-8d13-4499-8ac9-eb37d9f41cbb
-const BORROW_URL =
-  "https://prometheusk.avatark.io/my/borrow/builder-journey/practice/aad2380d-8d13-4499-8ac9-eb37d9f41cbb?source=avatark-onboarding";
-
 export default async function WitnessPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { slug } = await params;
   if (slug !== WITNESS_SLUG) notFound();
+
+  const search = await searchParams;
+  const intention = typeof search.intention === "string" ? search.intention : null;
+  const invitation = typeof search.invitation === "string" ? search.invitation : null;
+  const cohort = typeof search.cohort === "string" ? search.cohort : null;
+
+  const host = (await headers()).get("host");
+  const returnTo = `https://${host}/continue`;
+
+  const borrowUrl = buildBorrowUrl({
+    intention,
+    witness: WITNESS_SLUG,
+    invitation,
+    cohort,
+    returnTo,
+  });
 
   return (
     <main
@@ -79,7 +95,7 @@ export default async function WitnessPage({
         </p>
 
         <a
-          href={BORROW_URL}
+          href={borrowUrl}
           className="mt-2 rounded-md px-8 py-3 text-center text-base font-semibold transition-opacity hover:opacity-90"
           style={{ background: "var(--gold)", color: "var(--midnight)" }}
         >
