@@ -1,0 +1,178 @@
+'use client'
+
+import { Suspense, useEffect, useSyncExternalStore } from 'react'
+import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useJourneySession } from '@/lib/journey/session'
+import { INTENTIONS } from '@/lib/onboarding/intentions'
+import { WITNESS_SLUG, WITNESS_LABEL, PRACTICE_LABEL } from '@/lib/onboarding/witness'
+import { buildBorrowUrl } from '@/lib/onboarding/prometheusk'
+import type { JourneyContext } from '@/lib/journey/state'
+
+const ctaStyle = {
+  background: 'var(--gold)',
+  color: 'var(--midnight)',
+} as const
+
+// Origin never changes after load, so there's nothing to subscribe to
+// -- this is just useSyncExternalStore's standard trick for reading a
+// browser-only value without a server/first-render mismatch (the
+// server snapshot is null, same as before hydration on the client).
+function subscribeNoop() {
+  return () => {}
+}
+function getOriginSnapshot() {
+  return window.location.origin
+}
+function getServerOriginSnapshot() {
+  return null
+}
+
+// Pure by design -- every branch is fully determined by its props, so
+// it can be rendered with fixture data with no Supabase session at all.
+// `origin` is passed in rather than read from `window` here so this
+// component never has a browser-only branch of its own -- the caller
+// (TodayContent below) is responsible for resolving it in a way that's
+// safe across the server/first-client-render boundary.
+export function TodayView({
+  context,
+  displayName,
+  origin,
+}: {
+  context: JourneyContext
+  displayName: string | null
+  origin: string | null
+}) {
+  const intentionLabel = INTENTIONS.find((i) => i.id === context.intention)?.label
+  const greeting = displayName ? `Welcome back, ${displayName}.` : 'Welcome back.'
+
+  type Recommendation = { body: string; ctaLabel: string; href: string; external: boolean }
+
+  let recommendation: Recommendation
+
+  if (!context.intention && !context.witness) {
+    recommendation = {
+      body: "You haven't begun an Echo yet. Every journey here starts with one small practice.",
+      ctaLabel: 'Begin with an Echo',
+      href: '/start',
+      external: false,
+    }
+  } else if (!context.witness) {
+    recommendation = {
+      body: "You named what you're after. The next step is waiting exactly where you left it.",
+      ctaLabel: 'Continue to the practice',
+      href: `/witness/${WITNESS_SLUG}${context.intention ? `?intention=${context.intention}` : ''}`,
+      external: false,
+    }
+  } else {
+    const returnTo = origin ? `${origin}/journey/today` : '/journey/today'
+    recommendation = {
+      body: 'Your practice is right where you left it, on Prometheus.',
+      ctaLabel: 'Return to your practice',
+      href: buildBorrowUrl({ intention: context.intention, witness: context.witness, returnTo }),
+      external: true,
+    }
+  }
+
+  const hasSnapshot = Boolean(intentionLabel || context.witness)
+
+  return (
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-2">
+        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--gold)' }}>
+          Today
+        </p>
+        <h1 className="text-2xl font-semibold sm:text-3xl">{greeting}</h1>
+      </div>
+
+      {hasSnapshot ? (
+        <div
+          className="flex flex-col gap-4 rounded-md border p-5"
+          style={{ borderColor: 'var(--surface-line)', background: 'var(--surface)' }}
+        >
+          {intentionLabel ? (
+            <div>
+              <p className="text-xs uppercase tracking-wide" style={{ color: 'var(--text-dim)' }}>
+                Current intention
+              </p>
+              <p className="text-base" style={{ color: 'var(--paper)' }}>
+                {intentionLabel}
+              </p>
+            </div>
+          ) : null}
+          {context.witness ? (
+            <div>
+              <p className="text-xs uppercase tracking-wide" style={{ color: 'var(--text-dim)' }}>
+                Current practice
+              </p>
+              <p className="text-base" style={{ color: 'var(--paper)' }}>
+                {PRACTICE_LABEL}
+              </p>
+              <p className="text-sm" style={{ color: 'var(--text-dim)' }}>
+                from {WITNESS_LABEL}, on Prometheus
+              </p>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+
+      <div className="flex flex-col gap-3">
+        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-dim)' }}>
+          Recommended next step
+        </p>
+        <p className="text-base leading-7" style={{ color: 'var(--paper)' }}>
+          {recommendation.body}
+        </p>
+        {recommendation.external ? (
+          <a
+            href={recommendation.href}
+            className="mt-1 inline-block w-fit rounded-md px-8 py-3 text-center text-base font-semibold transition-opacity hover:opacity-90"
+            style={ctaStyle}
+          >
+            {recommendation.ctaLabel}
+          </a>
+        ) : (
+          <Link
+            href={recommendation.href}
+            className="mt-1 inline-block w-fit rounded-md px-8 py-3 text-center text-base font-semibold transition-opacity hover:opacity-90"
+            style={ctaStyle}
+          >
+            {recommendation.ctaLabel}
+          </Link>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function TodayContent() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const intentionParam = searchParams.get('intention')
+  const witnessParam = searchParams.get('witness')
+  const { principal, context, displayName, absorbIntentionParams } = useJourneySession()
+
+  const origin = useSyncExternalStore(subscribeNoop, getOriginSnapshot, getServerOriginSnapshot)
+
+  // Absorb query params carried in from the onboarding chain into the
+  // canonical (user_metadata-backed) context, then drop them from the
+  // URL -- a returning visit to this exact page should look identical
+  // whether or not it just arrived with params.
+  useEffect(() => {
+    if (principal.status !== 'signed_in') return
+    if (!intentionParam && !witnessParam) return
+    absorbIntentionParams({ intention: intentionParam, witness: witnessParam }).then(() => {
+      router.replace('/journey/today')
+    })
+  }, [principal.status, intentionParam, witnessParam, absorbIntentionParams, router])
+
+  return <TodayView context={context} displayName={displayName} origin={origin} />
+}
+
+export default function JourneyTodayPage() {
+  return (
+    <Suspense fallback={<p className="text-sm" style={{ color: 'var(--text-dim)' }}>Loading…</p>}>
+      <TodayContent />
+    </Suspense>
+  )
+}

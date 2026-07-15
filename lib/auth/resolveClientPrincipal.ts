@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/client'
 
 export type ClientPrincipalResult =
   | { status: 'signed_out' }
-  | { status: 'signed_in'; userId: string; email: string }
+  | { status: 'signed_in'; userId: string; email: string; metadata: Record<string, unknown> }
   | { status: 'error'; message: string }
 
 // Same defensive shape as app/account/page.tsx's load effect (kept
@@ -24,7 +24,12 @@ export async function resolveClientPrincipal(): Promise<ClientPrincipalResult> {
       return { status: 'error', message: error.message }
     }
     if (!user) return { status: 'signed_out' }
-    return { status: 'signed_in', userId: user.id, email: user.email ?? '' }
+    return {
+      status: 'signed_in',
+      userId: user.id,
+      email: user.email ?? '',
+      metadata: (user.user_metadata ?? {}) as Record<string, unknown>,
+    }
   } catch (err) {
     return { status: 'error', message: err instanceof Error ? err.message : String(err) }
   }
