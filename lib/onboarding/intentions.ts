@@ -14,12 +14,17 @@ export interface Intention {
   label: string;
 }
 
+// RC6A.1 -- reordered (display order only, ids/URL contract unchanged):
+// the two higher-friction, most-immediate emotional states ("stuck",
+// "calm") lead, ahead of the more aspirational/goal-oriented options,
+// with "curious" -- the lowest-commitment, just-browsing option --
+// moved last.
 export const INTENTIONS: Intention[] = [
-  { id: "clarity", label: "I want more clarity." },
+  { id: "stuck", label: "I feel stuck." },
   { id: "calm", label: "I want to feel calmer." },
+  { id: "clarity", label: "I want more clarity." },
   { id: "habits", label: "I want better habits." },
   { id: "leadership", label: "I want to lead better." },
-  { id: "stuck", label: "I feel stuck." },
   { id: "curious", label: "I am simply curious." },
 ];
 
