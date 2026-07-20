@@ -10,30 +10,124 @@ import type { AccountPrincipal } from '@/lib/auth/principal'
 // not unconditionally live. Reads a real env var -- no hardcoded true.
 const ACCOUNT_MOUNT_ENABLED = process.env.NEXT_PUBLIC_ACCOUNT_MOUNT_ENABLED === 'true'
 
-function AccountRoot({ principal }: { principal: AccountPrincipal }) {
+// @avatark/account's own tab set (profile/signin/products/membership/
+// preferences/privacy/activity/echoes/data) has no "Overview" or "Support"
+// tab -- that package is owned upstream (its canonical source lives in
+// prometheusk-web), so those two are added here as a thin platform-side
+// wrapper around the package rather than forked/patched locally.
+type AccountView = 'overview' | 'details' | 'support'
+
+function OverviewView({ principal, onOpenTab }: { principal: Extract<AccountPrincipal, { status: 'signed_in' }>; onOpenTab: (tab: AccountTabKey) => void }) {
+  const quickLinks: { tab: AccountTabKey; label: string }[] = [
+    { tab: 'profile', label: 'Profile' },
+    { tab: 'products', label: 'Products' },
+    { tab: 'preferences', label: 'Preferences' },
+    { tab: 'privacy', label: 'Privacy' },
+    { tab: 'signin', label: 'Security' },
+    { tab: 'membership', label: 'Membership' },
+    { tab: 'data', label: 'Data & Export' },
+  ]
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <div className="text-lg font-semibold">{principal.displayName}</div>
+        <div className="text-sm text-neutral-500">{principal.email}</div>
+      </div>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        {quickLinks.map((link) => (
+          <button
+            key={link.tab}
+            onClick={() => onOpenTab(link.tab)}
+            className="rounded-md border px-3 py-2 text-left text-sm hover:bg-neutral-50"
+          >
+            {link.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function SupportView() {
+  const supportEmail = avatarKPlatformAdapters.support?.supportEmail ?? 'support@avatark.ai'
+  return (
+    <div className="max-w-md space-y-2 text-sm">
+      <p>Need help with your AvatarK account? Contact <a className="underline" href={`mailto:${supportEmail}`}>{supportEmail}</a>.</p>
+      <p className="text-neutral-500">
+        Product-local support (practices, challenges, in-product issues) is handled by each product directly, not
+        through this platform account surface.
+      </p>
+    </div>
+  )
+}
+
+function ViewTabs({ view, onChange }: { view: AccountView; onChange: (view: AccountView) => void }) {
+  const tabs: { key: AccountView; label: string }[] = [
+    { key: 'overview', label: 'Overview' },
+    { key: 'details', label: 'Account' },
+    { key: 'support', label: 'Support' },
+  ]
+  return (
+    <div className="mb-6 flex gap-1 border-b pb-3 text-sm">
+      {tabs.map((t) => (
+        <button
+          key={t.key}
+          onClick={() => onChange(t.key)}
+          className={`rounded-md px-3 py-1.5 font-medium ${view === t.key ? 'bg-black text-white' : 'text-neutral-600 hover:bg-neutral-100'}`}
+        >
+          {t.label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function AccountRoot({ principal }: { principal: Extract<AccountPrincipal, { status: 'signed_in' }> }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const rawTab = searchParams.get('tab')
   const activeTab = (rawTab ?? undefined) as AccountTabKey | undefined
+  const view = (searchParams.get('view') as AccountView | null) ?? 'overview'
 
-  function handleActiveTabChange(next: AccountTabKey) {
-    if (next === rawTab) return
+  function setParams(next: Record<string, string | undefined>) {
     const params = new URLSearchParams(searchParams.toString())
-    params.set('tab', next)
+    for (const [key, value] of Object.entries(next)) {
+      if (value === undefined) params.delete(key)
+      else params.set(key, value)
+    }
     router.push(`/account?${params.toString()}`)
   }
 
+  function handleActiveTabChange(next: AccountTabKey) {
+    if (next === rawTab) return
+    setParams({ tab: next, view: 'details' })
+  }
+
+  function openTab(tab: AccountTabKey) {
+    setParams({ tab, view: 'details' })
+  }
+
   return (
-    <AccountAdaptersProvider adapters={avatarKPlatformAdapters}>
-      <AvatarKAccount
-        principal={principal}
-        currentProduct="avatark"
-        productName="AvatarK"
-        activeTab={activeTab}
-        onActiveTabChange={handleActiveTabChange}
-        onSignedOut={() => { window.location.href = '/auth/sign-in' }}
-      />
-    </AccountAdaptersProvider>
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      <ViewTabs view={view} onChange={(next) => setParams({ view: next === 'overview' ? undefined : next })} />
+      {view === 'support' ? (
+        <SupportView />
+      ) : view === 'overview' ? (
+        <OverviewView principal={principal} onOpenTab={openTab} />
+      ) : (
+        <AccountAdaptersProvider adapters={avatarKPlatformAdapters}>
+          <AvatarKAccount
+            principal={principal}
+            currentProduct="avatark"
+            productName="AvatarK"
+            activeTab={activeTab}
+            onActiveTabChange={handleActiveTabChange}
+            onSignedOut={() => { window.location.href = '/auth/sign-in' }}
+          />
+        </AccountAdaptersProvider>
+      )}
+    </div>
   )
 }
 
