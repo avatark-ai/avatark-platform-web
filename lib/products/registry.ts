@@ -1,8 +1,11 @@
-// AvatarK Platform's own product registry -- deliberately NOT copied
-// from PrometheusK's productCatalog.ts (that's PrometheusK-specific
-// config). Real, honest data only: PrometheusK is the one genuinely
-// live product with a real URL; everything else is either coming_soon
-// or omitted entirely rather than guessed at.
+// AvatarK Platform's app-level view of the shared @avatark/product-registry
+// package -- this file used to hold the hardcoded product list directly;
+// now it derives from the registry and layers on two things that are
+// genuinely local to this app rather than portable, ecosystem-wide facts:
+// per-deployment domain overrides (env vars) and this app's own knowledge
+// of which products have a product-local admin surface it can link to.
+import { NO_BILLING_SYSTEM_NOTE, PRODUCT_REGISTRY, type AvatarKProduct } from '@avatark/product-registry'
+
 export interface PlatformProduct {
   id: string
   name: string
@@ -22,102 +25,42 @@ export interface PlatformProduct {
   version: string | null
 }
 
-// No product in this ecosystem has a billing/subscription system yet (see
-// supabase/migrations/010_organizations.sql's own note on this). This is a
-// uniform, ecosystem-wide gap, not a per-product fact, so it's a single
-// shared constant rather than a field that would imply per-product variance
-// that doesn't exist.
-export const SUBSCRIPTION_MODEL_NOTE = 'No billing/subscription system exists yet anywhere in the AvatarK ecosystem.'
+export const SUBSCRIPTION_MODEL_NOTE = NO_BILLING_SYSTEM_NOTE
 
-export const PLATFORM_PRODUCTS: PlatformProduct[] = [
-  {
-    // The platform itself. Included so "every product registers through
-    // the Platform registry" is literally true rather than an implicit
-    // exception -- real URL from the same env var used elsewhere in this
-    // repo (lib/identity/supabaseIdentityProvider.ts), not a new guess.
-    id: 'avatark',
-    name: 'AvatarK',
-    purpose: 'Identity, account, organizations, and platform administration for the AvatarK ecosystem (this application)',
-    url: process.env.NEXT_PUBLIC_PLATFORM_ORIGIN || null,
-    adminUrl: '/admin',
-    availability: 'live',
+// Real env vars, unchanged from before this app's registry moved to the
+// shared package -- the package itself stays free of Next.js/env
+// assumptions so non-Next consumers (landing page, future billing) can
+// use it too. A deployment-specific override always wins over the
+// package's own best-known default.
+const DOMAIN_OVERRIDES: Record<string, string | undefined> = {
+  avatark: process.env.NEXT_PUBLIC_PLATFORM_ORIGIN,
+  prometheusk: process.env.NEXT_PUBLIC_PROMETHEUSK_URL,
+  gamek: process.env.NEXT_PUBLIC_GAMEK_URL,
+  arenak: process.env.NEXT_PUBLIC_ARENAK_URL,
+  streamk: process.env.NEXT_PUBLIC_STREAMK_URL,
+  cinemak: process.env.NEXT_PUBLIC_CINEMAK_URL,
+  studiok: process.env.NEXT_PUBLIC_STUDIOK_URL,
+  atlas: process.env.NEXT_PUBLIC_ATLAS_URL,
+  setpointk: process.env.NEXT_PUBLIC_SETPOINTK_URL,
+}
+
+// This app's own admin surface is the only one this repo can honestly
+// claim to know about -- every other product's admin surface is
+// product-owned and not centrally tracked.
+const ADMIN_URLS: Record<string, string | null> = {
+  avatark: '/admin',
+}
+
+function toPlatformProduct(product: AvatarKProduct): PlatformProduct {
+  return {
+    id: product.id,
+    name: product.displayName,
+    purpose: product.tagline ?? product.description,
+    url: DOMAIN_OVERRIDES[product.id] || product.domain,
+    adminUrl: ADMIN_URLS[product.id] ?? null,
+    availability: product.status === 'live' ? 'live' : 'coming_soon',
     version: null,
-  },
-  {
-    id: 'prometheusk',
-    name: 'PrometheusK',
-    purpose: 'Practices, reflection, and Living Echoes',
-    url: process.env.NEXT_PUBLIC_PROMETHEUSK_URL ?? 'https://prometheusk.avatark.io',
-    adminUrl: null,
-    availability: 'live',
-    version: null,
-  },
-  {
-    // Confirmed via the cross-repo integration audit (gamek-web's
-    // site.config.ts links to self.avatark.ai / app.avatark.ai/gamek) --
-    // not guessed.
-    id: 'gamek',
-    name: 'GameK',
-    purpose: 'World progress and consumer game state',
-    url: process.env.NEXT_PUBLIC_GAMEK_URL ?? 'https://app.avatark.ai/gamek',
-    adminUrl: null,
-    availability: 'coming_soon',
-    version: null,
-  },
-  {
-    // ArenaK (dt4m-os/apps/avatark-consumer). No confirmed public hostname
-    // found during the cross-repo audit -- left null rather than guessed.
-    id: 'arenak',
-    name: 'ArenaK',
-    purpose: 'Invitations, enrollments, challenges, leagues, rankings',
-    url: process.env.NEXT_PUBLIC_ARENAK_URL ?? null,
-    adminUrl: null,
-    availability: 'coming_soon',
-    version: null,
-  },
-  {
-    id: 'streamk',
-    name: 'StreamK',
-    purpose: 'Streaming product (scope not yet integrated with Platform)',
-    url: process.env.NEXT_PUBLIC_STREAMK_URL ?? null,
-    adminUrl: null,
-    availability: 'coming_soon',
-    version: null,
-  },
-  {
-    id: 'cinemak',
-    name: 'CinemaK',
-    purpose: 'Cinema product (scope not yet integrated with Platform)',
-    url: process.env.NEXT_PUBLIC_CINEMAK_URL ?? null,
-    adminUrl: null,
-    availability: 'coming_soon',
-    version: null,
-  },
-  {
-    id: 'studiok',
-    name: 'StudioK',
-    purpose: 'Studio product (scope not yet integrated with Platform)',
-    url: process.env.NEXT_PUBLIC_STUDIOK_URL ?? null,
-    adminUrl: null,
-    availability: 'coming_soon',
-    version: null,
-  },
-  {
-    id: 'atlas',
-    name: 'Atlas',
-    purpose: 'Atlas product (scope not yet integrated with Platform)',
-    url: process.env.NEXT_PUBLIC_ATLAS_URL ?? null,
-    adminUrl: null,
-    availability: 'coming_soon',
-    version: null,
-  },
-  {
-    id: 'setpointk',
-    name: 'SetpointK',
-    purpose: 'Historically Cognito-backed; not yet integrated with Platform identity',
-    url: process.env.NEXT_PUBLIC_SETPOINTK_URL ?? null,
-    adminUrl: null,
-    availability: 'coming_soon',
-    version: null,
-  },
-]
+  }
+}
+
+export const PLATFORM_PRODUCTS: PlatformProduct[] = PRODUCT_REGISTRY.map(toPlatformProduct)

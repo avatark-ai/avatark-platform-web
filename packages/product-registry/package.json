@@ -1,0 +1,23 @@
+{
+  "name": "@avatark/product-registry",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Canonical, typed catalog of AvatarK ecosystem products -- shared by every app that needs to know what products exist and what they support.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "test": "node --experimental-strip-types --test src/validation.test.ts src/helpers.test.ts"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@types/react": "^19",
+    "typescript": "^5"
+  }
+}

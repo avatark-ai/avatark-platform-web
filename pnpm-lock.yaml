@@ -11,6 +11,9 @@ importers:
       '@avatark/account':
         specifier: file:avatark-account-0.1.1.tgz
         version: file:avatark-account-0.1.1.tgz(next@16.2.10(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@avatark/product-registry':
+        specifier: workspace:*
+        version: link:packages/product-registry
       '@supabase/ssr':
         specifier: ^0.12.1
         version: 0.12.1(@supabase/supabase-js@2.110.5)
@@ -54,6 +57,19 @@ importers:
       tailwindcss:
         specifier: ^4
         version: 4.3.2
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/product-registry:
+    dependencies:
+      react:
+        specifier: '>=18'
+        version: 19.2.4
+    devDependencies:
+      '@types/react':
+        specifier: ^19
+        version: 19.2.17
       typescript:
         specifier: ^5
         version: 5.9.3
