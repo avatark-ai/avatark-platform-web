@@ -4,6 +4,14 @@ import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { callbackErrorMessage } from '@/lib/auth/callbackError'
 
+// Feature-flagged: Google OAuth is wired up end-to-end (this button plus
+// the callback's exchangeCodeForSession path both work for it), but no
+// Google client ID/secret is configured in Supabase Auth for any
+// environment yet. Hidden by default so real visitors aren't offered a
+// sign-in method that would fail -- flip NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED
+// to 'true' once Supabase's Google provider is actually configured.
+const GOOGLE_OAUTH_ENABLED = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED === 'true'
+
 function SignInForm() {
   const searchParams = useSearchParams()
   // Real fix: this `return` param was previously read by /account and
@@ -58,20 +66,24 @@ function SignInForm() {
         <p className="text-sm text-neutral-600">Check your email for a sign-in link.</p>
       ) : (
         <div className="space-y-3">
-          <button
-            onClick={handleGoogleSignIn}
-            disabled={googleStatus === 'redirecting'}
-            className="w-full rounded-md border px-4 py-2 text-sm font-semibold disabled:opacity-50"
-          >
-            {googleStatus === 'redirecting' ? 'Redirecting…' : 'Continue with Google'}
-          </button>
-          {googleStatus === 'error' && <p className="text-sm text-red-600">Couldn&apos;t start Google sign-in. Try again.</p>}
+          {GOOGLE_OAUTH_ENABLED && (
+            <>
+              <button
+                onClick={handleGoogleSignIn}
+                disabled={googleStatus === 'redirecting'}
+                className="w-full rounded-md border px-4 py-2 text-sm font-semibold disabled:opacity-50"
+              >
+                {googleStatus === 'redirecting' ? 'Redirecting…' : 'Continue with Google'}
+              </button>
+              {googleStatus === 'error' && <p className="text-sm text-red-600">Couldn&apos;t start Google sign-in. Try again.</p>}
 
-          <div className="flex items-center gap-3 py-1 text-xs text-neutral-500">
-            <div className="h-px flex-1 bg-neutral-200" />
-            or
-            <div className="h-px flex-1 bg-neutral-200" />
-          </div>
+              <div className="flex items-center gap-3 py-1 text-xs text-neutral-500">
+                <div className="h-px flex-1 bg-neutral-200" />
+                or
+                <div className="h-px flex-1 bg-neutral-200" />
+              </div>
+            </>
+          )}
 
           <input
             type="email"
