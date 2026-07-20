@@ -31,12 +31,12 @@ export default async function AdminAuditPage() {
       <table className="w-full text-left text-sm">
         <thead className="bg-neutral-50 text-xs uppercase text-neutral-500">
           <tr>
-            <th className="px-3 py-2">Time</th>
-            <th className="px-3 py-2">Actor</th>
-            <th className="px-3 py-2">Action</th>
-            <th className="px-3 py-2">Target</th>
-            <th className="px-3 py-2">Environment</th>
-            <th className="px-3 py-2">Result</th>
+            <th scope="col" className="px-3 py-2">Time</th>
+            <th scope="col" className="px-3 py-2">Actor</th>
+            <th scope="col" className="px-3 py-2">Action</th>
+            <th scope="col" className="px-3 py-2">Target</th>
+            <th scope="col" className="px-3 py-2">Environment</th>
+            <th scope="col" className="px-3 py-2">Result</th>
           </tr>
         </thead>
         <tbody>

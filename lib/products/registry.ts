@@ -14,9 +14,35 @@ export interface PlatformProduct {
   // confirmed.
   adminUrl: string | null
   availability: 'live' | 'coming_soon'
+  // A confirmed, product-published release version. Left null for every
+  // product today -- none publishes a version manifest/endpoint this repo
+  // can read, and each product's own package.json version is Next.js
+  // scaffold boilerplate (e.g. "0.1.0"), not a real release marker, so
+  // surfacing it would be more misleading than an honest null.
+  version: string | null
 }
 
+// No product in this ecosystem has a billing/subscription system yet (see
+// supabase/migrations/010_organizations.sql's own note on this). This is a
+// uniform, ecosystem-wide gap, not a per-product fact, so it's a single
+// shared constant rather than a field that would imply per-product variance
+// that doesn't exist.
+export const SUBSCRIPTION_MODEL_NOTE = 'No billing/subscription system exists yet anywhere in the AvatarK ecosystem.'
+
 export const PLATFORM_PRODUCTS: PlatformProduct[] = [
+  {
+    // The platform itself. Included so "every product registers through
+    // the Platform registry" is literally true rather than an implicit
+    // exception -- real URL from the same env var used elsewhere in this
+    // repo (lib/identity/supabaseIdentityProvider.ts), not a new guess.
+    id: 'avatark',
+    name: 'AvatarK',
+    purpose: 'Identity, account, organizations, and platform administration for the AvatarK ecosystem (this application)',
+    url: process.env.NEXT_PUBLIC_PLATFORM_ORIGIN || null,
+    adminUrl: '/admin',
+    availability: 'live',
+    version: null,
+  },
   {
     id: 'prometheusk',
     name: 'PrometheusK',
@@ -24,6 +50,7 @@ export const PLATFORM_PRODUCTS: PlatformProduct[] = [
     url: process.env.NEXT_PUBLIC_PROMETHEUSK_URL ?? 'https://prometheusk.avatark.io',
     adminUrl: null,
     availability: 'live',
+    version: null,
   },
   {
     // Confirmed via the cross-repo integration audit (gamek-web's
@@ -35,6 +62,7 @@ export const PLATFORM_PRODUCTS: PlatformProduct[] = [
     url: process.env.NEXT_PUBLIC_GAMEK_URL ?? 'https://app.avatark.ai/gamek',
     adminUrl: null,
     availability: 'coming_soon',
+    version: null,
   },
   {
     // ArenaK (dt4m-os/apps/avatark-consumer). No confirmed public hostname
@@ -45,6 +73,7 @@ export const PLATFORM_PRODUCTS: PlatformProduct[] = [
     url: process.env.NEXT_PUBLIC_ARENAK_URL ?? null,
     adminUrl: null,
     availability: 'coming_soon',
+    version: null,
   },
   {
     id: 'streamk',
@@ -53,6 +82,7 @@ export const PLATFORM_PRODUCTS: PlatformProduct[] = [
     url: process.env.NEXT_PUBLIC_STREAMK_URL ?? null,
     adminUrl: null,
     availability: 'coming_soon',
+    version: null,
   },
   {
     id: 'cinemak',
@@ -61,6 +91,7 @@ export const PLATFORM_PRODUCTS: PlatformProduct[] = [
     url: process.env.NEXT_PUBLIC_CINEMAK_URL ?? null,
     adminUrl: null,
     availability: 'coming_soon',
+    version: null,
   },
   {
     id: 'studiok',
@@ -69,6 +100,7 @@ export const PLATFORM_PRODUCTS: PlatformProduct[] = [
     url: process.env.NEXT_PUBLIC_STUDIOK_URL ?? null,
     adminUrl: null,
     availability: 'coming_soon',
+    version: null,
   },
   {
     id: 'atlas',
@@ -77,6 +109,7 @@ export const PLATFORM_PRODUCTS: PlatformProduct[] = [
     url: process.env.NEXT_PUBLIC_ATLAS_URL ?? null,
     adminUrl: null,
     availability: 'coming_soon',
+    version: null,
   },
   {
     id: 'setpointk',
@@ -85,5 +118,6 @@ export const PLATFORM_PRODUCTS: PlatformProduct[] = [
     url: process.env.NEXT_PUBLIC_SETPOINTK_URL ?? null,
     adminUrl: null,
     availability: 'coming_soon',
+    version: null,
   },
 ]

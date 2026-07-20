@@ -22,7 +22,11 @@ export default async function AdminRolesPage() {
           <div className="overflow-x-auto rounded-md border">
             <table className="w-full text-left text-sm">
               <thead className="bg-neutral-50 text-xs uppercase text-neutral-500">
-                <tr><th className="px-3 py-2">User</th><th className="px-3 py-2">Role</th><th className="px-3 py-2">Granted</th></tr>
+                <tr>
+                  <th scope="col" className="px-3 py-2">User</th>
+                  <th scope="col" className="px-3 py-2">Role</th>
+                  <th scope="col" className="px-3 py-2">Granted</th>
+                </tr>
               </thead>
               <tbody>
                 {(roles as { user_id: string; role: string; granted_at: string }[]).map((r) => (
@@ -46,7 +50,12 @@ export default async function AdminRolesPage() {
           <div className="overflow-x-auto rounded-md border">
             <table className="w-full text-left text-sm">
               <thead className="bg-neutral-50 text-xs uppercase text-neutral-500">
-                <tr><th className="px-3 py-2">User</th><th className="px-3 py-2">Product</th><th className="px-3 py-2">Status</th><th className="px-3 py-2">Granted</th></tr>
+                <tr>
+                  <th scope="col" className="px-3 py-2">User</th>
+                  <th scope="col" className="px-3 py-2">Product</th>
+                  <th scope="col" className="px-3 py-2">Status</th>
+                  <th scope="col" className="px-3 py-2">Granted</th>
+                </tr>
               </thead>
               <tbody>
                 {(grants as { user_id: string; product_id: string; status: string; granted_at: string }[]).map((g) => (

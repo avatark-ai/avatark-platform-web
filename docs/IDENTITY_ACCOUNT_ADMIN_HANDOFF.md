@@ -1,12 +1,22 @@
 # Identity / Account / Platform Admin — Handoff & Current State
 
-**As of:** 2026-07-20, branch `identity-account-admin/checkpoint-1-20260720`,
-HEAD `aab95f8`, pushed to origin. Base branch: `platform/foundation-20260714`
+**As of:** 2026-07-20 (second session, "Platform Completion Phase"), branch
+`identity-account-admin/checkpoint-1-20260720` (same branch continued, not
+a new one), pushed to origin. Base branch: `platform/foundation-20260714`
 (this repo has no `main` — that branch is the trunk). Not merged.
 
-Mission brief this session worked from: identity, auth, account, product
-access, organizations, roles, permissions, privacy, and platform admin —
-the shared layer every AvatarK product integrates with once.
+This session's mission: finish out Product Access, Organizations, Platform
+Users, the Admin Dashboard, Auth/Email diagnostics, Account's consumption
+of the real product registry, and a quality pass — see
+`docs/PLATFORM_COMPLETION_CHECKPOINT.md` for the detailed per-phase record
+of what changed and how it was verified. This document stays the
+current-state summary; that one is this session's specific checkpoint
+report.
+
+Prior session's mission brief (identity, auth, account, product access,
+organizations, roles, permissions, privacy, and platform admin — the
+shared layer every AvatarK product integrates with once) is still the
+umbrella this work sits under.
 
 ## How to tell what state this is in when you come back
 
@@ -15,8 +25,9 @@ git log --oneline platform/foundation-20260714..identity-account-admin/checkpoin
 pnpm lint && npx tsc --noEmit && pnpm test && pnpm build
 ```
 
-All four passed clean as of `aab95f8`. If they don't, something changed —
-trust the commands over this document.
+All four passed clean as of this session's final commit (74/74 tests, up
+from 61). If they don't, something changed — trust the commands over this
+document.
 
 ## What's real and working right now
 
@@ -34,25 +45,52 @@ trust the commands over this document.
   real, persisted, opt-in by default. Added this round: Overview and
   Support views wrapping `@avatark/account` (that package has neither tab
   natively, and its canonical source lives in `prometheusk-web`, not here).
-- **Platform Admin** (`/admin`): built from nothing this round. Dashboard,
-  Users (email lookup, read-only, writes a real audit event), Organizations,
-  Products, Roles, Audit, Settings (Email/Auth diagnostics, Environment
-  health, Support). Authz via `lib/admin/authz.ts` checking a `platform_roles`
-  row under normal RLS. Every view needing cross-user data degrades to an
-  explicit "unavailable — SUPABASE_SERVICE_ROLE_KEY not configured" state
-  instead of crashing or fabricating data — **true in every environment
-  today**, since no service-role key exists in this repo's env anywhere yet.
-- **Schema**: migrations 010–015 add `organizations`/`organization_members`,
-  `platform_roles`, `product_access`, `platform_audit_events`. RLS is
-  read-only and owner/member-scoped for `authenticated`; all writes go
-  through a new service-role admin client (`lib/supabase/admin.ts`) — no
-  direct-mutation UI exists yet, deliberately, per the mission's "no unsafe
-  direct auth mutation without confirmation" instruction.
-- **Product registry** (`lib/products/registry.ts`): all 8 products
-  (PrometheusK, GameK, ArenaK, StreamK, CinemaK, StudioK, Atlas, SetpointK).
-  Only PrometheusK and GameK have real URLs (GameK's confirmed via the
+- **Platform Admin** (`/admin`): Dashboard (now includes organizations
+  count, a live Supabase reachability check, and a recent-audit-events
+  feed), Users (search + email lookup, read-only, writes a real audit
+  event, now shows platform roles and splits recent-activity vs
+  audit-history), Organizations (list gained search; a new `/admin/
+  organizations/[id]` detail page adds members with role-change, real
+  invitations with create/revoke, a permissions design-reference table,
+  and org-scoped audit), Products (now shows version/enabled/live health/
+  admins-with-access/subscription-model-note alongside URL and grants),
+  Roles, Audit, Settings (Email/Auth diagnostics — both substantially
+  expanded this round, see `docs/PLATFORM_COMPLETION_CHECKPOINT.md` —
+  Environment health, Support). Authz via `lib/admin/authz.ts` checking a
+  `platform_roles` row under normal RLS. Every view needing cross-user
+  data degrades to an explicit "unavailable — SUPABASE_SERVICE_ROLE_KEY
+  not configured" state instead of crashing or fabricating data — **true
+  in every environment today**, since no service-role key exists in this
+  repo's env anywhere yet. `/admin` now also has `loading.tsx`/`error.tsx`.
+- **Schema**: migrations 010–016 add `organizations`/`organization_members`,
+  `platform_roles`, `product_access`, `platform_audit_events`, and (new
+  this round) `organization_invitations` (service-role-only, same
+  default-deny posture as the audit table — rows carry email addresses).
+  RLS is read-only and owner/member-scoped for `authenticated`; almost all
+  writes still go through the service-role admin client
+  (`lib/supabase/admin.ts`) from Platform Admin server code. One narrow
+  exception now exists on the read side: `lib/account/adapters.ts` reads
+  `product_access`/`platform_roles` directly with the anon/authenticated
+  client, relying on the existing `_select_own` RLS policies (no new
+  policy needed). Admin *write* flows (create org, invite/revoke, change
+  a member's role) are now real too — see Organizations above — still
+  authz-gated and audit-logged, not the free-for-all "no unsafe direct
+  auth mutation" language from last round meant to forbid. Also fixed a
+  real bug: `supabase/scripts/run-platform-migrations.js`'s migration list
+  had never been updated past `009_*`, so it could never have actually
+  applied 010–015 even if pointed at a real database. Fixed, still
+  unexercised — no `PLATFORM_DATABASE_URL` exists in any reachable
+  environment.
+- **Product registry** (`lib/products/registry.ts`): all 9 products now,
+  including `avatark` itself (PrometheusK, GameK, ArenaK, StreamK,
+  CinemaK, StudioK, Atlas, SetpointK, AvatarK). Adding `avatark` fixed a
+  real latent bug — `app/account/page.tsx` already passed
+  `currentProduct="avatark"` to the product switcher, but no matching
+  registry entry existed for it to resolve against. Only PrometheusK,
+  GameK, and AvatarK itself have real URLs (GameK's confirmed via the
   cross-repo audit of `gamek-web`'s `site.config.ts`, not guessed) — the
-  rest are `null` until confirmed.
+  rest are `null` until confirmed. `version` is `null` for every product
+  (no product publishes a real version manifest this repo can read).
 - **Cross-product identity contract**: `lib/identity/types.ts` +
   `supabaseIdentityProvider.ts` (same-repo only — no workspace package
   structure exists to publish it cross-repo yet). `/api/identity/me`
@@ -67,13 +105,22 @@ trust the commands over this document.
 
 ## Known gaps — not yet done, don't assume otherwise
 
-- `lib/account/adapters.ts`'s `productAccess.list` and `membership` are
-  **still static/stub** — they do not read the new `product_access` /
-  `organization_members` tables. The admin side reads the real tables; the
-  account-facing side doesn't yet. This is the natural next step.
-- No UI exists to grant a role, grant product access, create an
-  organization, or invite a member — the schema and admin *read* views
-  exist, the admin *write* flows don't.
+- **Resolved this round** (kept here, struck through in spirit, so the
+  next session doesn't have to re-discover it): `lib/account/adapters.ts`'s
+  `productAccess.list` (already real via the registry) and `membership`
+  (`getRelationships`/`getRoles`, now real via `product_access`/
+  `platform_roles`) are no longer static stubs. `getSummary`'s zeroed
+  practices/echoes fields are intentionally not "fixed" — those are
+  PrometheusK-specific concepts this platform genuinely has no data for.
+- **Resolved this round**: admin write flows now exist for organizations
+  (create org, invite/revoke a member, change a member's role) — all
+  authz-gated, all audit-logged. Still no write UI for granting a
+  *platform* role or a *product access* grant directly (only organization-
+  scoped writes were built this round) — that's the next natural slice.
+- No self-serve invitation-accept flow — an invitee still needs an admin
+  to manually add them as a member once they have an account. The
+  invitation row (email/role/status/expiry) is real and revocable, but
+  nothing lets the invitee act on it themselves yet.
 - Google OAuth is unverified end-to-end (no real provider credentials in
   this environment). Do not claim it works until tested against real
   Supabase Google provider config.
@@ -82,6 +129,10 @@ trust the commands over this document.
   Supabase projects (confirmed via cross-repo audit) — this does not make
   them interoperate. Centralizing identity, or adding a trust bridge, is an
   explicit later decision, not something this checkpoint solved.
+- No environment has ever actually run `supabase/scripts/run-platform-
+  migrations.js` — no `PLATFORM_DATABASE_URL` exists anywhere reachable
+  from this repo. Migrations 001–016 are correct and now correctly listed
+  in the runner, but genuinely unverified against a live database.
 
 ## Findings worth carrying forward
 
@@ -118,13 +169,20 @@ trust the commands over this document.
 
 ## Next priorities
 
-1. Wire `lib/account/adapters.ts`'s `productAccess`/`membership` to the real
-   `product_access`/`organization_members` tables.
-2. Admin write flows: grant/revoke a role, grant/revoke product access,
-   create an organization, invite a member (the last one can use
-   `lib/email/templates.ts`'s `invitationEmail` once `EMAIL_SENDING_ENABLED`
-   is on).
-3. Decide the `@avatark/account` package ownership question.
-4. Flag the GameK JWT-verification gap to its owner.
-5. Package `lib/identity/` for actual cross-repo consumption once a
+1. Direct platform-role and product-access write UI (grant/revoke a
+   platform role, grant/revoke product access outside the org-invitation
+   path) — organization-scoped writes exist now, these two don't yet.
+2. Self-serve invitation acceptance: a real `/invite/[token]` (or similar)
+   flow, plus wiring `lib/email/templates.ts`'s `invitationEmail` through
+   once `EMAIL_SENDING_ENABLED` is on — deliberately not built this round
+   to avoid emailing a link to a route that didn't exist.
+3. Get a real `PLATFORM_DATABASE_URL` (or equivalent test project) so
+   `run-platform-migrations.js` can actually be run at least once, and the
+   whole admin data-reading surface can be exercised against real rows
+   instead of only structurally verified.
+4. Decide the `@avatark/account` package ownership question.
+5. Flag the GameK JWT-verification gap to its owner.
+6. Package `lib/identity/` for actual cross-repo consumption once a
    workspace-package structure exists.
+7. Confirm real public URLs for ArenaK/StreamK/CinemaK/StudioK/Atlas/
+   SetpointK so their registry entries stop being `null`.

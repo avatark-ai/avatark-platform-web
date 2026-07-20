@@ -8,6 +8,22 @@ import type { AccountAdapters } from '@avatark/account'
 import { createClient } from '@/lib/supabase/client'
 import { PLATFORM_PRODUCTS } from '@/lib/products/registry'
 
+// See membership.getRelationships/getRoles below: the @avatark/account
+// package's MembershipAdapter.getRoles is synchronous, so real platform
+// role data has to be fetched ahead of time and cached here rather than
+// queried inline.
+let cachedPlatformRoles: string[] | null = null
+
+async function fetchAndCachePlatformRoles(userId: string | null): Promise<void> {
+  if (!userId) {
+    cachedPlatformRoles = []
+    return
+  }
+  const supabase = createClient()
+  const { data } = await supabase.from('platform_roles').select('role').eq('user_id', userId)
+  cachedPlatformRoles = (data ?? []).map((r) => r.role as string)
+}
+
 async function authFetch(path: string, init?: RequestInit) {
   const res = await fetch(path, { ...init, headers: { 'Content-Type': 'application/json', ...(init?.headers ?? {}) } })
   const json = await res.json().catch(() => ({}))
@@ -90,9 +106,54 @@ export const avatarKPlatformAdapters: AccountAdapters = {
   },
 
   membership: {
+    // No billing system exists anywhere in this ecosystem yet (see
+    // lib/products/registry.ts's SUBSCRIPTION_MODEL_NOTE) -- 'Free' is
+    // genuinely the only plan that exists, not a placeholder. practices/
+    // borrowed/echoes are PrometheusK-specific concepts this host has no
+    // data for; the caller (MembershipTab) always passes 0 for them here,
+    // so echoing them back is accurate, not fabricated.
     getSummary: () => ({ planName: 'Free', usagePractices: 0, creatorStatus: 'Member', borrowedCount: 0 }),
-    getRelationships: async () => [],
-    getRoles: () => [],
+    // Real product_access rows via RLS's own-row policy (migration 014) --
+    // no service-role client needed, the signed-in user can read their own
+    // grants directly. Also warms the platform-roles cache getRoles()
+    // reads from (see fetchAndCachePlatformRoles below): getRoles() must
+    // be synchronous per the package's own type contract, so there's no
+    // way to await a fresh query inside it -- this piggybacks the async
+    // fetch on the one call the package already awaits before re-rendering
+    // with fresh data.
+    async getRelationships(currentProductId, memberSince) {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      await fetchAndCachePlatformRoles(user?.id ?? null)
+      if (!user) return []
+
+      const { data: accessRows } = await supabase
+        .from('product_access')
+        .select('product_id, status, granted_at')
+        .eq('user_id', user.id)
+      const accessByProduct = new Map((accessRows ?? []).map((r) => [r.product_id as string, r]))
+
+      return PLATFORM_PRODUCTS.map((p) => {
+        const grant = accessByProduct.get(p.id)
+        const isCurrent = p.id === currentProductId
+        const status: 'member' | 'not_enrolled' | 'coming_soon' =
+          p.availability !== 'live' ? 'coming_soon' : isCurrent || grant?.status === 'active' ? 'member' : 'not_enrolled'
+        return {
+          productId: p.id,
+          name: p.name,
+          status,
+          role: null,
+          since: isCurrent ? memberSince : (grant?.granted_at as string | undefined) ?? null,
+          ctaLabel: status === 'member' ? (isCurrent ? "You're here" : 'Open') : status === 'coming_soon' ? 'Coming Soon' : 'Learn more',
+          ctaHref: status !== 'coming_soon' && !isCurrent ? p.url : null,
+        }
+      })
+    },
+    // Real platform_roles for the signed-in user (e.g. 'admin'), read from
+    // a cache warmed by getRelationships above -- see that method's
+    // comment for why this can't fetch directly (the interface requires
+    // this to be synchronous).
+    getRoles: () => cachedPlatformRoles ?? [],
     getBenefits: () => [],
   },
 
