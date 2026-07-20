@@ -2,9 +2,9 @@ import Link from "next/link";
 import type { ActivityCard as ActivityCardData } from "@/lib/activities/registry";
 
 // One of the four primary intent cards on the AvatarK home. Order of
-// information is deliberate per docs/AVATARK_HOME_EXPERIENCE_V1.md: the
-// human intent leads, the destination product is secondary, and
-// availability is always honest -- never fabricated.
+// information is deliberate: the human intent leads, the destination
+// product is secondary, and availability is always honest -- never
+// fabricated.
 export function ActivityCard({ card }: { card: ActivityCardData }) {
   const isExternal = card.href?.startsWith("http") ?? false;
   const disabled = card.availability === "coming_soon";
@@ -52,16 +52,16 @@ export function ActivityCard({ card }: { card: ActivityCardData }) {
       ) : isExternal ? (
         <a
           href={card.href!}
-          className="mt-auto self-start rounded-md px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-90"
-          style={{ background: "var(--gold)", color: "var(--midnight)" }}
+          className="mt-auto self-start rounded-md px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
         >
           {card.ctaLabel}
         </a>
       ) : (
         <Link
           href={card.href!}
-          className="mt-auto self-start rounded-md px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-90"
-          style={{ background: "var(--gold)", color: "var(--midnight)" }}
+          className="mt-auto self-start rounded-md px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
         >
           {card.ctaLabel}
         </Link>

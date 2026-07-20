@@ -46,19 +46,28 @@ export default function Home() {
           ))}
         </div>
 
-        <div
+        <nav
+          aria-label="Other ways to begin"
           className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm"
           style={{ color: "var(--text-dim)" }}
         >
           {watchFirst && (
-            <a href={watchFirst} className="underline-offset-4 hover:underline hover:text-[var(--paper)]">
+            <a
+              href={watchFirst}
+              className="rounded-sm underline-offset-4 hover:underline hover:text-[var(--paper)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{ outlineColor: "var(--gold)" }}
+            >
               Watch a sample practice first
             </a>
           )}
-          <Link href="/enter" className="underline-offset-4 hover:underline hover:text-[var(--paper)]">
+          <Link
+            href="/enter"
+            className="rounded-sm underline-offset-4 hover:underline hover:text-[var(--paper)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{ outlineColor: "var(--gold)" }}
+          >
             Enter an Invitation
           </Link>
-        </div>
+        </nav>
       </div>
     </main>
   );

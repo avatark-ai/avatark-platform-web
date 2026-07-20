@@ -1,7 +1,17 @@
+import { getProductById } from "@avatark/product-registry";
+import { resolveProductUrl } from "../products/registry.ts";
+
 // PrometheusK owns practice runtime, reflection, evidence, and Living
 // Echo -- this repo only ever links out to its real, confirmed-live
 // routes. Never reimplement practice/reflection logic here.
-export const PROMETHEUSK_ORIGIN = "https://prometheusk.avatark.io";
+//
+// Resolved through the same registry every other cross-product link uses
+// (session 1B cleanup) instead of a second hardcoded copy of PrometheusK's
+// domain -- this file predates @avatark/product-registry, which is why it
+// had its own literal.
+const prometheuskProduct = getProductById("prometheusk");
+export const PROMETHEUSK_ORIGIN =
+  (prometheuskProduct && resolveProductUrl(prometheuskProduct)) || "https://prometheusk.avatark.io";
 
 // The "Drift" practice under the "Builder Journey", confirmed live via
 // direct request (2026-07-15):

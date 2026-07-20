@@ -11,7 +11,9 @@ import { getActivityCards, type ActivityCard } from '@/lib/activities/registry'
 // pointing at a page that only ever says "not yet available".
 const ACCOUNT_MOUNT_ENABLED = process.env.NEXT_PUBLIC_ACCOUNT_MOUNT_ENABLED === 'true'
 
-const LINK_CLASS = 'text-sm font-medium transition-colors hover:text-[var(--gold)]'
+const LINK_CLASS =
+  'text-sm font-medium transition-colors hover:text-[var(--gold)] rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
+const FOCUS_STYLE = { outlineColor: 'var(--gold)' } as const
 
 function ActivityLink({ card, onNavigate }: { card: ActivityCard; onNavigate?: () => void }) {
   // Coming-soon Activities still get a real nav entry -- they just point at
@@ -20,13 +22,13 @@ function ActivityLink({ card, onNavigate }: { card: ActivityCard; onNavigate?: (
   const href = card.href ?? `/#${card.id}`
   if (href.startsWith('http')) {
     return (
-      <a href={href} className={LINK_CLASS} style={{ color: 'var(--paper)' }} onClick={onNavigate}>
+      <a href={href} className={LINK_CLASS} style={{ color: 'var(--paper)', ...FOCUS_STYLE }} onClick={onNavigate}>
         {card.label}
       </a>
     )
   }
   return (
-    <Link href={href} className={LINK_CLASS} style={{ color: 'var(--paper)' }} onClick={onNavigate}>
+    <Link href={href} className={LINK_CLASS} style={{ color: 'var(--paper)', ...FOCUS_STYLE }} onClick={onNavigate}>
       {card.label}
     </Link>
   )
@@ -66,7 +68,11 @@ export function SiteHeader() {
   return (
     <header style={{ borderBottom: '1px solid var(--surface-line)', background: 'var(--midnight)' }}>
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="text-base font-semibold tracking-tight" style={{ color: 'var(--paper)' }}>
+        <Link
+          href="/"
+          className="rounded-sm text-base font-semibold tracking-tight focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          style={{ color: 'var(--paper)', ...FOCUS_STYLE }}
+        >
           AvatarK
         </Link>
 
@@ -79,11 +85,11 @@ export function SiteHeader() {
         <div className="hidden items-center gap-4 md:flex">
           {signedIn ? (
             <>
-              <Link href="/journey" className={LINK_CLASS} style={{ color: 'var(--paper)' }}>
+              <Link href="/journey" className={LINK_CLASS} style={{ color: 'var(--paper)', ...FOCUS_STYLE }}>
                 Continue
               </Link>
               {ACCOUNT_MOUNT_ENABLED && (
-                <Link href="/account" className={LINK_CLASS} style={{ color: 'var(--paper)' }}>
+                <Link href="/account" className={LINK_CLASS} style={{ color: 'var(--paper)', ...FOCUS_STYLE }}>
                   Account
                 </Link>
               )}
@@ -91,8 +97,8 @@ export function SiteHeader() {
           ) : principal.status !== 'loading' ? (
             <Link
               href="/auth/sign-in"
-              className="rounded-md px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-90"
-              style={{ background: 'var(--gold)', color: 'var(--midnight)' }}
+              className="rounded-md px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{ background: 'var(--gold)', color: 'var(--midnight)', ...FOCUS_STYLE }}
             >
               Sign in
             </Link>
@@ -101,14 +107,14 @@ export function SiteHeader() {
 
         <button
           type="button"
-          className="md:hidden"
+          className="rounded-sm md:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           aria-expanded={mobileOpen}
           aria-controls="mobile-nav"
           aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
           onClick={() => setMobileOpen((open) => !open)}
-          style={{ color: 'var(--paper)' }}
+          style={{ color: 'var(--paper)', ...FOCUS_STYLE }}
         >
-          {mobileOpen ? '✕' : '☰'}
+          <span aria-hidden="true">{mobileOpen ? '✕' : '☰'}</span>
         </button>
       </div>
 
@@ -126,17 +132,22 @@ export function SiteHeader() {
           ))}
           {signedIn ? (
             <>
-              <Link href="/journey" onClick={closeMobile} className={`py-2 ${LINK_CLASS}`} style={{ color: 'var(--paper)' }}>
+              <Link href="/journey" onClick={closeMobile} className={`py-2 ${LINK_CLASS}`} style={{ color: 'var(--paper)', ...FOCUS_STYLE }}>
                 Continue
               </Link>
               {ACCOUNT_MOUNT_ENABLED && (
-                <Link href="/account" onClick={closeMobile} className={`py-2 ${LINK_CLASS}`} style={{ color: 'var(--paper)' }}>
+                <Link href="/account" onClick={closeMobile} className={`py-2 ${LINK_CLASS}`} style={{ color: 'var(--paper)', ...FOCUS_STYLE }}>
                   Account
                 </Link>
               )}
             </>
           ) : principal.status !== 'loading' ? (
-            <Link href="/auth/sign-in" onClick={closeMobile} className="py-2 text-sm font-semibold" style={{ color: 'var(--gold)' }}>
+            <Link
+              href="/auth/sign-in"
+              onClick={closeMobile}
+              className="rounded-sm py-2 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{ color: 'var(--gold)', ...FOCUS_STYLE }}
+            >
               Sign in
             </Link>
           ) : null}

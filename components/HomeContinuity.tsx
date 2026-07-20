@@ -40,8 +40,8 @@ export function HomeContinuity() {
       </p>
       <Link
         href="/journey"
-        className="rounded-md px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-90"
-        style={{ background: "var(--gold)", color: "var(--midnight)" }}
+        className="rounded-md px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+        style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
       >
         Continue your journey
       </Link>

@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AvatarK — Every life leaves an Echo",
-  description: "Learn from people. Practice what works. Carry forward what changes you.",
+  title: "AvatarK — Explore, practice, connect, or watch",
+  description: "Pick what fits right now. AvatarK carries your account and progress underneath, wherever you go next.",
 };
 
 export default function RootLayout({
