@@ -51,12 +51,18 @@ const ADMIN_URLS: Record<string, string | null> = {
   avatark: '/admin',
 }
 
+// A deployment-specific env override always wins over the registry's own
+// best-known domain; null when neither exists (never guessed).
+export function resolveProductUrl(product: AvatarKProduct): string | null {
+  return DOMAIN_OVERRIDES[product.id] || product.domain
+}
+
 function toPlatformProduct(product: AvatarKProduct): PlatformProduct {
   return {
     id: product.id,
     name: product.displayName,
     purpose: product.tagline ?? product.description,
-    url: DOMAIN_OVERRIDES[product.id] || product.domain,
+    url: resolveProductUrl(product),
     adminUrl: ADMIN_URLS[product.id] ?? null,
     availability: product.status === 'live' ? 'live' : 'coming_soon',
     version: null,
