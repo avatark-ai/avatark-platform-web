@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --test lib/onboarding/receipt.test.ts"
+    "test": "node --experimental-strip-types --test lib/onboarding/receipt.test.ts lib/auth/safeReturnPath.test.ts lib/auth/callbackError.test.ts"
   },
   "dependencies": {
     "@avatark/account": "file:avatark-account-0.1.1.tgz",

@@ -18,6 +18,10 @@ const eslintConfig = defineConfig([
     // ESM import syntax, and should not be held to the app's
     // TypeScript/ESM conventions.
     "supabase/scripts/**",
+    // .claude/worktrees/** holds other sessions' git worktrees (their own
+    // full checkouts, including their own generated .next/ build output).
+    // Not this repo's source -- must never be linted as if it were.
+    ".claude/**",
   ]),
 ]);
 
