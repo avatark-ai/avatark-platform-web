@@ -24,6 +24,14 @@ if (!resolvedPrometheuskOrigin) {
 }
 export const PROMETHEUSK_ORIGIN = resolvedPrometheuskOrigin;
 
+// RC1 Iteration 4 -- the registry's own display name, for any UI copy
+// that needs to name this product. Several Journey surfaces previously
+// hardcoded the literal "Prometheus" (dropping the "K") instead of
+// deriving it here, which would have silently drifted from the registry
+// if its displayName ever changed. `prometheuskProduct` is already
+// resolved above and guaranteed non-null by the throw above it.
+export const PROMETHEUSK_DISPLAY_NAME = prometheuskProduct.displayName;
+
 // The "Drift" practice under the "Builder Journey", confirmed live via
 // direct request (2026-07-15):
 // https://prometheusk.avatark.io/my/borrow/builder-journey/practice/aad2380d-8d13-4499-8ac9-eb37d9f41cbb

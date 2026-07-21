@@ -4,9 +4,9 @@ import { Suspense, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useJourneySession } from '@/lib/journey/session'
-import { INTENTIONS } from '@/lib/onboarding/intentions'
-import { WITNESS_SLUG, WITNESS_LABEL, PRACTICE_LABEL } from '@/lib/onboarding/witness'
-import { buildContinueUrl } from '@/lib/onboarding/prometheusk'
+import { WITNESS_LABEL, PRACTICE_LABEL } from '@/lib/onboarding/witness'
+import { PROMETHEUSK_DISPLAY_NAME } from '@/lib/onboarding/prometheusk'
+import { getContinuityAction, getIntentionLabel } from '@/lib/journey/continuity'
 import type { JourneyContext } from '@/lib/journey/state'
 
 const ctaStyle = {
@@ -23,36 +23,9 @@ export function TodayView({
   context: JourneyContext
   displayName: string | null
 }) {
-  const intentionLabel = INTENTIONS.find((i) => i.id === context.intention)?.label
+  const intentionLabel = getIntentionLabel(context)
   const greeting = displayName ? `Welcome back, ${displayName}.` : 'Welcome back.'
-
-  type Recommendation = { body: string; ctaLabel: string; href: string; external: boolean }
-
-  let recommendation: Recommendation
-
-  if (!context.intention && !context.witness) {
-    recommendation = {
-      body: "You haven't begun an Echo yet. Every journey here starts with one small practice.",
-      ctaLabel: 'Begin with an Echo',
-      href: '/start',
-      external: false,
-    }
-  } else if (!context.witness) {
-    recommendation = {
-      body: "You named what you're after. The next step is waiting exactly where you left it.",
-      ctaLabel: 'Continue to the practice',
-      href: `/witness/${WITNESS_SLUG}${context.intention ? `?intention=${context.intention}` : ''}`,
-      external: false,
-    }
-  } else {
-    recommendation = {
-      body: 'Your practice is right where you left it, on Prometheus -- pick up where you left off, or see what it recommends next.',
-      ctaLabel: 'Return to your practice',
-      href: buildContinueUrl(),
-      external: true,
-    }
-  }
-
+  const recommendation = getContinuityAction(context)
   const hasSnapshot = Boolean(intentionLabel || context.witness)
 
   return (
@@ -88,13 +61,13 @@ export function TodayView({
                 {PRACTICE_LABEL}
               </p>
               <p className="text-sm" style={{ color: 'var(--text-dim)' }}>
-                from {WITNESS_LABEL}, on Prometheus
+                from {WITNESS_LABEL}, on {PROMETHEUSK_DISPLAY_NAME}
               </p>
             </div>
           ) : null}
           {context.practiceCompletedAt ? (
             <p className="text-sm" style={{ color: 'var(--gold)' }}>
-              ✓ Completion verified by Prometheus
+              ✓ Completion verified by {PROMETHEUSK_DISPLAY_NAME}
             </p>
           ) : null}
         </div>
