@@ -60,9 +60,9 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     displayName: 'AvatarK',
     tagline: 'Identity, account, organizations, and platform administration for the AvatarK ecosystem',
     description:
-      'The shared layer every AvatarK product integrates with: identity, authentication, account, organizations, roles, permissions, product access, and platform administration.',
+      'The shared layer every AvatarK product integrates with: identity, authentication, account, organizations, roles, permissions, product access, and platform administration. Domain finalized as this repo\'s real, linked Vercel project origin (`.vercel/repo.json`\'s project name is `avatark-platform-web`; `prometheusk-web`\'s own RC5 receipt allowlist -- `lib/onboarding/returnOrigin.ts`\'s `DEFAULT_ALLOWED_ORIGINS` -- already trusts this exact origin as Platform\'s production address, confirming it is not a guess but the address another repo already depends on today, 2026-07-21). A custom branded domain (e.g. avatark.ai/avatark.io, both used inconsistently by other, non-canonical surfaces per the cross-repo audit) remains an open, undecided naming/DNS question -- not resolved or invented here.',
     status: 'live',
-    domain: null, // no fixed canonical domain confirmed; deployment-dependent (see host app's own env override)
+    domain: 'https://avatark-platform-web.vercel.app',
     icon: 'sparkles',
     accentColor: '#111827',
     logo: null,

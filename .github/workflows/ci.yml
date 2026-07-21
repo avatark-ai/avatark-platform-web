@@ -3,7 +3,13 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main]
+    # This repo has no `main` branch -- the real trunk is
+    # `platform/foundation-20260714` (confirmed via `git remote show
+    # origin`'s "HEAD branch"). The previous `[main]` filter meant this
+    # workflow never fired on a trunk push, only on `pull_request` events
+    # -- a stale reference to a branch name that was never renamed here,
+    # not a deliberate choice to disable push-triggered CI.
+    branches: [platform/foundation-20260714]
 
 jobs:
   lockfile-check:
