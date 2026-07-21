@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { loadIdentityExtras } from '@/lib/identity/claims'
 
 // Cross-product session verification: a product holding an access token
 // issued by *this* Supabase project can POST it here to get back verified
@@ -35,12 +36,20 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 })
   }
 
+  // A second client, scoped to the caller's own verified token via the
+  // Authorization header, so organization_members/product_access/
+  // platform_roles' own-row RLS policies (migration 014) resolve
+  // auth.uid() to this same user -- same policies lib/account/adapters.ts
+  // already relies on, no service-role client, no RLS change.
+  const scopedClient = createSupabaseClient(url, anonKey, {
+    global: { headers: { Authorization: `Bearer ${accessToken}` } },
+  })
+  const extras = await loadIdentityExtras(scopedClient, data.user.id)
+
   return NextResponse.json({
     subjectId: data.user.id,
     email: data.user.email ?? '',
     displayName: data.user.email?.split('@')[0] ?? 'Member',
-    organizationIds: [],
-    productAccess: [],
-    roles: [],
+    ...extras,
   })
 }

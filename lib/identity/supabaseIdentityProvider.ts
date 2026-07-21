@@ -6,6 +6,7 @@
 import { createClient } from '@/lib/supabase/server'
 import type { IdentityClaims, IdentityProvider } from './types'
 import { safeReturnPath } from '@/lib/auth/safeReturnPath'
+import { loadIdentityExtras } from './claims'
 
 // Same-origin by default (Platform's own account/sign-in pages). Set to
 // e.g. https://identity.avatark.ai once the hostname split in AGENTS.md's
@@ -14,21 +15,16 @@ const PLATFORM_ORIGIN = process.env.NEXT_PUBLIC_PLATFORM_ORIGIN ?? ''
 
 async function loadClaims(user: { id: string; email?: string | null }): Promise<IdentityClaims> {
   const supabase = await createClient()
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('display_name')
-    .eq('id', user.id)
-    .single()
+  const [{ data: profile }, extras] = await Promise.all([
+    supabase.from('profiles').select('display_name').eq('id', user.id).single(),
+    loadIdentityExtras(supabase, user.id),
+  ])
 
   return {
     subjectId: user.id,
     email: user.email ?? '',
     displayName: profile?.display_name ?? user.email?.split('@')[0] ?? 'Member',
-    // Honestly empty: no organizations/roles/product_access tables exist
-    // yet (see the audit report). Not fabricated defaults.
-    organizationIds: [],
-    productAccess: [],
-    roles: [],
+    ...extras,
   }
 }
 
