@@ -8,10 +8,21 @@ import { resolveProductUrl } from "../products/registry.ts";
 // Resolved through the same registry every other cross-product link uses
 // (session 1B cleanup) instead of a second hardcoded copy of PrometheusK's
 // domain -- this file predates @avatark/product-registry, which is why it
-// had its own literal.
+// had its own literal. Wave 1 registry integration (2026-07-21) removed
+// that literal's last remnant, a "just in case" `||` fallback string that
+// silently duplicated the registry's own domain value -- if the registry
+// ever changes PrometheusK's domain, this fallback would have kept
+// resolving to the old one instead of failing loudly. `prometheusk` is a
+// static registry entry with a non-null domain, so this can only throw if
+// that invariant is ever broken, not in any real request today.
 const prometheuskProduct = getProductById("prometheusk");
-export const PROMETHEUSK_ORIGIN =
-  (prometheuskProduct && resolveProductUrl(prometheuskProduct)) || "https://prometheusk.avatark.io";
+const resolvedPrometheuskOrigin = prometheuskProduct && resolveProductUrl(prometheuskProduct);
+if (!resolvedPrometheuskOrigin) {
+  throw new Error(
+    "PrometheusK is missing from @avatark/product-registry or has no resolvable domain -- this should never happen for a static registry entry."
+  );
+}
+export const PROMETHEUSK_ORIGIN = resolvedPrometheuskOrigin;
 
 // The "Drift" practice under the "Builder Journey", confirmed live via
 // direct request (2026-07-15):

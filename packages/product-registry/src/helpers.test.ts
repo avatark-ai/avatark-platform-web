@@ -44,8 +44,11 @@ test('getProductsByStatus', () => {
 })
 
 test('getProductsByVisibility', () => {
+  // arenak/streamk moved to 'public' in Wave 1 registry integration
+  // (2026-07-21) once their domains were confirmed live -- see
+  // docs/ecosystem/WAVE1_REGISTRY_INTEGRATION_REPORT.md.
   const publicProducts = getProductsByVisibility('public')
-  assert.deepEqual(publicProducts.map((p) => p.id).sort(), ['avatark', 'gamek', 'prometheusk'])
+  assert.deepEqual(publicProducts.map((p) => p.id).sort(), ['arenak', 'avatark', 'gamek', 'prometheusk', 'streamk'])
 })
 
 test('getProductsWithCapability finds every product supporting Echo', () => {

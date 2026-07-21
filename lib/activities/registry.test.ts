@@ -19,13 +19,13 @@ test('Practice routes through AvatarK\'s own /start funnel, not PrometheusK\'s d
   assert.equal(card?.availability, 'available')
 })
 
-test('Together (ArenaK, alpha+internal) is an honest coming-soon state with no href', () => {
+test('Together (ArenaK, alpha+public) is an honest coming-soon state with no href', () => {
   const card = getActivityCards().find((c) => c.id === 'together')
   assert.equal(card?.availability, 'coming_soon')
   assert.equal(card?.href, null)
 })
 
-test('Watch (StreamK, alpha+internal) is an honest coming-soon state with no href', () => {
+test('Watch (StreamK, alpha+public) is an honest coming-soon state with no href', () => {
   const card = getActivityCards().find((c) => c.id === 'watch')
   assert.equal(card?.availability, 'coming_soon')
   assert.equal(card?.href, null)

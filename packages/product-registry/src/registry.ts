@@ -142,16 +142,24 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     displayName: 'ArenaK',
     tagline: 'Invitations, enrollments, challenges, leagues, rankings',
     description:
-      'Competitive layer: invitations, enrollments, challenges, leagues, and rankings. No confirmed public hostname or local repository found in this workspace as of this registry’s creation -- a real, actively-deployed Vercel project exists under a name that doesn’t match this ecosystem’s planning documents.',
+      'Competitive layer: invitations, enrollments, challenges, leagues, and rankings. Domain confirmed live at next.arenak.ai (direct HTTP request returned real ArenaK-branded content, 2026-07-21). `repository` stays null: the real implementation lives inside a separate `dt4m-os` repo’s `apps/avatark-consumer`, not as a sibling repo folder in this workspace the way every other non-null `repository` value here is.',
+    // status stays 'alpha' deliberately, separate from the domain/visibility
+    // fix above -- visibility='public' + domain confirm the destination is
+    // real and reachable; status is a maturity call (alpha/beta/live) this
+    // registry fix does not make unilaterally. Together will keep showing
+    // "coming soon" on the consumer home page until a human decides status
+    // should move (see registryAvailability() in lib/activities/registry.ts:
+    // it requires status to be 'live' or 'beta', not just visibility, before
+    // ever returning something other than coming_soon).
     status: 'alpha',
-    domain: null,
+    domain: 'https://next.arenak.ai',
     icon: 'trophy',
     accentColor: '#b45309',
     logo: null,
     category: 'competition',
     owner: null,
     repository: null,
-    visibility: 'internal',
+    visibility: 'public',
     requiresAuth: true,
     ...NO_CAPABILITIES,
     supportsEvents: true,
@@ -168,16 +176,20 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     slug: 'streamk',
     displayName: 'StreamK',
     tagline: 'Streaming product',
-    description: 'Live and on-demand streaming. Scope not yet integrated with Platform.',
+    description:
+      'Live and on-demand streaming. Domain confirmed live at streamk.ai (direct HTTP request returned real StreamK-branded content -- title "StreamK — The Broadcast Layer for AvatarK", 2026-07-21). Scope (feature-level integration with Platform, beyond domain reachability) not yet confirmed.',
+    // status stays 'alpha' for the same reason as ArenaK's -- see the
+    // comment on that entry. Domain reachability confirms the destination
+    // is real, not that the product is mature enough for a status bump.
     status: 'alpha',
-    domain: null,
+    domain: 'https://www.streamk.ai',
     icon: 'video',
     accentColor: '#0369a1',
     logo: null,
     category: 'streaming',
     owner: null,
     repository: 'streamk-web',
-    visibility: 'internal',
+    visibility: 'public',
     requiresAuth: true,
     ...NO_CAPABILITIES,
     supportsStreaming: true,
