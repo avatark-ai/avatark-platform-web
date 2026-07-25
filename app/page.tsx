@@ -10,14 +10,31 @@ import { StatusGrid } from '@/components/foundation/sections/StatusGrid'
 import { Question } from '@/components/foundation/sections/Question'
 import { FinalCta } from '@/components/foundation/sections/FinalCta'
 import { getCanonContent } from '@/lib/content/foundation'
+import { resolveSite } from '@/lib/sites/resolveSite'
+import { EchoLanding } from '@/components/echo/landing/EchoLanding'
 
-export const metadata: Metadata = {
-  title: 'AvatarK — The Architecture of Becoming',
-  description:
-    'Learn from real lives. Transform wisdom into practice. Leave an Echo worth carrying forward. The institutional home of the AvatarK ecosystem.',
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await resolveSite()
+  if (site === 'echo') {
+    return {
+      title: 'Echo — Every Life Leaves an Echo',
+      description:
+        'Learn from what another person discovered. Practice what proves useful. Leave something another life can carry.',
+    }
+  }
+  return {
+    title: 'AvatarK — The Architecture of Becoming',
+    description:
+      'Learn from real lives. Transform wisdom into practice. Leave an Echo worth carrying forward. The institutional home of the AvatarK ecosystem.',
+  }
 }
 
-export default function Home() {
+export default async function Home() {
+  const site = await resolveSite()
+  if (site === 'echo') {
+    return <EchoLanding />
+  }
+
   const canonContent = getCanonContent()
 
   return (

@@ -1,10 +1,13 @@
-// The single RC3 Guide -- a deliberately generic archetype, not a real,
-// named, consenting individual (same honesty standard as
-// lib/onboarding/witness.ts). Swappable by design: when a real,
-// consented practitioner is later designed in (see
-// docs/INVITATION_MIGRATION.md, Phase 1), only this file should need
-// to change -- app/guide/[slug] just renders whatever's here.
-export const GUIDE_SLUG = "the-returner";
+// Thin compatibility shim over the generalized Echo content model
+// (content/echo/echoes/*.md, lib/content/echo.ts). Was previously a single
+// hardcoded Guide constant; app/guide/[slug] now looks up any slug in the
+// real registry, so this file only re-exports the shape callers already
+// depend on. GUIDE_SLUG/GUIDE resolve to whichever Echo is first in the
+// registry today (the-returner) -- adding more Echoes never requires this
+// file to change.
+import { getEchoBySlug, listEchoes } from "@/lib/content/echo";
+
+export const GUIDE_SLUG = listEchoes()[0]?.slug ?? "the-returner";
 
 export interface Guide {
   archetype: string;
@@ -13,11 +16,20 @@ export interface Guide {
   giftMessage: string;
 }
 
-export const GUIDE: Guide = {
-  archetype: "The Returner",
-  role: "CEO of a major global manufacturing company",
-  mission:
-    "Crossed a threshold decades ago, and came back to make sure the crossing doesn't just evaporate for whoever's next.",
-  giftMessage:
-    "I know what this threshold is. I crossed it. Here is what I carried forward.",
+export function getGuide(slug: string): Guide | null {
+  const echo = getEchoBySlug(slug);
+  if (!echo) return null;
+  return {
+    archetype: echo.name,
+    role: echo.role,
+    mission: echo.mission,
+    giftMessage: echo.giftMessage,
+  };
+}
+
+export const GUIDE: Guide = getGuide(GUIDE_SLUG) ?? {
+  archetype: "",
+  role: "",
+  mission: "",
+  giftMessage: "",
 };

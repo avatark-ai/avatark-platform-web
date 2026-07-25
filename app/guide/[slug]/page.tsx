@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { GUIDE, GUIDE_SLUG } from "@/lib/onboarding/guide";
-import { WITNESS_SLUG } from "@/lib/onboarding/witness";
+import { getGuide } from "@/lib/onboarding/guide";
+import { listPracticesByEcho, pickPracticeForIntention } from "@/lib/content/echo";
 
 export default async function GuidePage({
   params,
@@ -11,13 +11,22 @@ export default async function GuidePage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { slug } = await params;
-  if (slug !== GUIDE_SLUG) notFound();
+  const guide = getGuide(slug);
+  if (!guide) notFound();
 
   const search = await searchParams;
   const intention = typeof search.intention === "string" ? search.intention : null;
   const invitation = typeof search.invitation === "string" ? search.invitation : null;
 
-  const thresholdUrl = new URL(`/witness/${WITNESS_SLUG}`, "https://placeholder.invalid");
+  // Any practice sourced from this Echo, matched on intention where
+  // possible -- falls back to any practice at all so a guide with no
+  // practice of its own still has somewhere to send the visitor next.
+  const echoPractices = listPracticesByEcho(slug);
+  const intentionMatch = intention
+    ? echoPractices.find((practice) => practice.themes.includes(intention))
+    : undefined;
+  const nextPractice = intentionMatch ?? echoPractices[0] ?? pickPracticeForIntention(intention);
+  const thresholdUrl = new URL(`/witness/${nextPractice?.slug ?? ""}`, "https://placeholder.invalid");
   if (intention) thresholdUrl.searchParams.set("intention", intention);
   if (invitation) thresholdUrl.searchParams.set("invitation", invitation);
   const thresholdHref = `${thresholdUrl.pathname}${thresholdUrl.search}`;
@@ -42,19 +51,19 @@ export default async function GuidePage({
           style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}
         >
           <p className="text-sm font-semibold" style={{ color: "var(--paper)" }}>
-            {GUIDE.archetype}
+            {guide.archetype}
           </p>
           <p className="text-sm" style={{ color: "var(--text-dim)" }}>
-            {GUIDE.role}
+            {guide.role}
           </p>
         </div>
 
         <p className="text-base leading-7" style={{ color: "var(--text-dim)" }}>
-          {GUIDE.mission}
+          {guide.mission}
         </p>
 
         <p className="text-sm italic leading-6" style={{ color: "var(--text-dim)" }}>
-          &ldquo;{GUIDE.giftMessage}&rdquo;
+          &ldquo;{guide.giftMessage}&rdquo;
         </p>
 
         <Link

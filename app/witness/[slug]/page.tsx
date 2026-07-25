@@ -1,9 +1,6 @@
 import { notFound } from "next/navigation";
 import OrbReveal from "@/components/OrbReveal";
-
-// RC1 ships exactly one witness experience -- an AvatarK archetype, not
-// a real practitioner (no consent/status has been verified for one).
-const WITNESS_SLUG = "the-promise-to-myself";
+import { getPracticeBySlug } from "@/lib/content/echo";
 
 export default async function WitnessPage({
   params,
@@ -13,7 +10,8 @@ export default async function WitnessPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { slug } = await params;
-  if (slug !== WITNESS_SLUG) notFound();
+  const practice = getPracticeBySlug(slug);
+  if (!practice) notFound();
 
   const search = await searchParams;
   const intention = typeof search.intention === "string" ? search.intention : null;
@@ -25,7 +23,7 @@ export default async function WitnessPage({
   // generated and cookied server-side before the redirect. See
   // docs/RC5_HANDOFF_CONTRACT.md.
   const beginUrl = new URL("/api/onboarding/begin", "https://placeholder.invalid");
-  beginUrl.searchParams.set("witness", WITNESS_SLUG);
+  beginUrl.searchParams.set("witness", practice.slug);
   if (intention) beginUrl.searchParams.set("intention", intention);
   if (invitation) beginUrl.searchParams.set("invitation", invitation);
   if (cohort) beginUrl.searchParams.set("cohort", cohort);
@@ -44,14 +42,10 @@ export default async function WitnessPage({
           AvatarK archetype — a demonstration experience
         </p>
 
-        <h1 className="text-2xl font-semibold sm:text-3xl">The promise to myself</h1>
+        <h1 className="text-2xl font-semibold sm:text-3xl">{practice.witnessLabel}</h1>
 
         <p className="text-base leading-7" style={{ color: "var(--text-dim)" }}>
-          Someone decides, out loud or just to themselves, that something is
-          going to change. For a few days it holds. Then the ordinary week
-          comes back — meetings, errands, everything urgent — and the
-          decision quietly slips out of view. Nothing dramatic breaks it.
-          It just stops being remembered.
+          {practice.narrative}
         </p>
 
         <div
@@ -59,11 +53,10 @@ export default async function WitnessPage({
           style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}
         >
           <p className="text-sm font-semibold" style={{ color: "var(--paper)" }}>
-            The practice: a two-minute check-in
+            The practice: {practice.title}
           </p>
           <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
-            A short, daily return to the decision — not a review, not a
-            progress report. Just enough contact to keep it real.
+            {practice.purpose}
           </p>
         </div>
 
@@ -71,26 +64,21 @@ export default async function WitnessPage({
           <span className="font-semibold" style={{ color: "var(--paper)" }}>
             Why it mattered:
           </span>{" "}
-          good decisions rarely fail all at once — they fade from disuse.
-          A tiny, repeated point of contact is often the only thing standing
-          between a decision and forgetting it happened.
+          {practice.whyItMattered}
         </p>
 
         <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
           <span className="font-semibold" style={{ color: "var(--paper)" }}>
             Estimated time:
           </span>{" "}
-          a few quiet minutes — short enough to do before the day pulls you
-          elsewhere.
+          {practice.duration}
         </p>
 
         <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
           <span className="font-semibold" style={{ color: "var(--paper)" }}>
             What you may notice:
           </span>{" "}
-          how easily something important can go quiet, and how little it
-          takes to keep it alive without turning it into one more thing to
-          manage.
+          {practice.whatYouMayNotice}
         </p>
 
         <OrbReveal>
