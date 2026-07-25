@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { InstitutionalShell } from '@/components/foundation/InstitutionalShell'
+import { InstitutionalLayout } from '@/components/foundation/InstitutionalLayout'
+import { EditorialContainer } from '@/components/foundation/Container'
 import { getFounderLetter } from '@/lib/content/foundation'
 import { ENTER_ECHO_HREF } from '@/lib/content/links'
 
@@ -13,9 +14,9 @@ export default function FounderPage() {
   const letter = getFounderLetter()
 
   return (
-    <InstitutionalShell>
-      <main className="flex flex-1 flex-col">
-        <article className="mx-auto w-full max-w-2xl px-6 py-20 sm:py-28">
+    <InstitutionalLayout>
+      <article>
+        <EditorialContainer>
           <h1 className="text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">{letter.title}</h1>
 
           <div className="mt-16 flex flex-col gap-6 text-lg leading-8" style={{ color: 'var(--ink)' }}>
@@ -45,8 +46,8 @@ export default function FounderPage() {
               Enter Echo
             </Link>
           </div>
-        </article>
-      </main>
-    </InstitutionalShell>
+        </EditorialContainer>
+      </article>
+    </InstitutionalLayout>
   )
 }

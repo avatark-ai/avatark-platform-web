@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { EditorialContainer } from '@/components/foundation/Container'
 
 // Timeline reflects the Founder Letter's own account exactly (1986 arrival
 // at BITS Pilani, not an earlier placeholder year) -- see
@@ -8,7 +9,7 @@ const TIMELINE = ['1986', 'BITS Pilani', 'Setpoint', 'USA', 'IBM', 'AI', 'Avatar
 export function Question() {
   return (
     <section id="question" className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
-      <div className="mx-auto max-w-3xl px-6 py-20 text-center sm:py-28">
+      <EditorialContainer className="text-center">
         <h2 className="text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
           What builds the engineer before the engineer builds the world?
         </h2>
@@ -33,7 +34,7 @@ export function Question() {
         >
           Read the Founder Letter
         </Link>
-      </div>
+      </EditorialContainer>
     </section>
   )
 }

@@ -96,7 +96,7 @@ export function InstitutionalFooter() {
 
   return (
     <footer style={{ borderTop: '1px solid var(--surface-line)', background: 'var(--midnight)' }}>
-      <div className="mx-auto max-w-6xl px-6 py-12">
+      <div className="mx-auto max-w-[var(--shell-width)] px-6 py-12">
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
           <FooterColumn title="Foundation" links={foundationLinks} />
           <FooterColumn title="Experience" links={experienceLinks} />

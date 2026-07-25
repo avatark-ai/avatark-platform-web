@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
-import { InstitutionalShell } from '@/components/foundation/InstitutionalShell'
+import { InstitutionalLayout } from '@/components/foundation/InstitutionalLayout'
+import { EditorialContainer } from '@/components/foundation/Container'
 import { getRoadmapContent } from '@/lib/content/foundation'
 import { getEcosystemStatusEntries, STATUS_GROUP_ORDER } from '@/lib/content/statusGroups'
 
@@ -13,9 +14,9 @@ export default function RoadmapPage() {
   const entries = getEcosystemStatusEntries()
 
   return (
-    <InstitutionalShell>
-      <main className="flex flex-1 flex-col">
-        <article className="mx-auto w-full max-w-2xl px-6 py-20 sm:py-28">
+    <InstitutionalLayout>
+      <article>
+        <EditorialContainer>
           <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
             {roadmap.subtitle}
           </p>
@@ -69,8 +70,8 @@ export default function RoadmapPage() {
               {roadmap.ladder}
             </p>
           </section>
-        </article>
-      </main>
-    </InstitutionalShell>
+        </EditorialContainer>
+      </article>
+    </InstitutionalLayout>
   )
 }

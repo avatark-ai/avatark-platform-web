@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { CanonContent } from '@/lib/content/foundation'
+import { SectionContainer } from '@/components/foundation/Container'
 
 // Desktop: tabs, one axis visible at a time, geometry (the four-axis
 // structure) always visible via the tab row itself. Mobile: accordion,
@@ -13,7 +14,7 @@ export function Canon({ content }: { content: CanonContent }) {
 
   return (
     <section id="canon" className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
-      <div className="mx-auto max-w-4xl px-6 py-20 sm:py-28">
+      <SectionContainer>
         <div className="text-center">
           <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
             {content.subtitle}
@@ -98,7 +99,7 @@ export function Canon({ content }: { content: CanonContent }) {
             )
           })}
         </div>
-      </div>
+      </SectionContainer>
     </section>
   )
 }

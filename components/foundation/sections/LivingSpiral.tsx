@@ -1,4 +1,5 @@
 import { getLivingSpiralContent } from '@/lib/content/foundation'
+import { SectionContainer } from '@/components/foundation/Container'
 
 // Layout-only geometry for the five stage nodes -- not editorial content,
 // so it stays here rather than in content/foundation/living-spiral.md.
@@ -22,7 +23,7 @@ export function LivingSpiral() {
 
   return (
     <section id="living-spiral" className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
-      <div className="mx-auto max-w-4xl px-6 py-20 sm:py-28">
+      <SectionContainer>
         <div className="text-center">
           <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">{content.title}</h2>
           {content.intro.map((paragraph) => (
@@ -61,7 +62,7 @@ export function LivingSpiral() {
             ))}
           </svg>
         </div>
-      </div>
+      </SectionContainer>
     </section>
   )
 }

@@ -1,11 +1,12 @@
 import { getEcosystemGroups } from '@/lib/content/ecosystemGroups'
+import { SectionContainer } from '@/components/foundation/Container'
 
 export function Ecosystem() {
   const groups = getEcosystemGroups()
 
   return (
     <section id="ecosystem" className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
-      <div className="mx-auto max-w-5xl px-6 py-20 sm:py-28">
+      <SectionContainer>
         <div className="text-center">
           <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">The Ecosystem</h2>
           <p className="mx-auto mt-4 max-w-xl text-base leading-7" style={{ color: 'var(--ink-dim)' }}>
@@ -49,7 +50,7 @@ export function Ecosystem() {
             </div>
           ))}
         </div>
-      </div>
+      </SectionContainer>
     </section>
   )
 }

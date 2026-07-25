@@ -1,10 +1,11 @@
 import Link from 'next/link'
 import { ENTER_ECHO_HREF } from '@/lib/content/links'
+import { EditorialContainer } from '@/components/foundation/Container'
 
 export function FinalCta() {
   return (
     <section id="final-cta" style={{ background: 'var(--midnight)', color: 'var(--paper)' }}>
-      <div className="mx-auto flex max-w-2xl flex-col items-center gap-6 px-6 py-24 text-center sm:py-28">
+      <EditorialContainer className="flex flex-col items-center gap-6 text-center">
         <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
           You have seen the architecture. Now experience it.
         </h2>
@@ -20,7 +21,7 @@ export function FinalCta() {
         >
           Enter Echo →
         </Link>
-      </div>
+      </EditorialContainer>
     </section>
   )
 }

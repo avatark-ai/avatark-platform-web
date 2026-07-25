@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { InstitutionalShell } from '@/components/foundation/InstitutionalShell'
+import { InstitutionalLayout } from '@/components/foundation/InstitutionalLayout'
 import { Hero } from '@/components/foundation/sections/Hero'
 import { Gap } from '@/components/foundation/sections/Gap'
 import { EchoIntro } from '@/components/foundation/sections/EchoIntro'
@@ -38,18 +38,16 @@ export default async function Home() {
   const canonContent = getCanonContent()
 
   return (
-    <InstitutionalShell>
-      <main className="flex flex-1 flex-col">
-        <Hero />
-        <Gap />
-        <EchoIntro />
-        <Canon content={canonContent} />
-        <LivingSpiral />
-        <Ecosystem />
-        <StatusGrid />
-        <Question />
-        <FinalCta />
-      </main>
-    </InstitutionalShell>
+    <InstitutionalLayout>
+      <Hero />
+      <Gap />
+      <EchoIntro />
+      <Canon content={canonContent} />
+      <LivingSpiral />
+      <Ecosystem />
+      <StatusGrid />
+      <Question />
+      <FinalCta />
+    </InstitutionalLayout>
   )
 }

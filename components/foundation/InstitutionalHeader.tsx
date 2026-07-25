@@ -97,7 +97,7 @@ export function InstitutionalHeader({ ecosystemGroups }: { ecosystemGroups: Ecos
 
   return (
     <header style={{ borderBottom: '1px solid var(--surface-line)', background: 'var(--midnight)' }}>
-      <div className="relative mx-auto max-w-6xl px-6" ref={panelRef}>
+      <div className="relative mx-auto max-w-[var(--shell-width)] px-6" ref={panelRef}>
         <div className="flex items-center justify-between py-4">
           <Link
             href="/"

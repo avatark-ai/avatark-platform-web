@@ -1,11 +1,12 @@
 import { getArchitectureContent } from '@/lib/content/foundation'
+import { SectionContainer } from '@/components/foundation/Container'
 
 export function Gap() {
   const { gapStatement, gapCards } = getArchitectureContent()
 
   return (
     <section id="gap" className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
-      <div className="mx-auto max-w-4xl px-6 py-20 sm:py-28">
+      <SectionContainer>
         <p className="text-center text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">
           &ldquo;{gapStatement}&rdquo;
         </p>
@@ -26,7 +27,7 @@ export function Gap() {
             </div>
           ))}
         </div>
-      </div>
+      </SectionContainer>
     </section>
   )
 }

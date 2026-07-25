@@ -38,6 +38,13 @@
   --ink-dim: #57534a;
   --paper-line: #ded6c4;
   --surface-card: #fbf9f4;
+
+  /* Shared institutional layout widths (components/foundation/InstitutionalLayout.tsx) --
+     one source of truth so the header/footer bar, section content, and editorial reading
+     columns nest consistently instead of each picking its own max-w-*. */
+  --shell-width: 1240px;
+  --content-width: 1160px;
+  --editorial-width: 760px;
 }
 
 @theme inline {

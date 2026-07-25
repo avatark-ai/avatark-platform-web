@@ -1,10 +1,11 @@
 import Link from 'next/link'
 import { ENTER_ECHO_HREF } from '@/lib/content/links'
+import { EditorialContainer } from '@/components/foundation/Container'
 
 export function EchoIntro() {
   return (
     <section id="echo" className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
-      <div className="mx-auto max-w-3xl px-6 py-20 text-center sm:py-28">
+      <EditorialContainer className="text-center">
         <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Every life leaves an Echo</h2>
 
         <ul className="mt-8 flex flex-col gap-2 text-lg" style={{ color: 'var(--ink-dim)' }}>
@@ -29,7 +30,7 @@ export function EchoIntro() {
         >
           Begin with Echo
         </Link>
-      </div>
+      </EditorialContainer>
     </section>
   )
 }

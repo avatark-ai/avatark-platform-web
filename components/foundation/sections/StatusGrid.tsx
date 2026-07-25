@@ -1,11 +1,12 @@
 import { getEcosystemStatusEntries, STATUS_GROUP_ORDER } from '@/lib/content/statusGroups'
+import { SectionContainer } from '@/components/foundation/Container'
 
 export function StatusGrid() {
   const entries = getEcosystemStatusEntries()
 
   return (
     <section id="status" className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
-      <div className="mx-auto max-w-5xl px-6 py-20 sm:py-28">
+      <SectionContainer>
         <div className="text-center">
           <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">From Philosophy to Platform</h2>
           <p className="mx-auto mt-4 max-w-xl text-base leading-7" style={{ color: 'var(--ink-dim)' }}>
@@ -44,7 +45,7 @@ export function StatusGrid() {
             )
           })}
         </div>
-      </div>
+      </SectionContainer>
     </section>
   )
 }

@@ -1,13 +1,14 @@
 import Link from 'next/link'
 import { getArchitectureContent } from '@/lib/content/foundation'
 import { ENTER_ECHO_HREF } from '@/lib/content/links'
+import { EditorialContainer } from '@/components/foundation/Container'
 
 export function Hero() {
   const { headline, lines } = getArchitectureContent()
 
   return (
     <section id="hero" className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
-      <div className="mx-auto flex max-w-4xl flex-col items-center gap-8 px-6 py-24 text-center sm:py-32">
+      <EditorialContainer className="flex flex-col items-center gap-8 text-center">
         <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl md:text-6xl">{headline}</h1>
         <div className="h-px w-16" style={{ background: 'var(--gold)' }} aria-hidden="true" />
         <div className="flex flex-col gap-2 text-lg leading-8 sm:text-xl" style={{ color: 'var(--ink-dim)' }}>
@@ -31,7 +32,7 @@ export function Hero() {
             Explore the Foundation
           </a>
         </div>
-      </div>
+      </EditorialContainer>
     </section>
   )
 }
