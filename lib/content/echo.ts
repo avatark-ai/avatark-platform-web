@@ -137,6 +137,8 @@ export function pickPracticeForIntention(intentionId: string | null): PracticeRe
   return practices[0]
 }
 
+export type StoryKind = 'episode' | 'live' | 'film'
+
 export interface StoryRecord {
   slug: string
   sourceEcho: string | null
@@ -147,6 +149,8 @@ export interface StoryRecord {
   description: string
   /** A real, playable source. Null means "no media yet" -- render a truthful preview state, never a fake player. */
   mediaUrl: string | null
+  kind: StoryKind
+  creator: string | null
   isDemo: boolean
 }
 
@@ -160,6 +164,8 @@ export function listStories(): StoryRecord[] {
     status: (content.meta.status as ContentStatus) ?? 'seed',
     description: sectionParagraph(content, 'Description'),
     mediaUrl: content.meta.mediaUrl || null,
+    kind: (content.meta.kind as StoryKind) ?? 'episode',
+    creator: content.meta.creator || null,
     isDemo: isDemoContent(content),
   }))
 }
