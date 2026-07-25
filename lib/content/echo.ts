@@ -168,6 +168,14 @@ export function getStoryBySlug(slug: string): StoryRecord | undefined {
   return listStories().find((story) => story.slug === slug)
 }
 
+export function listStoriesByEcho(echoSlug: string): StoryRecord[] {
+  return listStories().filter((story) => story.sourceEcho === echoSlug)
+}
+
+export function listCollectionsForEcho(echoSlug: string): CollectionRecord[] {
+  return listCollections().filter((collection) => collection.echoSlugs.includes(echoSlug))
+}
+
 export interface CollectionRecord {
   slug: string
   title: string
