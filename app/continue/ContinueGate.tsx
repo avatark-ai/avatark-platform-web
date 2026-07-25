@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { resolveClientPrincipal, type ClientPrincipalResult } from '@/lib/auth/resolveClientPrincipal'
+import { MY_ECHO_HREF, TODAY_HREF } from '@/lib/echo/links'
 
 function buildContinuePath(intention: string | null, witness: string | null, receipt: string | null): string {
   const params = new URLSearchParams()
@@ -57,10 +58,10 @@ export function ContinueGate({
     )
   }
 
-  const journeyHref =
+  const todayHref =
     witness || intention
-      ? `/journey?${new URLSearchParams({ ...(intention ? { intention } : {}), ...(witness ? { witness } : {}) }).toString()}`
-      : '/journey'
+      ? `${TODAY_HREF}?${new URLSearchParams({ ...(intention ? { intention } : {}), ...(witness ? { witness } : {}) }).toString()}`
+      : TODAY_HREF
 
   const unverifiedNote =
     unverifiedReason === 'expired'
@@ -72,8 +73,8 @@ export function ContinueGate({
       <div className="space-y-4">
         {verified ? (
           <>
-            <p className="text-lg">You completed your first practice.</p>
-            <p className="text-lg">What you noticed belongs to your journey.</p>
+            <p className="text-lg font-semibold">Practice Complete</p>
+            <p className="text-lg">Added to Your Echo.</p>
           </>
         ) : receipt ? (
           <>
@@ -87,13 +88,13 @@ export function ContinueGate({
         )}
         <div className="flex flex-col gap-3 pt-2 sm:flex-row">
           <Link
-            href={journeyHref}
+            href={todayHref}
             className="rounded-md bg-black px-6 py-3 text-center text-sm font-semibold text-white"
           >
-            Continue Your Journey
+            Continue to Today
           </Link>
-          <Link href="/account" className="text-sm underline self-center">
-            Account Settings
+          <Link href={MY_ECHO_HREF} className="text-sm underline self-center">
+            View My Echo
           </Link>
         </div>
       </div>
