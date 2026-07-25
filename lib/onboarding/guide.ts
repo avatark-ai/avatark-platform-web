@@ -5,7 +5,7 @@
 // depend on. GUIDE_SLUG/GUIDE resolve to whichever Echo is first in the
 // registry today (the-returner) -- adding more Echoes never requires this
 // file to change.
-import { getEchoBySlug, listEchoes } from "@/lib/content/echo";
+import { getEchoBySlug, listEchoes, type EchoCategory } from "@/lib/content/echo";
 
 export const GUIDE_SLUG = listEchoes()[0]?.slug ?? "the-returner";
 
@@ -14,6 +14,7 @@ export interface Guide {
   role: string;
   mission: string;
   giftMessage: string;
+  category: EchoCategory;
 }
 
 export function getGuide(slug: string): Guide | null {
@@ -24,6 +25,7 @@ export function getGuide(slug: string): Guide | null {
     role: echo.role,
     mission: echo.mission,
     giftMessage: echo.giftMessage,
+    category: echo.category,
   };
 }
 
@@ -32,4 +34,17 @@ export const GUIDE: Guide = getGuide(GUIDE_SLUG) ?? {
   role: "",
   mission: "",
   giftMessage: "",
+  category: "archetype",
 };
+
+const CATEGORY_EYEBROW: Record<EchoCategory, string> = {
+  archetype: "An AvatarK archetype — a demonstration experience",
+  organization: "An organization's Echo",
+  theme: "A themed Echo",
+  product: "A product Echo",
+  community: "A community-created Echo",
+};
+
+export function echoCategoryEyebrow(category: EchoCategory): string {
+  return CATEGORY_EYEBROW[category];
+}

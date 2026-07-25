@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import OrbReveal from "@/components/OrbReveal";
-import { getPracticeBySlug } from "@/lib/content/echo";
+import { getEchoBySlug, getPracticeBySlug } from "@/lib/content/echo";
+import { echoCategoryEyebrow } from "@/lib/onboarding/guide";
 
 export default async function WitnessPage({
   params,
@@ -12,6 +13,7 @@ export default async function WitnessPage({
   const { slug } = await params;
   const practice = getPracticeBySlug(slug);
   if (!practice) notFound();
+  const sourceEcho = getEchoBySlug(practice.sourceEcho);
 
   const search = await searchParams;
   const intention = typeof search.intention === "string" ? search.intention : null;
@@ -39,7 +41,7 @@ export default async function WitnessPage({
           className="text-xs font-semibold uppercase tracking-wide"
           style={{ color: "var(--gold)" }}
         >
-          AvatarK archetype — a demonstration experience
+          {echoCategoryEyebrow(sourceEcho?.category ?? "archetype")}
         </p>
 
         <h1 className="text-2xl font-semibold sm:text-3xl">{practice.witnessLabel}</h1>

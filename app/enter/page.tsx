@@ -40,14 +40,14 @@ function EnterInvitationForm() {
           className="text-xs font-semibold uppercase tracking-wide"
           style={{ color: "var(--gold)" }}
         >
-          AvatarK archetype — a demonstration experience
+          ECHO
         </p>
 
         <h1 className="text-2xl font-semibold sm:text-3xl">Enter an invitation</h1>
 
         <p className="text-base leading-7" style={{ color: "var(--text-dim)" }}>
-          Someone passed this along — a code that opens the door to a
-          guide&apos;s practice, meant for you specifically.
+          An invitation connects you to an Echo, practice, cohort, event or
+          story — someone passed this along, meant for you specifically.
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">

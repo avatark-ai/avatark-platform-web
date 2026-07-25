@@ -145,6 +145,8 @@ export interface StoryRecord {
   themes: string[]
   status: ContentStatus
   description: string
+  /** A real, playable source. Null means "no media yet" -- render a truthful preview state, never a fake player. */
+  mediaUrl: string | null
   isDemo: boolean
 }
 
@@ -157,6 +159,7 @@ export function listStories(): StoryRecord[] {
     themes: splitList(content.meta.themes),
     status: (content.meta.status as ContentStatus) ?? 'seed',
     description: sectionParagraph(content, 'Description'),
+    mediaUrl: content.meta.mediaUrl || null,
     isDemo: isDemoContent(content),
   }))
 }

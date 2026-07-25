@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getGuide } from "@/lib/onboarding/guide";
+import { echoCategoryEyebrow, getGuide } from "@/lib/onboarding/guide";
 import { listPracticesByEcho, pickPracticeForIntention } from "@/lib/content/echo";
 
 export default async function GuidePage({
@@ -41,7 +41,7 @@ export default async function GuidePage({
           className="text-xs font-semibold uppercase tracking-wide"
           style={{ color: "var(--gold)" }}
         >
-          AvatarK archetype — a demonstration experience
+          {echoCategoryEyebrow(guide.category)}
         </p>
 
         <h1 className="text-2xl font-semibold sm:text-3xl">Meet your guide</h1>
