@@ -12,6 +12,12 @@ export interface ContentSection {
   heading: string
   fields: Record<string, string>
   paragraphs: string[]
+  // Indexes into `paragraphs` for any paragraph whose source line started
+  // with "> " -- a lightweight pull-quote marker so editorial pages (e.g.
+  // Founder) can call out a sentence without a page component hardcoding
+  // which paragraph index is "the quote". The marker is stripped from the
+  // paragraph text itself; the source sentence is unchanged.
+  pullQuotes: number[]
 }
 
 export interface ParsedContent {
@@ -20,14 +26,26 @@ export interface ParsedContent {
   sections: ContentSection[]
 }
 
-function splitParagraphs(block: string): string[] {
-  return block
+function splitParagraphs(block: string): { paragraphs: string[]; pullQuotes: number[] } {
+  const raw = block
     .split(/\n{2,}/)
-    .map((p) => p.replace(/\s+/g, ' ').trim())
+    .map((p) => p.trim())
     .filter(Boolean)
+
+  const pullQuotes: number[] = []
+  const paragraphs = raw.map((p, index) => {
+    const isPullQuote = p.startsWith('> ')
+    if (isPullQuote) pullQuotes.push(index)
+    const text = isPullQuote ? p.slice(2) : p
+    return text.replace(/\s+/g, ' ').trim()
+  })
+
+  return { paragraphs, pullQuotes }
 }
 
-function parseFieldsAndParagraphs(block: string): { fields: Record<string, string>; paragraphs: string[] } {
+function parseFieldsAndParagraphs(
+  block: string,
+): { fields: Record<string, string>; paragraphs: string[]; pullQuotes: number[] } {
   const fields: Record<string, string> = {}
   const lines = block.split('\n')
   let index = 0
@@ -43,7 +61,8 @@ function parseFieldsAndParagraphs(block: string): { fields: Record<string, strin
     index += 1
   }
   const rest = lines.slice(index).join('\n')
-  return { fields, paragraphs: splitParagraphs(rest) }
+  const { paragraphs, pullQuotes } = splitParagraphs(rest)
+  return { fields, paragraphs, pullQuotes }
 }
 
 export function parseFoundationContent(raw: string): ParsedContent {
@@ -61,14 +80,14 @@ export function parseFoundationContent(raw: string): ParsedContent {
 
   const parts = body.split(/\n##\s+/)
   const introBlock = parts[0]
-  const intro = splitParagraphs(introBlock)
+  const { paragraphs: intro } = splitParagraphs(introBlock)
 
   const sections: ContentSection[] = parts.slice(1).map((part) => {
     const newlineIndex = part.indexOf('\n')
     const heading = (newlineIndex === -1 ? part : part.slice(0, newlineIndex)).trim()
     const rest = newlineIndex === -1 ? '' : part.slice(newlineIndex + 1)
-    const { fields, paragraphs } = parseFieldsAndParagraphs(rest)
-    return { heading, fields, paragraphs }
+    const { fields, paragraphs, pullQuotes } = parseFieldsAndParagraphs(rest)
+    return { heading, fields, paragraphs, pullQuotes }
   })
 
   return { meta, intro, sections }

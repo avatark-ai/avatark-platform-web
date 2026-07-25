@@ -3,12 +3,32 @@
 // (frontmatter + "## Heading" sections) stays an implementation detail.
 import { readFoundationContent } from './markdown.ts'
 
+export interface FounderChapter {
+  id: string
+  navLabel: string
+  paragraphs: string[]
+  pullQuoteIndexes: number[]
+}
+
 export interface FounderLetter {
   title: string
   author: string
   role: string
   credentials: string
-  paragraphs: string[]
+  opening: string[]
+  chapters: FounderChapter[]
+}
+
+// Display copy for each `## Heading` in founder-letter.md -- kept short in
+// the file itself, spelled out here for the page/chapter-nav. Closing has
+// no nav entry (the Founder page's chapter nav omits it deliberately).
+const FOUNDER_CHAPTER_NAV_LABELS: Record<string, string> = {
+  Question: 'The Question',
+  Technology: 'Technology',
+  Geometry: 'Geometry',
+  AvatarK: 'AvatarK',
+  Future: 'The Future',
+  Closing: 'Closing',
 }
 
 export function getFounderLetter(): FounderLetter {
@@ -18,7 +38,13 @@ export function getFounderLetter(): FounderLetter {
     author: content.meta.author ?? '',
     role: content.meta.role ?? '',
     credentials: content.meta.credentials ?? '',
-    paragraphs: content.intro,
+    opening: content.intro,
+    chapters: content.sections.map((section) => ({
+      id: section.heading.toLowerCase(),
+      navLabel: FOUNDER_CHAPTER_NAV_LABELS[section.heading] ?? section.heading,
+      paragraphs: section.paragraphs,
+      pullQuoteIndexes: section.pullQuotes,
+    })),
   }
 }
 

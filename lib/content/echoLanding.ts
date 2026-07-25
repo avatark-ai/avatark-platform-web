@@ -26,7 +26,8 @@ export interface EchoLandingContent {
 export function getEchoLandingContent(): EchoLandingContent {
   const content = readEchoDocument("landing.md");
   const byHeading = new Map(content.sections.map((section) => [section.heading, section]));
-  const section = (heading: string) => byHeading.get(heading) ?? { heading, fields: {}, paragraphs: [] };
+  const section = (heading: string) =>
+    byHeading.get(heading) ?? { heading, fields: {}, paragraphs: [], pullQuotes: [] };
 
   const hero = section("Hero");
   const whatIsEcho = section("WhatIsEcho");

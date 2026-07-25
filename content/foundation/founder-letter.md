@@ -17,6 +17,8 @@ I do not know whether the founders of BITS Pilani intended any deeper geometry b
 
 What builds the engineer before the engineer builds the world?
 
+## Question
+
 The name Setpoint stayed with me as well.
 
 In engineering, a setpoint is the state toward which a system is regulated. A system senses where it is, compares that state with where it needs to be and continually adjusts.
@@ -26,6 +28,8 @@ Over time, I began asking the same question about human beings.
 What is the setpoint of a human life?
 
 How do we recognize when we are drifting? How do we adapt when circumstances change? How do we retain what experience has taught us? And how does one person's learning become useful to another?
+
+## Technology
 
 After BITS Pilani, I pursued a master's degree in computer science in the United States. I then spent more than thirty years working across enterprise software, distributed systems, semiconductors and artificial intelligence, including part of my career at IBM.
 
@@ -41,9 +45,11 @@ It can record what a person bought, clicked, produced or completed. It can measu
 
 We have operating systems for computers, databases for knowledge and algorithms for prediction.
 
-Yet we have no operating system for becoming.
+> Yet we have no operating system for becoming.
 
 We measure performance, but rarely cultivate character. We optimize outcomes, but often lose the human journey that produced them. We preserve documents, images and messages, but not necessarily the wisdom earned through a lifetime of decisions, mistakes, practices and reflection.
+
+## Geometry
 
 That question from BITS Pilani never left me.
 
@@ -71,11 +77,13 @@ Western engineering taught me how to design and build systems.
 
 Prometheus gave those systems a purpose beyond themselves.
 
+## AvatarK
+
 AvatarK is where these journeys meet.
 
 It is not simply an artificial-intelligence platform, a digital identity system or a collection of software products.
 
-It is an architecture for becoming.
+> It is an architecture for becoming.
 
 Its purpose is to help people learn from human experience, transform wisdom into practice, observe what changes, preserve the evidence of that transformation and pass what proves valuable to another person.
 
@@ -113,6 +121,8 @@ It leaves an Echo.
 
 That Echo is not merely a record of what happened. It is what remains useful after the moment has passed: a practice, a warning, a way of seeing, a decision, a story or a truth that another person can test in their own life.
 
+## Future
+
 Technology changes rapidly.
 
 Human nature evolves slowly.
@@ -123,10 +133,12 @@ It should remember not only what we did, but what we learned.
 
 It should help transform information into practice, practice into evidence and evidence into wisdom that can travel between lives.
 
+## Closing
+
 That is the journey AvatarK invites you to begin.
 
 Not simply to use technology.
 
 But to become someone worth remembering.
 
-And to leave an Echo worth carrying forward.
+> And to leave an Echo worth carrying forward.
