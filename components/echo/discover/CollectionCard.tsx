@@ -8,15 +8,17 @@ export function CollectionCard({ collection }: { collection: CollectionRecord })
 
   return (
     <div
-      className="flex flex-col gap-3 rounded-md border p-5"
+      className="flex flex-col gap-4 rounded-2xl border p-6"
       style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}
     >
-      <p className="text-base font-semibold" style={{ color: "var(--paper)" }}>
-        {collection.title}
-      </p>
-      <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
-        {collection.description}
-      </p>
+      <div className="flex flex-col gap-1.5">
+        <p className="text-lg font-semibold" style={{ color: "var(--paper)" }}>
+          {collection.title}
+        </p>
+        <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
+          {collection.description}
+        </p>
+      </div>
       {(echoes.length > 0 || practices.length > 0) && (
         <div className="flex flex-wrap gap-2">
           {echoes.map((echo) => (

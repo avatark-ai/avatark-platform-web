@@ -32,12 +32,9 @@ export default async function EchoDetailPage({ params }: { params: Promise<{ slu
       id: "overview",
       label: "Overview",
       content: (
-        <div className="flex flex-col gap-4 text-base leading-7" style={{ color: "var(--text-dim)" }}>
-          <p>{echo.mission}</p>
-          <p className="italic" style={{ color: "var(--paper)" }}>
-            &ldquo;{echo.giftMessage}&rdquo;
-          </p>
-        </div>
+        <p className="max-w-2xl text-lg leading-8" style={{ color: "var(--text-dim)" }}>
+          {echo.mission}
+        </p>
       ),
     },
     {
@@ -45,28 +42,28 @@ export default async function EchoDetailPage({ params }: { params: Promise<{ slu
       label: "Practices",
       content:
         practices.length > 0 ? (
-          <ul className="flex flex-col gap-4">
+          <ul className="flex flex-col gap-5">
             {practices.map((practice) => (
-              <li key={practice.slug} className="rounded-md border p-4" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
-                <p className="text-base font-semibold" style={{ color: "var(--paper)" }}>
+              <li key={practice.slug} className="rounded-2xl border p-6" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
+                <p className="text-lg font-semibold" style={{ color: "var(--paper)" }}>
                   {practice.title}
                 </p>
-                <p className="mt-1 text-sm leading-6" style={{ color: "var(--text-dim)" }}>
+                <p className="mt-2 text-base leading-7" style={{ color: "var(--text-dim)" }}>
                   {practice.purpose}
                 </p>
                 <Link
                   href={practiceDetailHref(practice.slug)}
-                  className="mt-3 inline-block text-sm font-semibold underline underline-offset-4 hover:no-underline"
-                  style={{ color: "var(--gold)" }}
+                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
                 >
-                  Borrow a Practice
+                  Borrow a Practice <span aria-hidden="true">→</span>
                 </Link>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="text-sm" style={{ color: "var(--text-dim)" }}>
-            No practices from this Echo yet.
+          <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
+            No practices from this Echo yet — practices are how its mission becomes something you can actually try.
           </p>
         ),
     },
@@ -83,8 +80,8 @@ export default async function EchoDetailPage({ params }: { params: Promise<{ slu
             ))}
           </ul>
         ) : (
-          <p className="text-sm" style={{ color: "var(--text-dim)" }}>
-            No stories from this Echo yet.
+          <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
+            No stories from this Echo yet — this is where a narrative telling of its experience would appear.
           </p>
         ),
     },
@@ -119,17 +116,38 @@ export default async function EchoDetailPage({ params }: { params: Promise<{ slu
   ];
 
   return (
-    <main className="flex flex-1 flex-col px-6 py-16" style={{ background: "var(--midnight)", color: "var(--paper)" }}>
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+    <main className="flex flex-1 flex-col px-6 py-20 sm:py-24" style={{ background: "var(--midnight)", color: "var(--paper)" }}>
+      <div className="mx-auto flex w-full max-w-2xl flex-col">
+        <span
+          aria-hidden="true"
+          className="mb-6 h-14 w-14 rounded-full border-2"
+          style={{ borderColor: "var(--gold)", background: "color-mix(in srgb, var(--gold) 12%, transparent)" }}
+        />
         <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
           {echoCategoryEyebrow(echo.category)}
         </p>
-        <h1 className="text-2xl font-semibold sm:text-3xl">{echo.name}</h1>
-        <p className="text-base" style={{ color: "var(--text-dim)" }}>
+        <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">{echo.name}</h1>
+        <p className="mt-2 text-lg" style={{ color: "var(--text-dim)" }}>
           {echo.role}
         </p>
 
-        <Tabs tabs={tabs} />
+        <blockquote
+          className="relative mt-10 rounded-2xl border py-8 pl-8 pr-6 text-xl font-medium italic leading-9 sm:text-2xl"
+          style={{ borderColor: "var(--surface-line)", background: "var(--surface)", color: "var(--paper)" }}
+        >
+          <span
+            aria-hidden="true"
+            className="absolute left-4 top-3 select-none text-5xl"
+            style={{ color: "color-mix(in srgb, var(--gold) 55%, transparent)" }}
+          >
+            &ldquo;
+          </span>
+          {echo.giftMessage}
+        </blockquote>
+
+        <div className="mt-14">
+          <Tabs tabs={tabs} />
+        </div>
       </div>
     </main>
   );

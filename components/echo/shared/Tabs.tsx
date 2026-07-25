@@ -27,7 +27,7 @@ export function Tabs({ tabs, initialTabId }: { tabs: TabDefinition[]; initialTab
 
   return (
     <div>
-      <div role="tablist" aria-label="Sections" className="flex gap-1 overflow-x-auto border-b" style={{ borderColor: "var(--surface-line)" }}>
+      <div role="tablist" aria-label="Sections" className="flex gap-6 overflow-x-auto border-b" style={{ borderColor: "var(--surface-line)" }}>
         {tabs.map((tab, index) => {
           const active = tab.id === activeId;
           return (
@@ -41,7 +41,7 @@ export function Tabs({ tabs, initialTabId }: { tabs: TabDefinition[]; initialTab
               tabIndex={active ? 0 : -1}
               onClick={() => setActiveId(tab.id)}
               onKeyDown={(event) => onKeyDown(event, index)}
-              className="shrink-0 border-b-2 px-4 py-2 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="shrink-0 border-b-2 pb-3 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{
                 borderColor: active ? "var(--gold)" : "transparent",
                 color: active ? "var(--paper)" : "var(--text-dim)",
@@ -54,7 +54,7 @@ export function Tabs({ tabs, initialTabId }: { tabs: TabDefinition[]; initialTab
         })}
       </div>
       {tabs.map((tab) => (
-        <div key={tab.id} id={`tabpanel-${tab.id}`} role="tabpanel" aria-labelledby={`tab-${tab.id}`} hidden={tab.id !== activeId} className="py-6">
+        <div key={tab.id} id={`tabpanel-${tab.id}`} role="tabpanel" aria-labelledby={`tab-${tab.id}`} hidden={tab.id !== activeId} className="py-8">
           {tab.content}
         </div>
       ))}

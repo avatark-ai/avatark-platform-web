@@ -25,22 +25,20 @@ export function MyJourneyView({ context }: { context: JourneyContext }) {
   const reached = reachedStageCount(context);
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-2">
-        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
-          My Journey
-        </p>
-        <h1 className="text-2xl font-semibold sm:text-3xl">Your journey is not a score.</h1>
-        <p className="text-base leading-7" style={{ color: "var(--text-dim)" }}>
-          It is a record of what you are learning and becoming.
-        </p>
-      </div>
+    <div className="flex flex-col">
+      <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
+        My Journey
+      </p>
+      <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Your journey is not a score.</h1>
+      <p className="mt-2 max-w-md text-lg leading-8" style={{ color: "var(--text-dim)" }}>
+        It is a record of what you are learning and becoming.
+      </p>
 
-      <ol className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm font-medium" style={{ color: "var(--paper)" }}>
+      <ol className="mt-10 flex flex-wrap items-center gap-x-3 gap-y-3 text-sm font-medium" style={{ color: "var(--paper)" }}>
         {STAGES.map((stage, index) => (
           <li key={stage} className="flex items-center gap-3">
             <span
-              className="rounded-full border px-3 py-1"
+              className="rounded-full border px-4 py-1.5"
               style={{
                 borderColor: index <= reached ? "var(--gold)" : "var(--surface-line)",
                 color: index <= reached ? "var(--paper)" : "var(--text-dim)",
@@ -59,11 +57,11 @@ export function MyJourneyView({ context }: { context: JourneyContext }) {
 
       {context.startedAt ? (
         <>
-          <div className="flex flex-col gap-1 rounded-md border p-5" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
-            <p className="text-xs uppercase tracking-wide" style={{ color: "var(--gold)" }}>
+          <div className="mt-10 flex flex-col gap-1.5 rounded-2xl border p-6" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
+            <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
               {formatDate(context.startedAt)}
             </p>
-            <p className="text-base" style={{ color: "var(--paper)" }}>
+            <p className="text-lg" style={{ color: "var(--paper)" }}>
               {intentionLabel ? (
                 <>
                   Named what mattered: <span className="font-semibold">&ldquo;{intentionLabel}&rdquo;</span>
@@ -83,37 +81,37 @@ export function MyJourneyView({ context }: { context: JourneyContext }) {
               </p>
             )}
           </div>
-          <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
-            Avoid vanity metrics — this page grows as you return to practice and reflection, not as a count to chase.
+          <p className="mt-4 text-sm leading-6" style={{ color: "var(--text-dim)" }}>
+            This page grows as you return to practice and reflection — never a count to chase.
           </p>
         </>
       ) : (
-        <>
-          <p className="text-base leading-7" style={{ color: "var(--paper)" }}>
+        <div className="mt-10 flex flex-col items-start gap-5">
+          <p className="max-w-md text-lg leading-8" style={{ color: "var(--paper)" }}>
             You haven&apos;t begun your journey yet.
           </p>
           <Link
             href="/start"
-            className="inline-block w-fit rounded-md px-8 py-3 text-center text-base font-semibold transition-opacity hover:opacity-90"
-            style={{ background: "var(--gold)", color: "var(--midnight)" }}
+            className="rounded-full px-8 py-3 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
           >
             Begin with an Echo
           </Link>
-        </>
+        </div>
       )}
 
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
         <Link
           href={MY_ECHO_HREF}
-          className="rounded-md border px-6 py-3 text-center text-sm font-semibold transition-colors hover:border-[var(--gold)]"
-          style={{ borderColor: "var(--surface-line)", color: "var(--paper)" }}
+          className="text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
         >
           View My Echo
         </Link>
         <Link
           href={TODAY_HREF}
-          className="rounded-md border px-6 py-3 text-center text-sm font-semibold transition-colors hover:border-[var(--gold)]"
-          style={{ borderColor: "var(--surface-line)", color: "var(--paper)" }}
+          className="text-sm font-medium underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          style={{ color: "var(--paper)", outlineColor: "var(--gold)" }}
         >
           Continue Today
         </Link>

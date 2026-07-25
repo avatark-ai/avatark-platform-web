@@ -32,10 +32,10 @@ function EnterInvitationForm() {
 
   return (
     <main
-      className="flex flex-1 flex-col items-center px-6 py-16"
+      className="flex flex-1 flex-col items-center px-6 py-20 sm:py-24"
       style={{ background: "var(--midnight)", color: "var(--paper)" }}
     >
-      <div className="flex w-full max-w-md flex-col gap-6">
+      <div className="flex w-full max-w-md flex-col">
         <p
           className="text-xs font-semibold uppercase tracking-wide"
           style={{ color: "var(--gold)" }}
@@ -43,14 +43,14 @@ function EnterInvitationForm() {
           ECHO
         </p>
 
-        <h1 className="text-2xl font-semibold sm:text-3xl">Enter an invitation</h1>
+        <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Enter an invitation</h1>
 
-        <p className="text-base leading-7" style={{ color: "var(--text-dim)" }}>
+        <p className="mt-4 text-lg leading-8" style={{ color: "var(--text-dim)" }}>
           An invitation connects you to an Echo, practice, cohort, event or
           story — someone passed this along, meant for you specifically.
         </p>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-3">
           <label htmlFor="invitation-code" className="text-sm font-semibold">
             Invitation code
           </label>
@@ -63,11 +63,12 @@ function EnterInvitationForm() {
               if (error) setError(null);
             }}
             placeholder="Paste or type your code"
-            className="w-full rounded-md border px-4 py-3 text-base"
+            className="w-full rounded-xl border px-4 py-3 text-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{
               borderColor: "var(--surface-line)",
               background: "var(--surface)",
               color: "var(--paper)",
+              outlineColor: "var(--gold)",
             }}
             aria-invalid={error ? "true" : undefined}
             aria-describedby={error ? "invitation-code-error" : undefined}
@@ -79,16 +80,20 @@ function EnterInvitationForm() {
           )}
           <button
             type="submit"
-            className="mt-2 rounded-md px-8 py-3 text-center text-base font-semibold transition-opacity hover:opacity-90"
-            style={{ background: "var(--gold)", color: "var(--midnight)" }}
+            className="mt-3 self-start rounded-full px-8 py-3 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
           >
             Continue
           </button>
         </form>
 
-        <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
+        <p className="mt-6 text-sm leading-6" style={{ color: "var(--text-dim)" }}>
           Don&apos;t have a code?{" "}
-          <a href="/start" className="underline underline-offset-4 hover:no-underline">
+          <a
+            href="/start"
+            className="underline underline-offset-4 hover:no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
+          >
             Begin with an Echo
           </a>{" "}
           instead.

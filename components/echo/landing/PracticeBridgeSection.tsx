@@ -7,12 +7,12 @@ export function PracticeBridgeSection({ headline, paragraphs }: { headline: stri
   const practice = listPractices()[0];
 
   return (
-    <section className="border-b" style={{ borderColor: "var(--surface-line)" }}>
-      <div className="mx-auto flex max-w-4xl flex-col items-center px-6 py-16 text-center sm:py-20">
-        <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl" style={{ color: "var(--paper)" }}>
+    <section>
+      <div className="mx-auto flex max-w-4xl flex-col items-center px-6 py-20 text-center sm:py-24">
+        <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl" style={{ color: "var(--paper)" }}>
           {headline}
         </h2>
-        <div className="mt-4 flex max-w-xl flex-col gap-2 text-base leading-7" style={{ color: "var(--text-dim)" }}>
+        <div className="mt-5 flex max-w-xl flex-col gap-2 text-lg leading-8" style={{ color: "var(--text-dim)" }}>
           {paragraphs.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
           ))}
@@ -20,21 +20,21 @@ export function PracticeBridgeSection({ headline, paragraphs }: { headline: stri
 
         <span
           aria-hidden="true"
-          className="mt-8 h-16 w-16 rounded-full border"
+          className="mt-10 h-16 w-16 rounded-full border-2"
           style={{ borderColor: "var(--gold)", background: "color-mix(in srgb, var(--gold) 8%, transparent)" }}
         />
 
         {practice && (
           <Link
             href={practiceDetailHref(practice.slug)}
-            className="mt-8 rounded-md px-8 py-3 text-center text-base font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="mt-10 rounded-full px-8 py-3.5 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
           >
             Try the Practice
           </Link>
         )}
 
-        <p className="mt-4 text-xs uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
+        <p className="mt-5 text-xs font-medium uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
           Powered by {PROMETHEUSK_DISPLAY_NAME}
         </p>
       </div>

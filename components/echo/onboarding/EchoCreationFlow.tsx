@@ -37,11 +37,11 @@ export function EchoCreationFlow({ themePracticeMap }: { themePracticeMap: Recor
 
   if (step === 1) {
     return (
-      <div className="flex w-full max-w-lg flex-col items-center gap-6 text-center">
+      <div className="flex w-full max-w-lg flex-col items-center gap-7 text-center">
         <p className="text-sm" style={{ color: "var(--text-dim)" }}>
           Step 1 of 3
         </p>
-        <h1 className="text-2xl font-semibold sm:text-3xl">What are you navigating now?</h1>
+        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">What are you navigating now?</h1>
 
         <ul className="flex w-full flex-wrap justify-center gap-3">
           {THEMES.map((option) => (
@@ -73,8 +73,8 @@ export function EchoCreationFlow({ themePracticeMap }: { themePracticeMap: Recor
             value={note}
             onChange={(event) => setNote(event.target.value)}
             rows={3}
-            className="w-full rounded-md border px-4 py-3 text-base"
-            style={{ borderColor: "var(--surface-line)", background: "var(--surface)", color: "var(--paper)" }}
+            className="w-full rounded-xl border px-4 py-3 text-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{ borderColor: "var(--surface-line)", background: "var(--surface)", color: "var(--paper)", outlineColor: "var(--gold)" }}
           />
         </div>
 
@@ -82,8 +82,8 @@ export function EchoCreationFlow({ themePracticeMap }: { themePracticeMap: Recor
           type="button"
           disabled={!theme}
           onClick={() => setStep(2)}
-          className="rounded-md px-8 py-3 text-center text-base font-semibold transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
-          style={{ background: "var(--gold)", color: "var(--midnight)" }}
+          className="rounded-full px-8 py-3 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
         >
           Continue
         </button>
@@ -93,11 +93,11 @@ export function EchoCreationFlow({ themePracticeMap }: { themePracticeMap: Recor
 
   if (step === 2) {
     return (
-      <div className="flex w-full max-w-lg flex-col items-center gap-6 text-center">
+      <div className="flex w-full max-w-lg flex-col items-center gap-7 text-center">
         <p className="text-sm" style={{ color: "var(--text-dim)" }}>
           Step 2 of 3
         </p>
-        <h1 className="text-2xl font-semibold sm:text-3xl">What kind of beginning would help?</h1>
+        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">What kind of beginning would help?</h1>
 
         <ul className="flex w-full flex-col gap-3">
           {BEGINNINGS.map((option) => (
@@ -108,8 +108,8 @@ export function EchoCreationFlow({ themePracticeMap }: { themePracticeMap: Recor
                   setBeginning(option.id);
                   setStep(3);
                 }}
-                className="w-full rounded-md border px-6 py-3 text-left text-base transition-colors hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                style={{ borderColor: "var(--surface-line)", background: "var(--surface)", color: "var(--paper)" }}
+                className="w-full rounded-2xl border px-6 py-4 text-left text-base transition-colors hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                style={{ borderColor: "var(--surface-line)", background: "var(--surface)", color: "var(--paper)", outlineColor: "var(--gold)" }}
               >
                 {option.label}
               </button>
@@ -124,18 +124,18 @@ export function EchoCreationFlow({ themePracticeMap }: { themePracticeMap: Recor
   const path = resolvePath(beginning ?? "practice", practiceSlug);
 
   return (
-    <div className="flex w-full max-w-lg flex-col items-center gap-6 text-center">
+    <div className="flex w-full max-w-lg flex-col items-center gap-7 text-center">
       <p className="text-sm" style={{ color: "var(--text-dim)" }}>
         Step 3 of 3
       </p>
-      <h1 className="text-2xl font-semibold sm:text-3xl">Here&apos;s where to begin.</h1>
-      <p className="text-base leading-7" style={{ color: "var(--text-dim)" }}>
+      <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Here&apos;s where to begin.</h1>
+      <p className="text-lg leading-8" style={{ color: "var(--text-dim)" }}>
         Based on what you named, we suggest starting with: <span style={{ color: "var(--paper)" }}>{path.label}</span>
       </p>
       <Link
         href={path.href}
-        className="rounded-md px-8 py-3 text-center text-base font-semibold transition-opacity hover:opacity-90"
-        style={{ background: "var(--gold)", color: "var(--midnight)" }}
+        className="rounded-full px-9 py-3.5 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+        style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
       >
         Begin My Journey
       </Link>

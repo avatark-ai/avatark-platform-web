@@ -37,47 +37,51 @@ export default async function PracticeDetailPage({
   const beginHref = `${beginUrl.pathname}${beginUrl.search}`;
 
   return (
-    <main className="flex flex-1 flex-col items-center px-6 py-16" style={{ background: "var(--midnight)", color: "var(--paper)" }}>
-      <div className="flex w-full max-w-lg flex-col gap-6">
+    <main className="flex flex-1 flex-col items-center px-6 py-20 sm:py-24" style={{ background: "var(--midnight)", color: "var(--paper)" }}>
+      <div className="flex w-full max-w-xl flex-col">
         <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
           {practice.duration}
           {practice.modality ? ` · ${practice.modality}` : ""}
         </p>
 
-        <h1 className="text-2xl font-semibold sm:text-3xl">{practice.title}</h1>
-
-        <p className="text-base leading-7" style={{ color: "var(--text-dim)" }}>
-          {practice.purpose}
-        </p>
-
-        <div className="flex flex-col gap-2 rounded-md border p-4" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
-          <p className="text-sm font-semibold" style={{ color: "var(--paper)" }}>
-            What you&apos;ll do
-          </p>
-          <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
-            {practice.narrative}
-          </p>
-        </div>
-
-        <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
-          <span className="font-semibold" style={{ color: "var(--paper)" }}>
-            Why it may help:
-          </span>{" "}
-          {practice.whyItMattered}
-        </p>
+        <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">{practice.title}</h1>
 
         {sourceEcho && (
-          <p className="text-sm" style={{ color: "var(--text-dim)" }}>
+          <p className="mt-2 text-base" style={{ color: "var(--text-dim)" }}>
             From{" "}
-            <Link href={echoDetailHref(sourceEcho.slug)} className="underline underline-offset-4 hover:no-underline" style={{ color: "var(--gold)" }}>
+            <Link
+              href={echoDetailHref(sourceEcho.slug)}
+              className="underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
+            >
               {sourceEcho.name}
             </Link>
           </p>
         )}
 
+        <p className="mt-7 text-lg leading-8" style={{ color: "var(--text-dim)" }}>
+          {practice.purpose}
+        </p>
+
+        <div className="mt-8 flex flex-col gap-2 rounded-2xl border p-6" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
+          <p className="text-sm font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
+            What you&apos;ll do
+          </p>
+          <p className="text-base leading-7" style={{ color: "var(--paper)" }}>
+            {practice.narrative}
+          </p>
+        </div>
+
+        <p className="mt-6 text-base leading-7" style={{ color: "var(--text-dim)" }}>
+          <span className="font-semibold" style={{ color: "var(--paper)" }}>
+            Why it may help —
+          </span>{" "}
+          {practice.whyItMattered}
+        </p>
+
         <a
           href={beginHref}
-          className="mt-2 rounded-md px-8 py-3 text-center text-base font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="mt-10 self-start rounded-full px-9 py-3.5 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
         >
           Begin Practice

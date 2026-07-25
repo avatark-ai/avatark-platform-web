@@ -10,10 +10,17 @@ import { Suspense, useEffect, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { JourneySessionProvider, useJourneySession } from "@/lib/journey/session";
 
+// A shape-matched skeleton (eyebrow, heading, one card) rather than a bare
+// "Loading…" line -- animate-pulse is neutralized under
+// prefers-reduced-motion by the global rule in app/globals.css.
 function LoadingShell() {
   return (
-    <main className="flex flex-1 items-center justify-center px-6 py-20" style={{ background: "var(--midnight)", color: "var(--text-dim)" }}>
-      <p className="text-sm">Loading…</p>
+    <main className="flex flex-1 flex-col px-6 py-20 sm:py-24" role="status" aria-label="Loading your journey">
+      <div className="mx-auto flex w-full max-w-lg animate-pulse flex-col gap-6">
+        <div className="h-3 w-16 rounded-full" style={{ background: "var(--surface-line)" }} />
+        <div className="h-8 w-2/3 rounded-full" style={{ background: "var(--surface-line)" }} />
+        <div className="mt-4 h-32 rounded-2xl" style={{ background: "var(--surface)" }} />
+      </div>
     </main>
   );
 }

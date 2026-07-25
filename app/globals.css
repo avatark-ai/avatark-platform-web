@@ -59,3 +59,18 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Every hover/press transition in the Echo UI (scale, color, opacity) is
+   purely cosmetic -- no interaction depends on it completing. This makes
+   that true for prefers-reduced-motion users globally, rather than
+   requiring every component to opt in individually. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

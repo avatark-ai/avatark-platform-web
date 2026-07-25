@@ -4,13 +4,10 @@ import { Suspense, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useJourneySession } from "@/lib/journey/session";
-import { getContinuityAction, getIntentionLabel } from "@/lib/journey/continuity";
+import { getContinuityAction } from "@/lib/journey/continuity";
 import { PRACTICE_LABEL } from "@/lib/onboarding/witness";
-import { PROMETHEUSK_DISPLAY_NAME } from "@/lib/onboarding/prometheusk";
-import { JOURNAL_HREF, LIVING_ECHO_HREF } from "@/lib/echo/links";
+import { JOURNAL_HREF, MY_ECHO_HREF } from "@/lib/echo/links";
 import type { JourneyContext } from "@/lib/journey/state";
-
-const ctaStyle = { background: "var(--gold)", color: "var(--midnight)" } as const;
 
 function TodayContent() {
   const router = useRouter();
@@ -30,101 +27,83 @@ function TodayContent() {
   return <TodayView context={context} displayName={displayName} />;
 }
 
+// Calm by design: one primary recommendation, one reflection prompt (only
+// when there's something real to reflect on), one quiet continuation --
+// never more than that stacked on the page at once.
 export function TodayView({ context, displayName }: { context: JourneyContext; displayName: string | null }) {
-  const intentionLabel = getIntentionLabel(context);
   const greeting = displayName ? `Welcome back, ${displayName}.` : "Welcome back.";
   const recommendation = getContinuityAction(context);
-  const hasSnapshot = Boolean(intentionLabel || context.witness);
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-2">
+    <div className="flex flex-col">
+      <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
+        Today
+      </p>
+      <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">{greeting}</h1>
+
+      <div className="mt-10 rounded-2xl border p-7" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
         <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
-          Today
+          Today&apos;s recommendation
         </p>
-        <h1 className="text-2xl font-semibold sm:text-3xl">{greeting}</h1>
-      </div>
-
-      {hasSnapshot && (
-        <div className="flex flex-col gap-4 rounded-md border p-5" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
-          {intentionLabel && (
-            <div>
-              <p className="text-xs uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
-                Current intention
-              </p>
-              <p className="text-base" style={{ color: "var(--paper)" }}>
-                {intentionLabel}
-              </p>
-            </div>
-          )}
-          {context.witness && (
-            <div>
-              <p className="text-xs uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
-                Current practice
-              </p>
-              <p className="text-base" style={{ color: "var(--paper)" }}>
-                {PRACTICE_LABEL}
-              </p>
-            </div>
-          )}
-          {context.practiceCompletedAt && (
-            <p className="text-sm" style={{ color: "var(--gold)" }}>
-              ✓ Completion verified by {PROMETHEUSK_DISPLAY_NAME}
-            </p>
-          )}
-        </div>
-      )}
-
-      <div className="flex flex-col gap-3">
-        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
-          Today&apos;s Recommendation
-        </p>
-        <p className="text-base leading-7" style={{ color: "var(--paper)" }}>
+        <p className="mt-3 text-lg leading-8" style={{ color: "var(--paper)" }}>
           {recommendation.body}
         </p>
         {recommendation.external ? (
-          <a href={recommendation.href} className="mt-1 inline-block w-fit rounded-md px-8 py-3 text-center text-base font-semibold transition-opacity hover:opacity-90" style={ctaStyle}>
+          <a
+            href={recommendation.href}
+            className="mt-6 inline-block w-fit rounded-full px-8 py-3 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
+          >
             {recommendation.ctaLabel}
           </a>
         ) : (
-          <Link href={recommendation.href} className="mt-1 inline-block w-fit rounded-md px-8 py-3 text-center text-base font-semibold transition-opacity hover:opacity-90" style={ctaStyle}>
+          <Link
+            href={recommendation.href}
+            className="mt-6 inline-block w-fit rounded-full px-8 py-3 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
+          >
             {recommendation.ctaLabel}
           </Link>
         )}
       </div>
 
       {context.practiceCompletedAt && (
-        <div className="flex flex-col gap-2 rounded-md border p-5" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
-          <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
-            Reflect on a Recent Practice
-          </p>
-          <p className="text-sm leading-6" style={{ color: "var(--paper)" }}>
-            What changed since {PRACTICE_LABEL}?
-          </p>
-          <Link href={JOURNAL_HREF} className="text-sm font-semibold underline underline-offset-4 hover:no-underline" style={{ color: "var(--gold)" }}>
-            Open Journal
+        <p className="mt-8 text-base leading-7" style={{ color: "var(--text-dim)" }}>
+          What changed since {PRACTICE_LABEL}?{" "}
+          <Link
+            href={JOURNAL_HREF}
+            className="font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
+          >
+            Reflect in your journal
           </Link>
-        </div>
+        </p>
       )}
 
-      <div className="flex flex-col gap-2 rounded-md border p-5" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
-        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
-          Living Echo Insight
-        </p>
-        <p className="text-sm leading-6" style={{ color: "var(--paper)" }}>
-          {hasSnapshot ? "A pattern may be forming as you return to practice." : "Not enough history yet to observe a pattern."}
-        </p>
-        <Link href={LIVING_ECHO_HREF} className="text-sm font-semibold underline underline-offset-4 hover:no-underline" style={{ color: "var(--gold)" }}>
-          View My Echo
-        </Link>
-      </div>
+      <Link
+        href={MY_ECHO_HREF}
+        className="mt-8 text-sm font-medium underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+        style={{ color: "var(--text-dim)", outlineColor: "var(--gold)" }}
+      >
+        View My Echo →
+      </Link>
+    </div>
+  );
+}
+
+function TodaySkeleton() {
+  return (
+    <div className="flex animate-pulse flex-col gap-6" role="status" aria-label="Loading today">
+      <div className="h-3 w-16 rounded-full" style={{ background: "var(--surface-line)" }} />
+      <div className="h-8 w-2/3 rounded-full" style={{ background: "var(--surface-line)" }} />
+      <div className="mt-4 h-32 rounded-2xl" style={{ background: "var(--surface)" }} />
     </div>
   );
 }
 
 export function TodayHome() {
   return (
-    <Suspense fallback={<p className="text-sm" style={{ color: "var(--text-dim)" }}>Loading…</p>}>
+    <Suspense fallback={<TodaySkeleton />}>
       <TodayContent />
     </Suspense>
   );

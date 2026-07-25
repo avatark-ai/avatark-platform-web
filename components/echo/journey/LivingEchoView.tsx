@@ -16,18 +16,16 @@ export function LivingEchoView({ context }: { context: JourneyContext }) {
   const hasObservation = Boolean(intentionLabel && context.practiceCompletedAt);
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
-          Living Echo
-        </p>
-        <h1 className="text-2xl font-semibold sm:text-3xl">Your Echo grows through reflection.</h1>
-      </div>
+    <div className="flex flex-col">
+      <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
+        Living Echo
+      </p>
+      <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Your Echo grows through reflection.</h1>
 
-      <div className="flex flex-col gap-3 rounded-md border p-5" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
+      <div className="mt-10 rounded-2xl border p-7" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
         {hasObservation ? (
-          <>
-            <p className="text-sm leading-6" style={{ color: "var(--paper)" }}>
+          <div className="flex flex-col gap-3">
+            <p className="text-lg leading-8" style={{ color: "var(--paper)" }}>
               You began with &ldquo;{intentionLabel}&rdquo; and completed {WITNESS_LABEL} on{" "}
               {context.practiceCompletedAt ? formatDate(context.practiceCompletedAt) : "a recent date"}.
             </p>
@@ -35,20 +33,28 @@ export function LivingEchoView({ context }: { context: JourneyContext }) {
               That&apos;s one real observation — not yet enough history to call it a pattern. This is an
               observation, not a diagnosis.
             </p>
-          </>
+          </div>
         ) : (
-          <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
+          <p className="text-base leading-7" style={{ color: "var(--text-dim)" }}>
             Not enough history yet to observe a pattern. As you return to practice and reflection, patterns worth
-            noticing will start to appear here.
+            noticing will start to appear here — never a score, never a diagnosis.
           </p>
         )}
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <Link href={DISCOVER_HREF} className="rounded-md px-6 py-3 text-center text-sm font-semibold transition-opacity hover:opacity-90" style={{ background: "var(--gold)", color: "var(--midnight)" }}>
+      <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+        <Link
+          href={DISCOVER_HREF}
+          className="rounded-full px-7 py-3 text-center text-sm font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
+        >
           Recommended Next Practice
         </Link>
-        <Link href={MY_ECHO_HREF} className="rounded-md border px-6 py-3 text-center text-sm font-semibold transition-colors hover:border-[var(--gold)]" style={{ borderColor: "var(--surface-line)", color: "var(--paper)" }}>
+        <Link
+          href={MY_ECHO_HREF}
+          className="text-sm font-medium underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          style={{ color: "var(--paper)", outlineColor: "var(--gold)" }}
+        >
           Back to My Echo
         </Link>
       </div>
