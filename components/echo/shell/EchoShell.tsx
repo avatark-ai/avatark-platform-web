@@ -28,8 +28,17 @@ export function EchoShell({ site, children }: { site: SiteId; children: React.Re
 
   return (
     <EchoMobileMenuProvider>
+      <a
+        href="#echo-main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:px-4 focus:py-2 focus:text-sm focus:font-semibold"
+        style={{ background: "var(--gold)", color: "var(--midnight)" }}
+      >
+        Skip to content
+      </a>
       <EchoHeader />
-      <div className="flex flex-1 flex-col pb-16 lg:pb-0">{children}</div>
+      <div id="echo-main-content" className="flex flex-1 flex-col pb-16 lg:pb-0">
+        {children}
+      </div>
       <EchoFooter />
       <EchoBottomNav />
     </EchoMobileMenuProvider>
