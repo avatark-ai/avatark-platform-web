@@ -61,6 +61,13 @@ export function SiteHeader() {
   // consumer header must never stack on top of or merge with it.
   if (pathname.startsWith('/admin')) return null
 
+  // The institutional AvatarK.ai pages (/, /founder, /roadmap) render their
+  // own InstitutionalHeader (components/foundation/InstitutionalHeader.tsx)
+  // -- same self-exclusion pattern as /admin above, so the two navs never
+  // stack. Every other route (/start, /journey, /account, /enter, etc.)
+  // keeps this app-shell header exactly as before.
+  if (pathname === '/' || pathname === '/founder' || pathname === '/roadmap') return null
+
   const activities = getActivityCards()
   const signedIn = principal.status === 'signed_in'
   const closeMobile = () => setMobileOpen(false)

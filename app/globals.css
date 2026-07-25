@@ -29,6 +29,15 @@
      and account feel like one continuous brand. */
   --paper: #f5f2ea;
   --midnight: var(--aka-bg-base, #0a0a0f);
+  /* Editorial extension of the same brand tokens, for the institutional
+     AvatarK.ai shell (components/foundation/*) -- Paper/Ink/Gold/Midnight.
+     Ink is a warm near-black (not pure #000) so it reads as printed text
+     on --paper, matching --paper's own warm off-white rather than a
+     generic neutral gray scale. --gold is reused as-is, unchanged. */
+  --ink: #1c1a16;
+  --ink-dim: #57534a;
+  --paper-line: #ded6c4;
+  --surface-card: #fbf9f4;
 }
 
 @theme inline {

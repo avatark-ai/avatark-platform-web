@@ -1,74 +1,38 @@
-import Link from "next/link";
-import { getProductById } from "@avatark/product-registry";
-import { resolveProductUrl } from "@/lib/products/registry";
-import { getActivityCards } from "@/lib/activities/registry";
-import { ActivityCard } from "@/components/ActivityCard";
-import { HomeContinuity } from "@/components/HomeContinuity";
+import type { Metadata } from 'next'
+import { InstitutionalShell } from '@/components/foundation/InstitutionalShell'
+import { Hero } from '@/components/foundation/sections/Hero'
+import { Gap } from '@/components/foundation/sections/Gap'
+import { EchoIntro } from '@/components/foundation/sections/EchoIntro'
+import { Canon } from '@/components/foundation/sections/Canon'
+import { LivingSpiral } from '@/components/foundation/sections/LivingSpiral'
+import { Ecosystem } from '@/components/foundation/sections/Ecosystem'
+import { StatusGrid } from '@/components/foundation/sections/StatusGrid'
+import { Question } from '@/components/foundation/sections/Question'
+import { FinalCta } from '@/components/foundation/sections/FinalCta'
+import { getCanonContent } from '@/lib/content/foundation'
 
-// Migrated off the old hardcoded literal per docs/ARCHITECTURE_INDEX_V1.md's
-// P1 item: resolved through the registry so PrometheusK's domain changing
-// doesn't require a landing-page edit. This is PrometheusK's own
-// low-commitment preview route -- unrelated to the "Watch" Activity card
-// below (StreamK), which is why its copy says "sample practice", not
-// "Watch".
-function watchFirstHref(): string | null {
-  const prometheusk = getProductById("prometheusk");
-  if (!prometheusk) return null;
-  const domain = resolveProductUrl(prometheusk);
-  return domain ? `${domain}/watch-first` : null;
+export const metadata: Metadata = {
+  title: 'AvatarK — The Architecture of Becoming',
+  description:
+    'Learn from real lives. Transform wisdom into practice. Leave an Echo worth carrying forward. The institutional home of the AvatarK ecosystem.',
 }
 
 export default function Home() {
-  const activities = getActivityCards();
-  const watchFirst = watchFirstHref();
+  const canonContent = getCanonContent()
 
   return (
-    <main
-      className="flex flex-1 flex-col items-center px-6 py-16"
-      style={{ background: "var(--midnight)", color: "var(--paper)" }}
-    >
-      <div className="flex w-full max-w-4xl flex-col gap-10">
-        <div className="flex flex-col items-center gap-4 text-center">
-          <h1 className="text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
-            Explore, practice, connect, or watch.
-          </h1>
-          <p className="max-w-xl text-base leading-7" style={{ color: "var(--text-dim)" }}>
-            Pick what fits right now. AvatarK carries your account and progress underneath,
-            wherever you go next.
-          </p>
-        </div>
-
-        <HomeContinuity />
-
-        <div className="grid gap-6 sm:grid-cols-2">
-          {activities.map((card) => (
-            <ActivityCard key={card.id} card={card} />
-          ))}
-        </div>
-
-        <nav
-          aria-label="Other ways to begin"
-          className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm"
-          style={{ color: "var(--text-dim)" }}
-        >
-          {watchFirst && (
-            <a
-              href={watchFirst}
-              className="rounded-sm underline-offset-4 hover:underline hover:text-[var(--paper)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-              style={{ outlineColor: "var(--gold)" }}
-            >
-              Watch a sample practice first
-            </a>
-          )}
-          <Link
-            href="/enter"
-            className="rounded-sm underline-offset-4 hover:underline hover:text-[var(--paper)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{ outlineColor: "var(--gold)" }}
-          >
-            Enter an Invitation
-          </Link>
-        </nav>
-      </div>
-    </main>
-  );
+    <InstitutionalShell>
+      <main className="flex flex-1 flex-col">
+        <Hero />
+        <Gap />
+        <EchoIntro />
+        <Canon content={canonContent} />
+        <LivingSpiral />
+        <Ecosystem />
+        <StatusGrid />
+        <Question />
+        <FinalCta />
+      </main>
+    </InstitutionalShell>
+  )
 }
