@@ -1,13 +1,15 @@
 import { getCanonContent } from '@/lib/content/foundation'
 
-// The one geometry illustration for the Founder page: a static cross --
-// three axes (Awareness/Adiyogi, Wisdom/Krishna, Responsibility/Rama) in a
-// row, with Prometheus/Creation as the perpendicular fourth axis below,
-// echoing the letter's own "the perpendicular one" language. Labels/figures
-// come from getCanonContent() -- the same real Four Axes data already used
-// on the homepage, not invented for this page. viewBox-scaled like
-// LivingSpiral's SVG, so it scales instead of clipping on mobile. Static,
-// no animation, per this repo's existing "no motion" convention.
+// The one geometry illustration for the Founder page -- now the Synthesis
+// route specifically, rendered prominently rather than as a small aside: a
+// static cross, three axes (Awareness/Adiyogi, Wisdom/Krishna,
+// Responsibility/Rama) in a row, with Prometheus/Creation as the
+// perpendicular fourth axis below, echoing the letter's own "the
+// perpendicular one" language. Labels/figures come from getCanonContent()
+// -- the same real Four Axes data already used on the homepage, not
+// invented for this page. viewBox-scaled like LivingSpiral's SVG, so it
+// scales instead of clipping on mobile. Static, no animation, per this
+// repo's existing "no motion" convention.
 // Awareness/Responsibility sit on the horizontal line's own y, so their
 // above/below labels never cross it. Wisdom/Creation anchor the vertical
 // line instead, so their labels are offset sideways (labelAnchor/labelDx)
@@ -27,7 +29,7 @@ export function FounderGeometry() {
   const [awareness, wisdom, responsibility, creation] = nodes
 
   return (
-    <div className="mx-auto my-8 max-w-[220px]">
+    <div className="mx-auto my-10 max-w-md sm:max-w-lg">
       <svg
         viewBox="0 0 400 260"
         className="h-auto w-full"
@@ -52,21 +54,21 @@ export function FounderGeometry() {
         />
         {nodes.map((node) => (
           <g key={node.id}>
-            <circle cx={node.x} cy={node.y} r={8} fill="var(--paper)" stroke="var(--gold)" strokeWidth={2} />
+            <circle cx={node.x} cy={node.y} r={9} fill="var(--paper)" stroke="var(--gold)" strokeWidth={2.5} />
             <text
               x={node.x + node.labelDx}
-              y={node.labelAnchor === 'middle' ? node.y - 18 : node.y - 4}
+              y={node.labelAnchor === 'middle' ? node.y - 20 : node.y - 5}
               textAnchor={node.labelAnchor}
-              className="text-[13px] font-semibold"
+              className="text-[16px] font-semibold"
               fill="var(--ink)"
             >
               {node.label}
             </text>
             <text
               x={node.x + node.labelDx}
-              y={node.labelAnchor === 'middle' ? node.y + 28 : node.y + 14}
+              y={node.labelAnchor === 'middle' ? node.y + 32 : node.y + 16}
               textAnchor={node.labelAnchor}
-              className="text-[11px]"
+              className="text-[13px]"
               fill="var(--ink-dim)"
             >
               {node.figure}

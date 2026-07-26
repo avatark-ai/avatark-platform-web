@@ -37,6 +37,8 @@ We have operating systems for computers, databases for knowledge and algorithms 
 
 > Yet we have no operating system for becoming.
 
+## Synthesis
+
 We measure performance, but rarely cultivate character. We optimize outcomes, but often lose the human journey that produced them. We preserve documents, images and messages, but not necessarily the wisdom earned through a lifetime of decisions, mistakes, practices and reflection.
 
 That question from BITS Pilani never left me, and as I searched for answers, I returned to Indian philosophical traditions. They describe an extraordinary inner journey—not merely a collection of beliefs, but disciplines through which a human being develops awareness, wisdom, responsibility and the capacity to act with purpose. What those three qualities mean here — Adiyogi, Krishna, Rama — is its own account, held in the Canon; this letter is the story of how I arrived at them, not a definition of them.
@@ -61,29 +63,13 @@ A life is a continuing process of attention, practice, relationship, responsibil
 
 AvatarK seeks to preserve something more meaningful than a simulation: the lessons a life has earned and the practices another person may carry forward.
 
-From this vision grew an ecosystem.
-
-PrometheusK turns recurring observations and inherited wisdom into practices that can be attempted, reflected upon and improved.
-
-ArenaK gives private practice a communal dimension through challenges, cohorts, evidence, recognition and contribution.
-
-GameK turns learning into experience through flow, paths, geometry, chronology and navigation.
-
-StreamK allows journeys, practices and human stories to be witnessed and shared.
-
-CinemaK explores those stories through enduring narrative and archetype.
-
-Atlas connects knowledge, evidence, relationships and decisions.
-
-Echo preserves the part of one life that can help another life begin.
+From this architecture grew an ecosystem of experiences.
 
 These are not meant to be disconnected products. They are different surfaces of one architecture:
 
 Life → Experience → Reflection → Practice → Evidence → Story → Inheritance
 
 A life produces more than data — it leaves an Echo.
-
-That Echo is not merely a record of what happened. It is what remains useful after the moment has passed: a practice, a warning, a way of seeing, a decision, a story or a truth that another person can test in their own life.
 
 Technology changes rapidly, while human nature evolves slowly.
 

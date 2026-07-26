@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { InstitutionalLayout } from '@/components/foundation/InstitutionalLayout'
-import { SectionContainer } from '@/components/foundation/Container'
+import { SectionContainer, EditorialContainer } from '@/components/foundation/Container'
 import { resolveEcosystemProduct } from '@/lib/content/ecosystemGroups'
 
 export const metadata: Metadata = {
@@ -85,6 +86,19 @@ export default function EcosystemPage() {
             })}
           </div>
         </SectionContainer>
+      </section>
+
+      <section className="border-t" style={{ background: 'var(--midnight)', color: 'var(--paper)' }}>
+        <EditorialContainer className="text-center">
+          <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Every product traces back to one person.</h2>
+          <Link
+            href="/founder"
+            className="mt-6 inline-block rounded-md px-6 py-3 text-sm font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{ background: 'var(--gold)', color: 'var(--midnight)', outlineColor: 'var(--paper)' }}
+          >
+            Continue to the Founder →
+          </Link>
+        </EditorialContainer>
       </section>
     </InstitutionalLayout>
   )

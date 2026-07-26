@@ -60,8 +60,8 @@ export function InstitutionalFooter() {
   const supportEmail = avatark?.supportEmail ?? null
 
   const foundationLinks: FooterLink[] = [
-    { label: 'Why AvatarK', href: '/#gap' },
-    { label: 'Canon', href: '/#canon' },
+    { label: 'Why AvatarK', href: '/foundation' },
+    { label: 'Canon', href: '/canon' },
     { label: 'Founder Letter', href: '/founder' },
   ]
 

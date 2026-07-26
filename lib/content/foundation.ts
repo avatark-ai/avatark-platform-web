@@ -21,9 +21,11 @@ export interface FounderLetter {
 
 // Display copy for each `## Heading` in founder-letter.md -- kept short in
 // the file itself, spelled out here for the page/chapter-nav. Each of these
-// is now its own route (/founder, /founder/question, /founder/future).
+// is now its own route (/founder, /founder/question, /founder/synthesis,
+// /founder/future).
 const FOUNDER_CHAPTER_NAV_LABELS: Record<string, string> = {
   Question: 'The Question',
+  Synthesis: 'The Synthesis',
   Future: 'The Future',
 }
 

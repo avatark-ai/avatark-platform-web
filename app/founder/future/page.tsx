@@ -17,12 +17,23 @@ export default function FounderFuturePage() {
 
   return (
     <FounderPageLayout>
-      <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
         {chapter.navLabel}
-      </p>
+      </h1>
       <div className="mt-6 flex flex-col gap-5 text-lg leading-8" style={{ color: 'var(--ink)' }}>
         {chapter.paragraphs.map((paragraph, index) => (
-          <p key={index}>{paragraph}</p>
+          <div key={index}>
+            <p>{paragraph}</p>
+            {paragraph.startsWith('From this architecture grew an ecosystem') && (
+              <Link
+                href="/ecosystem"
+                className="mt-3 inline-block rounded-sm text-base font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+              >
+                Explore the Ecosystem →
+              </Link>
+            )}
+          </div>
         ))}
       </div>
 

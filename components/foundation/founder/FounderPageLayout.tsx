@@ -5,12 +5,13 @@ import { FounderPageNav } from '@/components/foundation/founder/FounderPageNav'
 const NAV_ITEMS = [
   { id: 'introduction', label: 'Introduction', href: '/founder' },
   { id: 'question', label: 'The Question', href: '/founder/question' },
+  { id: 'synthesis', label: 'The Synthesis', href: '/founder/synthesis' },
   { id: 'future', label: 'The Future', href: '/founder/future' },
 ]
 
-// Shared shell for all three Founder routes -- the nav rail + editorial
+// Shared shell for all four Founder routes -- the nav rail + editorial
 // reading column grid used to live inline in the single all-in-one
-// /founder page; now it's genuinely reused three times identically.
+// /founder page; now it's genuinely reused four times identically.
 export function FounderPageLayout({ children }: { children: React.ReactNode }) {
   return (
     <InstitutionalLayout>

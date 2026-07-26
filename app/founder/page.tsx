@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { FounderPageLayout } from '@/components/foundation/founder/FounderPageLayout'
 import { getFounderLetter } from '@/lib/content/foundation'
 
@@ -20,6 +21,16 @@ export default function FounderPage() {
         {letter.opening.map((paragraph, index) => (
           <p key={index}>{paragraph}</p>
         ))}
+      </div>
+
+      <div className="mt-8 border-t pt-8" style={{ borderColor: 'var(--paper-line)' }}>
+        <Link
+          href="/founder/question"
+          className="inline-block rounded-sm text-base font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+        >
+          Continue to The Question →
+        </Link>
       </div>
     </FounderPageLayout>
   )

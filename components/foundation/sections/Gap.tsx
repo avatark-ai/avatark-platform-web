@@ -1,32 +1,24 @@
+import Link from 'next/link'
 import { getArchitectureContent } from '@/lib/content/foundation'
 import { SectionContainer } from '@/components/foundation/Container'
 
+// The Home teaser for the gap -- just the thesis statement. The
+// elaboration (Reactive/Fragmented/Not Longitudinal) is Foundation's to
+// tell now (app/foundation/page.tsx), not repeated here.
 export function Gap() {
-  const { gapStatement, gapCards } = getArchitectureContent()
+  const { gapStatement } = getArchitectureContent()
 
   return (
     <section id="gap" className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
-      <SectionContainer>
-        <p className="text-center text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">
-          &ldquo;{gapStatement}&rdquo;
-        </p>
-
-        <div className="mt-10 grid gap-6 sm:grid-cols-3">
-          {gapCards.map((card) => (
-            <div
-              key={card.id}
-              className="rounded-lg border p-5"
-              style={{ borderColor: 'var(--paper-line)', background: 'var(--surface-card)' }}
-            >
-              <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
-                {card.label}
-              </h3>
-              <p className="mt-3 text-sm leading-6" style={{ color: 'var(--ink-dim)' }}>
-                {card.body}
-              </p>
-            </div>
-          ))}
-        </div>
+      <SectionContainer className="flex flex-col items-center gap-6 text-center">
+        <p className="text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">&ldquo;{gapStatement}&rdquo;</p>
+        <Link
+          href="/foundation"
+          className="rounded-sm px-2 py-1 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+        >
+          Learn More →
+        </Link>
       </SectionContainer>
     </section>
   )

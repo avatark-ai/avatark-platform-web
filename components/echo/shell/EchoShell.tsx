@@ -3,11 +3,11 @@
 // The one place that decides whether a given path/host combination gets
 // the Echo shell (header, footer, bottom nav) at all. Institutional pages
 // (/, when the resolved site is institutional; /founder and its sub-routes;
-// /ecosystem; /roadmap) and the admin surface (/admin/*, which renders its
-// own AdminNav) render only their own children, exactly like the old
-// components/SiteHeader.tsx's self-exclusion -- generalized here to be
-// host-aware for `/`, since that path alone can be either experience
-// depending on the resolved site.
+// /foundation; /canon; /ecosystem; /roadmap) and the admin surface
+// (/admin/*, which renders its own AdminNav) render only their own
+// children, exactly like the old components/SiteHeader.tsx's
+// self-exclusion -- generalized here to be host-aware for `/`, since that
+// path alone can be either experience depending on the resolved site.
 import { usePathname } from "next/navigation";
 import type { SiteId } from "@/lib/sites/registry";
 import { EchoHeader } from "./EchoHeader";
@@ -16,7 +16,14 @@ import { EchoBottomNav } from "./EchoBottomNav";
 import { EchoMobileMenuProvider } from "./EchoShellState";
 
 function isInstitutionalOnlyPath(pathname: string): boolean {
-  return pathname === "/founder" || pathname.startsWith("/founder/") || pathname === "/ecosystem" || pathname === "/roadmap";
+  return (
+    pathname === "/founder" ||
+    pathname.startsWith("/founder/") ||
+    pathname === "/foundation" ||
+    pathname === "/canon" ||
+    pathname === "/ecosystem" ||
+    pathname === "/roadmap"
+  );
 }
 
 export function EchoShell({ site, children }: { site: SiteId; children: React.ReactNode }) {

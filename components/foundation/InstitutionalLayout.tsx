@@ -1,9 +1,10 @@
 import { InstitutionalHeader } from '@/components/foundation/InstitutionalHeader'
 import { InstitutionalFooter } from '@/components/foundation/InstitutionalFooter'
 
-// Shared shell for every institutional AvatarK.ai page (/, /founder,
-// /ecosystem, /roadmap). Owns the <main> wrapper, so pages only provide
-// their sections/content, not their own layout scaffolding.
+// Shared shell for every institutional AvatarK.ai page (/, /foundation,
+// /canon, /founder, /ecosystem, /roadmap). Owns the <main> wrapper, so
+// pages only provide their sections/content, not their own layout
+// scaffolding.
 //
 // The width primitives (SectionContainer/EditorialContainer) live in
 // ./Container.tsx, not here, so a client component (e.g. Canon) can import

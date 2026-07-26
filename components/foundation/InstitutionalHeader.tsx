@@ -4,9 +4,9 @@
 // app-shell's own header/footer (components/echo/shell/EchoShell.tsx,
 // EchoHeader.tsx). That one keeps running, unchanged, on /start, /journey,
 // /account, /enter, etc. This one only renders on the institutional pages
-// (/, /founder and its sub-routes, /ecosystem, /roadmap) --
-// EchoShell.isInstitutionalOnlyPath() self-excludes there so the two shells
-// never stack.
+// (/, /foundation, /canon, /founder and its sub-routes, /ecosystem,
+// /roadmap) -- EchoShell.isInstitutionalOnlyPath() self-excludes there so
+// the two shells never stack.
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -16,20 +16,18 @@ const LINK_CLASS =
   'rounded-sm text-sm font-medium tracking-tight transition-colors hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
 const FOCUS_STYLE = { outlineColor: 'var(--gold)' } as const
 
-// Ecosystem is a plain route now, not a mega menu -- one flat nav array,
-// same treatment for every item.
+// Foundation and Canon are now dedicated pages, not homepage anchors --
+// one flat nav array, same treatment for every item, exact-match active
+// state (no more anchor-vs-route branching).
 const NAV_ITEMS = [
-  { label: 'Foundation', href: '/#gap' },
-  { label: 'Canon', href: '/#canon' },
+  { label: 'Foundation', href: '/foundation' },
+  { label: 'Canon', href: '/canon' },
   { label: 'Ecosystem', href: '/ecosystem' },
   { label: 'Founder', href: '/founder' },
 ] as const
 
-// Anchor links (/#gap, /#canon) live on the homepage, so they're "active"
-// whenever the current page is /. A real route (e.g. /founder, /ecosystem)
-// is active only on an exact match.
 function isNavItemActive(pathname: string, href: string): boolean {
-  return href.startsWith('/#') ? pathname === '/' : pathname === href
+  return pathname === href
 }
 
 export function InstitutionalHeader() {
@@ -58,24 +56,13 @@ export function InstitutionalHeader() {
           <nav aria-label="Primary" className="hidden items-center gap-6 lg:flex">
             {NAV_ITEMS.map((item) => {
               const active = isNavItemActive(pathname, item.href)
-              const itemStyle = { color: active ? 'var(--gold)' : 'var(--paper)', ...FOCUS_STYLE }
-              return item.href.startsWith('/#') ? (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  aria-current={active ? 'page' : undefined}
-                  className={LINK_CLASS}
-                  style={itemStyle}
-                >
-                  {item.label}
-                </a>
-              ) : (
+              return (
                 <Link
                   key={item.label}
                   href={item.href}
                   aria-current={active ? 'page' : undefined}
                   className={LINK_CLASS}
-                  style={itemStyle}
+                  style={{ color: active ? 'var(--gold)' : 'var(--paper)', ...FOCUS_STYLE }}
                 >
                   {item.label}
                 </Link>
@@ -119,26 +106,14 @@ export function InstitutionalHeader() {
         >
           {NAV_ITEMS.map((item) => {
             const active = isNavItemActive(pathname, item.href)
-            const itemStyle = { color: active ? 'var(--gold)' : 'var(--paper)', ...FOCUS_STYLE }
-            return item.href.startsWith('/#') ? (
-              <a
-                key={item.label}
-                href={item.href}
-                onClick={() => setMobileOpen(false)}
-                aria-current={active ? 'page' : undefined}
-                className={`py-2 ${LINK_CLASS}`}
-                style={itemStyle}
-              >
-                {item.label}
-              </a>
-            ) : (
+            return (
               <Link
                 key={item.label}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
                 aria-current={active ? 'page' : undefined}
                 className={`py-2 ${LINK_CLASS}`}
-                style={itemStyle}
+                style={{ color: active ? 'var(--gold)' : 'var(--paper)', ...FOCUS_STYLE }}
               >
                 {item.label}
               </Link>

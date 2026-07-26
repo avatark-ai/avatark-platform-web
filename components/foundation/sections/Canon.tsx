@@ -8,27 +8,24 @@ import { SectionContainer } from '@/components/foundation/Container'
 // structure) always visible via the tab row itself. Mobile: accordion,
 // same data, no separate content model. No animation -- state toggles
 // instantly, per this milestone's explicit scope.
+//
+// This renders only the axes tablist/accordion, not a page masthead --
+// its one caller (app/canon/page.tsx) owns the page's own title/intro, so
+// this doesn't repeat "The Canon" and its intro paragraph a second time
+// on the same page.
 export function Canon({ content }: { content: CanonContent }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
   const activeIndex = openIndex ?? 0
 
   return (
-    <section id="canon" className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
+    <section id="four-axes">
       <SectionContainer>
-        <div className="text-center">
-          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
-            {content.subtitle}
-          </p>
-          <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">{content.title}</h2>
-          {content.intro.map((paragraph) => (
-            <p key={paragraph} className="mx-auto mt-6 max-w-2xl text-base leading-7" style={{ color: 'var(--ink-dim)' }}>
-              {paragraph}
-            </p>
-          ))}
-        </div>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+          {content.subtitle}
+        </p>
 
         {/* Desktop: tabs */}
-        <div className="mt-8 hidden sm:block">
+        <div className="mt-4 hidden sm:block">
           <div role="tablist" aria-label="The Four Axes" className="flex border-b" style={{ borderColor: 'var(--paper-line)' }}>
             {content.axes.map((axis, index) => {
               const selected = index === activeIndex
@@ -72,7 +69,7 @@ export function Canon({ content }: { content: CanonContent }) {
         </div>
 
         {/* Mobile: accordion */}
-        <div className="mt-8 flex flex-col gap-2 sm:hidden">
+        <div className="mt-4 flex flex-col gap-2 sm:hidden">
           {content.axes.map((axis, index) => {
             const expanded = openIndex === index
             return (

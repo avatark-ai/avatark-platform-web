@@ -3,9 +3,8 @@ import { InstitutionalLayout } from '@/components/foundation/InstitutionalLayout
 import { Hero } from '@/components/foundation/sections/Hero'
 import { Gap } from '@/components/foundation/sections/Gap'
 import { EchoIntro } from '@/components/foundation/sections/EchoIntro'
-import { Canon } from '@/components/foundation/sections/Canon'
-import { LivingSpiral } from '@/components/foundation/sections/LivingSpiral'
-import { Ecosystem } from '@/components/foundation/sections/Ecosystem'
+import { CanonPreview } from '@/components/foundation/sections/CanonPreview'
+import { EcosystemPreview } from '@/components/foundation/sections/EcosystemPreview'
 import { Question } from '@/components/foundation/sections/Question'
 import { FinalCta } from '@/components/foundation/sections/FinalCta'
 import { getCanonContent } from '@/lib/content/foundation'
@@ -41,9 +40,8 @@ export default async function Home() {
       <Hero />
       <Gap />
       <EchoIntro />
-      <Canon content={canonContent} />
-      <LivingSpiral />
-      <Ecosystem />
+      <CanonPreview content={canonContent} />
+      <EcosystemPreview />
       <Question />
       <FinalCta />
     </InstitutionalLayout>

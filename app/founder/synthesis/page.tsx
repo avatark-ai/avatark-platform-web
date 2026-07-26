@@ -1,16 +1,17 @@
 import type { Metadata } from 'next'
 import { FounderPageLayout } from '@/components/foundation/founder/FounderPageLayout'
+import { FounderGeometry } from '@/components/foundation/founder/FounderGeometry'
 import { FounderPullQuote } from '@/components/foundation/founder/FounderPullQuote'
 import { getFounderLetter } from '@/lib/content/foundation'
 
 export const metadata: Metadata = {
-  title: 'The Question — AvatarK Founder Letter',
-  description: 'Enterprise software, IBM, and the missing operating system: why technology remembers transactions better than transformation.',
+  title: 'The Synthesis — AvatarK Founder Letter',
+  description: 'How the answer emerged: Indian philosophy, the three inner axes, Prometheus, and the geometry behind the AvatarK architecture.',
 }
 
-export default function FounderQuestionPage() {
+export default function FounderSynthesisPage() {
   const letter = getFounderLetter()
-  const chapter = letter.chapters.find((c) => c.id === 'question')
+  const chapter = letter.chapters.find((c) => c.id === 'synthesis')
 
   if (!chapter) return null
 
@@ -28,6 +29,7 @@ export default function FounderQuestionPage() {
           ),
         )}
       </div>
+      <FounderGeometry />
     </FounderPageLayout>
   )
 }
