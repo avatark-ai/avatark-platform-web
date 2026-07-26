@@ -18,9 +18,9 @@ import { PageEnter } from '@/components/motion/PageEnter'
 // this also covers the Founder chapter-to-chapter transition for free.
 export function InstitutionalLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-1 flex-col" style={{ background: 'var(--paper)', color: 'var(--ink)' }}>
+    <div className="flex min-w-0 flex-1 flex-col" style={{ background: 'var(--paper)', color: 'var(--ink)' }}>
       <InstitutionalHeader />
-      <main className="flex flex-1 flex-col">
+      <main className="flex min-w-0 flex-1 flex-col">
         <PageEnter>{children}</PageEnter>
       </main>
       <InstitutionalFooter />

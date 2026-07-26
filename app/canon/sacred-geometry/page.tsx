@@ -35,7 +35,7 @@ export default function SacredGeometryPage() {
           <Link
             key={plate.slug}
             href={`/canon/sacred-geometry/${plate.slug}`}
-            className="group flex flex-col overflow-hidden rounded-lg border transition-colors hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="group flex flex-col overflow-hidden rounded-lg border transition hover:-translate-y-1 hover:border-[var(--gold)] hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 active:translate-y-0 active:shadow-sm"
             style={{ borderColor: 'var(--paper-line)', background: 'var(--surface-card)', outlineColor: 'var(--gold)' }}
           >
             <div className="aspect-[4/3] w-full overflow-hidden" style={{ background: 'var(--midnight)' }}>

@@ -55,7 +55,7 @@ export default function FounderFuturePage() {
       <div className="mt-8 text-center">
         <RippleLink
           href={ENTER_ECHO_HREF}
-          className="inline-block rounded-md px-8 py-3 text-sm font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="inline-block rounded-md px-8 py-3 text-sm font-semibold transition hover:opacity-90 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{ background: 'var(--ink)', color: 'var(--paper)', outlineColor: 'var(--gold)' }}
         >
           Enter Echo

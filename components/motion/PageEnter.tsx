@@ -20,7 +20,7 @@ function RevealedOnMount({ children }: { children: React.ReactNode }) {
     return () => cancelAnimationFrame(id)
   }, [])
 
-  return <div className={`motion-emerge flex flex-1 flex-col${revealed ? ' is-revealed' : ''}`}>{children}</div>
+  return <div className={`motion-emerge flex min-w-0 flex-1 flex-col${revealed ? ' is-revealed' : ''}`}>{children}</div>
 }
 
 export function PageEnter({ children }: { children: React.ReactNode }) {

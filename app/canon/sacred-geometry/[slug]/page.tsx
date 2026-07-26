@@ -99,10 +99,12 @@ export default async function SacredGeometryPlatePage({ params }: { params: Prom
           {previous ? (
             <Link
               href={`/canon/sacred-geometry/${previous.slug}`}
-              className="flex flex-col rounded-sm text-sm hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="group flex flex-col rounded-sm text-sm transition-colors duration-200 hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{ color: 'var(--ink-dim)', outlineColor: 'var(--gold)' }}
             >
-              <span aria-hidden="true">← Plate {previous.numeral}</span>
+              <span aria-hidden="true" className="inline-block transition-transform duration-200 group-hover:-translate-x-1 group-focus-visible:-translate-x-1">
+                ← Plate {previous.numeral}
+              </span>
               <span className="font-semibold" style={{ color: 'var(--ink)' }}>
                 {previous.title}
               </span>
@@ -113,10 +115,12 @@ export default async function SacredGeometryPlatePage({ params }: { params: Prom
           {next && (
             <Link
               href={`/canon/sacred-geometry/${next.slug}`}
-              className="flex flex-col rounded-sm text-right text-sm hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="group flex flex-col rounded-sm text-right text-sm transition-colors duration-200 hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{ color: 'var(--ink-dim)', outlineColor: 'var(--gold)' }}
             >
-              <span aria-hidden="true">Plate {next.numeral} →</span>
+              <span aria-hidden="true" className="inline-block transition-transform duration-200 group-hover:translate-x-1 group-focus-visible:translate-x-1">
+                Plate {next.numeral} →
+              </span>
               <span className="font-semibold" style={{ color: 'var(--ink)' }}>
                 {next.title}
               </span>

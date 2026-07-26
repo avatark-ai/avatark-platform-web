@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { getProductById } from '@avatark/product-registry'
 import { resolveEcosystemProduct } from '@/lib/content/ecosystemGroups'
 import { ENTER_ECHO_HREF, SIGN_IN_HREF } from '@/lib/content/links'
+import { DepartureLink } from '@/components/motion/DepartureLink'
 
 const LINK_CLASS =
   'rounded-sm text-sm transition-colors hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
@@ -10,7 +11,12 @@ const FOCUS_STYLE = { outlineColor: 'var(--gold)' } as const
 interface FooterLink {
   label: string
   href: string | null
+  // Plain external link (e.g. mailto:) -- no cross-product departure cue,
+  // just a normal <a>.
   external?: boolean
+  // A genuine departure to a sibling AvatarK product on its own domain --
+  // gets the DepartureLink treatment (see docs/motion-transition-contract.md).
+  departure?: boolean
 }
 
 function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) {
@@ -23,7 +29,11 @@ function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) 
         {links.map((link) =>
           link.href ? (
             <li key={link.label}>
-              {link.external ? (
+              {link.departure ? (
+                <DepartureLink href={link.href} className={LINK_CLASS} style={{ color: 'var(--paper)', ...FOCUS_STYLE }}>
+                  {link.label}
+                </DepartureLink>
+              ) : link.external ? (
                 <a href={link.href} className={LINK_CLASS} style={{ color: 'var(--paper)', ...FOCUS_STYLE }}>
                   {link.label}
                 </a>
@@ -50,9 +60,15 @@ function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) 
 // homepage Ecosystem section and header dropdown use) so Echo gets its
 // proper display name and never-a-dead-link discipline instead of a
 // second, separately maintained resolver.
+//
+// Echo's href resolves to /start -- an internal route in this same app,
+// not a sibling product's own domain -- so it stays a plain Next <Link>
+// (client-side nav); every other product's href is a real cross-domain
+// URL and gets the departure treatment.
 function ecosystemFooterLink(id: string): FooterLink {
   const product = resolveEcosystemProduct(id)
-  return { label: product.name, href: product.href, external: true }
+  const isCrossDomain = product.href?.startsWith('http') ?? false
+  return { label: product.name, href: product.href, departure: isCrossDomain }
 }
 
 export function InstitutionalFooter() {

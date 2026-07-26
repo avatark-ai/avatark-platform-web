@@ -21,7 +21,7 @@ export function FounderPageNav({ items }: { items: FounderPageNavItem[] }) {
   return (
     <nav
       aria-label="Founder pages"
-      className="flex flex-row flex-nowrap gap-x-5 overflow-x-auto border-b pb-4 lg:sticky lg:top-24 lg:flex-col lg:gap-y-3 lg:self-start lg:overflow-visible lg:border-b-0 lg:pb-0"
+      className="flex min-w-0 flex-row flex-nowrap gap-x-5 overflow-x-auto border-b pb-4 lg:sticky lg:top-24 lg:flex-col lg:gap-y-3 lg:self-start lg:overflow-visible lg:border-b-0 lg:pb-0"
       style={{ borderColor: 'var(--paper-line)' }}
     >
       {items.map((item) => {

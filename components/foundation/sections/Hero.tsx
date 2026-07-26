@@ -23,7 +23,7 @@ export function Hero() {
         <div className="flex flex-col items-center gap-4 sm:flex-row">
           <Link
             href={ENTER_ECHO_HREF}
-            className="rounded-md px-6 py-3 text-sm font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="rounded-md px-6 py-3 text-sm font-semibold transition hover:opacity-90 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ background: 'var(--ink)', color: 'var(--paper)', outlineColor: 'var(--gold)' }}
           >
             Enter Echo

@@ -70,13 +70,13 @@ export function CanonRail() {
   }
 
   return (
-    <nav aria-label="Canon navigation" className="flex flex-col gap-8 lg:sticky lg:top-24 lg:self-start">
-      <div>
+    <nav aria-label="Canon navigation" className="flex min-w-0 flex-col gap-8 lg:sticky lg:top-24 lg:self-start">
+      <div className="min-w-0">
         <p className="hidden text-xs font-semibold uppercase tracking-wider lg:mb-3 lg:block" style={{ color: 'var(--ink-dim)' }}>
           Published
         </p>
         <div
-          className="flex flex-row flex-nowrap gap-x-5 overflow-x-auto border-b pb-4 lg:flex-col lg:items-start lg:gap-y-3 lg:overflow-visible lg:border-b-0 lg:pb-0"
+          className="flex min-w-0 flex-row flex-nowrap gap-x-5 overflow-x-auto border-b pb-4 lg:flex-col lg:items-start lg:gap-y-3 lg:overflow-visible lg:border-b-0 lg:pb-0"
           style={{ borderColor: 'var(--paper-line)' }}
         >
           {PUBLISHED_ITEMS.map((item) => {
@@ -96,7 +96,7 @@ export function CanonRail() {
         </div>
       </div>
 
-      <div>
+      <div className="min-w-0">
         <p
           className="text-xs font-semibold uppercase tracking-wider lg:mb-3"
           style={{ color: 'var(--ink-dim)', opacity: 0.75 }}
@@ -105,7 +105,7 @@ export function CanonRail() {
         </p>
         <ul
           aria-label="Upcoming Canon chapters"
-          className="flex flex-row flex-nowrap gap-x-5 overflow-x-auto pt-3 lg:flex-col lg:items-start lg:gap-y-2.5 lg:overflow-visible lg:pt-0"
+          className="flex min-w-0 flex-row flex-nowrap gap-x-5 overflow-x-auto pt-3 lg:flex-col lg:items-start lg:gap-y-2.5 lg:overflow-visible lg:pt-0"
         >
           {CANON_FUTURE_ITEMS.map((item) => (
             <li key={item.id} className="flex shrink-0 items-center gap-1.5 text-sm" style={{ color: 'var(--ink-dim)', opacity: 0.6 }}>
@@ -127,7 +127,7 @@ export function CanonRail() {
           <a
             href={FULL_CANON_ITEM.legacyHref}
             aria-label={`${FULL_CANON_ITEM.label} (opens the complete Canon at canon.avatark.ai)`}
-            className="inline-flex items-center gap-1.5 rounded-sm text-sm font-semibold transition-colors hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="link-underline-draw inline-flex items-center gap-1.5 rounded-sm text-sm font-semibold transition-colors hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ color: 'var(--gold)', outlineColor: 'var(--gold)' }}
           >
             {FULL_CANON_ITEM.label}

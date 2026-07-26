@@ -5,14 +5,20 @@ import { polylineLength } from '@/lib/motion/pathLength'
 // uneven heights with no connecting line ("currently separated"), once
 // resting on a single connected spine at one consistent height ("one
 // longitudinal human architecture"). Pure geometry (offset + a line), no
-// icons, same node/line convention as LivingSpiral.tsx. Motion: the
-// scattered dots emerge individually (no line to draw -- there isn't
-// one), then the spine draws itself and its nodes emerge, once scrolled
-// into view.
+// icons, same node/line convention as LivingSpiral.tsx.
+//
+// Motion sequences the brief's five stages explicitly rather than
+// animating both panels at once: (1) the scattered dots emerge in a
+// stagger -- disconnected nodes appearing; (2) they hold, legible, for a
+// beat; (3) only then does the spine's line draw; (4) its nodes resolve
+// onto that shared line; (5) it settles. SPINE_DELAY_MS is that pause --
+// long enough for the scattered stagger (6 nodes) to finish emerging
+// first.
 const LABELS = ['Profile', 'Practice', 'Evidence', 'Story', 'Health', 'Community']
 const X_POSITIONS = [60, 156, 252, 348, 444, 540]
 const SCATTER_OFFSETS = [-18, 14, -10, 20, -16, 10]
 const BASE_Y = 70
+const SPINE_DELAY_MS = 850
 
 function ScatteredPanel() {
   return (
@@ -55,8 +61,9 @@ function SpinePanel() {
         strokeDasharray={length}
         strokeDashoffset={length}
         className="motion-draw"
+        style={{ '--motion-delay': `${SPINE_DELAY_MS}ms` } as React.CSSProperties}
       />
-      <g className="motion-emerge-stagger">
+      <g className="motion-emerge-stagger" style={{ '--motion-delay': `${SPINE_DELAY_MS}ms` } as React.CSSProperties}>
         {LABELS.map((label, index) => {
           const x = X_POSITIONS[index]
           return (

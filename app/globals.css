@@ -66,23 +66,49 @@
   }
 }
 
+/* Defensive guard against page-level horizontal scroll. Nested flex
+   columns (InstitutionalLayout's wrapper -> <main> -> PageEnter's own
+   flex-col div) can report a scrollWidth wider than the viewport once a
+   deeply nested, intentionally-scrollable element (e.g. CanonRail's
+   overflow-x-auto rows) exists inside them -- min-width:0 on every flex
+   container in that chain does not stop it. The horizontally scrollable
+   content stays exactly as scrollable within its own container; this
+   only stops that width from ever bubbling up into a page-level
+   horizontal scrollbar. Set on both html and body directly -- relying on
+   body's overflow propagating to the viewport (the normal CSS behavior)
+   did not actually stop the viewport from scrolling here, so this
+   doesn't leave it to that propagation rule. */
+html {
+  overflow-x: hidden;
+}
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
 }
 
 /* Every hover/press transition in the Echo UI (scale, color, opacity) is
    purely cosmetic -- no interaction depends on it completing. This makes
    that true for prefers-reduced-motion users globally, rather than
-   requiring every component to opt in individually. */
+   requiring every component to opt in individually.
+
+   animation-delay/transition-delay are reset here too -- staged
+   institutional sequences (e.g. the Four Axes geometry's ~2.3s staggered
+   entrance) set delays of up to ~1.8s per element via --motion-delay.
+   Collapsing only *-duration would still make a reduced-motion user wait
+   out that full delay chain before each (now-instant) step snapped into
+   place, which is exactly the "remove stagger, show the final settled
+   state immediately" behavior the motion system is supposed to honor. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
     scroll-behavior: auto !important;
   }
 }
@@ -107,8 +133,15 @@ body {
   --motion-ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
   --motion-duration-emerge: 500ms;
   --motion-duration-draw: 1100ms;
+  /* Shorter DRAW, for a single segment within a staged multi-step
+     sequence (e.g. one leg of the Four Axes geometry) rather than an
+     entire diagram's line drawing in one pass. Same primitive, a second
+     duration token -- not a new alias. */
+  --motion-duration-draw-fast: 450ms;
   --motion-duration-ripple: 650ms;
   --motion-duration-breathe: 3400ms;
+  /* One full pass of the Living Spiral's traveling signal. */
+  --motion-duration-travel: 1600ms;
   --motion-stagger-step: 55ms;
 }
 
@@ -118,7 +151,10 @@ body {
    before JS marks the ancestor .is-revealed (see RevealOnView/PageEnter).
    Final opacity defaults to 1 but is overridable per-element via
    --motion-emerge-to (e.g. a dot that should settle at a dimmed 0.6, not
-   fully opaque, once revealed). */
+   fully opaque, once revealed). --motion-delay (default 0ms) is a generic
+   per-element offset -- used to choreograph a staged sequence (e.g. the
+   Four Axes geometry) out of the same shared primitive, without a
+   bespoke keyframe per stage. */
 @keyframes motion-emerge {
   from {
     opacity: 0;
@@ -132,8 +168,35 @@ body {
 .motion-emerge {
   opacity: 0;
 }
-.motion-emerge.is-revealed {
-  animation: motion-emerge var(--motion-duration-emerge) var(--motion-ease-settle) forwards;
+/* :is() covers both usage patterns, same as .motion-draw/
+   .motion-emerge-stagger below -- .motion-emerge on the same element
+   RevealOnView renders (e.g. Canon.tsx's delayed explanation-panel
+   wrapper) *and* .motion-emerge on a descendant of it (e.g.
+   FourAxesGeometry's individual per-node <g> groups, each needing its
+   own --motion-delay rather than the generic stagger). */
+:is(.is-revealed .motion-emerge, .motion-emerge.is-revealed) {
+  animation: motion-emerge var(--motion-duration-emerge) var(--motion-ease-settle) var(--motion-delay, 0ms) forwards;
+}
+
+/* Same EMERGE primitive (an element becoming perceptible), opacity-only
+   and self-playing rather than gated behind .is-revealed -- for
+   repeatable UI swaps (tab/accordion content) that should crossfade in
+   every time they're shown, not just once on first scroll-into-view. No
+   translateY component, since a content swap reads as a crossfade, not a
+   first appearance sliding into place. Relies on the browser's own
+   behavior of resetting a running/pending animation when an element
+   leaves `display: none` (e.g. the `hidden` attribute) -- no JS
+   re-triggering needed. */
+@keyframes motion-emerge-instant {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.motion-emerge-instant {
+  animation: motion-emerge-instant 160ms var(--motion-ease-settle) forwards;
 }
 
 /* Same primitive, applied to a grid/list of children with a small
@@ -153,41 +216,45 @@ body {
 :is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > * {
   animation: motion-emerge var(--motion-duration-emerge) var(--motion-ease-settle) forwards;
 }
+/* --motion-delay (default 0ms) adds a base offset on top of each child's
+   own stagger step -- e.g. FragmentedVsLongitudinal's "resolved" spine
+   panel waiting until the "separated" panel above it has finished
+   emerging, rather than both animating at once. */
 :is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(1) {
-  animation-delay: calc(var(--motion-stagger-step) * 0);
+  animation-delay: calc(var(--motion-delay, 0ms) + var(--motion-stagger-step) * 0);
 }
 :is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(2) {
-  animation-delay: calc(var(--motion-stagger-step) * 1);
+  animation-delay: calc(var(--motion-delay, 0ms) + var(--motion-stagger-step) * 1);
 }
 :is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(3) {
-  animation-delay: calc(var(--motion-stagger-step) * 2);
+  animation-delay: calc(var(--motion-delay, 0ms) + var(--motion-stagger-step) * 2);
 }
 :is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(4) {
-  animation-delay: calc(var(--motion-stagger-step) * 3);
+  animation-delay: calc(var(--motion-delay, 0ms) + var(--motion-stagger-step) * 3);
 }
 :is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(5) {
-  animation-delay: calc(var(--motion-stagger-step) * 4);
+  animation-delay: calc(var(--motion-delay, 0ms) + var(--motion-stagger-step) * 4);
 }
 :is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(6) {
-  animation-delay: calc(var(--motion-stagger-step) * 5);
+  animation-delay: calc(var(--motion-delay, 0ms) + var(--motion-stagger-step) * 5);
 }
 :is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(7) {
-  animation-delay: calc(var(--motion-stagger-step) * 6);
+  animation-delay: calc(var(--motion-delay, 0ms) + var(--motion-stagger-step) * 6);
 }
 :is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(8) {
-  animation-delay: calc(var(--motion-stagger-step) * 7);
+  animation-delay: calc(var(--motion-delay, 0ms) + var(--motion-stagger-step) * 7);
 }
 :is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(9) {
-  animation-delay: calc(var(--motion-stagger-step) * 8);
+  animation-delay: calc(var(--motion-delay, 0ms) + var(--motion-stagger-step) * 8);
 }
 :is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(10) {
-  animation-delay: calc(var(--motion-stagger-step) * 9);
+  animation-delay: calc(var(--motion-delay, 0ms) + var(--motion-stagger-step) * 9);
 }
 :is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(11) {
-  animation-delay: calc(var(--motion-stagger-step) * 10);
+  animation-delay: calc(var(--motion-delay, 0ms) + var(--motion-stagger-step) * 10);
 }
 :is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(n + 12) {
-  animation-delay: calc(var(--motion-stagger-step) * 11);
+  animation-delay: calc(var(--motion-delay, 0ms) + var(--motion-stagger-step) * 11);
 }
 
 /* DRAW + CONNECT -- SVG stroke reveal. Each diagram computes its own
@@ -204,7 +271,12 @@ body {
   }
 }
 :is(.is-revealed .motion-draw, .motion-draw.is-revealed) {
-  animation: motion-draw var(--motion-duration-draw) var(--motion-ease-settle) forwards;
+  animation: motion-draw var(--motion-duration-draw) var(--motion-ease-settle) var(--motion-delay, 0ms) forwards;
+}
+/* Same primitive, the shorter --motion-duration-draw-fast token -- one
+   leg of a staged sequence rather than a whole diagram's line. */
+:is(.is-revealed .motion-draw-fast, .motion-draw-fast.is-revealed) {
+  animation: motion-draw var(--motion-duration-draw-fast) var(--motion-ease-settle) var(--motion-delay, 0ms) forwards;
 }
 
 /* DRAW, then BREATHE once drawing finishes -- a single rule so the two
@@ -240,10 +312,68 @@ body {
   animation: motion-ripple var(--motion-duration-ripple) ease-out forwards;
 }
 
+/* Same RIPPLE primitive, for an SVG node instead of a pointer position --
+   "the selected node emits one localized pulse" (Four Axes tab
+   selection). transform-box/transform-origin center the scale on the
+   shape itself regardless of where it sits in the diagram's viewBox.
+   Rendered inert (no animation) until a caller adds .is-pulsing; React
+   re-keys the element on each selection change to replay it, since a
+   fresh element (not a class toggle on the same node) is the reliable
+   way to restart a `forwards`-filled CSS animation. */
+.motion-ripple-node {
+  transform-box: fill-box;
+  transform-origin: center;
+  pointer-events: none;
+}
+.motion-ripple-node.is-pulsing {
+  animation: motion-ripple var(--motion-duration-ripple) ease-out forwards;
+}
+
+/* Same RIPPLE primitive again, for a static one-time entrance pulse
+   (e.g. the final node of a lineage/progression chain, once the chain
+   settles) rather than a pointer position or a JS-retriggered selection
+   change -- gated by .is-revealed/--motion-delay like EMERGE/DRAW,
+   instead of a class RippleLink/FourAxesGeometry add imperatively. A
+   thin ring rather than a filled dot, since it overlays existing text
+   rather than an empty SVG node. */
+.motion-ripple-once {
+  position: absolute;
+  inset: -0.4em -0.6em;
+  border-radius: 9999px;
+  border: 1.5px solid var(--gold);
+  pointer-events: none;
+  opacity: 0;
+}
+:is(.is-revealed .motion-ripple-once, .motion-ripple-once.is-revealed) {
+  animation: motion-ripple var(--motion-duration-ripple) ease-out var(--motion-delay, 0ms) forwards;
+}
+
+/* Micro-interaction: DRAW applied to a plain text link's underline via
+   background-size rather than SVG stroke-dasharray (there's no SVG in
+   play for a text link) -- the underline draws left-to-right on hover/
+   focus instead of snapping on, and withdraws the same way on exit. No
+   layout shift: background-image never affects box size. */
+.link-underline-draw {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  transition: background-size 160ms var(--motion-ease-settle);
+}
+.link-underline-draw:hover,
+.link-underline-draw:focus-visible {
+  background-size: 100% 1px;
+}
+
 /* BREATHE -- a slow, low-contrast opacity pulse marking a single "this is
-   alive/ongoing" element. Used once, deliberately: the Living Spiral's
-   own connecting loop, after it finishes drawing -- never a scale or
-   rotation loop, never applied to more than one element at a time. */
+   alive/ongoing" element. Used once, deliberately, per visible section
+   (Motion Budget): the Living Spiral's Discover node, once its traveling
+   signal (below) returns to it -- never a scale or rotation loop, never
+   applied to more than one element at a time. Starts invisible
+   (opacity: 0) and only begins once --motion-delay elapses, same
+   generic delay knob as EMERGE/DRAW; not gated behind .is-revealed since
+   by the time its delay elapses the surrounding diagram is already
+   revealed regardless. */
 @keyframes motion-breathe {
   0%,
   100% {
@@ -254,10 +384,70 @@ body {
   }
 }
 .motion-breathe {
+  opacity: 0;
   animation-name: motion-breathe;
   animation-duration: var(--motion-duration-breathe);
   animation-timing-function: ease-in-out;
+  animation-delay: var(--motion-delay, 0ms);
   animation-iteration-count: infinite;
+}
+
+/* Living Spiral only: a single small marker travels once around the
+   already-drawn loop and fades out as it returns to Discover --
+   "CONNECT": separate nodes reading as one intelligible, ongoing system.
+   Requires the `offset-path`/`offset-distance` CSS motion-path
+   properties (broadly supported in evergreen browsers); where
+   unsupported the marker simply stays at its default position on the
+   path and is invisible per the keyframe below regardless, so there's
+   no failure mode, just a skipped nicety. */
+@keyframes motion-signal-travel {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+.motion-signal-travel {
+  opacity: 0;
+  offset-rotate: 0deg;
+}
+:is(.is-revealed .motion-signal-travel, .motion-signal-travel.is-revealed) {
+  animation: motion-signal-travel var(--motion-duration-travel) var(--motion-ease-settle) var(--motion-delay, 0ms) forwards;
+}
+
+/* .motion-instant: applied by RevealOnView (via its `sessionKey` prop)
+   when a diagram already played once this session -- e.g. revisiting
+   /canon after navigating away and back. Shows the fully settled state
+   immediately, skips the one-time signal travel entirely (replaying it
+   would be the "aggressive replay" the brief explicitly asks to avoid),
+   and lets BREATHE carry on as the ongoing ambient state rather than
+   silencing it. */
+.motion-instant .motion-emerge,
+.motion-instant.motion-emerge,
+.motion-instant .motion-emerge-stagger > *,
+.motion-instant .motion-draw,
+.motion-instant .motion-draw-fast,
+.motion-instant .motion-draw-then-breathe,
+.motion-instant.motion-draw-then-breathe {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  stroke-dashoffset: 0 !important;
+}
+.motion-instant .motion-signal-travel {
+  display: none !important;
+}
+.motion-instant .motion-breathe {
+  animation-delay: 0ms !important;
 }
 
 /* Progressive-enhancement safety net for the no-JS case (RevealOnView/

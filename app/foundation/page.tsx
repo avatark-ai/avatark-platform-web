@@ -4,6 +4,7 @@ import { SectionContainer, EditorialContainer } from '@/components/foundation/Co
 import { TransactionsVsTransformation } from '@/components/foundation/architecture/TransactionsVsTransformation'
 import { FragmentedVsLongitudinal } from '@/components/foundation/architecture/FragmentedVsLongitudinal'
 import { ArchitectureOfBecomingFlow } from '@/components/foundation/architecture/ArchitectureOfBecomingFlow'
+import { RevealOnView } from '@/components/motion/RevealOnView'
 import { RippleLink } from '@/components/motion/RippleLink'
 import { getArchitectureContent } from '@/lib/content/foundation'
 
@@ -66,7 +67,7 @@ export default function FoundationPage() {
             <TransactionsVsTransformation />
           </div>
 
-          <div className="mt-8 grid gap-6 sm:grid-cols-3">
+          <RevealOnView className="motion-emerge-stagger mt-8 grid gap-6 sm:grid-cols-3">
             {gapCards.map((card) => (
               <div
                 key={card.id}
@@ -81,7 +82,7 @@ export default function FoundationPage() {
                 </p>
               </div>
             ))}
-          </div>
+          </RevealOnView>
 
           <div className="mt-8 max-w-3xl mx-auto w-full">
             <FragmentedVsLongitudinal />
@@ -92,7 +93,7 @@ export default function FoundationPage() {
       <section className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
         <SectionContainer>
           <h2 className="text-center text-2xl font-semibold tracking-tight sm:text-3xl">Core Principles</h2>
-          <div className="mt-8 grid gap-6 sm:grid-cols-3">
+          <RevealOnView className="motion-emerge-stagger mt-8 grid gap-6 sm:grid-cols-3">
             {PRINCIPLES.map((principle) => (
               <div key={principle.id}>
                 <h3 className="text-base font-semibold" style={{ color: 'var(--ink)' }}>
@@ -103,7 +104,7 @@ export default function FoundationPage() {
                 </p>
               </div>
             ))}
-          </div>
+          </RevealOnView>
         </SectionContainer>
       </section>
 
@@ -122,7 +123,7 @@ export default function FoundationPage() {
 
           <RippleLink
             href="/canon"
-            className="mt-8 inline-block rounded-md px-6 py-3 text-sm font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="mt-8 inline-block rounded-md px-6 py-3 text-sm font-semibold transition hover:opacity-90 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ background: 'var(--ink)', color: 'var(--paper)', outlineColor: 'var(--gold)' }}
           >
             Continue to Canon →

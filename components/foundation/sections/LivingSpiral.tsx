@@ -24,20 +24,32 @@ const GEOMETRY = [
   { x: 121, y: 123, anchor: 'end', dx: -12, dy: -4 },
 ] as const
 
+// Kept in sync by hand with the matching tokens in globals.css -- this
+// diagram needs the actual numbers to sequence its own stages and to
+// know when the loop has finished drawing (so the traveling signal and,
+// after it returns, Discover's breathe can start at the right moment).
+const NODE_STEP_MS = 90
+const DRAW_MS = 1100
+const TRAVEL_MS = 1600
+
 // Five nodes on a circle, connected in sequence, cycling back to
 // Discover -- the geometry itself (a closed loop, not a line) is what
 // communicates "living" and "spiral" here. Silver surface, not Paper --
 // this is the one structural/diagram section on the homepage.
 //
-// Motion (institutional pass): the loop draws itself once when scrolled
-// into view, then settles into a slow, subtle BREATHE pulse -- signaling
-// an ongoing practice, not a finished line. The five stage nodes emerge
-// in a small cascade alongside it. No rotation, no loop-around-the-ring
-// animation -- restrained on purpose.
+// Motion (institutional pass): nodes emerge in conceptual order: Discover,
+// Practice, Reflect, Adapt, Contribute. The loop draws itself once, then
+// one small signal travels around it and fades out returning to
+// Discover -- at which point Discover gets a barely-there ongoing
+// breathe, the diagram's one ambient loop, signaling a continuing
+// practice rather than a finished line. No rotation, no repeating chase
+// around the ring. sessionKey means a same-session revisit to /canon
+// shows this already settled instead of replaying the whole sequence.
 export function LivingSpiral() {
   const content = getLivingSpiralContent()
   const stages = content.stages.map((label, index) => ({ label, ...GEOMETRY[index] }))
   const loopLength = polygonLength(stages)
+  const pathData = `M ${stages.map((s) => `${s.x},${s.y}`).join(' L ')} Z`
 
   return (
     <section id="living-spiral" style={{ background: 'var(--silver-surface)' }}>
@@ -51,7 +63,7 @@ export function LivingSpiral() {
           ))}
         </div>
 
-        <RevealOnView className="mx-auto mt-8 max-w-md">
+        <RevealOnView className="mx-auto mt-8 max-w-md" sessionKey="living-spiral-intro">
           <svg
             viewBox="0 0 470 320"
             className="h-auto w-full"
@@ -65,24 +77,46 @@ export function LivingSpiral() {
               strokeWidth={1.5}
               strokeDasharray={loopLength}
               strokeDashoffset={loopLength}
-              className="motion-draw-then-breathe"
+              className="motion-draw"
             />
-            <g className="motion-emerge-stagger">
-              {stages.map((stage) => (
-                <g key={stage.label}>
-                  <circle cx={stage.x} cy={stage.y} r={8} fill="var(--paper)" stroke="var(--gold)" strokeWidth={2} />
-                  <text
-                    x={stage.x + stage.dx}
-                    y={stage.y + stage.dy}
-                    textAnchor={stage.anchor}
-                    className="text-[13px] font-semibold"
-                    fill="var(--ink)"
-                  >
-                    {stage.label}
-                  </text>
-                </g>
-              ))}
-            </g>
+
+            {/* The traveling signal -- one pass around the loop, once. */}
+            <circle
+              r={5}
+              fill="var(--gold)"
+              className="motion-signal-travel"
+              style={{ offsetPath: `path("${pathData}")`, '--motion-delay': `${DRAW_MS}ms` } as React.CSSProperties}
+            />
+
+            {stages.map((stage, index) => (
+              <g key={stage.label} className="motion-emerge" style={{ '--motion-delay': `${index * NODE_STEP_MS}ms` } as React.CSSProperties}>
+                {index === 0 && (
+                  // A soft glow behind Discover, breathing gently once the
+                  // signal above has completed its one lap -- the
+                  // diagram's single ambient loop, not the node itself
+                  // (avoids fighting the node's own emerge animation).
+                  <circle
+                    cx={stage.x}
+                    cy={stage.y}
+                    r={14}
+                    fill="var(--gold)"
+                    fillOpacity={0.35}
+                    className="motion-breathe"
+                    style={{ '--motion-delay': `${DRAW_MS + TRAVEL_MS}ms` } as React.CSSProperties}
+                  />
+                )}
+                <circle cx={stage.x} cy={stage.y} r={8} fill="var(--paper)" stroke="var(--gold)" strokeWidth={2} />
+                <text
+                  x={stage.x + stage.dx}
+                  y={stage.y + stage.dy}
+                  textAnchor={stage.anchor}
+                  className="text-[13px] font-semibold"
+                  fill="var(--ink)"
+                >
+                  {stage.label}
+                </text>
+              </g>
+            ))}
           </svg>
         </RevealOnView>
       </SectionContainer>

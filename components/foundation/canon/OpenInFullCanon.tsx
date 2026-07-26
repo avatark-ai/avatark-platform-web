@@ -7,7 +7,7 @@ export function OpenInFullCanon({ href, label = 'Open in the Full Canon' }: { hr
       <a
         href={href}
         aria-label={`${label} (opens canon.avatark.ai)`}
-        className="inline-flex items-center gap-1.5 rounded-sm text-sm font-medium underline-offset-4 transition-colors hover:text-[var(--gold)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="link-underline-draw inline-flex items-center gap-1.5 rounded-sm text-sm font-medium transition-colors hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
         style={{ color: 'var(--ink-dim)', outlineColor: 'var(--gold)' }}
       >
         {label}

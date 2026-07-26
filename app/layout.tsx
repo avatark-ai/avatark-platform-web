@@ -39,7 +39,7 @@ export default async function RootLayout({
             back to its resting, fully visible state instead of leaving it
             permanently hidden. */}
         <noscript>
-          <style>{`.motion-emerge,.motion-emerge-stagger>*,.motion-draw{opacity:1!important;transform:none!important;stroke-dashoffset:0!important;animation:none!important;}`}</style>
+          <style>{`.motion-emerge,.motion-emerge-stagger>*,.motion-draw,.motion-draw-fast{opacity:1!important;transform:none!important;stroke-dashoffset:0!important;animation:none!important;}`}</style>
         </noscript>
         <EchoShell site={site}>{children}</EchoShell>
       </body>

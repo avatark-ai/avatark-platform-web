@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { InstitutionalLayout } from '@/components/foundation/InstitutionalLayout'
 import { SectionContainer, EditorialContainer } from '@/components/foundation/Container'
+import { DepartureLink } from '@/components/motion/DepartureLink'
 import { resolveEcosystemProduct } from '@/lib/content/ecosystemGroups'
 
 export const metadata: Metadata = {
@@ -70,13 +71,23 @@ export default function EcosystemPage() {
                           </p>
                         )}
                         <div className="mt-2">
-                          <a
-                            href={product.href ?? undefined}
-                            className="rounded-sm text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                            style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
-                          >
-                            Open →
-                          </a>
+                          {product.href?.startsWith('http') ? (
+                            <DepartureLink
+                              href={product.href}
+                              className="link-underline-draw rounded-sm text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                              style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+                            >
+                              Open →
+                            </DepartureLink>
+                          ) : (
+                            <Link
+                              href={product.href ?? '#'}
+                              className="link-underline-draw rounded-sm text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                              style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+                            >
+                              Open →
+                            </Link>
+                          )}
                         </div>
                       </li>
                     ))}
@@ -93,7 +104,7 @@ export default function EcosystemPage() {
           <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Every product traces back to one person.</h2>
           <Link
             href="/founder"
-            className="mt-6 inline-block rounded-md px-6 py-3 text-sm font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="mt-6 inline-block rounded-md px-6 py-3 text-sm font-semibold transition hover:opacity-90 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ background: 'var(--gold)', color: 'var(--midnight)', outlineColor: 'var(--paper)' }}
           >
             Continue to the Founder →

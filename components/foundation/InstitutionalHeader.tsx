@@ -77,7 +77,7 @@ export function InstitutionalHeader() {
             </Link>
             <RippleLink
               href={ENTER_ECHO_HREF}
-              className="rounded-md px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="rounded-md px-4 py-2 text-sm font-semibold transition hover:opacity-90 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{ background: 'var(--gold)', color: 'var(--midnight)', ...FOCUS_STYLE }}
             >
               Enter Echo →
@@ -102,7 +102,7 @@ export function InstitutionalHeader() {
         <nav
           id="mobile-nav"
           aria-label="Primary"
-          className="flex flex-col gap-1 border-t px-6 py-4 lg:hidden"
+          className="motion-emerge-instant flex flex-col gap-1 border-t px-6 py-4 lg:hidden"
           style={{ borderColor: 'var(--surface-line)' }}
         >
           {NAV_ITEMS.map((item) => {
