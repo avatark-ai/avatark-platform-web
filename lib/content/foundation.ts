@@ -20,12 +20,10 @@ export interface FounderLetter {
 }
 
 // Display copy for each `## Heading` in founder-letter.md -- kept short in
-// the file itself, spelled out here for the page/chapter-nav. Every
-// chapter here gets a nav entry (Technology+Geometry merged into
-// Synthesis, and AvatarK+Future+Closing merged into Future).
+// the file itself, spelled out here for the page/chapter-nav. Each of these
+// is now its own route (/founder, /founder/question, /founder/future).
 const FOUNDER_CHAPTER_NAV_LABELS: Record<string, string> = {
   Question: 'The Question',
-  Synthesis: 'The Synthesis',
   Future: 'The Future',
 }
 

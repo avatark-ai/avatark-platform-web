@@ -4,10 +4,10 @@ import { findSiteByHost, type SiteId } from './registry'
 // Centralizes the one host-dependent decision this app makes: whether `/`
 // renders the Echo landing page or the institutional homepage. Every other
 // route is unambiguously one or the other regardless of host (institutional:
-// /, /founder, /roadmap; everything else: Echo) -- see
-// docs/ECHO_DOMAIN_MIGRATION.md -- so this is the only call site that needs
-// to exist. Reading `headers()` opts this call path out of static
-// rendering, same tradeoff any host-aware page makes.
+// /, /founder and its sub-routes, /ecosystem, /roadmap; everything else:
+// Echo) -- see docs/ECHO_DOMAIN_MIGRATION.md -- so this is the only call
+// site that needs to exist. Reading `headers()` opts this call path out of
+// static rendering, same tradeoff any host-aware page makes.
 export async function resolveSite(): Promise<SiteId> {
   const headerList = await headers()
   const host = headerList.get('host')

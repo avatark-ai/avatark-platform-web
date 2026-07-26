@@ -1,156 +1,81 @@
 'use client'
 
-// The institutional AvatarK.ai nav -- distinct from components/SiteHeader.tsx,
-// which is the shipped consumer app-shell's nav (Explore/Practice/Together/
-// Watch activity links, Sign in/Continue/Account). That one keeps running,
-// unchanged, on /start, /journey, /account, /enter, etc. This one only
-// renders on the institutional pages (/, /founder, /roadmap) -- SiteHeader
-// self-excludes there so the two never stack.
-import { useEffect, useRef, useState } from 'react'
+// The institutional AvatarK.ai nav -- distinct from the Echo consumer
+// app-shell's own header/footer (components/echo/shell/EchoShell.tsx,
+// EchoHeader.tsx). That one keeps running, unchanged, on /start, /journey,
+// /account, /enter, etc. This one only renders on the institutional pages
+// (/, /founder and its sub-routes, /ecosystem, /roadmap) --
+// EchoShell.isInstitutionalOnlyPath() self-excludes there so the two shells
+// never stack.
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import type { EcosystemGroup } from '@/lib/content/ecosystemGroups'
 import { ENTER_ECHO_HREF, SIGN_IN_HREF } from '@/lib/content/links'
 
 const LINK_CLASS =
   'rounded-sm text-sm font-medium tracking-tight transition-colors hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
 const FOCUS_STYLE = { outlineColor: 'var(--gold)' } as const
 
-const PRIMARY_NAV = [
+// Ecosystem is a plain route now, not a mega menu -- one flat nav array,
+// same treatment for every item.
+const NAV_ITEMS = [
   { label: 'Foundation', href: '/#gap' },
   { label: 'Canon', href: '/#canon' },
+  { label: 'Ecosystem', href: '/ecosystem' },
+  { label: 'Founder', href: '/founder' },
 ] as const
 
-const SECONDARY_NAV = [{ label: 'Founder', href: '/founder' }] as const
-
 // Anchor links (/#gap, /#canon) live on the homepage, so they're "active"
-// whenever the current page is /. A real route (e.g. /founder) is active
-// only on an exact match.
+// whenever the current page is /. A real route (e.g. /founder, /ecosystem)
+// is active only on an exact match.
 function isNavItemActive(pathname: string, href: string): boolean {
   return href.startsWith('/#') ? pathname === '/' : pathname === href
 }
 
-function EcosystemPanel({ groups, onNavigate }: { groups: EcosystemGroup[]; onNavigate: () => void }) {
-  return (
-    <div className="grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-3 md:grid-cols-4">
-      {groups.map((group) => (
-        <div key={group.id}>
-          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
-            {group.label}
-          </p>
-          <ul className="mt-2 flex flex-col gap-1.5">
-            {group.products.map((product) => (
-              <li key={product.id}>
-                {product.href ? (
-                  <a
-                    href={product.href}
-                    onClick={onNavigate}
-                    className="rounded-sm text-sm transition-colors hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                    style={{ color: 'var(--paper)', ...FOCUS_STYLE }}
-                  >
-                    {product.name}
-                  </a>
-                ) : (
-                  <span className="text-sm" style={{ color: 'var(--text-dim)' }}>
-                    {product.name}
-                    <span className="ml-1.5 text-xs">{product.isEcho ? '— not yet built' : '— coming soon'}</span>
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-export function InstitutionalHeader({ ecosystemGroups }: { ecosystemGroups: EcosystemGroup[] }) {
+export function InstitutionalHeader() {
   const pathname = usePathname()
-  const [ecosystemOpen, setEcosystemOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const panelRef = useRef<HTMLDivElement>(null)
 
   const [lastPathname, setLastPathname] = useState(pathname)
   if (pathname !== lastPathname) {
     setLastPathname(pathname)
-    setEcosystemOpen(false)
-    setMobileOpen(false)
-  }
-
-  useEffect(() => {
-    if (!ecosystemOpen) return
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') setEcosystemOpen(false)
-    }
-    function onClickOutside(event: MouseEvent) {
-      if (panelRef.current && !panelRef.current.contains(event.target as Node)) setEcosystemOpen(false)
-    }
-    document.addEventListener('keydown', onKeyDown)
-    document.addEventListener('mousedown', onClickOutside)
-    return () => {
-      document.removeEventListener('keydown', onKeyDown)
-      document.removeEventListener('mousedown', onClickOutside)
-    }
-  }, [ecosystemOpen])
-
-  const closeAll = () => {
-    setEcosystemOpen(false)
     setMobileOpen(false)
   }
 
   return (
     <header style={{ borderBottom: '1px solid var(--surface-line)', background: 'var(--midnight)' }}>
-      <div className="relative mx-auto max-w-[var(--shell-width)] px-6" ref={panelRef}>
+      <div className="relative mx-auto max-w-[var(--shell-width)] px-6">
         <div className="flex items-center justify-between py-4">
           <Link
             href="/"
             className="rounded-sm text-base font-semibold tracking-tight focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ color: 'var(--paper)', ...FOCUS_STYLE }}
-            onClick={closeAll}
+            onClick={() => setMobileOpen(false)}
           >
             AvatarK
           </Link>
 
           <nav aria-label="Primary" className="hidden items-center gap-6 lg:flex">
-            {PRIMARY_NAV.map((item) => {
+            {NAV_ITEMS.map((item) => {
               const active = isNavItemActive(pathname, item.href)
-              return (
+              const itemStyle = { color: active ? 'var(--gold)' : 'var(--paper)', ...FOCUS_STYLE }
+              return item.href.startsWith('/#') ? (
                 <a
                   key={item.label}
                   href={item.href}
                   aria-current={active ? 'page' : undefined}
                   className={LINK_CLASS}
-                  style={{ color: active ? 'var(--gold)' : 'var(--paper)', ...FOCUS_STYLE }}
+                  style={itemStyle}
                 >
                   {item.label}
                 </a>
-              )
-            })}
-
-            <button
-              type="button"
-              className={`${LINK_CLASS} flex items-center gap-1`}
-              style={{ color: pathname === '/' ? 'var(--gold)' : 'var(--paper)', ...FOCUS_STYLE }}
-              aria-expanded={ecosystemOpen}
-              aria-controls="ecosystem-panel"
-              onClick={() => setEcosystemOpen((open) => !open)}
-            >
-              Ecosystem
-              <span aria-hidden="true" className="text-xs">
-                {ecosystemOpen ? '▲' : '▼'}
-              </span>
-            </button>
-
-            {SECONDARY_NAV.map((item) => {
-              const active = isNavItemActive(pathname, item.href)
-              return (
+              ) : (
                 <Link
                   key={item.label}
                   href={item.href}
                   aria-current={active ? 'page' : undefined}
                   className={LINK_CLASS}
-                  style={{ color: active ? 'var(--gold)' : 'var(--paper)', ...FOCUS_STYLE }}
+                  style={itemStyle}
                 >
                   {item.label}
                 </Link>
@@ -183,16 +108,6 @@ export function InstitutionalHeader({ ecosystemGroups }: { ecosystemGroups: Ecos
             <span aria-hidden="true">{mobileOpen ? '✕' : '☰'}</span>
           </button>
         </div>
-
-        {ecosystemOpen && (
-          <div
-            id="ecosystem-panel"
-            className="hidden border-t py-6 lg:block"
-            style={{ borderColor: 'var(--surface-line)' }}
-          >
-            <EcosystemPanel groups={ecosystemGroups} onNavigate={closeAll} />
-          </div>
-        )}
       </div>
 
       {mobileOpen && (
@@ -202,41 +117,28 @@ export function InstitutionalHeader({ ecosystemGroups }: { ecosystemGroups: Ecos
           className="flex flex-col gap-1 border-t px-6 py-4 lg:hidden"
           style={{ borderColor: 'var(--surface-line)' }}
         >
-          {PRIMARY_NAV.map((item) => {
+          {NAV_ITEMS.map((item) => {
             const active = isNavItemActive(pathname, item.href)
-            return (
+            const itemStyle = { color: active ? 'var(--gold)' : 'var(--paper)', ...FOCUS_STYLE }
+            return item.href.startsWith('/#') ? (
               <a
                 key={item.label}
                 href={item.href}
-                onClick={closeAll}
+                onClick={() => setMobileOpen(false)}
                 aria-current={active ? 'page' : undefined}
                 className={`py-2 ${LINK_CLASS}`}
-                style={{ color: active ? 'var(--gold)' : 'var(--paper)', ...FOCUS_STYLE }}
+                style={itemStyle}
               >
                 {item.label}
               </a>
-            )
-          })}
-
-          <div className="py-2">
-            <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
-              Ecosystem
-            </p>
-            <div className="mt-3">
-              <EcosystemPanel groups={ecosystemGroups} onNavigate={closeAll} />
-            </div>
-          </div>
-
-          {SECONDARY_NAV.map((item) => {
-            const active = isNavItemActive(pathname, item.href)
-            return (
+            ) : (
               <Link
                 key={item.label}
                 href={item.href}
-                onClick={closeAll}
+                onClick={() => setMobileOpen(false)}
                 aria-current={active ? 'page' : undefined}
                 className={`py-2 ${LINK_CLASS}`}
-                style={{ color: active ? 'var(--gold)' : 'var(--paper)', ...FOCUS_STYLE }}
+                style={itemStyle}
               >
                 {item.label}
               </Link>
@@ -245,7 +147,7 @@ export function InstitutionalHeader({ ecosystemGroups }: { ecosystemGroups: Ecos
 
           <Link
             href={SIGN_IN_HREF}
-            onClick={closeAll}
+            onClick={() => setMobileOpen(false)}
             className={`py-2 ${LINK_CLASS}`}
             style={{ color: 'var(--paper)', ...FOCUS_STYLE }}
           >
@@ -253,7 +155,7 @@ export function InstitutionalHeader({ ecosystemGroups }: { ecosystemGroups: Ecos
           </Link>
           <Link
             href={ENTER_ECHO_HREF}
-            onClick={closeAll}
+            onClick={() => setMobileOpen(false)}
             className="mt-2 rounded-md px-4 py-2 text-center text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ background: 'var(--gold)', color: 'var(--midnight)', ...FOCUS_STYLE }}
           >

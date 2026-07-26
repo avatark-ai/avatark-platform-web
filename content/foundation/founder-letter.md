@@ -17,15 +17,13 @@ I do not know whether the founders of BITS Pilani intended any deeper geometry b
 
 What builds the engineer before the engineer builds the world?
 
-## Question
-
 The name Setpoint stayed with me as well — in engineering, a setpoint is the state toward which a system is regulated: a system senses where it is, compares that state with where it needs to be, and continually adjusts.
 
 Over time, I began asking the same question about human beings: what is the setpoint of a human life?
 
 How do we recognize when we are drifting? How do we adapt when circumstances change? How do we retain what experience has taught us? And how does one person's learning become useful to another?
 
-## Synthesis
+## Question
 
 After BITS Pilani, I pursued a master's degree in computer science in the United States. I then spent more than thirty years working across enterprise software, distributed systems, semiconductors and artificial intelligence, including part of my career at IBM.
 

@@ -87,7 +87,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     id: 'prometheusk',
     slug: 'prometheusk',
     displayName: 'PrometheusK',
-    tagline: 'Practices, reflection, and Living Echoes',
+    tagline: 'Turns recurring observations and inherited wisdom into practices you can attempt, reflect on, and improve.',
     description:
       'The practice product: guided practices, reflection, evidence/contribution tracking, challenges, and Living Echo -- the recorded trace of a person’s practice over time.',
     status: 'live',
@@ -115,7 +115,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     id: 'gamek',
     slug: 'gamek',
     displayName: 'GameK',
-    tagline: 'World progress and consumer game state',
+    tagline: 'Turns learning into experience through flow, paths, and navigation.',
     description:
       'Tracks world progress and consumer game state, and exchanges completion events with PrometheusK via a defined export/inbound contract.',
     status: 'beta',
@@ -140,7 +140,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     id: 'arenak',
     slug: 'arenak',
     displayName: 'ArenaK',
-    tagline: 'Invitations, enrollments, challenges, leagues, rankings',
+    tagline: 'Gives private practice a communal dimension through challenges, cohorts, and recognition.',
     description:
       'Competitive layer: invitations, enrollments, challenges, leagues, and rankings. `repository` stays null: the real implementation lives inside a separate `dt4m-os` repo’s `apps/avatark-consumer`, not as a sibling repo folder in this workspace the way every other non-null `repository` value here is.',
     // status stays 'alpha' deliberately, separate from the domain/visibility
@@ -180,7 +180,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     id: 'streamk',
     slug: 'streamk',
     displayName: 'StreamK',
-    tagline: 'Streaming product',
+    tagline: 'Witness journeys, practices, and stories as they unfold.',
     description:
       'Live and on-demand streaming. Scope (feature-level integration with Platform, beyond domain reachability) not yet confirmed.',
     // status stays 'alpha' for the same reason as ArenaK's -- see the
@@ -209,7 +209,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     id: 'cinemak',
     slug: 'cinemak',
     displayName: 'CinemaK',
-    tagline: 'Cinema product',
+    tagline: 'Carry those same human stories into enduring cinematic form.',
     description: 'Film and cinema-format media. Scope not yet integrated with Platform.',
     status: 'alpha',
     domain: 'https://cinemak.ai',
@@ -234,7 +234,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     id: 'studiok',
     slug: 'studiok',
     displayName: 'StudioK',
-    tagline: 'Studio product',
+    tagline: 'Creation tools for the ecosystem’s own content and practices.',
     description:
       'Creation tools. Scope not yet integrated with Platform. No confirmed local repository found in this workspace -- a real, actively-deployed Vercel project exists under a name that doesn’t match this ecosystem’s planning documents.',
     status: 'alpha',
@@ -259,7 +259,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     id: 'atlas',
     slug: 'atlas',
     displayName: 'Atlas',
-    tagline: 'Atlas product',
+    tagline: 'Connects knowledge, evidence, relationships, and decisions.',
     description: 'Exploration/reference product. Scope not yet integrated with Platform.',
     status: 'alpha',
     domain: 'https://atlas.dt4i.ai',
