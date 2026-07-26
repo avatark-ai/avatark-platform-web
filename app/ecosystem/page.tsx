@@ -33,11 +33,9 @@ export default function EcosystemPage() {
             The AvatarK Ecosystem
           </h1>
           <div className="h-px w-16" style={{ background: 'var(--gold)' }} aria-hidden="true" />
-          <div className="flex flex-col gap-2 text-lg leading-8 sm:text-xl" style={{ color: 'var(--ink-dim)' }}>
-            <p>One architecture.</p>
-            <p>Many experiences.</p>
-            <p>One journey of becoming.</p>
-          </div>
+          <p className="text-lg leading-8 sm:text-xl" style={{ color: 'var(--ink-dim)' }}>
+            One architecture. Many experiences. One journey of becoming.
+          </p>
         </div>
       </section>
 
