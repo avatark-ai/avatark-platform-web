@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { InstitutionalLayout } from '@/components/foundation/InstitutionalLayout'
 import { SectionContainer, EditorialContainer } from '@/components/foundation/Container'
+import { TransactionsVsTransformation } from '@/components/foundation/architecture/TransactionsVsTransformation'
+import { FragmentedVsLongitudinal } from '@/components/foundation/architecture/FragmentedVsLongitudinal'
+import { ArchitectureOfBecomingFlow } from '@/components/foundation/architecture/ArchitectureOfBecomingFlow'
 import { getArchitectureContent } from '@/lib/content/foundation'
 
 export const metadata: Metadata = {
@@ -59,6 +62,10 @@ export default function FoundationPage() {
             </p>
           </div>
 
+          <div className="mt-10 max-w-2xl mx-auto w-full">
+            <TransactionsVsTransformation />
+          </div>
+
           <div className="mt-8 grid gap-6 sm:grid-cols-3">
             {gapCards.map((card) => (
               <div
@@ -74,6 +81,10 @@ export default function FoundationPage() {
                 </p>
               </div>
             ))}
+          </div>
+
+          <div className="mt-8 max-w-3xl mx-auto w-full">
+            <FragmentedVsLongitudinal />
           </div>
         </SectionContainer>
       </section>
@@ -104,6 +115,11 @@ export default function FoundationPage() {
             make that memory useful to the next person who needs it. An operating system for becoming, one
             practice at a time.
           </p>
+
+          <div className="mt-8">
+            <ArchitectureOfBecomingFlow />
+          </div>
+
           <Link
             href="/canon"
             className="mt-8 inline-block rounded-md px-6 py-3 text-sm font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
