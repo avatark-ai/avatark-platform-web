@@ -14,7 +14,7 @@ export function Question() {
           What builds the engineer before the engineer builds the world?
         </h2>
 
-        <ol className="mt-12 flex flex-wrap items-center justify-center gap-x-2 gap-y-3 text-sm font-medium" style={{ color: 'var(--ink-dim)' }}>
+        <ol className="mt-8 flex flex-wrap items-center justify-center gap-x-2 gap-y-3 text-sm font-medium" style={{ color: 'var(--ink-dim)' }}>
           {TIMELINE.map((step, index) => (
             <li key={step} className="flex items-center gap-2">
               <span style={{ color: 'var(--ink)' }}>{step}</span>
@@ -29,7 +29,7 @@ export function Question() {
 
         <Link
           href="/founder"
-          className="mt-12 inline-block rounded-sm px-2 py-1 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="mt-8 inline-block rounded-sm px-2 py-1 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
         >
           Read the Founder Letter

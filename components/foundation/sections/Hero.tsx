@@ -1,14 +1,18 @@
 import Link from 'next/link'
 import { getArchitectureContent } from '@/lib/content/foundation'
 import { ENTER_ECHO_HREF } from '@/lib/content/links'
-import { EditorialContainer } from '@/components/foundation/Container'
 
+// Hero has its own compact wrapper (not the shared EditorialContainer) --
+// it targets a specific ~520-580px desktop height, tighter than the
+// shared section default, and Tailwind utility precedence between two
+// conflicting py-* classes isn't reliably order-dependent, so an
+// overriding className passed into EditorialContainer isn't safe to rely on.
 export function Hero() {
   const { headline, lines } = getArchitectureContent()
 
   return (
     <section id="hero" className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
-      <EditorialContainer className="flex flex-col items-center gap-8 text-center">
+      <div className="mx-auto flex w-full max-w-[var(--editorial-width)] flex-col items-center gap-7 px-6 py-14 text-center sm:py-16">
         <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl md:text-6xl">{headline}</h1>
         <div className="h-px w-16" style={{ background: 'var(--gold)' }} aria-hidden="true" />
         <div className="flex flex-col gap-2 text-lg leading-8 sm:text-xl" style={{ color: 'var(--ink-dim)' }}>
@@ -16,7 +20,7 @@ export function Hero() {
             <p key={line}>{line}</p>
           ))}
         </div>
-        <div className="mt-4 flex flex-col items-center gap-4 sm:flex-row">
+        <div className="flex flex-col items-center gap-4 sm:flex-row">
           <Link
             href={ENTER_ECHO_HREF}
             className="rounded-md px-6 py-3 text-sm font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
@@ -32,7 +36,7 @@ export function Hero() {
             Explore the Foundation
           </a>
         </div>
-      </EditorialContainer>
+      </div>
     </section>
   )
 }

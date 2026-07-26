@@ -11,11 +11,11 @@ export function Gap() {
           &ldquo;{gapStatement}&rdquo;
         </p>
 
-        <div className="mt-14 grid gap-6 sm:grid-cols-3">
+        <div className="mt-10 grid gap-6 sm:grid-cols-3">
           {gapCards.map((card) => (
             <div
               key={card.id}
-              className="rounded-lg border p-6"
+              className="rounded-lg border p-5"
               style={{ borderColor: 'var(--paper-line)', background: 'var(--surface-card)' }}
             >
               <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>

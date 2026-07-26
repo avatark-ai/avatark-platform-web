@@ -1,13 +1,11 @@
 // Resolves content/foundation/ecosystem.md's editorial groups (Begin/
 // Practice/Play/Gather/Watch/Create/Understand) against the real
-// @avatark/product-registry -- same "never fabricate a destination"
-// discipline as lib/activities/registry.ts, reused here rather than
-// duplicated because the Ecosystem nav dropdown and homepage section need
-// the identical grouping.
+// @avatark/product-registry -- reused by the Ecosystem nav dropdown,
+// homepage section, and footer so all three never diverge.
 import { getProductById } from '@avatark/product-registry'
 import { resolveProductUrl } from '../products/registry.ts'
 import { getEcosystemGroupsContent } from './foundation.ts'
-import { toEcosystemStatusLabel, type EcosystemStatus } from './statusGroups.ts'
+import { ENTER_ECHO_HREF } from './links.ts'
 
 export interface EcosystemProductRef {
   id: string
@@ -15,7 +13,6 @@ export interface EcosystemProductRef {
   href: string | null
   isEcho: boolean
   purpose: string | null
-  statusLabel: EcosystemStatus
 }
 
 export interface EcosystemGroup {
@@ -31,32 +28,31 @@ export interface EcosystemGroup {
 // special-case Echo and rendered it as the raw lowercase id.
 export function resolveEcosystemProduct(id: string): EcosystemProductRef {
   if (id === 'echo') {
-    // Echo has no registry entry -- it isn't built yet, an explicit
-    // non-goal for this milestone. Never invent a destination for it.
+    // Echo has no registry entry (unbuilt) -- its ecosystem entry point is
+    // the same real destination every "Enter Echo" CTA site-wide already
+    // uses, not a fabricated separate one.
     return {
       id: 'echo',
       name: 'Echo',
-      href: null,
+      href: ENTER_ECHO_HREF,
       isEcho: true,
       purpose: 'A person’s wisdom becoming useful to another life.',
-      statusLabel: 'In Development',
     }
   }
   const product = getProductById(id)
   if (!product) {
-    return { id, name: id, href: null, isEcho: false, purpose: null, statusLabel: 'In Development' }
+    return { id, name: id, href: null, isEcho: false, purpose: null }
   }
   return {
     id: product.id,
     name: product.displayName,
-    // A nav-visible link only for a product that is actually public --
-    // internal-visibility products (CinemaK, StudioK, Atlas, SetpointK
-    // today) still appear so the ecosystem's shape is honest, just
-    // without a real destination yet.
-    href: product.visibility === 'public' ? resolveProductUrl(product) : null,
+    // The institutional page only describes purpose and relationship; the
+    // destination product itself owns auth, invitation gating, and
+    // availability -- so every product with a known domain gets a real
+    // link regardless of visibility/status.
+    href: resolveProductUrl(product),
     isEcho: false,
     purpose: product.tagline ?? product.description,
-    statusLabel: toEcosystemStatusLabel(product),
   }
 }
 

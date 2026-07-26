@@ -14,7 +14,7 @@ export function SectionContainer({
   className?: string
 }) {
   return (
-    <div className={`mx-auto w-full max-w-[var(--content-width)] px-6 py-16 sm:px-8 sm:py-20 ${className}`}>
+    <div className={`mx-auto w-full max-w-[var(--content-width)] px-6 py-12 sm:px-8 sm:py-14 ${className}`}>
       {children}
     </div>
   )
@@ -29,7 +29,7 @@ export function EditorialContainer({
   className?: string
 }) {
   return (
-    <div className={`mx-auto w-full max-w-[var(--editorial-width)] px-6 py-16 sm:px-8 sm:py-20 ${className}`}>
+    <div className={`mx-auto w-full max-w-[var(--editorial-width)] px-6 py-12 sm:px-8 sm:py-14 ${className}`}>
       {children}
     </div>
   )

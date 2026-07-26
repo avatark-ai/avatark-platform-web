@@ -5,24 +5,34 @@ import { SectionContainer } from '@/components/foundation/Container'
 // so it stays here rather than in content/foundation/living-spiral.md.
 // Order must match that file's "## Stages" list (Discover, Practice,
 // Reflect, Adapt, Contribute).
+//
+// viewBox is 470 wide (not a tight 320) specifically so the two
+// side-anchored labels ("Practice", start-anchored; "Contribute",
+// end-anchored) have room for their full word width without clipping --
+// the circles themselves sit safely inside a narrower box, but
+// anchor-based text extends a full word past the node position, which a
+// 320-wide box didn't leave room for. Every x below is the original
+// tighter-box coordinate shifted +75 to keep the geometry centered in the
+// wider box.
 const GEOMETRY = [
-  { x: 160, y: 40, anchor: 'middle', dx: 0, dy: -14 },
-  { x: 274, y: 123, anchor: 'start', dx: 12, dy: -4 },
-  { x: 231, y: 257, anchor: 'middle', dx: 0, dy: 26 },
-  { x: 89, y: 257, anchor: 'middle', dx: 0, dy: 26 },
-  { x: 46, y: 123, anchor: 'end', dx: -12, dy: -4 },
+  { x: 235, y: 40, anchor: 'middle', dx: 0, dy: -14 },
+  { x: 349, y: 123, anchor: 'start', dx: 12, dy: -4 },
+  { x: 306, y: 257, anchor: 'middle', dx: 0, dy: 26 },
+  { x: 164, y: 257, anchor: 'middle', dx: 0, dy: 26 },
+  { x: 121, y: 123, anchor: 'end', dx: -12, dy: -4 },
 ] as const
 
 // A clean, static diagram -- five nodes on a circle, connected in
 // sequence, cycling back to Discover. No animation, per this milestone's
 // explicit scope; the geometry itself (a closed loop, not a line) is what
-// communicates "living" and "spiral" here.
+// communicates "living" and "spiral" here. Silver surface, not Paper --
+// this is the one structural/diagram section on the homepage.
 export function LivingSpiral() {
   const content = getLivingSpiralContent()
   const stages = content.stages.map((label, index) => ({ label, ...GEOMETRY[index] }))
 
   return (
-    <section id="living-spiral" className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
+    <section id="living-spiral" style={{ background: 'var(--silver-surface)' }}>
       <SectionContainer>
         <div className="text-center">
           <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">{content.title}</h2>
@@ -33,9 +43,9 @@ export function LivingSpiral() {
           ))}
         </div>
 
-        <div className="mx-auto mt-12 max-w-md">
+        <div className="mx-auto mt-8 max-w-md">
           <svg
-            viewBox="0 0 320 320"
+            viewBox="0 0 470 320"
             className="h-auto w-full"
             role="img"
             aria-label={`The Living Spiral: ${stages.map((s) => s.label).join(', ')}, in a continuous loop`}
@@ -43,7 +53,7 @@ export function LivingSpiral() {
             <polygon
               points={stages.map((s) => `${s.x},${s.y}`).join(' ')}
               fill="none"
-              stroke="var(--paper-line)"
+              stroke="var(--silver-accent)"
               strokeWidth={1.5}
             />
             {stages.map((stage) => (

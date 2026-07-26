@@ -119,7 +119,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     description:
       'Tracks world progress and consumer game state, and exchanges completion events with PrometheusK via a defined export/inbound contract.',
     status: 'beta',
-    domain: 'https://app.avatark.ai/gamek',
+    domain: 'https://gamek.ai',
     icon: 'gamepad-2',
     accentColor: '#7c3aed',
     logo: null,
@@ -142,7 +142,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     displayName: 'ArenaK',
     tagline: 'Invitations, enrollments, challenges, leagues, rankings',
     description:
-      'Competitive layer: invitations, enrollments, challenges, leagues, and rankings. Domain confirmed live at next.arenak.ai (direct HTTP request returned real ArenaK-branded content, 2026-07-21). `repository` stays null: the real implementation lives inside a separate `dt4m-os` repo’s `apps/avatark-consumer`, not as a sibling repo folder in this workspace the way every other non-null `repository` value here is.',
+      'Competitive layer: invitations, enrollments, challenges, leagues, and rankings. `repository` stays null: the real implementation lives inside a separate `dt4m-os` repo’s `apps/avatark-consumer`, not as a sibling repo folder in this workspace the way every other non-null `repository` value here is.',
     // status stays 'alpha' deliberately, separate from the domain/visibility
     // fix above -- visibility='public' + domain confirm the destination is
     // real and reachable; status is a maturity call (alpha/beta/live) this
@@ -152,7 +152,12 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     // it requires status to be 'live' or 'beta', not just visibility, before
     // ever returning something other than coming_soon).
     status: 'alpha',
-    domain: 'https://next.arenak.ai',
+    // Canonical production domain as of this pass. A future redirect to the
+    // consumer practice experience (practice.arenak.ai or a different final
+    // destination) is planned but not live yet -- update this one field when
+    // that destination is ready, since every consumer (header, ecosystem,
+    // footer) resolves through it.
+    domain: 'https://arenak.ai',
     icon: 'trophy',
     accentColor: '#b45309',
     logo: null,
@@ -177,12 +182,12 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     displayName: 'StreamK',
     tagline: 'Streaming product',
     description:
-      'Live and on-demand streaming. Domain confirmed live at streamk.ai (direct HTTP request returned real StreamK-branded content -- title "StreamK — The Broadcast Layer for AvatarK", 2026-07-21). Scope (feature-level integration with Platform, beyond domain reachability) not yet confirmed.',
+      'Live and on-demand streaming. Scope (feature-level integration with Platform, beyond domain reachability) not yet confirmed.',
     // status stays 'alpha' for the same reason as ArenaK's -- see the
     // comment on that entry. Domain reachability confirms the destination
     // is real, not that the product is mature enough for a status bump.
     status: 'alpha',
-    domain: 'https://www.streamk.ai',
+    domain: 'https://streamk.ai',
     icon: 'video',
     accentColor: '#0369a1',
     logo: null,
@@ -207,7 +212,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     tagline: 'Cinema product',
     description: 'Film and cinema-format media. Scope not yet integrated with Platform.',
     status: 'alpha',
-    domain: null,
+    domain: 'https://cinemak.ai',
     icon: 'clapperboard',
     accentColor: '#831843',
     logo: null,
@@ -233,7 +238,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     description:
       'Creation tools. Scope not yet integrated with Platform. No confirmed local repository found in this workspace -- a real, actively-deployed Vercel project exists under a name that doesn’t match this ecosystem’s planning documents.',
     status: 'alpha',
-    domain: null,
+    domain: 'https://studiok.dt4m.ai',
     icon: 'palette',
     accentColor: '#0d9488',
     logo: null,
@@ -257,7 +262,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     tagline: 'Atlas product',
     description: 'Exploration/reference product. Scope not yet integrated with Platform.',
     status: 'alpha',
-    domain: null,
+    domain: 'https://atlas.dt4i.ai',
     icon: 'map',
     accentColor: '#166534',
     logo: null,
@@ -282,7 +287,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     description:
       'Wellness/goal-setting product. Historically backed by its own Cognito auth; not yet integrated with Platform identity. No local repository found in this workspace.',
     status: 'internal',
-    domain: null,
+    domain: 'https://setpointk.ai',
     icon: 'compass',
     accentColor: '#4338ca',
     logo: null,

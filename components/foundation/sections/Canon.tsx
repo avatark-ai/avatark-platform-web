@@ -28,7 +28,7 @@ export function Canon({ content }: { content: CanonContent }) {
         </div>
 
         {/* Desktop: tabs */}
-        <div className="mt-12 hidden sm:block">
+        <div className="mt-8 hidden sm:block">
           <div role="tablist" aria-label="The Four Axes" className="flex border-b" style={{ borderColor: 'var(--paper-line)' }}>
             {content.axes.map((axis, index) => {
               const selected = index === activeIndex
@@ -63,7 +63,7 @@ export function Canon({ content }: { content: CanonContent }) {
               id={`canon-panel-${axis.id}`}
               aria-labelledby={`canon-tab-${axis.id}`}
               hidden={index !== activeIndex}
-              className="px-1 py-8 text-base leading-7"
+              className="px-1 py-6 text-base leading-7"
               style={{ color: 'var(--ink-dim)' }}
             >
               {axis.body}
@@ -72,7 +72,7 @@ export function Canon({ content }: { content: CanonContent }) {
         </div>
 
         {/* Mobile: accordion */}
-        <div className="mt-10 flex flex-col gap-2 sm:hidden">
+        <div className="mt-8 flex flex-col gap-2 sm:hidden">
           {content.axes.map((axis, index) => {
             const expanded = openIndex === index
             return (

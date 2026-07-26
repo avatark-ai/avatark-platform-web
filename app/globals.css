@@ -38,6 +38,11 @@
   --ink-dim: #57534a;
   --paper-line: #ded6c4;
   --surface-card: #fbf9f4;
+  /* Structural/diagram surface -- the fifth institutional token, distinct
+     from Paper's warm cream. Used for sections that are geometry/structure
+     rather than editorial reading (e.g. the Living Spiral diagram). */
+  --silver-accent: #9ba1ac;
+  --silver-surface: #e4e7eb;
 
   /* Shared institutional layout widths (components/foundation/InstitutionalLayout.tsx) --
      one source of truth so the header/footer bar, section content, and editorial reading
