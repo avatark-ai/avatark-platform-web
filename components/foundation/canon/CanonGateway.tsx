@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { CANON_GATEWAY_CARD_IDS, CANON_NAV_ITEMS } from '@/lib/content/canonNav'
+import { RevealOnView } from '@/components/motion/RevealOnView'
 
 // Bridge from the Canon overview into the three reader pages -- these are
 // now local institutional routes, not canon.avatark.ai deep links, so a
@@ -17,7 +18,7 @@ export function CanonGateway() {
   return (
     <div>
       <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">Explore the Canon</h2>
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <RevealOnView className="motion-emerge-stagger mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
         {cards.map((card) => (
           <Link
             key={card.id}
@@ -33,7 +34,7 @@ export function CanonGateway() {
             </p>
           </Link>
         ))}
-      </div>
+      </RevealOnView>
       {fullCanon?.legacyHref && (
         <a
           href={fullCanon.legacyHref}

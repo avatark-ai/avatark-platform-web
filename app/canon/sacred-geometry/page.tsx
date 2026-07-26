@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CanonPageLayout } from '@/components/foundation/canon/CanonPageLayout'
 import { OpenInFullCanon } from '@/components/foundation/canon/OpenInFullCanon'
+import { RevealOnView } from '@/components/motion/RevealOnView'
 import { CANON_PLATES } from '@/lib/content/canonPlates'
 import { findCanonNavItem } from '@/lib/content/canonNav'
 
@@ -29,7 +30,7 @@ export default function SacredGeometryPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <RevealOnView className="motion-emerge-stagger grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {CANON_PLATES.map((plate) => (
           <Link
             key={plate.slug}
@@ -68,7 +69,7 @@ export default function SacredGeometryPage() {
             </div>
           </Link>
         ))}
-      </div>
+      </RevealOnView>
 
       {navItem?.legacyHref && <OpenInFullCanon href={navItem.legacyHref} label="Open Sacred Geometry in the Full Canon" />}
     </CanonPageLayout>

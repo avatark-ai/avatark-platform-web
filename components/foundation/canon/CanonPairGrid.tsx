@@ -1,11 +1,13 @@
 import type { CanonPair } from '@/lib/content/canonReaders'
+import { RevealOnView } from '@/components/motion/RevealOnView'
 
 // Shared "label — body" card grid used across the Dynamics and Alignment
 // reader pages (regimes, imbalance signatures, Arena measures, misalignment
-// signals) so the same pattern isn't rebuilt four separate times.
+// signals) so the same pattern isn't rebuilt four separate times. Cards
+// emerge in a small cascade once scrolled into view.
 export function CanonPairGrid({ items }: { items: CanonPair[] }) {
   return (
-    <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <RevealOnView className="motion-emerge-stagger mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
       {items.map((item) => (
         <div
           key={item.label}
@@ -20,6 +22,6 @@ export function CanonPairGrid({ items }: { items: CanonPair[] }) {
           </p>
         </div>
       ))}
-    </div>
+    </RevealOnView>
   )
 }

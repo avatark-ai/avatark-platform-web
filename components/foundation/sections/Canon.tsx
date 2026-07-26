@@ -38,7 +38,7 @@ export function Canon({ content }: { content: CanonContent }) {
                   aria-controls={`canon-panel-${axis.id}`}
                   id={`canon-tab-${axis.id}`}
                   onClick={() => setOpenIndex(index)}
-                  className="flex-1 rounded-t-sm px-4 py-3 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  className="flex-1 rounded-t-sm px-4 py-3 text-sm font-semibold transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                   style={{
                     color: selected ? 'var(--ink)' : 'var(--ink-dim)',
                     borderBottom: selected ? '2px solid var(--gold)' : '2px solid transparent',

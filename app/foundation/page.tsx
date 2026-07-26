@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { InstitutionalLayout } from '@/components/foundation/InstitutionalLayout'
 import { SectionContainer, EditorialContainer } from '@/components/foundation/Container'
 import { TransactionsVsTransformation } from '@/components/foundation/architecture/TransactionsVsTransformation'
 import { FragmentedVsLongitudinal } from '@/components/foundation/architecture/FragmentedVsLongitudinal'
 import { ArchitectureOfBecomingFlow } from '@/components/foundation/architecture/ArchitectureOfBecomingFlow'
+import { RippleLink } from '@/components/motion/RippleLink'
 import { getArchitectureContent } from '@/lib/content/foundation'
 
 export const metadata: Metadata = {
@@ -120,13 +120,13 @@ export default function FoundationPage() {
             <ArchitectureOfBecomingFlow />
           </div>
 
-          <Link
+          <RippleLink
             href="/canon"
             className="mt-8 inline-block rounded-md px-6 py-3 text-sm font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ background: 'var(--ink)', color: 'var(--paper)', outlineColor: 'var(--gold)' }}
           >
             Continue to Canon →
-          </Link>
+          </RippleLink>
         </EditorialContainer>
       </section>
     </InstitutionalLayout>

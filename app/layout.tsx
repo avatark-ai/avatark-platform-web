@@ -31,6 +31,16 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        {/* Safety net for the institutional motion system (app/globals.css):
+            .motion-emerge/.motion-draw start hidden and only reveal once
+            RevealOnView/PageEnter (client components) add .is-revealed on
+            scroll-into-view or mount. If JS never runs, this <noscript>
+            stylesheet -- parsed only in that case -- forces everything
+            back to its resting, fully visible state instead of leaving it
+            permanently hidden. */}
+        <noscript>
+          <style>{`.motion-emerge,.motion-emerge-stagger>*,.motion-draw{opacity:1!important;transform:none!important;stroke-dashoffset:0!important;animation:none!important;}`}</style>
+        </noscript>
         <EchoShell site={site}>{children}</EchoShell>
       </body>
     </html>

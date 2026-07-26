@@ -11,9 +11,10 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ENTER_ECHO_HREF, SIGN_IN_HREF } from '@/lib/content/links'
+import { RippleLink } from '@/components/motion/RippleLink'
 
 const LINK_CLASS =
-  'rounded-sm text-sm font-medium tracking-tight transition-colors hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
+  'rounded-sm text-sm font-medium tracking-tight transition-colors duration-200 hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
 const FOCUS_STYLE = { outlineColor: 'var(--gold)' } as const
 
 // Foundation and Canon are now dedicated pages, not homepage anchors --
@@ -74,13 +75,13 @@ export function InstitutionalHeader() {
             <Link href={SIGN_IN_HREF} className={LINK_CLASS} style={{ color: 'var(--paper)', ...FOCUS_STYLE }}>
               Sign In
             </Link>
-            <Link
+            <RippleLink
               href={ENTER_ECHO_HREF}
               className="rounded-md px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{ background: 'var(--gold)', color: 'var(--midnight)', ...FOCUS_STYLE }}
             >
               Enter Echo →
-            </Link>
+            </RippleLink>
           </div>
 
           <button
@@ -128,14 +129,14 @@ export function InstitutionalHeader() {
           >
             Sign In
           </Link>
-          <Link
+          <RippleLink
             href={ENTER_ECHO_HREF}
             onClick={() => setMobileOpen(false)}
             className="mt-2 rounded-md px-4 py-2 text-center text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ background: 'var(--gold)', color: 'var(--midnight)', ...FOCUS_STYLE }}
           >
             Enter Echo →
-          </Link>
+          </RippleLink>
         </nav>
       )}
     </header>

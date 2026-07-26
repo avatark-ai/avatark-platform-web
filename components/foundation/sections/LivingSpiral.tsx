@@ -1,5 +1,7 @@
 import { getLivingSpiralContent } from '@/lib/content/foundation'
 import { SectionContainer } from '@/components/foundation/Container'
+import { RevealOnView } from '@/components/motion/RevealOnView'
+import { polygonLength } from '@/lib/motion/pathLength'
 
 // Layout-only geometry for the five stage nodes -- not editorial content,
 // so it stays here rather than in content/foundation/living-spiral.md.
@@ -22,14 +24,20 @@ const GEOMETRY = [
   { x: 121, y: 123, anchor: 'end', dx: -12, dy: -4 },
 ] as const
 
-// A clean, static diagram -- five nodes on a circle, connected in
-// sequence, cycling back to Discover. No animation, per this milestone's
-// explicit scope; the geometry itself (a closed loop, not a line) is what
+// Five nodes on a circle, connected in sequence, cycling back to
+// Discover -- the geometry itself (a closed loop, not a line) is what
 // communicates "living" and "spiral" here. Silver surface, not Paper --
 // this is the one structural/diagram section on the homepage.
+//
+// Motion (institutional pass): the loop draws itself once when scrolled
+// into view, then settles into a slow, subtle BREATHE pulse -- signaling
+// an ongoing practice, not a finished line. The five stage nodes emerge
+// in a small cascade alongside it. No rotation, no loop-around-the-ring
+// animation -- restrained on purpose.
 export function LivingSpiral() {
   const content = getLivingSpiralContent()
   const stages = content.stages.map((label, index) => ({ label, ...GEOMETRY[index] }))
+  const loopLength = polygonLength(stages)
 
   return (
     <section id="living-spiral" style={{ background: 'var(--silver-surface)' }}>
@@ -43,7 +51,7 @@ export function LivingSpiral() {
           ))}
         </div>
 
-        <div className="mx-auto mt-8 max-w-md">
+        <RevealOnView className="mx-auto mt-8 max-w-md">
           <svg
             viewBox="0 0 470 320"
             className="h-auto w-full"
@@ -55,23 +63,28 @@ export function LivingSpiral() {
               fill="none"
               stroke="var(--silver-accent)"
               strokeWidth={1.5}
+              strokeDasharray={loopLength}
+              strokeDashoffset={loopLength}
+              className="motion-draw-then-breathe"
             />
-            {stages.map((stage) => (
-              <g key={stage.label}>
-                <circle cx={stage.x} cy={stage.y} r={8} fill="var(--paper)" stroke="var(--gold)" strokeWidth={2} />
-                <text
-                  x={stage.x + stage.dx}
-                  y={stage.y + stage.dy}
-                  textAnchor={stage.anchor}
-                  className="text-[13px] font-semibold"
-                  fill="var(--ink)"
-                >
-                  {stage.label}
-                </text>
-              </g>
-            ))}
+            <g className="motion-emerge-stagger">
+              {stages.map((stage) => (
+                <g key={stage.label}>
+                  <circle cx={stage.x} cy={stage.y} r={8} fill="var(--paper)" stroke="var(--gold)" strokeWidth={2} />
+                  <text
+                    x={stage.x + stage.dx}
+                    y={stage.y + stage.dy}
+                    textAnchor={stage.anchor}
+                    className="text-[13px] font-semibold"
+                    fill="var(--ink)"
+                  >
+                    {stage.label}
+                  </text>
+                </g>
+              ))}
+            </g>
           </svg>
-        </div>
+        </RevealOnView>
       </SectionContainer>
     </section>
   )

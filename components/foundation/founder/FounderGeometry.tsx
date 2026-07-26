@@ -1,4 +1,6 @@
 import { getCanonContent } from '@/lib/content/foundation'
+import { RevealOnView } from '@/components/motion/RevealOnView'
+import { polylineLength } from '@/lib/motion/pathLength'
 
 // The one geometry illustration for the Founder page -- now the Synthesis
 // route specifically, rendered prominently rather than as a small aside: a
@@ -8,8 +10,9 @@ import { getCanonContent } from '@/lib/content/foundation'
 // perpendicular one" language. Labels/figures come from getCanonContent()
 // -- the same real Four Axes data already used on the homepage, not
 // invented for this page. viewBox-scaled like LivingSpiral's SVG, so it
-// scales instead of clipping on mobile. Static, no animation, per this
-// repo's existing "no motion" convention.
+// scales instead of clipping on mobile. Motion (institutional pass): the
+// two axis lines draw themselves in, nodes emerge in a small cascade,
+// once scrolled into view.
 // Awareness/Responsibility sit on the horizontal line's own y, so their
 // above/below labels never cross it. Wisdom/Creation anchor the vertical
 // line instead, so their labels are offset sideways (labelAnchor/labelDx)
@@ -27,9 +30,11 @@ export function FounderGeometry() {
 
   if (nodes.length < 4) return null
   const [awareness, wisdom, responsibility, creation] = nodes
+  const horizontalLength = polylineLength([awareness, responsibility])
+  const verticalLength = polylineLength([wisdom, creation])
 
   return (
-    <div className="mx-auto my-12 max-w-lg sm:max-w-2xl">
+    <RevealOnView className="mx-auto my-12 max-w-lg sm:max-w-2xl">
       <svg
         viewBox="0 0 400 260"
         className="h-auto w-full"
@@ -43,6 +48,9 @@ export function FounderGeometry() {
           y2={responsibility.y}
           stroke="var(--paper-line)"
           strokeWidth={2}
+          strokeDasharray={horizontalLength}
+          strokeDashoffset={horizontalLength}
+          className="motion-draw"
         />
         <line
           x1={wisdom.x}
@@ -51,31 +59,36 @@ export function FounderGeometry() {
           y2={creation.y}
           stroke="var(--paper-line)"
           strokeWidth={2}
+          strokeDasharray={verticalLength}
+          strokeDashoffset={verticalLength}
+          className="motion-draw"
         />
-        {nodes.map((node) => (
-          <g key={node.id}>
-            <circle cx={node.x} cy={node.y} r={10} fill="var(--paper)" stroke="var(--gold)" strokeWidth={3} />
-            <text
-              x={node.x + node.labelDx}
-              y={node.labelAnchor === 'middle' ? node.y - 22 : node.y - 6}
-              textAnchor={node.labelAnchor}
-              className="text-[18px] font-semibold"
-              fill="var(--ink)"
-            >
-              {node.label}
-            </text>
-            <text
-              x={node.x + node.labelDx}
-              y={node.labelAnchor === 'middle' ? node.y + 34 : node.y + 18}
-              textAnchor={node.labelAnchor}
-              className="text-[14px]"
-              fill="var(--ink-dim)"
-            >
-              {node.figure}
-            </text>
-          </g>
-        ))}
+        <g className="motion-emerge-stagger">
+          {nodes.map((node) => (
+            <g key={node.id}>
+              <circle cx={node.x} cy={node.y} r={10} fill="var(--paper)" stroke="var(--gold)" strokeWidth={3} />
+              <text
+                x={node.x + node.labelDx}
+                y={node.labelAnchor === 'middle' ? node.y - 22 : node.y - 6}
+                textAnchor={node.labelAnchor}
+                className="text-[18px] font-semibold"
+                fill="var(--ink)"
+              >
+                {node.label}
+              </text>
+              <text
+                x={node.x + node.labelDx}
+                y={node.labelAnchor === 'middle' ? node.y + 34 : node.y + 18}
+                textAnchor={node.labelAnchor}
+                className="text-[14px]"
+                fill="var(--ink-dim)"
+              >
+                {node.figure}
+              </text>
+            </g>
+          ))}
+        </g>
       </svg>
-    </div>
+    </RevealOnView>
   )
 }

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { CanonPageLayout } from '@/components/foundation/canon/CanonPageLayout'
 import { CanonFormula } from '@/components/foundation/canon/CanonFormula'
 import { OpenInFullCanon } from '@/components/foundation/canon/OpenInFullCanon'
+import { RevealOnView } from '@/components/motion/RevealOnView'
 import { OPERATORS_CONTENT } from '@/lib/content/canonReaders'
 import { findCanonNavItem } from '@/lib/content/canonNav'
 
@@ -31,7 +32,7 @@ export default function OperatorsPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <RevealOnView className="motion-emerge-stagger grid grid-cols-1 gap-5 sm:grid-cols-2">
         {operators.map((operator) => (
           <div
             key={operator.id}
@@ -52,7 +53,7 @@ export default function OperatorsPage() {
             </p>
           </div>
         ))}
-      </div>
+      </RevealOnView>
 
       <div>
         <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>

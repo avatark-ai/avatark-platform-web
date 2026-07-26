@@ -86,7 +86,7 @@ export function CanonRail() {
                 key={item.id}
                 href={item.institutionalHref ?? '#'}
                 aria-current={active ? 'page' : undefined}
-                className="shrink-0 rounded-sm text-sm font-medium transition-colors hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="shrink-0 rounded-sm text-sm font-medium transition-colors duration-200 hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={{ color: active ? 'var(--gold)' : 'var(--ink-dim)', outlineColor: 'var(--gold)' }}
               >
                 {item.label}

@@ -86,3 +86,181 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* ---------------------------------------------------------------------
+   Institutional motion system -- six canonical primitives: EMERGE, DRAW,
+   CONNECT, SETTLE, RIPPLE, BREATHE. Institutional pages only
+   (components/foundation/*, app/canon, app/founder, app/foundation);
+   Echo consumer pages are untouched by this pass.
+
+   The prefers-reduced-motion block above already collapses every
+   animation/transition duration to ~0 globally, so none of the classes
+   below need their own reduced-motion opt-out -- that's handled once,
+   for the whole site, rather than per primitive.
+
+   Motion hierarchy this pass respects:
+     1. Narrative motion   -- diagram line drawing, Living Spiral progression
+     2. Supporting motion  -- page-entry/chapter transitions, card emergence
+     3. Micro-interaction  -- nav active-state color, CTA ripple
+   ------------------------------------------------------------------- */
+:root {
+  --motion-ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-duration-emerge: 500ms;
+  --motion-duration-draw: 1100ms;
+  --motion-duration-ripple: 650ms;
+  --motion-duration-breathe: 3400ms;
+  --motion-stagger-step: 55ms;
+}
+
+/* EMERGE + SETTLE -- fade up into resting position. Used for page-entry,
+   Founder chapter transitions, and Canon plate/card emergence. Elements
+   start hidden via the base class so there's no flash of the final state
+   before JS marks the ancestor .is-revealed (see RevealOnView/PageEnter).
+   Final opacity defaults to 1 but is overridable per-element via
+   --motion-emerge-to (e.g. a dot that should settle at a dimmed 0.6, not
+   fully opaque, once revealed). */
+@keyframes motion-emerge {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: var(--motion-emerge-to, 1);
+    transform: translateY(0);
+  }
+}
+.motion-emerge {
+  opacity: 0;
+}
+.motion-emerge.is-revealed {
+  animation: motion-emerge var(--motion-duration-emerge) var(--motion-ease-settle) forwards;
+}
+
+/* Same primitive, applied to a grid/list of children with a small
+   cascading stagger instead of one flat fade -- "emergence" reading as
+   a sequence rather than everything appearing at once. Covers up to 12
+   children (the largest grid this pass uses is the 12 Sacred Geometry
+   plates); anything past that just shares the last delay step.
+
+   .is-revealed is added by RevealOnView to the wrapper *it* renders --
+   which is sometimes the same element as .motion-emerge-stagger (the
+   className passed straight into RevealOnView) and sometimes an ancestor
+   of it (.motion-emerge-stagger set on a nested grid/SVG-<g> instead).
+   :is() covers both without requiring callers to remember which. */
+.motion-emerge-stagger > * {
+  opacity: 0;
+}
+:is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > * {
+  animation: motion-emerge var(--motion-duration-emerge) var(--motion-ease-settle) forwards;
+}
+:is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(1) {
+  animation-delay: calc(var(--motion-stagger-step) * 0);
+}
+:is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(2) {
+  animation-delay: calc(var(--motion-stagger-step) * 1);
+}
+:is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(3) {
+  animation-delay: calc(var(--motion-stagger-step) * 2);
+}
+:is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(4) {
+  animation-delay: calc(var(--motion-stagger-step) * 3);
+}
+:is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(5) {
+  animation-delay: calc(var(--motion-stagger-step) * 4);
+}
+:is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(6) {
+  animation-delay: calc(var(--motion-stagger-step) * 5);
+}
+:is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(7) {
+  animation-delay: calc(var(--motion-stagger-step) * 6);
+}
+:is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(8) {
+  animation-delay: calc(var(--motion-stagger-step) * 7);
+}
+:is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(9) {
+  animation-delay: calc(var(--motion-stagger-step) * 8);
+}
+:is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(10) {
+  animation-delay: calc(var(--motion-stagger-step) * 9);
+}
+:is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(11) {
+  animation-delay: calc(var(--motion-stagger-step) * 10);
+}
+:is(.is-revealed .motion-emerge-stagger, .motion-emerge-stagger.is-revealed) > *:nth-child(n + 12) {
+  animation-delay: calc(var(--motion-stagger-step) * 11);
+}
+
+/* DRAW + CONNECT -- SVG stroke reveal. Each diagram computes its own
+   stroke-dasharray/stroke-dashoffset from its real point data (see
+   lib/motion/pathLength.ts) and sets it inline; this class only supplies
+   the animation once .is-revealed is present, whether on the same
+   element or an ancestor (see note above). Presentation attributes have
+   lower priority than a CSS animation targeting the same property, so
+   the animation cleanly overrides the initial (fully hidden) inline
+   dashoffset. */
+@keyframes motion-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+:is(.is-revealed .motion-draw, .motion-draw.is-revealed) {
+  animation: motion-draw var(--motion-duration-draw) var(--motion-ease-settle) forwards;
+}
+
+/* DRAW, then BREATHE once drawing finishes -- a single rule so the two
+   animations compose in one `animation` shorthand instead of two
+   separate class rules fighting over which one "wins" the cascade. Used
+   on the Living Spiral's loop: it draws once, then breathes gently,
+   forever -- signaling the spiral is a continuous, ongoing practice
+   rather than a completed line. */
+:is(.is-revealed .motion-draw-then-breathe, .motion-draw-then-breathe.is-revealed) {
+  animation:
+    motion-draw var(--motion-duration-draw) var(--motion-ease-settle) forwards,
+    motion-breathe var(--motion-duration-breathe) ease-in-out var(--motion-duration-draw) infinite;
+}
+
+/* RIPPLE -- an expanding, fading ring from the pointer's position on a
+   primary CTA. Spawned/removed by RippleLink; this only supplies the
+   animation for the span it inserts. */
+@keyframes motion-ripple {
+  from {
+    transform: scale(0);
+    opacity: 0.4;
+  }
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+.motion-ripple-span {
+  position: absolute;
+  border-radius: 9999px;
+  background: currentColor;
+  pointer-events: none;
+  animation: motion-ripple var(--motion-duration-ripple) ease-out forwards;
+}
+
+/* BREATHE -- a slow, low-contrast opacity pulse marking a single "this is
+   alive/ongoing" element. Used once, deliberately: the Living Spiral's
+   own connecting loop, after it finishes drawing -- never a scale or
+   rotation loop, never applied to more than one element at a time. */
+@keyframes motion-breathe {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.motion-breathe {
+  animation-name: motion-breathe;
+  animation-duration: var(--motion-duration-breathe);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+/* Progressive-enhancement safety net for the no-JS case (RevealOnView/
+   PageEnter never run, so .is-revealed never gets added): a <noscript>
+   stylesheet forcing all of the above back to their resting state lives
+   in app/layout.tsx, applied once for the whole site. */

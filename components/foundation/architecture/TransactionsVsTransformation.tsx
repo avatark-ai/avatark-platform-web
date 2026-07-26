@@ -1,8 +1,13 @@
+import { RevealOnView } from '@/components/motion/RevealOnView'
+import { polylineLength } from '@/lib/motion/pathLength'
+
 // Diagram 1: two small SVGs sharing the same node positions on the x-axis --
 // Transactions are flat, isolated dots (nothing connects them); Transformation
 // is the same count of points rising and joined into one line. Same viewBox
 // scaling convention as LivingSpiral.tsx/FounderGeometry.tsx (h-auto w-full,
-// no fixed pixel width), so nothing clips on mobile.
+// no fixed pixel width), so nothing clips on mobile. Motion: the
+// Transformation line draws itself in, both panels' dots emerge in a
+// small cascade, once scrolled into view.
 const POINTS_X = [24, 78, 132, 186, 216]
 
 const TRANSACTION_Y = [56, 56, 56, 56, 56]
@@ -28,26 +33,35 @@ function Panel({
         → {caption}
       </p>
       <svg viewBox="0 0 240 100" className="mt-4 h-auto w-full" role="img" aria-hidden="true">
-        {connected && (
-          <polyline
-            points={points.map((p) => `${p.x},${p.y}`).join(' ')}
-            fill="none"
-            stroke="var(--gold)"
-            strokeWidth={2}
-          />
-        )}
-        {points.map((p, index) => (
-          <circle
-            key={index}
-            cx={p.x}
-            cy={p.y}
-            r={5}
-            fill={connected ? 'var(--paper)' : 'var(--ink-dim)'}
-            stroke={connected ? 'var(--gold)' : 'none'}
-            strokeWidth={connected ? 2 : 0}
-            opacity={connected ? 1 : 0.6}
-          />
-        ))}
+        {connected &&
+          (() => {
+            const length = polylineLength(points)
+            return (
+              <polyline
+                points={points.map((p) => `${p.x},${p.y}`).join(' ')}
+                fill="none"
+                stroke="var(--gold)"
+                strokeWidth={2}
+                strokeDasharray={length}
+                strokeDashoffset={length}
+                className="motion-draw"
+              />
+            )
+          })()}
+        <g className="motion-emerge-stagger">
+          {points.map((p, index) => (
+            <circle
+              key={index}
+              cx={p.x}
+              cy={p.y}
+              r={5}
+              fill={connected ? 'var(--paper)' : 'var(--ink-dim)'}
+              stroke={connected ? 'var(--gold)' : 'none'}
+              strokeWidth={connected ? 2 : 0}
+              style={{ '--motion-emerge-to': connected ? 1 : 0.6 } as React.CSSProperties}
+            />
+          ))}
+        </g>
       </svg>
     </div>
   )
@@ -55,23 +69,25 @@ function Panel({
 
 export function TransactionsVsTransformation() {
   return (
-    <div
-      className="grid grid-cols-1 gap-4 sm:grid-cols-2"
-      role="img"
-      aria-label="Transactions record what happened, as isolated events. Transformation connects the same moments into what changed in the person."
-    >
-      <Panel
-        eyebrow="Transactions"
-        caption="what happened"
-        points={POINTS_X.map((x, i) => ({ x, y: TRANSACTION_Y[i] }))}
-        connected={false}
-      />
-      <Panel
-        eyebrow="Transformation"
-        caption="what changed in the person"
-        points={POINTS_X.map((x, i) => ({ x, y: TRANSFORMATION_Y[i] }))}
-        connected
-      />
-    </div>
+    <RevealOnView>
+      <div
+        className="grid grid-cols-1 gap-4 sm:grid-cols-2"
+        role="img"
+        aria-label="Transactions record what happened, as isolated events. Transformation connects the same moments into what changed in the person."
+      >
+        <Panel
+          eyebrow="Transactions"
+          caption="what happened"
+          points={POINTS_X.map((x, i) => ({ x, y: TRANSACTION_Y[i] }))}
+          connected={false}
+        />
+        <Panel
+          eyebrow="Transformation"
+          caption="what changed in the person"
+          points={POINTS_X.map((x, i) => ({ x, y: TRANSFORMATION_Y[i] }))}
+          connected
+        />
+      </div>
+    </RevealOnView>
   )
 }

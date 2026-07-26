@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { FounderPageLayout } from '@/components/foundation/founder/FounderPageLayout'
 import { FounderChapterHeader } from '@/components/foundation/founder/FounderChapterHeader'
 import { FounderChapterNav } from '@/components/foundation/founder/FounderChapterNav'
+import { RippleLink } from '@/components/motion/RippleLink'
 import { getFounderLetter } from '@/lib/content/foundation'
 import { ENTER_ECHO_HREF } from '@/lib/content/links'
 
@@ -52,13 +53,13 @@ export default function FounderFuturePage() {
       </div>
 
       <div className="mt-8 text-center">
-        <Link
+        <RippleLink
           href={ENTER_ECHO_HREF}
           className="inline-block rounded-md px-8 py-3 text-sm font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{ background: 'var(--ink)', color: 'var(--paper)', outlineColor: 'var(--gold)' }}
         >
           Enter Echo
-        </Link>
+        </RippleLink>
       </div>
     </FounderPageLayout>
   )
