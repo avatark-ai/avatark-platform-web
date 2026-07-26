@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { FounderPageLayout } from '@/components/foundation/founder/FounderPageLayout'
+import { FounderChapterHeader } from '@/components/foundation/founder/FounderChapterHeader'
+import { FounderChapterNav } from '@/components/foundation/founder/FounderChapterNav'
 import { getFounderLetter } from '@/lib/content/foundation'
 import { ENTER_ECHO_HREF } from '@/lib/content/links'
 
@@ -17,9 +19,7 @@ export default function FounderFuturePage() {
 
   return (
     <FounderPageLayout>
-      <h1 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
-        {chapter.navLabel}
-      </h1>
+      <FounderChapterHeader chapterId="future" title={chapter.navLabel} />
       <div className="mt-6 flex flex-col gap-5 text-lg leading-8" style={{ color: 'var(--ink)' }}>
         {chapter.paragraphs.map((paragraph, index) => (
           <div key={index}>
@@ -37,7 +37,9 @@ export default function FounderFuturePage() {
         ))}
       </div>
 
-      <div className="mt-8 border-t pt-8" style={{ borderColor: 'var(--paper-line)' }}>
+      <FounderChapterNav chapterId="future" />
+
+      <div className="mt-8">
         <p className="text-base font-semibold" style={{ color: 'var(--ink)' }}>
           {letter.author}
         </p>

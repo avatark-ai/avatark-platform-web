@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import { FounderPageLayout } from '@/components/foundation/founder/FounderPageLayout'
+import { FounderChapterHeader } from '@/components/foundation/founder/FounderChapterHeader'
+import { FounderChapterNav } from '@/components/foundation/founder/FounderChapterNav'
 import { FounderGeometry } from '@/components/foundation/founder/FounderGeometry'
 import { FounderPullQuote } from '@/components/foundation/founder/FounderPullQuote'
 import { getFounderLetter } from '@/lib/content/foundation'
@@ -17,9 +19,7 @@ export default function FounderSynthesisPage() {
 
   return (
     <FounderPageLayout>
-      <h1 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
-        {chapter.navLabel}
-      </h1>
+      <FounderChapterHeader chapterId="synthesis" title={chapter.navLabel} />
       <div className="mt-6 flex flex-col gap-5 text-lg leading-8" style={{ color: 'var(--ink)' }}>
         {chapter.paragraphs.map((paragraph, index) =>
           chapter.pullQuoteIndexes.includes(index) ? (
@@ -30,6 +30,8 @@ export default function FounderSynthesisPage() {
         )}
       </div>
       <FounderGeometry />
+
+      <FounderChapterNav chapterId="synthesis" />
     </FounderPageLayout>
   )
 }

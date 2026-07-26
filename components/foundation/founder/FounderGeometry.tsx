@@ -29,7 +29,7 @@ export function FounderGeometry() {
   const [awareness, wisdom, responsibility, creation] = nodes
 
   return (
-    <div className="mx-auto my-10 max-w-md sm:max-w-lg">
+    <div className="mx-auto my-12 max-w-lg sm:max-w-2xl">
       <svg
         viewBox="0 0 400 260"
         className="h-auto w-full"
@@ -42,7 +42,7 @@ export function FounderGeometry() {
           x2={responsibility.x}
           y2={responsibility.y}
           stroke="var(--paper-line)"
-          strokeWidth={1.5}
+          strokeWidth={2}
         />
         <line
           x1={wisdom.x}
@@ -50,25 +50,25 @@ export function FounderGeometry() {
           x2={creation.x}
           y2={creation.y}
           stroke="var(--paper-line)"
-          strokeWidth={1.5}
+          strokeWidth={2}
         />
         {nodes.map((node) => (
           <g key={node.id}>
-            <circle cx={node.x} cy={node.y} r={9} fill="var(--paper)" stroke="var(--gold)" strokeWidth={2.5} />
+            <circle cx={node.x} cy={node.y} r={10} fill="var(--paper)" stroke="var(--gold)" strokeWidth={3} />
             <text
               x={node.x + node.labelDx}
-              y={node.labelAnchor === 'middle' ? node.y - 20 : node.y - 5}
+              y={node.labelAnchor === 'middle' ? node.y - 22 : node.y - 6}
               textAnchor={node.labelAnchor}
-              className="text-[16px] font-semibold"
+              className="text-[18px] font-semibold"
               fill="var(--ink)"
             >
               {node.label}
             </text>
             <text
               x={node.x + node.labelDx}
-              y={node.labelAnchor === 'middle' ? node.y + 32 : node.y + 16}
+              y={node.labelAnchor === 'middle' ? node.y + 34 : node.y + 18}
               textAnchor={node.labelAnchor}
-              className="text-[13px]"
+              className="text-[14px]"
               fill="var(--ink-dim)"
             >
               {node.figure}

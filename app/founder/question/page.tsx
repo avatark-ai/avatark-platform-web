@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import { FounderPageLayout } from '@/components/foundation/founder/FounderPageLayout'
+import { FounderChapterHeader } from '@/components/foundation/founder/FounderChapterHeader'
+import { FounderChapterNav } from '@/components/foundation/founder/FounderChapterNav'
 import { FounderPullQuote } from '@/components/foundation/founder/FounderPullQuote'
 import { getFounderLetter } from '@/lib/content/foundation'
 
@@ -16,9 +18,7 @@ export default function FounderQuestionPage() {
 
   return (
     <FounderPageLayout>
-      <h1 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
-        {chapter.navLabel}
-      </h1>
+      <FounderChapterHeader chapterId="question" title={chapter.navLabel} />
       <div className="mt-6 flex flex-col gap-5 text-lg leading-8" style={{ color: 'var(--ink)' }}>
         {chapter.paragraphs.map((paragraph, index) =>
           chapter.pullQuoteIndexes.includes(index) ? (
@@ -28,6 +28,8 @@ export default function FounderQuestionPage() {
           ),
         )}
       </div>
+
+      <FounderChapterNav chapterId="question" />
     </FounderPageLayout>
   )
 }
