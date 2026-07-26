@@ -20,15 +20,13 @@ export interface FounderLetter {
 }
 
 // Display copy for each `## Heading` in founder-letter.md -- kept short in
-// the file itself, spelled out here for the page/chapter-nav. Closing has
-// no nav entry (the Founder page's chapter nav omits it deliberately).
+// the file itself, spelled out here for the page/chapter-nav. Every
+// chapter here gets a nav entry (Technology+Geometry merged into
+// Synthesis, and AvatarK+Future+Closing merged into Future).
 const FOUNDER_CHAPTER_NAV_LABELS: Record<string, string> = {
   Question: 'The Question',
-  Technology: 'Technology',
-  Geometry: 'Geometry',
-  AvatarK: 'AvatarK',
+  Synthesis: 'The Synthesis',
   Future: 'The Future',
-  Closing: 'Closing',
 }
 
 export function getFounderLetter(): FounderLetter {

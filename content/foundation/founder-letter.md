@@ -19,27 +19,19 @@ What builds the engineer before the engineer builds the world?
 
 ## Question
 
-The name Setpoint stayed with me as well.
+The name Setpoint stayed with me as well — in engineering, a setpoint is the state toward which a system is regulated: a system senses where it is, compares that state with where it needs to be, and continually adjusts.
 
-In engineering, a setpoint is the state toward which a system is regulated. A system senses where it is, compares that state with where it needs to be and continually adjusts.
-
-Over time, I began asking the same question about human beings.
-
-What is the setpoint of a human life?
+Over time, I began asking the same question about human beings: what is the setpoint of a human life?
 
 How do we recognize when we are drifting? How do we adapt when circumstances change? How do we retain what experience has taught us? And how does one person's learning become useful to another?
 
-## Technology
+## Synthesis
 
 After BITS Pilani, I pursued a master's degree in computer science in the United States. I then spent more than thirty years working across enterprise software, distributed systems, semiconductors and artificial intelligence, including part of my career at IBM.
 
-Technology taught me how to build systems.
+Technology taught me how to build systems: how information could be structured, how complex processes could be coordinated, and how software could extend human capability across organizations and continents.
 
-It taught me how information could be structured, how complex processes could be coordinated and how software could extend human capability across organizations and continents.
-
-But it also revealed something missing.
-
-Most technology remembers transactions better than transformation.
+But it also revealed something missing — most technology remembers transactions better than transformation.
 
 It can record what a person bought, clicked, produced or completed. It can measure productivity, model behavior and predict what someone may do next. But it rarely understands what that person practiced, learned, overcame or became—and what another life might carry forward from it.
 
@@ -49,47 +41,23 @@ We have operating systems for computers, databases for knowledge and algorithms 
 
 We measure performance, but rarely cultivate character. We optimize outcomes, but often lose the human journey that produced them. We preserve documents, images and messages, but not necessarily the wisdom earned through a lifetime of decisions, mistakes, practices and reflection.
 
-## Geometry
+That question from BITS Pilani never left me, and as I searched for answers, I returned to Indian philosophical traditions. They describe an extraordinary inner journey—not merely a collection of beliefs, but disciplines through which a human being develops awareness, wisdom, responsibility and the capacity to act with purpose. What those three qualities mean here — Adiyogi, Krishna, Rama — is its own account, held in the Canon; this letter is the story of how I arrived at them, not a definition of them.
 
-That question from BITS Pilani never left me.
+These traditions offered a vertical journey of human development: a movement inward and upward, through attention, discipline, self-knowledge and transformation. Engineering and enterprise technology offered another dimension: structure, evidence, execution and scale.
 
-As I searched for answers, I returned to Indian philosophical traditions. They describe an extraordinary inner journey—not merely a collection of beliefs, but disciplines through which a human being develops awareness, wisdom, responsibility and the capacity to act with purpose. What those three qualities mean here — Adiyogi, Krishna, Rama — is its own account, held in the Canon; this letter is the story of how I arrived at them, not a definition of them.
-
-These traditions offered a vertical journey of human development: a movement inward and upward, through attention, discipline, self-knowledge and transformation.
-
-Engineering and enterprise technology offered another dimension: structure, evidence, execution and scale.
-
-But one question remained.
-
-After we build ourselves, what do we build for others?
-
-Prometheus offered an unexpected answer.
+But one question remained: after we build ourselves, what do we build for others? Prometheus offered an unexpected answer.
 
 The Indian traditions illuminated the vertical journey of becoming. Prometheus became the fourth axis — the perpendicular one. What it means, and how it completes the geometry, is also in the Canon.
 
-Looking back, I realized that my own life had followed this same pattern.
+Looking back, I realized that my own life had followed this same pattern: BITS Pilani gave me the question; Indian philosophy gave me a framework for inner development; Western engineering taught me how to design and build systems; and Prometheus gave those systems a purpose beyond themselves.
 
-BITS Pilani gave me the question.
+## Future
 
-Indian philosophy gave me a framework for inner development.
-
-Western engineering taught me how to design and build systems.
-
-Prometheus gave those systems a purpose beyond themselves.
-
-## AvatarK
-
-AvatarK is where these journeys meet.
-
-It is not simply an artificial-intelligence platform, a digital identity system or a collection of software products.
-
-> It is an architecture for becoming.
+AvatarK is where these journeys meet. It is not simply an artificial-intelligence platform, a digital identity system or a collection of software products — it is an architecture for becoming.
 
 Its purpose is to help people learn from human experience, transform wisdom into practice, observe what changes, preserve the evidence of that transformation and pass what proves valuable to another person.
 
-It is not intended to manufacture a digital imitation of a human being.
-
-A person is not a dataset to be reconstructed.
+It is not intended to manufacture a digital imitation of a human being: a person is not a dataset to be reconstructed.
 
 A life is a continuing process of attention, practice, relationship, responsibility, creation and change.
 
@@ -115,30 +83,16 @@ These are not meant to be disconnected products. They are different surfaces of 
 
 Life → Experience → Reflection → Practice → Evidence → Story → Inheritance
 
-A life produces more than data.
-
-It leaves an Echo.
+A life produces more than data — it leaves an Echo.
 
 That Echo is not merely a record of what happened. It is what remains useful after the moment has passed: a practice, a warning, a way of seeing, a decision, a story or a truth that another person can test in their own life.
 
-## Future
-
-Technology changes rapidly.
-
-Human nature evolves slowly.
+Technology changes rapidly, while human nature evolves slowly.
 
 The next generation of technology should not only make us faster or more productive. It should help us become more aware, more responsible and more capable of contributing to others.
 
-It should remember not only what we did, but what we learned.
+It should remember not only what we did, but what we learned, and it should help transform information into practice, practice into evidence and evidence into wisdom that can travel between lives.
 
-It should help transform information into practice, practice into evidence and evidence into wisdom that can travel between lives.
+That is the journey AvatarK invites you to begin — not simply to use technology, but to become someone worth remembering.
 
-## Closing
-
-That is the journey AvatarK invites you to begin.
-
-Not simply to use technology.
-
-But to become someone worth remembering.
-
-> And to leave an Echo worth carrying forward.
+And to leave an Echo worth carrying forward.

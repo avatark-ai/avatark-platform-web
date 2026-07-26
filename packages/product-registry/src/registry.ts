@@ -278,7 +278,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     id: 'setpointk',
     slug: 'setpointk',
     displayName: 'SetpointK',
-    tagline: 'Historically Cognito-backed',
+    tagline: 'Human-state intelligence: longitudinal health, adaptive protocols, and digital-twin reasoning via the SETPOINT Physiological Index',
     description:
       'Wellness/goal-setting product. Historically backed by its own Cognito auth; not yet integrated with Platform identity. No local repository found in this workspace.',
     status: 'internal',

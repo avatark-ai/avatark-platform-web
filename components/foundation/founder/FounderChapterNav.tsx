@@ -37,7 +37,7 @@ export function FounderChapterNav({ items }: { items: FounderChapterNavItem[] })
   return (
     <nav
       aria-label="Founder chapters"
-      className="flex flex-row flex-wrap gap-x-5 gap-y-2 border-b pb-6 lg:sticky lg:top-24 lg:flex-col lg:gap-y-3 lg:self-start lg:border-b-0 lg:pb-0"
+      className="flex flex-row flex-nowrap gap-x-5 overflow-x-auto border-b pb-4 lg:sticky lg:top-24 lg:flex-col lg:gap-y-3 lg:self-start lg:overflow-visible lg:border-b-0 lg:pb-0"
       style={{ borderColor: 'var(--paper-line)' }}
     >
       {items.map((item) => {
@@ -47,7 +47,7 @@ export function FounderChapterNav({ items }: { items: FounderChapterNavItem[] })
             key={item.id}
             href={`#${item.id}`}
             aria-current={active ? 'true' : undefined}
-            className="rounded-sm text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="shrink-0 rounded-sm text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ color: active ? 'var(--gold)' : 'var(--ink-dim)', outlineColor: 'var(--gold)' }}
           >
             {item.label}

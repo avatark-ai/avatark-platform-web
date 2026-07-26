@@ -1,11 +1,12 @@
-// Section 7 ("From Philosophy to Platform") groups every product into
-// Live/Preview/Building/Research -- a presentation bucket derived purely
-// from each product's real, registry-confirmed status+visibility, never a
-// separate maturity score. Same "derive, don't fabricate" discipline as
+// Section 7 ("From Philosophy to Platform") groups every product using the
+// frozen ecosystem status vocabulary (Live/Public Beta/Preview/Private
+// Beta/In Development) -- a presentation label derived purely from each
+// product's real, registry-confirmed status+visibility, never a separate
+// maturity score. Same "derive, don't fabricate" discipline as
 // lib/activities/registry.ts's registryAvailability().
 import { PRODUCT_REGISTRY, type AvatarKProduct } from '@avatark/product-registry'
 
-export type EcosystemStatus = 'live' | 'preview' | 'building' | 'research'
+export type EcosystemStatus = 'Live' | 'Public Beta' | 'Preview' | 'Private Beta' | 'In Development'
 
 export interface EcosystemStatusEntry {
   id: string
@@ -14,11 +15,13 @@ export interface EcosystemStatusEntry {
   status: EcosystemStatus
 }
 
-function toStatus(product: AvatarKProduct): EcosystemStatus {
-  if (product.visibility === 'public' && product.status === 'live') return 'live'
-  if (product.visibility === 'public' && (product.status === 'beta' || product.status === 'alpha')) return 'preview'
-  if (product.visibility === 'internal' && product.status === 'alpha') return 'building'
-  return 'research'
+export function toEcosystemStatusLabel(product: Pick<AvatarKProduct, 'status' | 'visibility'>): EcosystemStatus {
+  if (product.status === 'live') return 'Live'
+  if (product.status === 'beta') return product.visibility === 'public' ? 'Public Beta' : 'Private Beta'
+  if (product.status === 'alpha') return product.visibility === 'public' ? 'Preview' : 'In Development'
+  // status === 'internal' -- an existing, functioning product just not yet
+  // integrated with Platform identity (e.g. SetpointK), not a from-scratch build.
+  return 'Private Beta'
 }
 
 // AvatarK itself is the platform/shell, not a consumer-facing ecosystem
@@ -32,7 +35,7 @@ export function getEcosystemStatusEntries(): EcosystemStatusEntry[] {
       id: product.id,
       name: product.displayName,
       tagline: product.tagline,
-      status: toStatus(product),
+      status: toEcosystemStatusLabel(product),
     }),
   )
 
@@ -41,13 +44,19 @@ export function getEcosystemStatusEntries(): EcosystemStatusEntry[] {
   // this page describes serves a product that hasn't been built yet.
   return [
     ...fromRegistry,
-    { id: 'echo', name: 'Echo', tagline: 'A person’s wisdom becoming useful to another life.', status: 'research' },
+    {
+      id: 'echo',
+      name: 'Echo',
+      tagline: 'A person’s wisdom becoming useful to another life.',
+      status: 'In Development',
+    },
   ]
 }
 
 export const STATUS_GROUP_ORDER: { status: EcosystemStatus; label: string }[] = [
-  { status: 'live', label: 'Live' },
-  { status: 'preview', label: 'Preview' },
-  { status: 'building', label: 'Building' },
-  { status: 'research', label: 'Research' },
+  { status: 'Live', label: 'Live' },
+  { status: 'Public Beta', label: 'Public Beta' },
+  { status: 'Preview', label: 'Preview' },
+  { status: 'Private Beta', label: 'Private Beta' },
+  { status: 'In Development', label: 'In Development' },
 ]

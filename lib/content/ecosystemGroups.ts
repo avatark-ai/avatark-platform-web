@@ -7,12 +7,15 @@
 import { getProductById } from '@avatark/product-registry'
 import { resolveProductUrl } from '../products/registry.ts'
 import { getEcosystemGroupsContent } from './foundation.ts'
+import { toEcosystemStatusLabel, type EcosystemStatus } from './statusGroups.ts'
 
 export interface EcosystemProductRef {
   id: string
   name: string
   href: string | null
   isEcho: boolean
+  purpose: string | null
+  statusLabel: EcosystemStatus
 }
 
 export interface EcosystemGroup {
@@ -22,14 +25,27 @@ export interface EcosystemGroup {
   products: EcosystemProductRef[]
 }
 
-function resolveEcosystemProduct(id: string): EcosystemProductRef {
+// Exported so the footer can reuse the exact same product resolution
+// (including Echo's special case) instead of a second, separately
+// maintained helper -- the footer previously had its own copy that didn't
+// special-case Echo and rendered it as the raw lowercase id.
+export function resolveEcosystemProduct(id: string): EcosystemProductRef {
   if (id === 'echo') {
     // Echo has no registry entry -- it isn't built yet, an explicit
     // non-goal for this milestone. Never invent a destination for it.
-    return { id: 'echo', name: 'Echo', href: null, isEcho: true }
+    return {
+      id: 'echo',
+      name: 'Echo',
+      href: null,
+      isEcho: true,
+      purpose: 'A person’s wisdom becoming useful to another life.',
+      statusLabel: 'In Development',
+    }
   }
   const product = getProductById(id)
-  if (!product) return { id, name: id, href: null, isEcho: false }
+  if (!product) {
+    return { id, name: id, href: null, isEcho: false, purpose: null, statusLabel: 'In Development' }
+  }
   return {
     id: product.id,
     name: product.displayName,
@@ -39,6 +55,8 @@ function resolveEcosystemProduct(id: string): EcosystemProductRef {
     // without a real destination yet.
     href: product.visibility === 'public' ? resolveProductUrl(product) : null,
     isEcho: false,
+    purpose: product.tagline ?? product.description,
+    statusLabel: toEcosystemStatusLabel(product),
   }
 }
 

@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { InstitutionalLayout } from '@/components/foundation/InstitutionalLayout'
 import { SectionContainer } from '@/components/foundation/Container'
-import { FounderTimeline } from '@/components/foundation/founder/FounderTimeline'
 import { FounderChapterNav } from '@/components/foundation/founder/FounderChapterNav'
 import { FounderGeometry } from '@/components/foundation/founder/FounderGeometry'
 import { FounderPullQuote } from '@/components/foundation/founder/FounderPullQuote'
@@ -14,47 +13,47 @@ export const metadata: Metadata = {
   description: 'Devendar Pallapati, Founder of AvatarK, on the question behind the architecture.',
 }
 
-// Chapters get the chapter nav; Closing does not (per the brief's Founder
-// Navigation list -- Introduction/Question/Technology/Geometry/AvatarK/Future).
-const NAV_CHAPTER_IDS = new Set(['question', 'technology', 'geometry', 'avatark', 'future'])
-
 export default function FounderPage() {
   const letter = getFounderLetter()
 
-  const navItems = [
-    { id: 'introduction', label: 'Introduction' },
-    ...letter.chapters.filter((chapter) => NAV_CHAPTER_IDS.has(chapter.id)).map((chapter) => ({
-      id: chapter.id,
-      label: chapter.navLabel,
-    })),
-  ]
+  const navItems = [{ id: 'introduction', label: 'Introduction' }, ...letter.chapters.map((chapter) => ({
+    id: chapter.id,
+    label: chapter.navLabel,
+  }))]
 
   return (
     <InstitutionalLayout>
       <article>
         <SectionContainer>
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[240px_1fr] lg:gap-12">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[180px_1fr] lg:gap-12">
             <FounderChapterNav items={navItems} />
 
-            <div className="max-w-[680px]">
-              <section id="introduction" className="grid grid-cols-1 gap-8 sm:grid-cols-[160px_1fr]">
-                <FounderTimeline />
-                <div>
-                  <h1 className="text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">{letter.title}</h1>
-                  <div className="mt-8 flex flex-col gap-6 text-lg leading-8" style={{ color: 'var(--ink)' }}>
-                    {letter.opening.map((paragraph, index) => (
-                      <p key={index}>{paragraph}</p>
-                    ))}
-                  </div>
+            <div className="max-w-[var(--editorial-width)]">
+              <section id="introduction" className="scroll-mt-24">
+                <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+                  Founder Letter
+                </p>
+                <h1 className="mt-2 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+                  {letter.title}
+                </h1>
+                <div className="mt-6 flex flex-col gap-5 text-lg leading-8" style={{ color: 'var(--ink)' }}>
+                  {letter.opening.map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))}
                 </div>
               </section>
 
               {letter.chapters.map((chapter) => (
-                <section key={chapter.id} id={chapter.id} className="mt-16 border-t pt-16" style={{ borderColor: 'var(--paper-line)' }}>
+                <section
+                  key={chapter.id}
+                  id={chapter.id}
+                  className="mt-8 scroll-mt-24 border-t pt-8"
+                  style={{ borderColor: 'var(--paper-line)' }}
+                >
                   <h2 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
                     {chapter.navLabel}
                   </h2>
-                  <div className="mt-6 flex flex-col gap-6 text-lg leading-8" style={{ color: 'var(--ink)' }}>
+                  <div className="mt-6 flex flex-col gap-5 text-lg leading-8" style={{ color: 'var(--ink)' }}>
                     {chapter.paragraphs.map((paragraph, index) =>
                       chapter.pullQuoteIndexes.includes(index) ? (
                         <FounderPullQuote key={index}>{paragraph}</FounderPullQuote>
@@ -63,11 +62,11 @@ export default function FounderPage() {
                       ),
                     )}
                   </div>
-                  {chapter.id === 'geometry' && <FounderGeometry />}
+                  {chapter.id === 'synthesis' && <FounderGeometry />}
                 </section>
               ))}
 
-              <div className="mt-16 border-t pt-8" style={{ borderColor: 'var(--paper-line)' }}>
+              <div className="mt-8 border-t pt-8" style={{ borderColor: 'var(--paper-line)' }}>
                 <p className="text-base font-semibold" style={{ color: 'var(--ink)' }}>
                   {letter.author}
                 </p>
@@ -79,7 +78,7 @@ export default function FounderPage() {
                 </p>
               </div>
 
-              <div className="mt-16 text-center">
+              <div className="mt-8 text-center">
                 <Link
                   href={ENTER_ECHO_HREF}
                   className="inline-block rounded-md px-8 py-3 text-sm font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"

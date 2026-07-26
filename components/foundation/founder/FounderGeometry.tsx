@@ -27,7 +27,7 @@ export function FounderGeometry() {
   const [awareness, wisdom, responsibility, creation] = nodes
 
   return (
-    <div className="mx-auto my-12 max-w-sm">
+    <div className="mx-auto my-8 max-w-[220px]">
       <svg
         viewBox="0 0 400 260"
         className="h-auto w-full"
