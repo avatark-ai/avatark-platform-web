@@ -21,6 +21,7 @@ function isInstitutionalOnlyPath(pathname: string): boolean {
     pathname.startsWith("/founder/") ||
     pathname === "/foundation" ||
     pathname === "/canon" ||
+    pathname.startsWith("/canon/") ||
     pathname === "/ecosystem" ||
     pathname === "/roadmap"
   );

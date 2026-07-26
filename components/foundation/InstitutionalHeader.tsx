@@ -4,9 +4,9 @@
 // app-shell's own header/footer (components/echo/shell/EchoShell.tsx,
 // EchoHeader.tsx). That one keeps running, unchanged, on /start, /journey,
 // /account, /enter, etc. This one only renders on the institutional pages
-// (/, /foundation, /canon, /founder and its sub-routes, /ecosystem,
-// /roadmap) -- EchoShell.isInstitutionalOnlyPath() self-excludes there so
-// the two shells never stack.
+// (/, /foundation, /canon and its sub-routes, /founder and its sub-routes,
+// /ecosystem, /roadmap) -- EchoShell.isInstitutionalOnlyPath() self-excludes
+// there so the two shells never stack.
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
