@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { DepartureLink } from '@/components/motion/DepartureLink'
-import { PlatformBreadcrumb } from './PlatformBreadcrumb'
 import { StatusBadge, type PlatformStatus } from './StatusBadge'
 
 // One of the three equal Growth Engine cards (PrometheusK, GameK, AtlasK).
@@ -10,8 +9,12 @@ import { StatusBadge, type PlatformStatus } from './StatusBadge'
 // resolver the pre-existing /ecosystem grid and the homepage's
 // EcosystemPreview already share, so this card can't drift from the real
 // product registry either.
+//
+// RC4 final polish: no longer opens with an "AvatarK > Echo > Product"
+// breadcrumb -- the page already establishes that lineage (the diagram,
+// the section headings), so repeating it inside every card was redundant.
+// Cards now open directly with their descriptor (e.g. "Practice Engine").
 export function GrowthEngineCard({
-  breadcrumbTrail,
   engineName,
   descriptor,
   status,
@@ -23,7 +26,6 @@ export function GrowthEngineCard({
   ctaLabel,
   nextProducts,
 }: {
-  breadcrumbTrail: string[]
   engineName: string
   descriptor: string
   status: PlatformStatus
@@ -52,9 +54,7 @@ export function GrowthEngineCard({
       className="flex flex-col rounded-lg border p-6"
       style={{ borderColor: 'var(--paper-line)', background: 'var(--surface-card)' }}
     >
-      <PlatformBreadcrumb trail={breadcrumbTrail} />
-
-      <div className="mt-4 flex items-start justify-between gap-3">
+      <div className="flex items-start justify-between gap-3">
         <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
           {descriptor}
         </p>

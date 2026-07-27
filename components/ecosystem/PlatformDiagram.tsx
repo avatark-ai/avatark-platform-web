@@ -128,13 +128,13 @@ function renderDiagram(positions: Record<string, Point>, radius: number) {
               x={point.x}
               y={point.y - radius - 8}
               textAnchor="middle"
-              className="text-[13px] font-semibold"
+              className="text-[14px] font-semibold"
               fill="var(--ink)"
             >
               {node.label}
             </text>
             {node.sublabel && (
-              <text x={point.x} y={point.y + radius + 18} textAnchor="middle" className="text-[11px]" fill="var(--ink-dim)">
+              <text x={point.x} y={point.y + radius + 18} textAnchor="middle" className="text-[12px]" fill="var(--ink-dim)">
                 {node.sublabel}
               </text>
             )}
@@ -152,14 +152,20 @@ export function PlatformDiagram() {
   return (
     <RevealOnView sessionKey="platform-diagram">
       <div
-        className="mx-auto max-w-4xl rounded-lg border p-8 sm:p-10"
+        className="mx-auto max-w-5xl rounded-lg border p-8 sm:p-10"
         style={{ borderColor: 'var(--paper-line)', background: 'var(--surface-card)' }}
       >
-        <svg viewBox="0 0 760 460" className="hidden h-auto w-full sm:block" role="img" aria-label={DIAGRAM_ARIA_LABEL}>
-          {renderDiagram(DESKTOP_POSITIONS, 15)}
+        {/* RC4 final polish: desktop viewBox tightened from "0 0 760 460"
+            (760 wide) to 680 wide, cropping ~40px of excess margin off each
+            side -- node/edge coordinates below are unchanged, this only
+            narrows the visible window onto them. Mobile viewBox is left as
+            "0 0 300 410": its content already runs close to those edges, so
+            tightening it further would risk clipping label text. */}
+        <svg viewBox="40 0 680 460" className="hidden h-auto w-full sm:block" role="img" aria-label={DIAGRAM_ARIA_LABEL}>
+          {renderDiagram(DESKTOP_POSITIONS, 16)}
         </svg>
         <svg viewBox="0 0 300 410" className="h-auto w-full sm:hidden" role="img" aria-label={DIAGRAM_ARIA_LABEL}>
-          {renderDiagram(MOBILE_POSITIONS, 11)}
+          {renderDiagram(MOBILE_POSITIONS, 12)}
         </svg>
       </div>
     </RevealOnView>

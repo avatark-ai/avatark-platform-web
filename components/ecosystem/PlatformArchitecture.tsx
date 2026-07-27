@@ -71,13 +71,13 @@ export function PlatformArchitecture() {
           </p>
           <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">AvatarK → Echo</h2>
 
-          <div className="mt-6">
+          <div className="mt-5">
             <PlatformDiagram />
           </div>
 
           <Link
             href={ENTER_ECHO_HREF}
-            className="mt-6 inline-block rounded-md px-6 py-3 text-sm font-semibold transition hover:opacity-90 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="mt-5 inline-block rounded-md px-6 py-3 text-sm font-semibold transition hover:opacity-90 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ background: 'var(--ink)', color: 'var(--paper)', outlineColor: 'var(--gold)' }}
           >
             Enter Echo
@@ -92,7 +92,7 @@ export function PlatformArchitecture() {
             Growth Engines
           </p>
 
-          <RevealOnView className="motion-emerge-stagger mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <RevealOnView className="motion-emerge-stagger mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {getGrowthEngines().map((engine) => {
               const copy = ENGINE_COPY[engine.id]
               const nextProducts = getJourneyTransitions()
@@ -101,7 +101,6 @@ export function PlatformArchitecture() {
               return (
                 <GrowthEngineCard
                   key={engine.id}
-                  breadcrumbTrail={['AvatarK', 'Echo', engine.name]}
                   engineName={engine.name}
                   descriptor={copy.descriptor}
                   status={engine.status}
@@ -125,7 +124,7 @@ export function PlatformArchitecture() {
           <p className="text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
             Expression Layer
           </p>
-          <div className="mt-6">
+          <div className="mt-5">
             <ExpressionLayer />
           </div>
         </SectionContainer>
@@ -146,20 +145,19 @@ export function PlatformArchitecture() {
             Every product above is one surface of a single platform, not a separate product that happens to sit
             next to the others. These are the services it shares.
           </p>
-          <div className="mt-6">
+          <div className="mt-5">
             <PlatformServices />
           </div>
 
-          <h2 className="mt-12 text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-dim)' }}>
+          <h2 className="mt-10 text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-dim)' }}>
             Creator & Intelligence
           </h2>
-          <RevealOnView className="motion-emerge-stagger mx-auto mt-6 grid max-w-2xl grid-cols-1 gap-5 sm:grid-cols-2">
+          <RevealOnView className="motion-emerge-stagger mx-auto mt-5 grid max-w-2xl grid-cols-1 gap-5 sm:grid-cols-2">
             {getCreatorIntelligenceNodes().map((node) => {
               const copy = CREATOR_INTELLIGENCE_COPY[node.id]
               return (
                 <GrowthEngineCard
                   key={node.id}
-                  breadcrumbTrail={['AvatarK', node.name]}
                   engineName={node.name}
                   descriptor={copy.descriptor}
                   status={node.status}
@@ -182,7 +180,7 @@ export function PlatformArchitecture() {
           <h2 className="text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-dim)' }}>
             Continue Your Journey
           </h2>
-          <div className="mt-6">
+          <div className="mt-5">
             <ContinueYourJourney />
           </div>
         </SectionContainer>

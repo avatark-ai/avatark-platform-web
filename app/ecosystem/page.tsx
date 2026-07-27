@@ -19,16 +19,14 @@ export default function EcosystemPage() {
   return (
     <InstitutionalLayout>
       <section className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
-        <div className="mx-auto flex w-full max-w-[var(--editorial-width)] flex-col items-center gap-5 px-6 py-10 text-center sm:py-12">
+        <div className="mx-auto flex w-full max-w-[var(--editorial-width)] flex-col items-center gap-3 px-6 py-7 text-center sm:py-8">
           <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl md:text-6xl">
             The AvatarK Ecosystem
           </h1>
           <div className="h-px w-16" style={{ background: 'var(--gold)' }} aria-hidden="true" />
-          <div className="flex flex-col gap-1 text-lg leading-8 sm:text-xl" style={{ color: 'var(--ink-dim)' }}>
-            <p>One platform.</p>
-            <p>Multiple ways to grow.</p>
-            <p>One continuous journey.</p>
-          </div>
+          <p className="text-lg tracking-wide sm:text-xl" style={{ color: 'var(--ink-dim)' }}>
+            {'One platform • Multiple ways to grow • One continuous journey'}
+          </p>
         </div>
       </section>
 

@@ -30,7 +30,7 @@ export function ConnectionLine({
       d={d}
       fill="none"
       stroke={emphasized ? 'var(--gold)' : 'var(--paper-line)'}
-      strokeWidth={emphasized ? 2.5 : 2}
+      strokeWidth={emphasized ? 2.5 : 2.25}
       strokeDasharray={length}
       strokeDashoffset={length}
       className={fast ? 'motion-draw-fast' : 'motion-draw'}
