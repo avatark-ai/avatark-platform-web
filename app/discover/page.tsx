@@ -7,6 +7,7 @@ import { PracticeCard } from "@/components/echo/discover/PracticeCard";
 import { StoryCard } from "@/components/echo/discover/StoryCard";
 import { CollectionCard } from "@/components/echo/discover/CollectionCard";
 import { ThemeFilter } from "@/components/echo/discover/ThemeFilter";
+import { EchoPageShell } from "@/components/echo/shell/EchoPageShell";
 
 export const metadata: Metadata = {
   title: "Discover — Echo",
@@ -45,8 +46,7 @@ export default async function DiscoverPage({
   const hasMoreToExplore = restEchoes.length > 0 || restPractices.length > 0 || stories.length > 0;
 
   return (
-    <main className="flex flex-1 flex-col px-6 py-20 sm:py-24" style={{ background: "var(--midnight)", color: "var(--paper)" }}>
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-20">
+    <EchoPageShell width="wide">
         <div className="flex flex-col gap-3">
           <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
             ECHO
@@ -181,7 +181,6 @@ export default async function DiscoverPage({
             ))}
           </div>
         </section>
-      </div>
-    </main>
+    </EchoPageShell>
   );
 }

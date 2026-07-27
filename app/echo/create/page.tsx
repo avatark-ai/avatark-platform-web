@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { EchoCreationFlow } from "@/components/echo/onboarding/EchoCreationFlow";
 import { pickPracticeForIntention } from "@/lib/content/echo";
+import { EchoPageShell } from "@/components/echo/shell/EchoPageShell";
 
 export const metadata: Metadata = {
   title: "Create My Echo",
@@ -14,8 +15,8 @@ export default function EchoCreatePage() {
   ) as Record<(typeof THEMES)[number], string>;
 
   return (
-    <main className="flex flex-1 flex-col items-center px-6 py-16 sm:py-20" style={{ background: "var(--midnight)", color: "var(--paper)" }}>
+    <EchoPageShell width="wide" topPadding="compact" layout="plain" className="items-center" contentClassName="flex flex-col items-center">
       <EchoCreationFlow themePracticeMap={themePracticeMap} />
-    </main>
+    </EchoPageShell>
   );
 }

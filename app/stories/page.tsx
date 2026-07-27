@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { listPractices, listStories } from "@/lib/content/echo";
-import { cinemakHref, practiceDetailHref, streamkHref, WATCH_FIRST_HREF } from "@/lib/echo/links";
+import { cinemakHref, DISCOVER_HREF, practiceDetailHref, streamkHref, WATCH_FIRST_HREF } from "@/lib/echo/links";
 import { StoryCard } from "@/components/echo/discover/StoryCard";
+import { ECHO_CONTENT_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
 
 export const metadata: Metadata = {
   title: "Stories — Echo",
@@ -30,7 +31,7 @@ export default function StoriesPage() {
           className="pointer-events-none absolute left-1/2 top-0 h-[32rem] w-[32rem] -translate-x-1/2 -translate-y-1/3 rounded-full opacity-50"
           style={{ background: "radial-gradient(circle, color-mix(in srgb, var(--gold) 12%, transparent) 0%, transparent 70%)" }}
         />
-        <div className="relative mx-auto flex max-w-3xl flex-col items-center px-6 py-20 text-center sm:py-28">
+        <div className="relative mx-auto flex max-w-3xl flex-col items-center px-6 py-16 text-center sm:py-20">
           <p className="text-xs font-semibold uppercase tracking-[0.3em]" style={{ color: "var(--gold)" }}>
             ECHO STORIES
           </p>
@@ -40,7 +41,7 @@ export default function StoriesPage() {
           </p>
           <Link
             href={WATCH_FIRST_HREF}
-            className="mt-10 rounded-full px-9 py-3.5 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="mt-8 rounded-full px-9 py-3.5 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
           >
             Watch First
@@ -48,100 +49,124 @@ export default function StoriesPage() {
         </div>
       </section>
 
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-16 px-6 py-20 sm:py-24">
-        <section id="watch" className="flex flex-col gap-5">
-          <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
-            Featured
-          </h2>
-          {stories.length > 0 ? (
-            <div className="grid gap-6 sm:grid-cols-2">
-              {stories.map((story) => (
-                <StoryCard key={story.slug} story={story} />
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-2xl border p-6" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
-              <p className="text-base leading-7" style={{ color: "var(--text-dim)" }}>
-                No stories are live yet — Watch First above already works, and every story that arrives here will
-                lead somewhere real: a practice you can begin the same way.
-              </p>
-            </div>
-          )}
-        </section>
+      <div className={`mx-auto flex w-full flex-col gap-10 px-6 pb-12 pt-10 sm:gap-12 sm:pb-16 sm:pt-14 ${ECHO_CONTENT_WIDTH_CLASS.wide}`}>
+        {stories.length > 0 ? (
+          <>
+            <section id="watch" className="flex flex-col gap-5">
+              <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
+                Featured
+              </h2>
+              <div className="grid gap-6 sm:grid-cols-2">
+                {stories.map((story) => (
+                  <StoryCard key={story.slug} story={story} />
+                ))}
+              </div>
+            </section>
 
-        <section id="episodes" className="flex flex-col gap-4">
-          <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
-            Episodes
-          </h2>
-          {episodes.length > 0 ? (
-            <div className="grid gap-6 sm:grid-cols-2">
-              {episodes.map((story) => (
-                <StoryCard key={story.slug} story={story} />
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
-              Episodic stories will appear here as they&apos;re added.
-            </p>
-          )}
-        </section>
+            <section id="episodes" className="flex flex-col gap-4">
+              <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
+                Episodes
+              </h2>
+              {episodes.length > 0 ? (
+                <div className="grid gap-6 sm:grid-cols-2">
+                  {episodes.map((story) => (
+                    <StoryCard key={story.slug} story={story} />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
+                  Episodic stories will appear here as they&apos;re added.
+                </p>
+              )}
+            </section>
 
-        <section id="live" className="flex flex-col gap-4">
-          <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
-            Live
-          </h2>
-          {live.length > 0 ? (
-            <div className="grid gap-6 sm:grid-cols-2">
-              {live.map((story) => (
-                <StoryCard key={story.slug} story={story} />
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
-              Nothing live right now — live programming will appear here when it&apos;s scheduled.
-            </p>
-          )}
-        </section>
+            <section id="live" className="flex flex-col gap-4">
+              <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
+                Live
+              </h2>
+              {live.length > 0 ? (
+                <div className="grid gap-6 sm:grid-cols-2">
+                  {live.map((story) => (
+                    <StoryCard key={story.slug} story={story} />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
+                  Nothing live right now — live programming will appear here when it&apos;s scheduled.
+                </p>
+              )}
+            </section>
 
-        <section id="films" className="flex flex-col gap-4">
-          <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
-            Films
-          </h2>
-          {films.length > 0 ? (
-            <div className="grid gap-6 sm:grid-cols-2">
-              {films.map((story) => (
-                <StoryCard key={story.slug} story={story} />
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
-              No films yet.
-            </p>
-          )}
-        </section>
+            <section id="films" className="flex flex-col gap-4">
+              <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
+                Films
+              </h2>
+              {films.length > 0 ? (
+                <div className="grid gap-6 sm:grid-cols-2">
+                  {films.map((story) => (
+                    <StoryCard key={story.slug} story={story} />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
+                  No films yet.
+                </p>
+              )}
+            </section>
 
-        <section id="creators" className="flex flex-col gap-4">
-          <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
-            Creators
-          </h2>
-          {creators.length > 0 ? (
-            <ul className="flex flex-wrap gap-2">
-              {creators.map((creator) => (
-                <li key={creator} className="rounded-full border px-4 py-1.5 text-sm" style={{ borderColor: "var(--surface-line)", color: "var(--paper)" }}>
-                  {creator}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
-              No creators listed yet — every story will carry an attribution once one exists.
+            {creators.length > 0 && (
+              <section id="creators" className="flex flex-col gap-4">
+                <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
+                  Creators
+                </h2>
+                <ul className="flex flex-wrap gap-2">
+                  {creators.map((creator) => (
+                    <li key={creator} className="rounded-full border px-4 py-1.5 text-sm" style={{ borderColor: "var(--surface-line)", color: "var(--paper)" }}>
+                      {creator}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+          </>
+        ) : (
+          // No real story content exists yet in any category (watch,
+          // episodes, live, films, creators) -- one compact, deliberate
+          // preview instead of five separate thin placeholder sections.
+          // id targets every context-nav anchor (#watch #episodes #live
+          // #films) so none of those links land on a dead spot.
+          <section id="watch" className="rounded-2xl border p-8 text-center" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
+            <span id="episodes" />
+            <span id="live" />
+            <span id="films" />
+            <p className="text-lg leading-8" style={{ color: "var(--paper)" }}>
+              Stories are being prepared.
             </p>
-          )}
-        </section>
+            <p className="mt-2 text-base leading-7" style={{ color: "var(--text-dim)" }}>
+              Begin with Watch First, where every story leads to a practice you can carry forward.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <Link
+                href={WATCH_FIRST_HREF}
+                className="rounded-full px-7 py-3 text-center text-sm font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
+              >
+                Watch First
+              </Link>
+              <Link
+                href={`${DISCOVER_HREF}#practices`}
+                className="rounded-full border px-7 py-3 text-center text-sm font-semibold transition-colors hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                style={{ borderColor: "var(--surface-line)", color: "var(--paper)", outlineColor: "var(--gold)" }}
+              >
+                Explore Practices
+              </Link>
+            </div>
+          </section>
+        )}
 
         {/* Strong transition into Practice, mirroring the landing page's
             own story-to-practice bridge. */}
-        {practice && (
+        {practice && stories.length > 0 && (
           <section className="rounded-2xl border p-8 text-center" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
             <p className="text-lg leading-8" style={{ color: "var(--paper)" }}>
               A story is where you meet a life. A practice is where you carry it.

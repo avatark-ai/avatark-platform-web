@@ -1,5 +1,6 @@
 import { getProductById } from "@avatark/product-registry";
 import { resolveProductUrl } from "../products/registry.ts";
+import type { PracticeHandoffTarget } from "./practiceHandoff.ts";
 
 // PrometheusK owns practice runtime, reflection, evidence, and Living
 // Echo -- this repo only ever links out to its real, confirmed-live
@@ -35,13 +36,15 @@ export const PROMETHEUSK_DISPLAY_NAME = prometheuskProduct.displayName;
 // The "Drift" practice under the "Builder Journey", confirmed live via
 // direct request (2026-07-15):
 // https://prometheusk.avatark.io/my/borrow/builder-journey/practice/aad2380d-8d13-4499-8ac9-eb37d9f41cbb
-const BUILDER_JOURNEY_ID = "builder-journey";
-// Exported so lib/onboarding/receipt.ts has one source of truth for the
-// single RC5 receipt-eligible practice, instead of a second copy of
-// this literal.
+//
+// No longer buildBorrowUrl's implicit default (see lib/onboarding/
+// practiceHandoff.ts) -- kept exported because lib/onboarding/receipt.ts
+// still verifies completion receipts against this one practice ID.
 export const DRIFT_PRACTICE_ID = "aad2380d-8d13-4499-8ac9-eb37d9f41cbb";
 
 export interface OnboardingHandoffContext {
+  /** Which real PrometheusK journey/practice this handoff resolves to -- see lib/onboarding/practiceHandoff.ts. Never guessed or defaulted here. */
+  target: PracticeHandoffTarget;
   intention?: string | null;
   witness: string;
   invitation?: string | null;
@@ -59,9 +62,16 @@ export interface OnboardingHandoffContext {
 // redirect); it's only ever handed to the signed completion receipt as
 // the destination for a user-initiated click. `witness`/`intention`/
 // `invitation`/`cohort` remain unread breadcrumbs, same as before RC5.
+//
+// `context.target` is required and always resolved by the caller through
+// lib/onboarding/practiceHandoff.ts's resolvePracticeHandoffTarget --
+// this function itself never falls back to a fixed practice (previously
+// always BUILDER_JOURNEY_ID/DRIFT_PRACTICE_ID regardless of which
+// practice was requested, the root cause of a verified Echo/PrometheusK
+// practice mismatch).
 export function buildBorrowUrl(context: OnboardingHandoffContext): string {
   const url = new URL(
-    `/my/borrow/${BUILDER_JOURNEY_ID}/practice/${DRIFT_PRACTICE_ID}`,
+    `/my/borrow/${context.target.journeyId}/practice/${context.target.practiceId}`,
     PROMETHEUSK_ORIGIN
   );
   url.searchParams.set("source", "avatark-onboarding");

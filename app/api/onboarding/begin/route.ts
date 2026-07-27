@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { randomBytes } from 'node:crypto'
 import { buildBorrowUrl } from '@/lib/onboarding/prometheusk'
+import { buildSafeReturnTo, resolvePracticeHandoffTarget } from '@/lib/onboarding/practiceHandoff'
 import { isIntentionId } from '@/lib/onboarding/intentions'
 import { ONBOARDING_STATE_COOKIE } from '@/lib/onboarding/stateCookie'
 
@@ -23,11 +24,21 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/start`)
   }
 
+  // Explicit, slug-keyed resolution -- never a fixed default practice.
+  // Under normal navigation the practice/witness detail pages already
+  // hide the "Begin Practice" CTA when this resolves to null, so hitting
+  // this branch means a stale link or direct URL tampering; land back on
+  // the practice's own page, which renders an honest unavailable state.
+  const target = resolvePracticeHandoffTarget(witness)
+  if (!target) {
+    return NextResponse.redirect(`${origin}/practice/${encodeURIComponent(witness)}?handoff=unavailable`)
+  }
+
   const intention = isIntentionId(intentionParam) ? intentionParam : null
   const state = randomBytes(32).toString('base64url')
-  const returnTo = `${origin}/continue`
+  const returnTo = buildSafeReturnTo(origin, '/continue')
 
-  const borrowUrl = new URL(buildBorrowUrl({ intention, witness, invitation, cohort, returnTo }))
+  const borrowUrl = new URL(buildBorrowUrl({ target, intention, witness, invitation, cohort, returnTo }))
   borrowUrl.searchParams.set('state', state)
 
   const response = NextResponse.redirect(borrowUrl.toString())

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { arenakHref } from "@/lib/echo/links";
+import { EchoPageShell } from "@/components/echo/shell/EchoPageShell";
 
 export const metadata: Metadata = {
   title: "Community — Echo",
@@ -38,8 +39,7 @@ export default function CommunityPage() {
   const arenak = arenakHref();
 
   return (
-    <main className="flex flex-1 flex-col px-6 py-20 sm:py-24" style={{ background: "var(--midnight)", color: "var(--paper)" }}>
-      <div className="mx-auto flex w-full max-w-3xl flex-col">
+    <EchoPageShell width="editorial" layout="plain" contentClassName="flex flex-col">
         <span
           aria-hidden="true"
           className="mb-6 h-14 w-14 rounded-full border-2"
@@ -56,20 +56,31 @@ export default function CommunityPage() {
           never a feed to keep up with.
         </p>
 
-        <div className="mt-14 flex flex-col gap-6">
-          {SECTIONS.map((section) => (
-            <section key={section.id} id={section.id} className="rounded-2xl border p-7" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
-              <h2 className="text-lg font-semibold" style={{ color: "var(--paper)" }}>
+        {/* One consolidated card rather than five separate bordered
+            sections -- every category here is honestly empty today, so
+            this reads as one deliberate "not yet, here's why it matters"
+            preview instead of several thin placeholders down the page.
+            id targets are preserved so the context-nav's Challenges/
+            Groups/Events/Cohorts/Recognition links still land correctly. */}
+        <div className="mt-10 rounded-2xl border p-2" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
+          {SECTIONS.map((section, index) => (
+            <section
+              key={section.id}
+              id={section.id}
+              className={`px-5 py-4 ${index > 0 ? "border-t" : ""}`}
+              style={{ borderColor: "var(--surface-line)" }}
+            >
+              <h2 className="text-sm font-semibold" style={{ color: "var(--paper)" }}>
                 {section.title}
               </h2>
-              <p className="mt-2 text-base leading-7" style={{ color: "var(--text-dim)" }}>
+              <p className="mt-1 text-sm leading-6" style={{ color: "var(--text-dim)" }}>
                 {section.body}
               </p>
             </section>
           ))}
         </div>
 
-        <div className="mt-14 flex flex-col items-start gap-3 border-t pt-8" style={{ borderColor: "var(--surface-line)" }}>
+        <div className="mt-10 flex flex-col items-start gap-3 border-t pt-8" style={{ borderColor: "var(--surface-line)" }}>
           <p className="text-xs font-medium uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
             Powered by ArenaK
           </p>
@@ -83,7 +94,6 @@ export default function CommunityPage() {
             </a>
           )}
         </div>
-      </div>
-    </main>
+    </EchoPageShell>
   );
 }

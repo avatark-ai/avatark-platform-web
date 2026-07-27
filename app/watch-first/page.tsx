@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { listPractices, listStories } from "@/lib/content/echo";
 import { practiceDetailHref } from "@/lib/echo/links";
+import { EchoPageShell } from "@/components/echo/shell/EchoPageShell";
 
 export const metadata: Metadata = {
   title: "Watch First — Echo",
@@ -13,11 +14,7 @@ export default function WatchFirstPage() {
   const practice = listPractices()[0] ?? null;
 
   return (
-    <main
-      className="flex flex-1 flex-col items-center px-6 py-16 sm:py-20"
-      style={{ background: "var(--midnight)", color: "var(--paper)" }}
-    >
-      <div className="flex w-full max-w-lg flex-col items-center gap-6 text-center">
+    <EchoPageShell width="form" layout="plain" className="items-center" contentClassName="flex flex-col items-center gap-6 text-center">
         <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
           ECHO
         </p>
@@ -70,7 +67,6 @@ export default function WatchFirstPage() {
         <p className="text-xs uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
           Powered by StreamK and CinemaK
         </p>
-      </div>
-    </main>
+    </EchoPageShell>
   );
 }

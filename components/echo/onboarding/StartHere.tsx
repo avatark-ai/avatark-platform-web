@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ENTER_INVITATION_HREF, SIGN_IN_HREF, WATCH_FIRST_HREF } from "@/lib/echo/links";
+import { EchoPageShell } from "@/components/echo/shell/EchoPageShell";
 
 const CHOICES = [
   {
@@ -24,11 +25,7 @@ const CHOICES = [
 
 export function StartHere() {
   return (
-    <main
-      className="flex flex-1 flex-col items-center px-6 py-16 sm:py-20"
-      style={{ background: "var(--midnight)", color: "var(--paper)" }}
-    >
-      <div className="flex w-full max-w-lg flex-col items-center gap-6 text-center">
+    <EchoPageShell width="form" layout="plain" className="items-center" contentClassName="flex flex-col items-center gap-6 text-center">
         <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
           ECHO
         </p>
@@ -64,7 +61,6 @@ export function StartHere() {
         >
           I already have an account
         </Link>
-      </div>
-    </main>
+    </EchoPageShell>
   );
 }

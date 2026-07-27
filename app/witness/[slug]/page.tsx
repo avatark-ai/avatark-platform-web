@@ -1,7 +1,10 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import OrbReveal from "@/components/OrbReveal";
 import { getEchoBySlug, getPracticeBySlug } from "@/lib/content/echo";
 import { echoCategoryEyebrow } from "@/lib/onboarding/guide";
+import { isPracticeHandoffAvailable } from "@/lib/onboarding/practiceHandoff";
+import { DISCOVER_HREF } from "@/lib/echo/links";
 
 export default async function WitnessPage({
   params,
@@ -30,6 +33,7 @@ export default async function WitnessPage({
   if (invitation) beginUrl.searchParams.set("invitation", invitation);
   if (cohort) beginUrl.searchParams.set("cohort", cohort);
   const borrowUrl = `${beginUrl.pathname}${beginUrl.search}`;
+  const available = isPracticeHandoffAvailable(practice.slug);
 
   return (
     <main
@@ -83,15 +87,31 @@ export default async function WitnessPage({
           {practice.whatYouMayNotice}
         </p>
 
-        <OrbReveal>
-          <a
-            href={borrowUrl}
-            className="mt-2 rounded-md px-8 py-3 text-center text-base font-semibold transition-opacity hover:opacity-90"
-            style={{ background: "var(--gold)", color: "var(--midnight)" }}
-          >
-            Borrow This Practice
-          </a>
-        </OrbReveal>
+        {available ? (
+          <OrbReveal>
+            <a
+              href={borrowUrl}
+              className="mt-2 rounded-md px-8 py-3 text-center text-base font-semibold transition-opacity hover:opacity-90"
+              style={{ background: "var(--gold)", color: "var(--midnight)" }}
+            >
+              Borrow This Practice
+            </a>
+          </OrbReveal>
+        ) : (
+          <div className="mt-2 flex flex-col gap-3 rounded-md border p-4" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
+            <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
+              This practice isn&apos;t available to begin on PrometheusK yet — we won&apos;t hand you off to a
+              different practice than the one you chose.
+            </p>
+            <Link
+              href={`${DISCOVER_HREF}#practices`}
+              className="self-start rounded-md px-6 py-2.5 text-center text-sm font-semibold transition-opacity hover:opacity-90"
+              style={{ background: "var(--gold)", color: "var(--midnight)" }}
+            >
+              Explore Practices
+            </Link>
+          </div>
+        )}
       </div>
     </main>
   );

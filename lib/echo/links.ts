@@ -10,6 +10,7 @@ import { SIGN_IN_HREF } from "@/lib/content/links";
 
 // BEGIN
 export const START_HERE_HREF = "/start";
+export const WHAT_IS_AN_ECHO_HREF = "/what-is-an-echo";
 export const ENTER_INVITATION_HREF = "/enter";
 export const WATCH_FIRST_HREF = "/watch-first";
 export const CREATE_MY_ECHO_HREF = "/echo/create";
@@ -46,7 +47,9 @@ export { SIGN_IN_HREF };
 export const WHY_AVATARK_HREF = "/";
 export const FOUNDER_LETTER_HREF = "/founder";
 export const ARCHITECTURE_HREF = "/#canon";
-export const ECOSYSTEM_HREF = "/roadmap";
+// The real institutional Ecosystem page (app/ecosystem) -- this constant
+// previously pointed at /roadmap, a different page, despite its name.
+export const ECOSYSTEM_HREF = "/ecosystem";
 
 // Cross-product attribution links ("Powered by ArenaK" / "Powered by
 // StreamK and CinemaK" copy, Community/Stories empty-state CTAs) --

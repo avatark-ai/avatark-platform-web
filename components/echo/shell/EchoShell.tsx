@@ -11,6 +11,7 @@
 import { usePathname } from "next/navigation";
 import type { SiteId } from "@/lib/sites/registry";
 import { EchoHeader } from "./EchoHeader";
+import { EchoContextNav } from "./EchoContextNav";
 import { EchoFooter } from "./EchoFooter";
 import { EchoBottomNav } from "./EchoBottomNav";
 import { EchoMobileMenuProvider } from "./EchoShellState";
@@ -45,6 +46,7 @@ export function EchoShell({ site, children }: { site: SiteId; children: React.Re
         Skip to content
       </a>
       <EchoHeader />
+      <EchoContextNav />
       <div id="echo-main-content" className="flex flex-1 flex-col pb-16 lg:pb-0">
         {children}
       </div>

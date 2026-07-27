@@ -1,50 +1,62 @@
 'use client'
 import { Suspense, useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 import { AccountAdaptersProvider, AvatarKAccount, type AccountTabKey } from '@avatark/account'
 import { avatarKPlatformAdapters } from '@/lib/account/adapters'
 import type { AccountPrincipal } from '@/lib/auth/principal'
+import { EchoPageShell } from '@/components/echo/shell/EchoPageShell'
 
 // Real feature flag, per explicit instruction: /account behind a flag,
 // not unconditionally live. Reads a real env var -- no hardcoded true.
 const ACCOUNT_MOUNT_ENABLED = process.env.NEXT_PUBLIC_ACCOUNT_MOUNT_ENABLED === 'true'
 
-// @avatark/account's own tab set (profile/signin/products/membership/
-// preferences/privacy/activity/echoes/data) has no "Overview" or "Support"
-// tab -- that package is owned upstream (its canonical source lives in
-// prometheusk-web), so those two are added here as a thin platform-side
-// wrapper around the package rather than forked/patched locally.
-type AccountView = 'overview' | 'details' | 'support'
+// One flat account center -- no "Overview"/"Account"/"Support" nested
+// hierarchy. Seven sections map onto @avatark/account's own tabs (that
+// package's canonical source lives in prometheusk-web, so its tab set is
+// used as-is rather than forked); Feedback and Support are host-added,
+// at the same level, not nested under a second "Account" tab. Sign Out
+// is an action, not a section.
+type Section = 'profile' | 'products' | 'membership' | 'preferences' | 'privacy' | 'security' | 'data' | 'feedback' | 'support'
 
-function OverviewView({ principal, onOpenTab }: { principal: Extract<AccountPrincipal, { status: 'signed_in' }>; onOpenTab: (tab: AccountTabKey) => void }) {
-  const quickLinks: { tab: AccountTabKey; label: string }[] = [
-    { tab: 'profile', label: 'Profile' },
-    { tab: 'products', label: 'Products' },
-    { tab: 'preferences', label: 'Preferences' },
-    { tab: 'privacy', label: 'Privacy' },
-    { tab: 'signin', label: 'Security' },
-    { tab: 'membership', label: 'Membership' },
-    { tab: 'data', label: 'Data & Export' },
-  ]
+const RAIL_SECTIONS: { id: Section; label: string; tab?: AccountTabKey }[] = [
+  { id: 'profile', label: 'Profile', tab: 'profile' },
+  { id: 'products', label: 'Products', tab: 'products' },
+  { id: 'membership', label: 'Membership', tab: 'membership' },
+  { id: 'preferences', label: 'Preferences', tab: 'preferences' },
+  { id: 'privacy', label: 'Privacy', tab: 'privacy' },
+  { id: 'security', label: 'Security', tab: 'signin' },
+  { id: 'data', label: 'Data & Export', tab: 'data' },
+  { id: 'feedback', label: 'Feedback' },
+  { id: 'support', label: 'Support' },
+]
 
+const SECTION_IDS = new Set(RAIL_SECTIONS.map((s) => s.id))
+
+function isSection(value: string | null): value is Section {
+  return !!value && SECTION_IDS.has(value as Section)
+}
+
+function tabToSection(tab: AccountTabKey): Section | null {
+  return RAIL_SECTIONS.find((s) => s.tab === tab)?.id ?? null
+}
+
+const RAIL_LINK_CLASS =
+  'rounded-md px-3 py-2 text-left text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
+const FOCUS_STYLE = { outlineColor: 'var(--gold)' } as const
+
+function FeedbackView() {
   return (
-    <div className="space-y-6">
-      <div>
-        <div className="text-lg font-semibold">{principal.displayName}</div>
-        <div className="text-sm text-neutral-500">{principal.email}</div>
-      </div>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-        {quickLinks.map((link) => (
-          <button
-            key={link.tab}
-            onClick={() => onOpenTab(link.tab)}
-            className="rounded-md border px-3 py-2 text-left text-sm hover:bg-neutral-50"
-          >
-            {link.label}
-          </button>
-        ))}
-      </div>
+    <div className="flex max-w-md flex-col gap-3 text-sm leading-6" style={{ color: 'var(--text-dim)' }}>
+      <p style={{ color: 'var(--paper)' }}>Have feedback on Echo or AvatarK?</p>
+      <p>
+        Send it to{' '}
+        <a className="underline-offset-4 hover:underline" style={{ color: 'var(--gold)' }} href="mailto:feedback@avatark.ai">
+          feedback@avatark.ai
+        </a>{' '}
+        -- product ideas, things that felt off, anything worth carrying forward. Read by the team building Echo, not
+        a form that disappears into a queue.
+      </p>
     </div>
   )
 }
@@ -52,33 +64,15 @@ function OverviewView({ principal, onOpenTab }: { principal: Extract<AccountPrin
 function SupportView() {
   const supportEmail = avatarKPlatformAdapters.support?.supportEmail ?? 'support@avatark.ai'
   return (
-    <div className="max-w-md space-y-2 text-sm">
-      <p>Need help with your AvatarK account? Contact <a className="underline" href={`mailto:${supportEmail}`}>{supportEmail}</a>.</p>
-      <p className="text-neutral-500">
-        Product-local support (practices, challenges, in-product issues) is handled by each product directly, not
-        through this platform account surface.
+    <div className="flex max-w-md flex-col gap-2 text-sm leading-6" style={{ color: 'var(--text-dim)' }}>
+      <p style={{ color: 'var(--paper)' }}>
+        Need help with your AvatarK account? Contact{' '}
+        <a className="underline-offset-4 hover:underline" style={{ color: 'var(--gold)' }} href={`mailto:${supportEmail}`}>
+          {supportEmail}
+        </a>
+        .
       </p>
-    </div>
-  )
-}
-
-function ViewTabs({ view, onChange }: { view: AccountView; onChange: (view: AccountView) => void }) {
-  const tabs: { key: AccountView; label: string }[] = [
-    { key: 'overview', label: 'Overview' },
-    { key: 'details', label: 'Account' },
-    { key: 'support', label: 'Support' },
-  ]
-  return (
-    <div className="mb-6 flex gap-1 border-b pb-3 text-sm">
-      {tabs.map((t) => (
-        <button
-          key={t.key}
-          onClick={() => onChange(t.key)}
-          className={`rounded-md px-3 py-1.5 font-medium ${view === t.key ? 'bg-black text-white' : 'text-neutral-600 hover:bg-neutral-100'}`}
-        >
-          {t.label}
-        </button>
-      ))}
+      <p>Product-local support (practices, challenges, in-product issues) is handled by each product directly, not through this platform account surface.</p>
     </div>
   )
 }
@@ -86,48 +80,89 @@ function ViewTabs({ view, onChange }: { view: AccountView; onChange: (view: Acco
 function AccountRoot({ principal }: { principal: Extract<AccountPrincipal, { status: 'signed_in' }> }) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const rawTab = searchParams.get('tab')
-  const activeTab = (rawTab ?? undefined) as AccountTabKey | undefined
-  const view = (searchParams.get('view') as AccountView | null) ?? 'overview'
+  const rawSection = searchParams.get('section')
+  const section: Section = isSection(rawSection) ? rawSection : 'profile'
+  const [signingOut, setSigningOut] = useState(false)
 
-  function setParams(next: Record<string, string | undefined>) {
-    const params = new URLSearchParams(searchParams.toString())
-    for (const [key, value] of Object.entries(next)) {
-      if (value === undefined) params.delete(key)
-      else params.set(key, value)
-    }
-    router.push(`/account?${params.toString()}`)
+  function goToSection(next: Section) {
+    if (next === section) return
+    router.push(`/account?section=${next}`)
   }
 
-  function handleActiveTabChange(next: AccountTabKey) {
-    if (next === rawTab) return
-    setParams({ tab: next, view: 'details' })
+  async function handleSignOut() {
+    setSigningOut(true)
+    await avatarKPlatformAdapters.auth.signOut()
+    window.location.href = '/auth/sign-in'
   }
 
-  function openTab(tab: AccountTabKey) {
-    setParams({ tab, view: 'details' })
-  }
+  const activeRailSection = RAIL_SECTIONS.find((s) => s.id === section)
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <ViewTabs view={view} onChange={(next) => setParams({ view: next === 'overview' ? undefined : next })} />
-      {view === 'support' ? (
-        <SupportView />
-      ) : view === 'overview' ? (
-        <OverviewView principal={principal} onOpenTab={openTab} />
-      ) : (
-        <AccountAdaptersProvider adapters={avatarKPlatformAdapters}>
-          <AvatarKAccount
-            principal={principal}
-            currentProduct="avatark"
-            productName="AvatarK"
-            activeTab={activeTab}
-            onActiveTabChange={handleActiveTabChange}
-            onSignedOut={() => { window.location.href = '/auth/sign-in' }}
-          />
-        </AccountAdaptersProvider>
-      )}
-    </div>
+    <EchoPageShell width="wide" layout="plain" contentClassName="flex flex-col gap-8 sm:flex-row sm:items-start">
+      <nav aria-label="Account" className="flex shrink-0 flex-row gap-1 overflow-x-auto sm:w-56 sm:flex-col sm:overflow-visible">
+        {RAIL_SECTIONS.map((item) => {
+          const active = item.id === section
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => goToSection(item.id)}
+              aria-current={active ? 'page' : undefined}
+              className={`${RAIL_LINK_CLASS} whitespace-nowrap`}
+              style={{
+                background: active ? 'color-mix(in srgb, var(--gold) 14%, transparent)' : 'transparent',
+                color: active ? 'var(--gold)' : 'var(--paper)',
+                ...FOCUS_STYLE,
+              }}
+            >
+              {item.label}
+            </button>
+          )
+        })}
+        <div className="my-1 border-t sm:mx-1" style={{ borderColor: 'var(--surface-line)' }} />
+        <button
+          type="button"
+          onClick={handleSignOut}
+          disabled={signingOut}
+          className={`${RAIL_LINK_CLASS} whitespace-nowrap disabled:opacity-50`}
+          style={{ color: 'var(--text-dim)', ...FOCUS_STYLE }}
+        >
+          {signingOut ? 'Signing out…' : 'Sign Out'}
+        </button>
+      </nav>
+
+      <div className="min-w-0 flex-1">
+        {section === 'feedback' ? (
+          <FeedbackView />
+        ) : section === 'support' ? (
+          <SupportView />
+        ) : (
+          // The package's own internal tab strip is hidden here -- this
+          // rail is the one and only navigation for the account
+          // workspace, so the package's tablist would otherwise
+          // duplicate it. activeTab/onActiveTabChange (not the package's
+          // own clicked tabs) are the sole source of truth.
+          <div className="echo-account-embed">
+            <style>{`.echo-account-embed .aka-tablist { display: none; }`}</style>
+            <AccountAdaptersProvider adapters={avatarKPlatformAdapters}>
+              <AvatarKAccount
+                principal={principal}
+                currentProduct="avatark"
+                productName="AvatarK"
+                activeTab={activeRailSection?.tab}
+                onActiveTabChange={(next) => {
+                  const nextSection = tabToSection(next)
+                  if (nextSection) goToSection(nextSection)
+                }}
+                onSignedOut={() => {
+                  window.location.href = '/auth/sign-in'
+                }}
+              />
+            </AccountAdaptersProvider>
+          </div>
+        )}
+      </div>
+    </EchoPageShell>
   )
 }
 
@@ -210,15 +245,19 @@ function AccountClientGate() {
 
   if (loadError) {
     return (
-      <div className="max-w-md mx-auto px-4 py-16 space-y-2">
-        <p className="text-sm text-red-600" role="alert">Couldn&apos;t load your account: {loadError}</p>
-        <button onClick={() => window.location.reload()} className="text-sm underline">Try again</button>
-      </div>
+      <EchoPageShell width="form" layout="plain" contentClassName="flex flex-col gap-2">
+        <p className="text-sm" role="alert" style={{ color: 'var(--gold)' }}>Couldn&apos;t load your account: {loadError}</p>
+        <button onClick={() => window.location.reload()} className="self-start text-sm underline" style={{ color: 'var(--paper)' }}>Try again</button>
+      </EchoPageShell>
     )
   }
 
   if (principal.status === 'loading' || principal.status === 'signed_out') {
-    return <div className="max-w-md mx-auto px-4 py-16 text-sm text-neutral-600">Loading…</div>
+    return (
+      <EchoPageShell width="form" layout="plain">
+        <p className="text-sm" style={{ color: 'var(--text-dim)' }}>Loading…</p>
+      </EchoPageShell>
+    )
   }
 
   return <AccountRoot principal={principal} />
@@ -227,9 +266,9 @@ function AccountClientGate() {
 export default function AccountPage() {
   if (!ACCOUNT_MOUNT_ENABLED) {
     return (
-      <div className="max-w-md mx-auto px-4 py-16">
-        <p className="text-sm text-neutral-600">Account is not yet available.</p>
-      </div>
+      <EchoPageShell width="form" layout="plain">
+        <p className="text-sm" style={{ color: 'var(--text-dim)' }}>Account is not yet available.</p>
+      </EchoPageShell>
     )
   }
 

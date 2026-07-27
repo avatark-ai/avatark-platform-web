@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getEchoBySlug, getPracticeBySlug, listPractices } from "@/lib/content/echo";
-import { echoDetailHref } from "@/lib/echo/links";
+import { DISCOVER_HREF, echoDetailHref } from "@/lib/echo/links";
+import { isPracticeHandoffAvailable } from "@/lib/onboarding/practiceHandoff";
+import { EchoPageShell } from "@/components/echo/shell/EchoPageShell";
 
 export function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   return params.then(({ id }) => {
@@ -25,6 +27,7 @@ export default async function PracticeDetailPage({
   const intention = typeof search.intention === "string" ? search.intention : null;
   const invitation = typeof search.invitation === "string" ? search.invitation : null;
   const sourceEcho = getEchoBySlug(practice.sourceEcho);
+  const available = isPracticeHandoffAvailable(practice.slug);
 
   // Same canonical PrometheusK handoff every other entry point in this
   // repo uses (see app/witness/[slug]/page.tsx) -- routed through the
@@ -37,8 +40,7 @@ export default async function PracticeDetailPage({
   const beginHref = `${beginUrl.pathname}${beginUrl.search}`;
 
   return (
-    <main className="flex flex-1 flex-col items-center px-6 py-20 sm:py-24" style={{ background: "var(--midnight)", color: "var(--paper)" }}>
-      <div className="flex w-full max-w-xl flex-col">
+    <EchoPageShell width="form" layout="plain" className="items-center" contentClassName="flex flex-col">
         <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
           {practice.duration}
           {practice.modality ? ` · ${practice.modality}` : ""}
@@ -79,15 +81,30 @@ export default async function PracticeDetailPage({
           {practice.whyItMattered}
         </p>
 
-        <a
-          href={beginHref}
-          className="mt-10 self-start rounded-full px-9 py-3.5 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-          style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
-        >
-          Begin Practice
-        </a>
-      </div>
-    </main>
+        {available ? (
+          <a
+            href={beginHref}
+            className="mt-10 self-start rounded-full px-9 py-3.5 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
+          >
+            Begin Practice
+          </a>
+        ) : (
+          <div className="mt-10 flex flex-col gap-3 rounded-2xl border p-6" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
+            <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
+              This practice isn&apos;t available to begin on PrometheusK yet — we won&apos;t hand you off to a
+              different practice than the one you chose. Explore what else Echo has ready today instead.
+            </p>
+            <Link
+              href={`${DISCOVER_HREF}#practices`}
+              className="self-start rounded-full px-6 py-2.5 text-center text-sm font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
+            >
+              Explore Practices
+            </Link>
+          </div>
+        )}
+    </EchoPageShell>
   );
 }
 
