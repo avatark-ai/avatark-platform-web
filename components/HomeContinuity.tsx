@@ -51,7 +51,7 @@ export function HomeContinuity() {
 
   const action = getContinuityAction(journey);
   const ctaClassName =
-    "rounded-md px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
+    "rounded-full px-4 py-2 text-sm font-semibold echo-cta-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
   const ctaStyle = { background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" } as const;
 
   return (

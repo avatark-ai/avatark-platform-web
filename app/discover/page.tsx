@@ -214,7 +214,7 @@ export default async function DiscoverPage({
               </h2>
               <Link
                 href={STORIES_HREF}
-                className="text-sm underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="text-sm link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
               >
                 See all stories
@@ -253,7 +253,7 @@ export default async function DiscoverPage({
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="flex flex-col gap-2 rounded-2xl border p-5 transition-colors hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  className="echo-card-interactive flex flex-col gap-2 rounded-2xl border p-5 hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                   style={{ borderColor: "var(--surface-line)", outlineColor: "var(--gold)" }}
                 >
                   <p className="text-base font-semibold" style={{ color: "var(--paper)" }}>

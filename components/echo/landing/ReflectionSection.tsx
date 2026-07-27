@@ -31,7 +31,7 @@ export function ReflectionSection({ headline }: { headline: string }) {
         <div className="mt-10 text-center">
           <Link
             href={MY_ECHO_HREF}
-            className="text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="text-sm font-semibold link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
           >
             View My Echo

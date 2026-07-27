@@ -10,6 +10,7 @@
 // path alone can be either experience depending on the resolved site.
 import { usePathname } from "next/navigation";
 import type { SiteId } from "@/lib/sites/registry";
+import { PageEnter } from "@/components/motion/PageEnter";
 import { EchoHeader } from "./EchoHeader";
 import { EchoContextNav } from "./EchoContextNav";
 import { EchoFooter } from "./EchoFooter";
@@ -48,7 +49,10 @@ export function EchoShell({ site, children }: { site: SiteId; children: React.Re
       <EchoHeader />
       <EchoContextNav />
       <div id="echo-main-content" className="flex flex-1 flex-col pb-16 lg:pb-0">
-        {children}
+        {/* Subtle page-entry settle -- the same EMERGE primitive/component
+            institutional pages use, re-keyed per pathname so it also
+            doubles as a small transition between sibling Echo routes. */}
+        <PageEnter>{children}</PageEnter>
       </div>
       <EchoFooter />
       <EchoBottomNav />

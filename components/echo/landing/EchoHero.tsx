@@ -45,14 +45,14 @@ export function EchoHero({ eyebrow, headline, paragraphs }: { eyebrow: string; h
         <div className="mt-12 flex flex-col items-center gap-5 sm:flex-row">
           <Link
             href={START_HERE_HREF}
-            className="rounded-full px-9 py-3.5 text-center text-base font-semibold shadow-[0_1px_0_0_rgba(0,0,0,0.05)] transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-[0.99]"
+            className="rounded-full px-9 py-3.5 text-center text-base font-semibold shadow-[0_1px_0_0_rgba(0,0,0,0.05)] echo-cta-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-[0.99]"
             style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
           >
             Begin My Echo
           </Link>
           <Link
             href={ENTER_INVITATION_HREF}
-            className="rounded-full px-6 py-3.5 text-center text-base font-medium underline-offset-4 transition-colors hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="rounded-full px-6 py-3.5 text-center text-base font-medium link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ color: "var(--paper)", outlineColor: "var(--gold)" }}
           >
             Enter Invitation
@@ -61,7 +61,7 @@ export function EchoHero({ eyebrow, headline, paragraphs }: { eyebrow: string; h
 
         <Link
           href={SIGN_IN_HREF}
-          className="mt-8 text-sm underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="mt-8 text-sm link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{ color: "var(--text-dim)", outlineColor: "var(--gold)" }}
         >
           Already a member? Sign In

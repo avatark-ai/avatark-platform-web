@@ -54,7 +54,7 @@ export function IntentionPicker({ intentionPracticeMap }: { intentionPracticeMap
               <button
                 type="button"
                 onClick={() => choose(intention.id)}
-                className="w-full rounded-2xl border px-6 py-3 text-left text-base transition-colors hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="echo-card-interactive w-full rounded-2xl border px-6 py-3 text-left text-base hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={{
                   borderColor: "var(--surface-line)",
                   background: "var(--surface)",

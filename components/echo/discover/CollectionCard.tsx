@@ -25,7 +25,7 @@ export function CollectionCard({ collection }: { collection: CollectionRecord })
             <Link
               key={`echo-${echo.slug}`}
               href={echoDetailHref(echo.slug)}
-              className="rounded-full border px-3 py-1 text-xs transition-colors hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="echo-cta-secondary rounded-full border px-3 py-1 text-xs hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{ borderColor: "var(--surface-line)", color: "var(--paper)", outlineColor: "var(--gold)" }}
             >
               {echo.name}
@@ -35,7 +35,7 @@ export function CollectionCard({ collection }: { collection: CollectionRecord })
             <Link
               key={`practice-${practice.slug}`}
               href={practiceDetailHref(practice.slug)}
-              className="rounded-full border px-3 py-1 text-xs transition-colors hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="echo-cta-secondary rounded-full border px-3 py-1 text-xs hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{ borderColor: "var(--surface-line)", color: "var(--paper)", outlineColor: "var(--gold)" }}
             >
               {practice.title}

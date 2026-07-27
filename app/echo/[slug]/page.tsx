@@ -54,7 +54,7 @@ export default async function EchoDetailPage({ params }: { params: Promise<{ slu
                 </p>
                 <Link
                   href={practiceDetailHref(practice.slug)}
-                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                   style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
                 >
                   Borrow a Practice <span aria-hidden="true">→</span>

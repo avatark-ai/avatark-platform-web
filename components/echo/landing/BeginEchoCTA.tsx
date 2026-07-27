@@ -33,14 +33,14 @@ export function BeginEchoCTA({
         <div className="mt-11 flex flex-col items-center gap-5 sm:flex-row">
           <Link
             href={START_HERE_HREF}
-            className="rounded-full px-9 py-3.5 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="rounded-full px-9 py-3.5 text-center text-base font-semibold echo-cta-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
           >
             Begin My Echo
           </Link>
           <Link
             href={ENTER_INVITATION_HREF}
-            className="rounded-full px-6 py-3.5 text-center text-base font-medium underline-offset-4 transition-colors hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="rounded-full px-6 py-3.5 text-center text-base font-medium link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ color: "var(--paper)", outlineColor: "var(--gold)" }}
           >
             Enter an Invitation

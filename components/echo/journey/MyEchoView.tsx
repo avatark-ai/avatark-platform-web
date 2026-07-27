@@ -35,21 +35,21 @@ function BeginningState() {
       <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
         <Link
           href={DISCOVER_HREF}
-          className="rounded-full px-6 py-3 text-center text-sm font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="rounded-full px-6 py-3 text-center text-sm font-semibold echo-cta-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
         >
           Browse a Practice
         </Link>
         <Link
           href={WATCH_FIRST_HREF}
-          className="text-sm font-medium underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="text-sm font-medium link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{ color: "var(--paper)", outlineColor: "var(--gold)" }}
         >
           Watch First
         </Link>
         <Link
           href={ENTER_INVITATION_HREF}
-          className="text-sm font-medium underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="text-sm font-medium link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{ color: "var(--paper)", outlineColor: "var(--gold)" }}
         >
           Enter an Invitation
@@ -84,7 +84,7 @@ export function MyEchoView({ context, initialTabId }: { context: JourneyContext;
           </p>
           <Link
             href={LIVING_ECHO_HREF}
-            className="inline-flex w-fit items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold transition-colors hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="echo-cta-secondary inline-flex w-fit items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ borderColor: "var(--surface-line)", color: "var(--paper)", outlineColor: "var(--gold)" }}
           >
             View Living Echo <span aria-hidden="true">→</span>

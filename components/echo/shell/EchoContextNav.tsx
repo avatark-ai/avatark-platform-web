@@ -19,8 +19,10 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { getActiveCategory, isContextLinkActive } from "@/lib/echo/nav";
 
+// border-b-2 stays a fixed 2px at all times -- only its color transitions
+// on activate/hover, so the "smooth active transition" never shifts layout.
 const LINK_CLASS =
-  "whitespace-nowrap rounded-sm px-1 py-2.5 text-xs font-medium tracking-tight transition-colors hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
+  "whitespace-nowrap rounded-sm border-b-2 px-1 py-2 text-xs font-medium tracking-tight transition-colors duration-200 hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
 const FOCUS_STYLE = { outlineColor: "var(--gold)" } as const;
 
 function EchoContextNavInner() {
@@ -54,8 +56,12 @@ function EchoContextNavInner() {
               href={link.href}
               ref={active ? activeRef : undefined}
               aria-current={active ? "page" : undefined}
-              className={LINK_CLASS}
-              style={{ color: active ? "var(--gold)" : "var(--text-dim)", ...FOCUS_STYLE }}
+              className={`${LINK_CLASS} hover:border-[var(--gold)]`}
+              style={{
+                color: active ? "var(--gold)" : "var(--text-dim)",
+                borderBottomColor: active ? "var(--gold)" : "transparent",
+                ...FOCUS_STYLE,
+              }}
             >
               {link.label}
             </Link>

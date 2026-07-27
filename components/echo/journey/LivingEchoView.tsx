@@ -45,14 +45,14 @@ export function LivingEchoView({ context }: { context: JourneyContext }) {
       <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
         <Link
           href={DISCOVER_HREF}
-          className="rounded-full px-7 py-3 text-center text-sm font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="rounded-full px-7 py-3 text-center text-sm font-semibold echo-cta-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
         >
           Recommended Next Practice
         </Link>
         <Link
           href={MY_ECHO_HREF}
-          className="text-sm font-medium underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="text-sm font-medium link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{ color: "var(--paper)", outlineColor: "var(--gold)" }}
         >
           Back to My Echo

@@ -51,7 +51,7 @@ export function TodayView({ context, displayName }: { context: JourneyContext; d
         {recommendation.external ? (
           <a
             href={recommendation.href}
-            className="mt-6 inline-block w-fit rounded-full px-8 py-3 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="mt-6 inline-block w-fit rounded-full px-8 py-3 text-center text-base font-semibold echo-cta-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
           >
             {recommendation.ctaLabel}
@@ -59,7 +59,7 @@ export function TodayView({ context, displayName }: { context: JourneyContext; d
         ) : (
           <Link
             href={recommendation.href}
-            className="mt-6 inline-block w-fit rounded-full px-8 py-3 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="mt-6 inline-block w-fit rounded-full px-8 py-3 text-center text-base font-semibold echo-cta-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
           >
             {recommendation.ctaLabel}
@@ -72,7 +72,7 @@ export function TodayView({ context, displayName }: { context: JourneyContext; d
           What changed since {PRACTICE_LABEL}?{" "}
           <Link
             href={JOURNAL_HREF}
-            className="font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="font-semibold link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
           >
             Reflect in your journal
@@ -82,7 +82,7 @@ export function TodayView({ context, displayName }: { context: JourneyContext; d
 
       <Link
         href={MY_ECHO_HREF}
-        className="mt-8 text-sm font-medium underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="mt-8 text-sm font-medium link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
         style={{ color: "var(--text-dim)", outlineColor: "var(--gold)" }}
       >
         View My Echo →

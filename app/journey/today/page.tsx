@@ -83,7 +83,7 @@ export function TodayView({
         {recommendation.external ? (
           <a
             href={recommendation.href}
-            className="mt-1 inline-block w-fit rounded-md px-8 py-3 text-center text-base font-semibold transition-opacity hover:opacity-90"
+            className="mt-1 inline-block w-fit rounded-full px-8 py-3 text-center text-base font-semibold echo-cta-primary"
             style={ctaStyle}
           >
             {recommendation.ctaLabel}
@@ -91,7 +91,7 @@ export function TodayView({
         ) : (
           <Link
             href={recommendation.href}
-            className="mt-1 inline-block w-fit rounded-md px-8 py-3 text-center text-base font-semibold transition-opacity hover:opacity-90"
+            className="mt-1 inline-block w-fit rounded-full px-8 py-3 text-center text-base font-semibold echo-cta-primary"
             style={ctaStyle}
           >
             {recommendation.ctaLabel}

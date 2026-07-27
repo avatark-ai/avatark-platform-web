@@ -108,7 +108,7 @@ export default async function StoriesPage({
           </p>
           <Link
             href={WATCH_FIRST_HREF}
-            className="mt-8 rounded-full px-9 py-3.5 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="mt-8 rounded-full px-9 py-3.5 text-center text-base font-semibold echo-cta-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
           >
             Watch First
@@ -141,7 +141,10 @@ export default async function StoriesPage({
               ))}
             </section>
           ) : (
-            <EmptyPanel title="No episodes yet" body="Episodic stories will appear here as they're added." />
+            <EmptyPanel
+              title="Episodes are still being gathered"
+              body="Each one will open with a life, not a lesson — the practice underneath comes after."
+            />
           ))}
 
         {view === "live" &&
@@ -152,7 +155,10 @@ export default async function StoriesPage({
               ))}
             </section>
           ) : (
-            <EmptyPanel title="Nothing live right now" body="Live programming will appear here when it's scheduled." />
+            <EmptyPanel
+              title="Nothing live right now"
+              body="When a live moment is worth gathering for, you'll see it here first."
+            />
           ))}
 
         {view === "films" &&
@@ -163,14 +169,17 @@ export default async function StoriesPage({
               ))}
             </section>
           ) : (
-            <EmptyPanel title="No films yet" body="Films will appear here once one is ready to share." />
+            <EmptyPanel
+              title="No films yet"
+              body="A longer telling takes longer to earn. The first one will be worth the wait."
+            />
           ))}
 
         {stories.length === 0 && (
           <div className={`flex flex-col gap-3 ${ECHO_READING_WIDTH_CLASS.editorial}`}>
             <Link
               href={`${DISCOVER_HREF}?view=practices`}
-              className="self-start rounded-full border px-6 py-2.5 text-center text-sm font-semibold transition-colors hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="echo-cta-secondary self-start rounded-full border px-6 py-2.5 text-center text-sm font-semibold hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{ borderColor: "var(--surface-line)", color: "var(--paper)", outlineColor: "var(--gold)" }}
             >
               Explore Practices
@@ -187,7 +196,7 @@ export default async function StoriesPage({
             </p>
             <Link
               href={practiceDetailHref(practice.slug)}
-              className="mt-6 inline-block rounded-full px-8 py-3 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="mt-6 inline-block rounded-full px-8 py-3 text-center text-base font-semibold echo-cta-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
             >
               Borrow the Practice
@@ -203,7 +212,7 @@ export default async function StoriesPage({
             {streamk && (
               <a
                 href={streamk}
-                className="text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="text-sm font-semibold link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
               >
                 Explore StreamK
@@ -212,7 +221,7 @@ export default async function StoriesPage({
             {cinemak && (
               <a
                 href={cinemak}
-                className="text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="text-sm font-semibold link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
               >
                 Explore CinemaK

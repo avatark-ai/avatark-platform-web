@@ -454,3 +454,68 @@ body {
    PageEnter never run, so .is-revealed never gets added): a <noscript>
    stylesheet forcing all of the above back to their resting state lives
    in app/layout.tsx, applied once for the whole site. */
+
+/* ---------------------------------------------------------------------
+   Echo RC1 polish -- restrained hover/press primitives for the Echo
+   consumer shell (cards, CTA buttons, pills). Distinct from the
+   institutional motion system above: no entrance choreography, just a
+   transform/box-shadow/color transition on interaction. Only ever
+   animates transform, box-shadow, opacity and color -- never a layout
+   property -- so none of this can cause layout shift. The global
+   prefers-reduced-motion rule earlier in this file already collapses
+   every transition-duration to ~0, so these need no separate opt-out.
+   ------------------------------------------------------------------- */
+
+/* Clickable cards (EchoCard, PracticeCard, Community entry cards, choice
+   cards on Start/Create My Echo): lift + border glow + a soft shadow.
+   Never applied to purely informational cards (e.g. StoryCard) -- those
+   have no hover motion at all, per spec. */
+.echo-card-interactive {
+  transition: transform 200ms var(--motion-ease-settle), box-shadow 200ms var(--motion-ease-settle),
+    border-color 200ms var(--motion-ease-settle);
+}
+.echo-card-interactive:hover,
+.echo-card-interactive:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px -20px rgba(0, 0, 0, 0.65), 0 0 0 1px color-mix(in srgb, var(--gold) 35%, transparent);
+}
+
+/* Primary (solid gold) CTA buttons: a small lift + a soft gold glow. */
+.echo-cta-primary {
+  transition: transform 200ms var(--motion-ease-settle), box-shadow 200ms var(--motion-ease-settle),
+    opacity 200ms var(--motion-ease-settle);
+}
+.echo-cta-primary:hover,
+.echo-cta-primary:focus-visible {
+  transform: translateY(-2px);
+  opacity: 0.95;
+  box-shadow: 0 10px 24px -10px var(--gold);
+}
+
+/* Secondary (outline) CTA buttons and small pills: the same lift, a
+   neutral shadow instead of a gold glow (glow is reserved for primary
+   actions and active states, per "avoid excessive gold"). */
+.echo-cta-secondary {
+  transition: transform 200ms var(--motion-ease-settle), box-shadow 200ms var(--motion-ease-settle),
+    border-color 200ms var(--motion-ease-settle);
+}
+.echo-cta-secondary:hover,
+.echo-cta-secondary:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px -12px rgba(0, 0, 0, 0.55);
+}
+
+/* PULSE -- a single, one-shot (never looping) confirmation pulse for a
+   freshly-activated state, e.g. a context-nav item becoming active.
+   Deliberately not infinite/ambient -- "no continuous animations". */
+@keyframes echo-pulse-once {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--gold) 45%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--gold) 0%, transparent);
+  }
+}
+.echo-pulse-once {
+  animation: echo-pulse-once 550ms var(--motion-ease-settle);
+}

@@ -1,123 +1,57 @@
 import Link from "next/link";
-import {
-  ACCOUNT_HREF,
-  COMMUNITY_HREF,
-  CREATE_MY_ECHO_HREF,
-  DISCOVER_HREF,
-  ECOSYSTEM_HREF,
-  ENTER_INVITATION_HREF,
-  FOUNDER_LETTER_HREF,
-  MY_JOURNEY_HREF,
-  START_HERE_HREF,
-  STORIES_HREF,
-  TODAY_HREF,
-  WHY_AVATARK_HREF,
-} from "@/lib/echo/links";
+import { ACCOUNT_HREF, START_HERE_HREF, WHY_AVATARK_HREF } from "@/lib/echo/links";
 
 const LINK_CLASS =
-  "rounded-sm text-sm transition-colors hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
+  "rounded-sm text-sm transition-colors duration-150 hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
 const FOCUS_STYLE = { outlineColor: "var(--gold)" } as const;
 
 const ACCOUNT_MOUNT_ENABLED = process.env.NEXT_PUBLIC_ACCOUNT_MOUNT_ENABLED === "true";
 
-interface FooterLink {
-  label: string;
-  href: string | null;
-}
-
-function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) {
-  return (
-    <div>
-      <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--gold)" }}>
-        {title}
-      </p>
-      <ul className="mt-2.5 flex flex-col gap-1.5">
-        {links.map((link) => (
-          <li key={link.label}>
-            {link.href ? (
-              <Link href={link.href} className={LINK_CLASS} style={{ color: "var(--paper)", ...FOCUS_STYLE }}>
-                {link.label}
-              </Link>
-            ) : (
-              <span className="text-sm" style={{ color: "var(--text-dim)" }}>
-                {link.label}
-              </span>
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-// Secondary navigation, not a second application menu -- this deliberately
-// does not repeat every context-navigation destination (see EchoHeader /
-// EchoContextNav for the full set). Four compact columns instead of the
-// previous seven, roughly halving footer height.
+// Echo is an application, not a marketing site -- this is a compact
+// closing strip, not a second navigation surface. Every real
+// destination Echo has already lives in EchoHeader/EchoContextNav;
+// this footer never repeats that list.
 export function EchoFooter() {
-  const beginLinks: FooterLink[] = [
-    { label: "Start Here", href: START_HERE_HREF },
-    { label: "Enter Invitation", href: ENTER_INVITATION_HREF },
-    { label: "Create My Echo", href: CREATE_MY_ECHO_HREF },
-  ];
-
-  const exploreLinks: FooterLink[] = [
-    { label: "Discover", href: DISCOVER_HREF },
-    { label: "Practice", href: TODAY_HREF },
-    { label: "Stories", href: STORIES_HREF },
-    { label: "Community", href: COMMUNITY_HREF },
-  ];
-
-  const yourEchoLinks: FooterLink[] = [
-    { label: "My Journey", href: MY_JOURNEY_HREF },
-    { label: "Account", href: ACCOUNT_MOUNT_ENABLED ? ACCOUNT_HREF : null },
-    { label: "Support", href: ACCOUNT_MOUNT_ENABLED ? `${ACCOUNT_HREF}?section=support` : null },
-  ];
-
-  const avatarkLinks: FooterLink[] = [
-    { label: "Why AvatarK", href: WHY_AVATARK_HREF },
-    { label: "Ecosystem", href: ECOSYSTEM_HREF },
-    { label: "Founder Letter", href: FOUNDER_LETTER_HREF },
-  ];
+  const accountHref = ACCOUNT_MOUNT_ENABLED ? ACCOUNT_HREF : "/account";
 
   return (
     <footer style={{ borderTop: "1px solid var(--surface-line)", background: "var(--midnight)" }}>
-      <div className="mx-auto max-w-6xl px-6 py-8">
-        <div className="mb-6 max-w-md">
+      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="max-w-sm">
           <p className="text-base font-semibold tracking-tight" style={{ color: "var(--paper)" }}>
             ECHO
           </p>
-          <p className="mt-1.5 text-sm leading-6" style={{ color: "var(--text-dim)" }}>
+          <p className="mt-1 text-sm leading-6" style={{ color: "var(--text-dim)" }}>
             Every life leaves something worth carrying forward.
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
-          <FooterColumn title="Begin" links={beginLinks} />
-          <FooterColumn title="Explore" links={exploreLinks} />
-          <FooterColumn title="Your Echo" links={yourEchoLinks} />
-          <FooterColumn title="AvatarK" links={avatarkLinks} />
-        </div>
-
-        <div
-          className="mt-6 flex flex-col gap-3 border-t pt-4 text-xs sm:flex-row sm:items-center sm:justify-between"
-          style={{ borderColor: "var(--surface-line)", color: "var(--text-dim)" }}
-        >
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <Link href={`${ACCOUNT_MOUNT_ENABLED ? ACCOUNT_HREF : "/account"}?section=privacy`} className={LINK_CLASS} style={{ color: "var(--text-dim)", ...FOCUS_STYLE }}>
+        <div className="flex flex-col gap-3 text-xs sm:items-end" style={{ color: "var(--text-dim)" }}>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <Link href={WHY_AVATARK_HREF} className={LINK_CLASS} style={{ color: "var(--text-dim)", ...FOCUS_STYLE }}>
+              AvatarK
+            </Link>
+            <Link href={`${accountHref}?section=support`} className={LINK_CLASS} style={{ color: "var(--text-dim)", ...FOCUS_STYLE }}>
+              Support
+            </Link>
+            <Link href={`${accountHref}?section=privacy`} className={LINK_CLASS} style={{ color: "var(--text-dim)", ...FOCUS_STYLE }}>
               Privacy
             </Link>
             <span>Terms</span>
             <span>Trust</span>
             <span>Accessibility</span>
-            <span>© 2026 AvatarK</span>
+            <span>© AvatarK</span>
           </div>
+
           <Link
             href={START_HERE_HREF}
-            className="rounded-sm text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{ color: "var(--gold)", ...FOCUS_STYLE }}
+            className="group inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-[transform,box-shadow,opacity] duration-200 ease-out hover:-translate-y-0.5 hover:opacity-95 hover:shadow-[0_8px_20px_-8px_var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
           >
-            Begin My Echo →
+            Begin My Echo
+            <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5">
+              →
+            </span>
           </Link>
         </div>
       </div>

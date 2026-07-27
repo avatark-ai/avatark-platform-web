@@ -34,7 +34,7 @@ export function StartHere() {
         <p className="text-lg leading-8" style={{ color: "var(--text-dim)" }}>
           Echo helps you learn from lived experience, turn insight into practice, and preserve what changes.
         </p>
-        <p className="mt-2 text-base font-semibold" style={{ color: "var(--paper)" }}>
+        <p className="text-base font-semibold" style={{ color: "var(--paper)" }}>
           How would you like to begin?
         </p>
 
@@ -43,7 +43,7 @@ export function StartHere() {
             <li key={choice.id}>
               <Link
                 href={choice.href}
-                className="group flex w-full flex-col gap-1 rounded-2xl border px-6 py-4 transition-colors hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="echo-card-interactive group flex w-full flex-col gap-1 rounded-2xl border px-6 py-4 hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={{ borderColor: "var(--surface-line)", background: "var(--surface)", outlineColor: "var(--gold)" }}
               >
                 <span className="flex items-center justify-between gap-3">

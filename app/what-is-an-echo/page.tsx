@@ -77,14 +77,14 @@ export default function WhatIsAnEchoPage() {
         <div className="flex flex-wrap gap-3">
           <Link
             href={START_HERE_HREF}
-            className="rounded-full px-7 py-3 text-center text-sm font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="rounded-full px-7 py-3 text-center text-sm font-semibold echo-cta-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
           >
             Start Here
           </Link>
           <Link
             href={CREATE_MY_ECHO_HREF}
-            className="rounded-full border px-7 py-3 text-center text-sm font-semibold transition-colors hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="echo-cta-secondary rounded-full border px-7 py-3 text-center text-sm font-semibold hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ borderColor: "var(--surface-line)", color: "var(--paper)", outlineColor: "var(--gold)" }}
           >
             Create My Echo
@@ -95,7 +95,7 @@ export default function WhatIsAnEchoPage() {
       <p className="text-sm">
         <Link
           href={`${DISCOVER_HREF}?view=echoes`}
-          className="underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
         >
           See a real Echo in Discover
@@ -107,7 +107,7 @@ export default function WhatIsAnEchoPage() {
       <p className="border-t pt-6 text-sm" style={{ borderColor: "var(--surface-line)", color: "var(--text-dim)" }}>
         <Link
           href="/canon"
-          className="underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{ color: "var(--text-dim)", outlineColor: "var(--gold)" }}
         >
           Learn about the AvatarK architecture →

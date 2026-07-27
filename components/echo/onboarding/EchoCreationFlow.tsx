@@ -82,7 +82,7 @@ export function EchoCreationFlow({ themePracticeMap }: { themePracticeMap: Recor
           type="button"
           disabled={!theme}
           onClick={() => setStep(2)}
-          className="self-start rounded-full px-8 py-3 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="self-start rounded-full px-8 py-3 text-center text-base font-semibold echo-cta-primary disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
         >
           Continue
@@ -108,7 +108,7 @@ export function EchoCreationFlow({ themePracticeMap }: { themePracticeMap: Recor
                   setBeginning(option.id);
                   setStep(3);
                 }}
-                className="w-full rounded-2xl border px-6 py-4 text-left text-base transition-colors hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="echo-card-interactive w-full rounded-2xl border px-6 py-4 text-left text-base hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={{ borderColor: "var(--surface-line)", background: "var(--surface)", color: "var(--paper)", outlineColor: "var(--gold)" }}
               >
                 {option.label}
@@ -134,7 +134,7 @@ export function EchoCreationFlow({ themePracticeMap }: { themePracticeMap: Recor
       </p>
       <Link
         href={path.href}
-        className="rounded-full px-9 py-3.5 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="rounded-full px-9 py-3.5 text-center text-base font-semibold echo-cta-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
         style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
       >
         Begin My Journey

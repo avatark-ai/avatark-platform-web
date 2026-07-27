@@ -89,7 +89,7 @@ export default async function WitnessPage({
           <OrbReveal>
             <a
               href={borrowUrl}
-              className="mt-2 rounded-full px-8 py-3 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95"
+              className="mt-2 rounded-full px-8 py-3 text-center text-base font-semibold echo-cta-primary"
               style={{ background: "var(--gold)", color: "var(--midnight)" }}
             >
               Borrow This Practice
@@ -103,7 +103,7 @@ export default async function WitnessPage({
             </p>
             <Link
               href={`${DISCOVER_HREF}?view=practices`}
-              className="self-start rounded-full px-6 py-2.5 text-center text-sm font-semibold transition-transform hover:scale-[1.02] hover:opacity-95"
+              className="self-start rounded-full px-6 py-2.5 text-center text-sm font-semibold echo-cta-primary"
               style={{ background: "var(--gold)", color: "var(--midnight)" }}
             >
               Explore Practices

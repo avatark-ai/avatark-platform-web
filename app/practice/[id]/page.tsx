@@ -54,7 +54,7 @@ export default async function PracticeDetailPage({
             From{" "}
             <Link
               href={echoDetailHref(sourceEcho.slug)}
-              className="underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
             >
               {sourceEcho.name}
@@ -85,7 +85,7 @@ export default async function PracticeDetailPage({
         {available ? (
           <a
             href={beginHref}
-            className="mt-10 self-start rounded-full px-9 py-3.5 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="mt-10 self-start rounded-full px-9 py-3.5 text-center text-base font-semibold echo-cta-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
           >
             Begin Practice
@@ -98,7 +98,7 @@ export default async function PracticeDetailPage({
             </p>
             <Link
               href={`${DISCOVER_HREF}?view=practices`}
-              className="self-start rounded-full px-6 py-2.5 text-center text-sm font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="self-start rounded-full px-6 py-2.5 text-center text-sm font-semibold echo-cta-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
             >
               Explore Practices

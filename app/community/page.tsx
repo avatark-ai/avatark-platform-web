@@ -36,7 +36,7 @@ export default function CommunityPage() {
           <Link
             key={entry.href}
             href={entry.href}
-            className="group flex flex-col gap-2 rounded-2xl border p-6 transition-colors hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="echo-card-interactive group flex flex-col gap-2 rounded-2xl border p-6 hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ borderColor: "var(--surface-line)", background: "var(--surface)", outlineColor: "var(--gold)" }}
           >
             <p className="text-lg font-semibold" style={{ color: "var(--paper)" }}>
@@ -62,7 +62,7 @@ export default function CommunityPage() {
         {arenak && (
           <a
             href={arenak}
-            className="inline-flex items-center gap-1.5 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
           >
             Explore ArenaK <span aria-hidden="true">→</span>

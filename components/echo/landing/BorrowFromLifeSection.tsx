@@ -17,7 +17,7 @@ export function BorrowFromLifeSection({ headline }: { headline: string }) {
             {practices.map((practice) => (
               <div
                 key={practice.slug}
-                className="flex flex-col gap-4 rounded-2xl border p-6 transition-colors hover:border-[var(--gold)]"
+                className="flex flex-col gap-4 rounded-2xl border p-6"
                 style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}
               >
                 <div className="flex flex-col gap-2">
@@ -33,7 +33,7 @@ export function BorrowFromLifeSection({ headline }: { headline: string }) {
                 </p>
                 <Link
                   href={practiceDetailHref(practice.slug)}
-                  className="mt-1 self-start rounded-full px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  className="mt-1 self-start rounded-full px-5 py-2.5 text-sm font-semibold echo-cta-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                   style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
                 >
                   Borrow Practice
@@ -50,7 +50,7 @@ export function BorrowFromLifeSection({ headline }: { headline: string }) {
         <div className="mt-12 text-center">
           <Link
             href={DISCOVER_HREF}
-            className="text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="text-sm font-semibold link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
           >
             Discover More

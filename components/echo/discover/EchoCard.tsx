@@ -6,7 +6,7 @@ export function EchoCard({ echo }: { echo: EchoRecord }) {
   return (
     <Link
       href={echoDetailHref(echo.slug)}
-      className="group flex flex-col gap-3 rounded-2xl border p-6 transition-colors hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+      className="echo-card-interactive group flex flex-col gap-3 rounded-2xl border p-6 hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
       style={{ borderColor: "var(--surface-line)", background: "var(--surface)", outlineColor: "var(--gold)" }}
     >
       <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>

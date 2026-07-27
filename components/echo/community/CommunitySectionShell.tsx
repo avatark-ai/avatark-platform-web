@@ -43,7 +43,7 @@ export function CommunitySectionShell({
           {arenak && (
             <a
               href={arenak}
-              className="inline-flex items-center gap-1.5 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
             >
               Explore ArenaK <span aria-hidden="true">→</span>
@@ -63,7 +63,7 @@ export function CommunityEmptyState({ body, ctaLabel, ctaHref }: { body: string;
       </p>
       <Link
         href={ctaHref}
-        className="self-start rounded-full px-6 py-2.5 text-center text-sm font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="self-start rounded-full px-6 py-2.5 text-center text-sm font-semibold echo-cta-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
         style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
       >
         {ctaLabel}

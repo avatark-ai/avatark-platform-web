@@ -32,7 +32,7 @@ export function WhatIsEchoSection({ headline, paragraphs }: { headline: string; 
 
         <Link
           href="/discover"
-          className="mt-10 inline-block text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="mt-10 inline-block text-sm font-semibold link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
         >
           See How an Echo Works

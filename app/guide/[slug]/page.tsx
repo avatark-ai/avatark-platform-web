@@ -66,7 +66,7 @@ export default async function GuidePage({
 
         <Link
           href={thresholdHref}
-          className="mt-2 rounded-full px-8 py-3 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95"
+          className="mt-2 rounded-full px-8 py-3 text-center text-base font-semibold echo-cta-primary"
           style={{ background: "var(--gold)", color: "var(--midnight)" }}
         >
           Continue to the threshold

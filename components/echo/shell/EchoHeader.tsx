@@ -171,7 +171,7 @@ export function EchoHeader() {
               </Link>
               <Link
                 href={START_HERE_HREF}
-                className="rounded-full px-4 py-2 text-sm font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="rounded-full px-4 py-2 text-sm font-semibold echo-cta-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={{ background: "var(--gold)", color: "var(--midnight)", ...FOCUS_STYLE }}
               >
                 Join Free
@@ -226,7 +226,7 @@ export function EchoHeader() {
                 <Link
                   href={START_HERE_HREF}
                   onClick={closeMobile}
-                  className="mt-1 rounded-full px-4 py-2 text-center text-sm font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  className="mt-1 rounded-full px-4 py-2 text-center text-sm font-semibold echo-cta-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                   style={{ background: "var(--gold)", color: "var(--midnight)", ...FOCUS_STYLE }}
                 >
                   Join Free

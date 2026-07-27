@@ -60,7 +60,7 @@ export function HistoryView({ context }: { context: JourneyContext }) {
           </p>
           <Link
             href="/start"
-            className="inline-block w-fit rounded-md px-8 py-3 text-center text-base font-semibold transition-opacity hover:opacity-90"
+            className="inline-block w-fit rounded-full px-8 py-3 text-center text-base font-semibold echo-cta-primary"
             style={{ background: 'var(--gold)', color: 'var(--midnight)' }}
           >
             Begin with an Echo
