@@ -1,36 +1,47 @@
 import Link from 'next/link'
 import { DepartureLink } from '@/components/motion/DepartureLink'
+import { PlatformBreadcrumb } from './PlatformBreadcrumb'
+import { StatusBadge, type PlatformStatus } from './StatusBadge'
 
-// One of the three equal Growth Engine cards (PrometheusK/Practice,
-// GameK/Exploration, AtlasK/Knowledge). `href` is always resolved by the
-// caller via resolveEcosystemProduct so this card never fabricates a
-// destination -- same resolver the pre-existing /ecosystem grid and the
-// homepage's EcosystemPreview already share, so this card can't drift from
-// the real product registry either.
+// One of the three equal Growth Engine cards (PrometheusK, GameK, AtlasK).
+// `href` is always resolved by the caller via resolveEcosystemProduct so
+// this card never fabricates a destination -- same resolver the
+// pre-existing /ecosystem grid and the homepage's EcosystemPreview already
+// share, so this card can't drift from the real product registry either.
 export function GrowthEngineCard({
+  breadcrumbTrail,
   engineName,
-  title,
+  descriptor,
+  status,
   description,
-  subItems,
+  features,
   href,
+  ctaLabel,
 }: {
+  breadcrumbTrail: string[]
   engineName: string
-  title: string
+  descriptor: string
+  status: PlatformStatus
   description: string
-  subItems?: string[]
+  features: string[]
   href: string | null
+  ctaLabel: string
 }) {
   const external = href?.startsWith('http') ?? false
-  const ctaLabel = `Explore ${engineName}`
 
   return (
     <div
       className="flex flex-col rounded-lg border p-6"
       style={{ borderColor: 'var(--paper-line)', background: 'var(--surface-card)' }}
     >
-      <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
-        {title}
-      </p>
+      <PlatformBreadcrumb trail={breadcrumbTrail} />
+
+      <div className="mt-4 flex items-start justify-between gap-3">
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+          {descriptor}
+        </p>
+        <StatusBadge status={status} />
+      </div>
       <h3 className="mt-2 text-xl font-semibold" style={{ color: 'var(--ink)' }}>
         {engineName}
       </h3>
@@ -38,15 +49,15 @@ export function GrowthEngineCard({
         {description}
       </p>
 
-      {subItems && subItems.length > 0 && (
+      {features.length > 0 && (
         <ul className="mt-4 flex flex-wrap gap-2">
-          {subItems.map((item) => (
+          {features.map((feature) => (
             <li
-              key={item}
+              key={feature}
               className="rounded-full border px-2.5 py-1 text-xs font-medium"
               style={{ borderColor: 'var(--paper-line)', color: 'var(--ink-dim)' }}
             >
-              {item}
+              {feature}
             </li>
           ))}
         </ul>

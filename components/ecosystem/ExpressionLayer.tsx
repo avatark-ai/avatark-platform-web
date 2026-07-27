@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { DepartureLink } from '@/components/motion/DepartureLink'
 import { RevealOnView } from '@/components/motion/RevealOnView'
 import { resolveEcosystemProduct } from '@/lib/content/ecosystemGroups'
+import { StatusBadge, type PlatformStatus } from './StatusBadge'
 
 // ArenaK -> StreamK -> CinemaK: the layer where private growth becomes
 // shared expression. Fixed, hand-authored structure (not data-driven from
@@ -9,12 +10,37 @@ import { resolveEcosystemProduct } from '@/lib/content/ecosystemGroups'
 // FragmentedVsLongitudinal hardcoding its own six labels rather than taking
 // them as a prop.
 const LAYERS = [
-  { id: 'arenak', bullets: ['Community', 'Competition', 'Challenges', 'Recognition'] },
-  { id: 'streamk', bullets: ['Stories', 'Events', 'Live experiences'] },
-  { id: 'cinemak', bullets: ['Documentaries', 'Series', 'Films'] },
+  {
+    id: 'arenak',
+    descriptor: 'Community Platform',
+    status: 'COMING ONLINE' as PlatformStatus,
+    bullets: ['Community', 'Competition', 'Challenges', 'Recognition'],
+  },
+  {
+    id: 'streamk',
+    descriptor: 'Media Platform',
+    status: 'IN DEVELOPMENT' as PlatformStatus,
+    bullets: ['Stories', 'Events', 'Live experiences'],
+  },
+  {
+    id: 'cinemak',
+    descriptor: 'Story Platform',
+    status: 'VISION' as PlatformStatus,
+    bullets: ['Documentaries', 'Series', 'Films'],
+  },
 ] as const
 
-function LayerCard({ id, bullets }: { id: string; bullets: readonly string[] }) {
+function LayerCard({
+  id,
+  descriptor,
+  status,
+  bullets,
+}: {
+  id: string
+  descriptor: string
+  status: PlatformStatus
+  bullets: readonly string[]
+}) {
   const product = resolveEcosystemProduct(id)
   const external = product.href?.startsWith('http') ?? false
 
@@ -23,6 +49,12 @@ function LayerCard({ id, bullets }: { id: string; bullets: readonly string[] }) 
       className="mx-auto flex w-full max-w-md flex-col items-center gap-3 rounded-lg border p-6 text-center"
       style={{ borderColor: 'var(--paper-line)', background: 'var(--surface-card)' }}
     >
+      <div className="flex items-center justify-center gap-3">
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+          {descriptor}
+        </p>
+        <StatusBadge status={status} />
+      </div>
       <h3 className="text-xl font-semibold" style={{ color: 'var(--ink)' }}>
         {product.name}
       </h3>
@@ -74,7 +106,7 @@ export function ExpressionLayer() {
               ↓
             </span>
           )}
-          <LayerCard id={layer.id} bullets={layer.bullets} />
+          <LayerCard id={layer.id} descriptor={layer.descriptor} status={layer.status} bullets={layer.bullets} />
         </div>
       ))}
     </RevealOnView>
