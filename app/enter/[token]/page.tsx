@@ -7,6 +7,7 @@ import { invitationContinueHref, previewInvitationDestination } from "@/lib/invi
 import { describeInvitation } from "@/lib/invitations/metadata";
 import { InvitationAcceptGate } from "@/components/echo/invitations/InvitationAcceptGate";
 import { InvitationMetadataPanel } from "@/components/echo/invitations/InvitationMetadataPanel";
+import { InvitationJourneyDiagram } from "@/components/echo/invitations/InvitationJourneyDiagram";
 import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
 import { DISCOVER_HREF, START_HERE_HREF } from "@/lib/echo/links";
 
@@ -167,6 +168,7 @@ export default async function EnterInvitationTokenPage({
           {preview.body}
         </p>
         <InvitationMetadataPanel answers={answers} />
+        <InvitationJourneyDiagram currentStep="preview" />
         <InvitationAcceptGate token={token} continueHref={finalHref} practiceSlug={practiceSlug} />
       </div>
     </EchoPageShell>
