@@ -27,9 +27,6 @@ export function StartHere() {
   return (
     <EchoPageShell layout="plain">
       <div className={`flex flex-col gap-6 ${ECHO_READING_WIDTH_CLASS.narrow}`}>
-        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
-          ECHO
-        </p>
         <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Welcome to Echo</h1>
         <p className="text-lg leading-8" style={{ color: "var(--text-dim)" }}>
           Echo helps you learn from lived experience, turn insight into practice, and preserve what changes.

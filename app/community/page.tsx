@@ -5,7 +5,7 @@ import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell
 
 export const metadata: Metadata = {
   title: "Community — Echo",
-  description: "A quiet place where private practice can become shared participation.",
+  description: "Practice together, join a challenge, and be recognized for what you've carried forward.",
 };
 
 const ENTRIES = [
@@ -27,7 +27,8 @@ export default function CommunityPage() {
         </p>
         <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Community</h1>
         <p className="text-lg leading-8" style={{ color: "var(--text-dim)" }}>
-          A quiet place where private practice can become shared participation.
+          Once a practice has changed something, Community is where it can be shared — practiced together, tested
+          in a challenge, or simply recognized. The natural next step after practice, not a separate destination.
         </p>
       </div>
 

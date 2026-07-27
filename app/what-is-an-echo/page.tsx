@@ -40,9 +40,6 @@ export default function WhatIsAnEchoPage() {
     <EchoPageShell layout="plain">
       <div className={`flex flex-col gap-10 sm:gap-12 ${ECHO_READING_WIDTH_CLASS.editorial}`}>
       <div className="flex flex-col gap-3">
-        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
-          ECHO
-        </p>
         <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Not a profile. A living inheritance.</h1>
         <p className="max-w-xl text-lg leading-8" style={{ color: "var(--text-dim)" }}>
           Not a résumé. Not a social feed. Not a digital copy of a person. An Echo is what another life learned,

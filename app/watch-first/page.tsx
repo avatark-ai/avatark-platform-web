@@ -16,9 +16,6 @@ export default function WatchFirstPage() {
   return (
     <EchoPageShell layout="plain">
       <div className={`flex flex-col gap-6 ${ECHO_READING_WIDTH_CLASS.narrow}`}>
-        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
-          ECHO
-        </p>
         <h1 className="text-2xl font-semibold sm:text-3xl">{featured ? featured.title : "Watch First"}</h1>
 
         <div

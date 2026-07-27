@@ -35,50 +35,11 @@ const CONTINUE_EXPLORING = [
   { label: "See what's next for you", body: "Your own recommendation, waiting on Today.", href: TODAY_HREF },
 ] as const;
 
-const VIEW_TABS: { id: DiscoverView; label: string }[] = [
-  { id: "topics", label: "Overview" },
-  { id: "echoes", label: "Echoes" },
-  { id: "practices", label: "Practices" },
-  { id: "collections", label: "Collections" },
-];
-
 function viewHref(view: DiscoverView, theme: string | null): string {
   const params = new URLSearchParams();
   params.set("view", view);
   if (theme) params.set("theme", theme);
   return `${DISCOVER_HREF}?${params.toString()}`;
-}
-
-// A stable, fixed-container tab strip -- not a hash jump. Every context-
-// nav "Featured Echoes / Featured Practices / Collections / Topics" item
-// lands here with a real `?view=` query value; this local strip lets a
-// visitor already on the page switch views the same way, with identical
-// active-state logic (pathname + query, not scroll position).
-function ViewTabs({ active, theme }: { active: DiscoverView; theme: string | null }) {
-  return (
-    <div role="tablist" aria-label="Discover sections" className="flex gap-6 overflow-x-auto border-b" style={{ borderColor: "var(--surface-line)" }}>
-      {VIEW_TABS.map((tab) => {
-        const isActive = tab.id === active;
-        return (
-          <Link
-            key={tab.id}
-            href={viewHref(tab.id, theme)}
-            role="tab"
-            aria-selected={isActive}
-            aria-current={isActive ? "page" : undefined}
-            className="shrink-0 border-b-2 pb-3 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{
-              borderColor: isActive ? "var(--gold)" : "transparent",
-              color: isActive ? "var(--paper)" : "var(--text-dim)",
-              outlineColor: "var(--gold)",
-            }}
-          >
-            {tab.label}
-          </Link>
-        );
-      })}
-    </div>
-  );
 }
 
 export default async function DiscoverPage({
@@ -102,18 +63,22 @@ export default async function DiscoverPage({
   return (
     <EchoPageShell>
       <div className="flex flex-col gap-3">
-        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
-          ECHO
-        </p>
         <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Discover</h1>
         <p className="max-w-xl text-lg leading-8" style={{ color: "var(--text-dim)" }}>
           Something learned by another life, and the practice that carries it forward.
         </p>
       </div>
 
-      <div className="flex flex-col gap-6">
+      {/* View switching (Echoes/Practices/Collections/Topics) lives once,
+          in the shared EchoContextNav bar above every Discover page --
+          this page no longer duplicates it with a second, page-local tab
+          strip. Topics stays here since it's a filter *within* whichever
+          view is active, not a view switch itself. */}
+      <div className="flex flex-col gap-3">
+        <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
+          Topics
+        </h2>
         <ThemeFilter themes={allThemes()} active={theme} view={view} />
-        <ViewTabs active={view} theme={theme} />
       </div>
 
       {view === "echoes" && (
@@ -206,6 +171,28 @@ export default async function DiscoverPage({
               </p>
             )}
           </section>
+
+          {collections.length > 0 && (
+            <section className="flex flex-col gap-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
+                  Collections
+                </h2>
+                <Link
+                  href={viewHref("collections", theme)}
+                  className="text-sm link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
+                >
+                  See all collections
+                </Link>
+              </div>
+              <div className="grid gap-6 sm:grid-cols-2">
+                {collections.slice(0, 2).map((collection) => (
+                  <CollectionCard key={collection.slug} collection={collection} />
+                ))}
+              </div>
+            </section>
+          )}
 
           <section className="flex flex-col gap-6">
             <div className="flex items-center justify-between">

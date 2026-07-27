@@ -82,6 +82,15 @@ export default async function PracticeDetailPage({
           {practice.whyItMattered}
         </p>
 
+        {practice.whatYouMayNotice && (
+          <p className="mt-6 text-base leading-7" style={{ color: "var(--text-dim)" }}>
+            <span className="font-semibold" style={{ color: "var(--paper)" }}>
+              What may change —
+            </span>{" "}
+            {practice.whatYouMayNotice}
+          </p>
+        )}
+
         {available ? (
           <a
             href={beginHref}

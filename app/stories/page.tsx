@@ -3,7 +3,7 @@ import Link from "next/link";
 import { listPractices, listStories } from "@/lib/content/echo";
 import { cinemakHref, DISCOVER_HREF, practiceDetailHref, streamkHref, WATCH_FIRST_HREF } from "@/lib/echo/links";
 import { StoryCard } from "@/components/echo/discover/StoryCard";
-import { ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
+import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
 
 export const metadata: Metadata = {
   title: "Stories — Echo",
@@ -15,47 +15,6 @@ const VALID_VIEWS: StoriesView[] = ["watch", "episodes", "live", "films"];
 
 function resolveView(raw: string | string[] | undefined): StoriesView {
   return typeof raw === "string" && (VALID_VIEWS as string[]).includes(raw) ? (raw as StoriesView) : "watch";
-}
-
-const VIEW_TABS: { id: StoriesView; label: string }[] = [
-  { id: "watch", label: "Watch" },
-  { id: "episodes", label: "Episodes" },
-  { id: "live", label: "Live" },
-  { id: "films", label: "Films" },
-];
-
-function viewHref(view: StoriesView): string {
-  return `/stories?view=${view}`;
-}
-
-// Same stable fixed-container tab pattern as Discover's ViewTabs -- each
-// of Watch/Episodes/Live/Films is a real, addressable state with its own
-// honest content, not four labels scrolling to one merged block.
-function ViewTabs({ active }: { active: StoriesView }) {
-  return (
-    <div role="tablist" aria-label="Stories sections" className="flex gap-6 overflow-x-auto border-b" style={{ borderColor: "var(--surface-line)" }}>
-      {VIEW_TABS.map((tab) => {
-        const isActive = tab.id === active;
-        return (
-          <Link
-            key={tab.id}
-            href={viewHref(tab.id)}
-            role="tab"
-            aria-selected={isActive}
-            aria-current={isActive ? "page" : undefined}
-            className="shrink-0 border-b-2 pb-3 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{
-              borderColor: isActive ? "var(--gold)" : "transparent",
-              color: isActive ? "var(--paper)" : "var(--text-dim)",
-              outlineColor: "var(--gold)",
-            }}
-          >
-            {tab.label}
-          </Link>
-        );
-      })}
-    </div>
-  );
 }
 
 function EmptyPanel({ title, body }: { title: string; body: string }) {
@@ -88,37 +47,30 @@ export default async function StoriesPage({
   const practice = listPractices()[0];
 
   return (
-    <main className="flex flex-1 flex-col" style={{ background: "var(--midnight)", color: "var(--paper)" }}>
-      {/* Large editorial hero, streaming-platform in spirit -- Watch First
-          is the one real, working story experience today, so it carries
-          the primary emphasis rather than a fabricated featured episode. */}
-      <section className="relative overflow-hidden border-b" style={{ borderColor: "var(--surface-line)" }}>
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute left-1/2 top-0 h-[32rem] w-[32rem] -translate-x-1/2 -translate-y-1/3 rounded-full opacity-50"
-          style={{ background: "radial-gradient(circle, color-mix(in srgb, var(--gold) 12%, transparent) 0%, transparent 70%)" }}
-        />
-        <div className="relative mx-auto flex max-w-3xl flex-col items-start px-6 py-16 sm:py-20">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em]" style={{ color: "var(--gold)" }}>
-            ECHO STORIES
-          </p>
-          <h1 className="mt-5 text-4xl font-semibold tracking-tight sm:text-5xl">Stories</h1>
-          <p className="mt-5 max-w-xl text-lg leading-8" style={{ color: "var(--text-dim)" }}>
-            Some lessons are encountered as stories before they become practices.
-          </p>
-          <Link
-            href={WATCH_FIRST_HREF}
-            className="mt-8 rounded-full px-9 py-3.5 text-center text-base font-semibold echo-cta-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
-          >
-            Watch First
-          </Link>
-        </div>
-      </section>
+    <EchoPageShell>
+      {/* Same hero pattern as every other Echo page (heading size, subhead
+          width/weight, no bare "ECHO" eyebrow) -- previously this page
+          built its own larger, differently-styled hero with a radial-
+          gradient background, which is why it read as a different product
+          from the rest of Echo. */}
+      <div className="flex flex-col gap-3">
+        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Stories</h1>
+        <p className="max-w-xl text-lg leading-8" style={{ color: "var(--text-dim)" }}>
+          Some lessons are encountered as stories before they become practices.
+        </p>
+        <Link
+          href={WATCH_FIRST_HREF}
+          className="mt-2 w-fit rounded-full px-9 py-3.5 text-center text-base font-semibold echo-cta-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
+        >
+          Watch First
+        </Link>
+      </div>
 
-      <div className={`mx-auto flex w-full flex-col gap-10 px-6 pb-12 pt-10 sm:gap-12 sm:pb-16 sm:pt-14 max-w-6xl`}>
-        <ViewTabs active={view} />
-
+      {/* View switching (Watch/Episodes/Live/Films) lives once, in the
+          shared EchoContextNav bar above every Stories page -- this page
+          no longer duplicates it with a second, page-local tab strip. */}
+      <>
         {view === "watch" &&
           (stories.length > 0 ? (
             <section className="grid gap-6 sm:grid-cols-2">
@@ -128,8 +80,8 @@ export default async function StoriesPage({
             </section>
           ) : (
             <EmptyPanel
-              title="No stories are live yet"
-              body="Watch First already works, and every story that arrives here will lead somewhere real: a practice you can begin the same way."
+              title="No stories are live yet."
+              body="Every practice that changes a life eventually becomes a story worth sharing."
             />
           ))}
 
@@ -229,7 +181,7 @@ export default async function StoriesPage({
             )}
           </div>
         </div>
-      </div>
-    </main>
+      </>
+    </EchoPageShell>
   );
 }

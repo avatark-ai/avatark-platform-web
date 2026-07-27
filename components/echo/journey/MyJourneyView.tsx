@@ -4,12 +4,8 @@ import Link from "next/link";
 import { useJourneySession } from "@/lib/journey/session";
 import { INTENTIONS } from "@/lib/onboarding/intentions";
 import { WITNESS_LABEL } from "@/lib/onboarding/witness";
-import { MY_ECHO_HREF, TODAY_HREF } from "@/lib/echo/links";
+import { LIVING_ECHO_HREF, MY_ECHO_HREF, TODAY_HREF } from "@/lib/echo/links";
 import type { JourneyContext } from "@/lib/journey/state";
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
-}
 
 const STAGES = ["Invitation", "Story", "Practice", "Reflection", "Contribution"] as const;
 
@@ -20,6 +16,44 @@ function reachedStageCount(context: JourneyContext): number {
   return 0;
 }
 
+function JourneySection({
+  eyebrow,
+  body,
+  linkHref,
+  linkLabel,
+}: {
+  eyebrow: string;
+  body: string;
+  linkHref: string;
+  linkLabel: string;
+}) {
+  return (
+    <div className="flex flex-col gap-2 border-t pt-6" style={{ borderColor: "var(--surface-line)" }}>
+      <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
+        {eyebrow}
+      </p>
+      <p className="text-base leading-7" style={{ color: "var(--text-dim)" }}>
+        {body}
+      </p>
+      <Link
+        href={linkHref}
+        className="mt-1 w-fit text-sm font-semibold link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+        style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
+      >
+        {linkLabel} →
+      </Link>
+    </div>
+  );
+}
+
+// My Journey is Echo's home -- a hub that fans out into the real,
+// already-built destinations that each answer one part of the target IA
+// (Living Echo, Practices -- including what you've borrowed, Reflections,
+// Evidence, Milestones, Recommendations), rather than duplicating their
+// content here. My Echo's own tabs already cover Practices/Reflections/
+// Evidence/Timeline (MyEchoView.tsx); Today already covers Recommendations.
+// No backend changes and no new data -- only linking out to what already
+// exists instead of inlining a second copy of it.
 export function MyJourneyView({ context }: { context: JourneyContext }) {
   const intentionLabel = INTENTIONS.find((intention) => intention.id === context.intention)?.label;
   const reached = reachedStageCount(context);
@@ -30,67 +64,11 @@ export function MyJourneyView({ context }: { context: JourneyContext }) {
         My Journey
       </p>
       <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Your journey is not a score.</h1>
-      <p className="mt-2 max-w-md text-lg leading-8" style={{ color: "var(--text-dim)" }}>
+      <p className="mt-2 text-lg leading-8" style={{ color: "var(--text-dim)" }}>
         It is a record of what you are learning and becoming.
       </p>
 
-      <ol className="mt-10 flex flex-wrap items-center gap-x-3 gap-y-3 text-sm font-medium" style={{ color: "var(--paper)" }}>
-        {STAGES.map((stage, index) => (
-          <li key={stage} className="flex items-center gap-3">
-            <span
-              className="rounded-full border px-4 py-1.5"
-              style={{
-                borderColor: index <= reached ? "var(--gold)" : "var(--surface-line)",
-                color: index <= reached ? "var(--paper)" : "var(--text-dim)",
-              }}
-            >
-              {stage}
-            </span>
-            {index < STAGES.length - 1 && (
-              <span aria-hidden="true" style={{ color: "var(--gold)" }}>
-                →
-              </span>
-            )}
-          </li>
-        ))}
-      </ol>
-
-      {context.startedAt ? (
-        <>
-          <div className="mt-10 flex flex-col gap-1.5 rounded-2xl border p-6" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
-            <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
-              {formatDate(context.startedAt)}
-            </p>
-            <p className="text-lg" style={{ color: "var(--paper)" }}>
-              {intentionLabel ? (
-                <>
-                  Named what mattered: <span className="font-semibold">&ldquo;{intentionLabel}&rdquo;</span>
-                </>
-              ) : (
-                "Began the journey."
-              )}
-            </p>
-            {context.invitationId && context.invitationAcceptedAt && (
-              <p className="text-sm" style={{ color: "var(--text-dim)" }}>
-                Accepted an invitation on {formatDate(context.invitationAcceptedAt)}.
-              </p>
-            )}
-            {context.witness && (
-              <p className="text-sm" style={{ color: "var(--text-dim)" }}>
-                Started {WITNESS_LABEL}.
-              </p>
-            )}
-            {context.practiceCompletedAt && (
-              <p className="text-sm" style={{ color: "var(--gold)" }}>
-                Completed a practice on {formatDate(context.practiceCompletedAt)}.
-              </p>
-            )}
-          </div>
-          <p className="mt-4 text-sm leading-6" style={{ color: "var(--text-dim)" }}>
-            This page grows as you return to practice and reflection — never a count to chase.
-          </p>
-        </>
-      ) : (
+      {!context.startedAt && (
         <div className="mt-10 flex flex-col items-start gap-5">
           <p className="max-w-md text-lg leading-8" style={{ color: "var(--paper)" }}>
             You haven&apos;t begun your journey yet.
@@ -105,22 +83,83 @@ export function MyJourneyView({ context }: { context: JourneyContext }) {
         </div>
       )}
 
-      <div className="mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+      {/* Milestones -- an at-a-glance stage stepper; the same events in
+          full (with dates) live on My Echo's own Timeline tab, not
+          repeated here a second time. */}
+      <div className="mt-10 flex flex-col gap-4">
+        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
+          Milestones
+        </p>
+        <ol className="flex flex-wrap items-center gap-x-3 gap-y-3 text-sm font-medium" style={{ color: "var(--paper)" }}>
+          {STAGES.map((stage, index) => (
+            <li key={stage} className="flex items-center gap-3">
+              <span
+                className="rounded-full border px-4 py-1.5"
+                style={{
+                  borderColor: index <= reached ? "var(--gold)" : "var(--surface-line)",
+                  color: index <= reached ? "var(--paper)" : "var(--text-dim)",
+                }}
+              >
+                {stage}
+              </span>
+              {index < STAGES.length - 1 && (
+                <span aria-hidden="true" style={{ color: "var(--gold)" }}>
+                  →
+                </span>
+              )}
+            </li>
+          ))}
+        </ol>
+        <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
+          {intentionLabel ? `Named what mattered: "${intentionLabel}."` : "This grows as you return to practice and reflection — never a count to chase."}
+        </p>
         <Link
-          href={MY_ECHO_HREF}
-          className="text-sm font-semibold link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          href={`${MY_ECHO_HREF}?tab=timeline`}
+          className="w-fit text-sm font-semibold link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
         >
-          View My Echo
-        </Link>
-        <Link
-          href={TODAY_HREF}
-          className="text-sm font-medium link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-          style={{ color: "var(--paper)", outlineColor: "var(--gold)" }}
-        >
-          Continue Today
+          View full timeline →
         </Link>
       </div>
+
+      <JourneySection
+        eyebrow="Living Echo"
+        body="The living record of what you've practiced, learned, and carried forward — not a profile, something that keeps growing."
+        linkHref={LIVING_ECHO_HREF}
+        linkLabel="View Living Echo"
+      />
+
+      <JourneySection
+        eyebrow="Practices"
+        body={
+          context.witness
+            ? `The practice you've borrowed and begun: ${WITNESS_LABEL}.`
+            : "Practices you've borrowed from an Echo gather here — your own small library of what you've tried."
+        }
+        linkHref={`${MY_ECHO_HREF}?tab=practices`}
+        linkLabel="View Practices"
+      />
+
+      <JourneySection
+        eyebrow="Reflections"
+        body="What a practice left you thinking about, kept private unless you choose to share it."
+        linkHref={`${MY_ECHO_HREF}?tab=reflections`}
+        linkLabel="View Reflections"
+      />
+
+      <JourneySection
+        eyebrow="Evidence"
+        body="Builds from what you've done, not what you've said — it accumulates from completed practices and verified reflections."
+        linkHref={`${MY_ECHO_HREF}?tab=evidence`}
+        linkLabel="View Evidence"
+      />
+
+      <JourneySection
+        eyebrow="Recommendations"
+        body="Today already knows what's next for you, computed from where your journey actually is."
+        linkHref={TODAY_HREF}
+        linkLabel="See today's recommendation"
+      />
     </div>
   );
 }

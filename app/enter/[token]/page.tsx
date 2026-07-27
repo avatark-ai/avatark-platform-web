@@ -22,9 +22,6 @@ export const metadata: Metadata = {
 function UnavailableCard({ title, body, action }: { title: string; body: string; action?: ReactNode }) {
   return (
     <div className={`flex flex-col gap-4 ${ECHO_READING_WIDTH_CLASS.narrow}`}>
-      <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
-        ECHO
-      </p>
       <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h1>
       <p className="text-lg leading-8" style={{ color: "var(--text-dim)" }}>
         {body}
