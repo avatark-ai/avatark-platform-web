@@ -6,6 +6,7 @@ import { echoCategoryEyebrow } from "@/lib/onboarding/guide";
 import { isPracticeHandoffAvailable } from "@/lib/onboarding/practiceHandoff";
 import { DISCOVER_HREF } from "@/lib/echo/links";
 import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
+import { GuestJourneyTracker } from "@/components/echo/onboarding/GuestJourneyTracker";
 
 export default async function WitnessPage({
   params,
@@ -38,6 +39,7 @@ export default async function WitnessPage({
 
   return (
     <EchoPageShell layout="plain">
+      <GuestJourneyTracker step="practice_intro" intendedPracticeId={practice.slug} />
       <div className={`flex flex-col gap-6 ${ECHO_READING_WIDTH_CLASS.narrow}`}>
         <p
           className="text-xs font-semibold uppercase tracking-wide"

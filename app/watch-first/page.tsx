@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { listPractices, listStories } from "@/lib/content/echo";
 import { practiceDetailHref } from "@/lib/echo/links";
 import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
+import { GuestJourneyTracker } from "@/components/echo/onboarding/GuestJourneyTracker";
 
 export const metadata: Metadata = {
   title: "Watch First — Echo",
@@ -15,6 +16,7 @@ export default function WatchFirstPage() {
 
   return (
     <EchoPageShell layout="plain">
+      <GuestJourneyTracker step="watch_first" watchFirstContentId={featured?.slug ?? null} />
       <div className={`flex flex-col gap-6 ${ECHO_READING_WIDTH_CLASS.narrow}`}>
         <h1 className="text-2xl font-semibold sm:text-3xl">{featured ? featured.title : "Watch First"}</h1>
 
