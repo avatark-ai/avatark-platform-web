@@ -16,6 +16,13 @@ export function FounderGeometry() {
   return (
     <RevealOnView className="mx-auto my-12 max-w-lg sm:max-w-2xl">
       <FourAxesGeometry axes={axes} />
+      {/* RC4: a single quiet caption naming the two axes this geometry
+          layers together -- the diagram itself is unchanged, this is
+          scoped to the Founder page's own wrapper, not FourAxesGeometry
+          (shared with /canon), so /canon's presentation is untouched. */}
+      <p className="mt-4 text-center text-xs uppercase tracking-wide" style={{ color: 'var(--ink-dim)' }}>
+        Human Development · Prometheus, the Fourth Axis
+      </p>
     </RevealOnView>
   )
 }

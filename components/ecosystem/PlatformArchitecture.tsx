@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { SectionContainer } from '@/components/foundation/Container'
 import { RevealOnView } from '@/components/motion/RevealOnView'
 import { ENTER_ECHO_HREF } from '@/lib/content/links'
-import { getGrowthEngines, getJourneyTransitions } from '@/lib/products/platformGraph'
+import { getGrowthEngines, getJourneyTransitions, distinctMaturityLabel } from '@/lib/products/platformGraph'
 import { PlatformDiagram } from './PlatformDiagram'
 import { GrowthEngineCard } from './GrowthEngineCard'
 import { ConnectedProducts } from './ConnectedProducts'
@@ -60,6 +60,15 @@ export function PlatformArchitecture() {
             <PlatformDiagram />
           </div>
 
+          {/* RC4: names StudioK/SetpointK's supporting (not journey-chain)
+              role -- they build and measure the ecosystem above rather than
+              sitting on the AvatarK -> Echo -> ... -> CinemaK chain
+              themselves, so a quiet caption here is more honest than adding
+              them to the diagram as if they were another chain step. */}
+          <p className="mx-auto mt-6 max-w-md text-xs leading-6" style={{ color: 'var(--ink-dim)' }}>
+            StudioK builds the ecosystem. SetpointK measures and supports human state.
+          </p>
+
           <Link
             href={ENTER_ECHO_HREF}
             className="mt-8 inline-block rounded-md px-6 py-3 text-sm font-semibold transition hover:opacity-90 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
@@ -90,6 +99,7 @@ export function PlatformArchitecture() {
                   engineName={engine.name}
                   descriptor={copy.descriptor}
                   status={engine.status}
+                  maturityLabel={distinctMaturityLabel(engine)}
                   description={copy.description}
                   features={engine.experiences.length > 0 ? engine.experiences.map((e) => e.name) : copy.fallbackFeatures}
                   featuresLabel={copy.featuresLabel}

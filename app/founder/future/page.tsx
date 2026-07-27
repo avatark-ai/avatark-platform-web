@@ -3,9 +3,10 @@ import Link from 'next/link'
 import { FounderPageLayout } from '@/components/foundation/founder/FounderPageLayout'
 import { FounderChapterHeader } from '@/components/foundation/founder/FounderChapterHeader'
 import { FounderChapterNav } from '@/components/foundation/founder/FounderChapterNav'
-import { RippleLink } from '@/components/motion/RippleLink'
+import { FounderPullQuote } from '@/components/foundation/founder/FounderPullQuote'
+import { FounderPortrait } from '@/components/foundation/founder/FounderPortrait'
+import { FounderContinueJourney } from '@/components/foundation/founder/FounderContinueJourney'
 import { getFounderLetter } from '@/lib/content/foundation'
-import { ENTER_ECHO_HREF } from '@/lib/content/links'
 
 export const metadata: Metadata = {
   title: 'The Future — AvatarK Founder Letter',
@@ -22,45 +23,31 @@ export default function FounderFuturePage() {
     <FounderPageLayout>
       <FounderChapterHeader chapterId="future" title={chapter.navLabel} />
       <div className="mt-6 flex flex-col gap-5 text-lg leading-8" style={{ color: 'var(--ink)' }}>
-        {chapter.paragraphs.map((paragraph, index) => (
-          <div key={index}>
-            <p>{paragraph}</p>
-            {paragraph.startsWith('From this architecture grew an ecosystem') && (
-              <Link
-                href="/ecosystem"
-                className="mt-3 inline-block rounded-sm text-base font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
-              >
-                Explore the Ecosystem →
-              </Link>
-            )}
-          </div>
-        ))}
+        {chapter.paragraphs.map((paragraph, index) =>
+          chapter.pullQuoteIndexes.includes(index) ? (
+            <FounderPullQuote key={index}>{paragraph}</FounderPullQuote>
+          ) : (
+            <div key={index}>
+              <p>{paragraph}</p>
+              {paragraph.startsWith('From this architecture grew an ecosystem') && (
+                <Link
+                  href="/ecosystem"
+                  className="mt-3 inline-block rounded-sm text-base font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+                >
+                  Explore the Ecosystem →
+                </Link>
+              )}
+            </div>
+          ),
+        )}
       </div>
 
       <FounderChapterNav chapterId="future" />
 
-      <div className="mt-8">
-        <p className="text-base font-semibold" style={{ color: 'var(--ink)' }}>
-          {letter.author}
-        </p>
-        <p className="mt-1 text-sm" style={{ color: 'var(--ink-dim)' }}>
-          {letter.role}
-        </p>
-        <p className="text-sm" style={{ color: 'var(--ink-dim)' }}>
-          {letter.credentials}
-        </p>
-      </div>
+      <FounderPortrait name={letter.author} role={letter.role} credentials={letter.credentials} />
 
-      <div className="mt-8 text-center">
-        <RippleLink
-          href={ENTER_ECHO_HREF}
-          className="inline-block rounded-md px-8 py-3 text-sm font-semibold transition hover:opacity-90 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-          style={{ background: 'var(--ink)', color: 'var(--paper)', outlineColor: 'var(--gold)' }}
-        >
-          Enter Echo
-        </RippleLink>
-      </div>
+      <FounderContinueJourney />
     </FounderPageLayout>
   )
 }

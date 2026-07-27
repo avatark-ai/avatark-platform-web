@@ -15,6 +15,7 @@ export function GrowthEngineCard({
   engineName,
   descriptor,
   status,
+  maturityLabel,
   description,
   features,
   featuresLabel,
@@ -26,6 +27,11 @@ export function GrowthEngineCard({
   engineName: string
   descriptor: string
   status: PlatformStatus
+  // RC4: a subtle, secondary maturity read (e.g. "Beta") shown only when
+  // it says something the `status` badge doesn't already say -- the
+  // caller decides via lib/products/platformGraph.ts's
+  // distinctMaturityLabel, so this card doesn't repeat itself.
+  maturityLabel?: string | null
   description: string
   features: string[]
   // Optional eyebrow above the feature chips (e.g. GameK's "Learning
@@ -57,6 +63,11 @@ export function GrowthEngineCard({
       <h3 className="mt-2 text-xl font-semibold" style={{ color: 'var(--ink)' }}>
         {engineName}
       </h3>
+      {maturityLabel && (
+        <p className="mt-0.5 text-[11px] uppercase tracking-wide" style={{ color: 'var(--ink-dim)' }}>
+          {maturityLabel}
+        </p>
+      )}
       <p className="mt-3 text-sm leading-6" style={{ color: 'var(--ink-dim)' }}>
         {description}
       </p>

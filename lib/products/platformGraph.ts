@@ -1,5 +1,5 @@
 // The platform journey graph: AvatarK -> Echo -> Growth Engines (PrometheusK/
-// GameK/AtlasK) -> ArenaK (convergence) -> StreamK -> CinemaK (expression).
+// GameK/Atlas) -> ArenaK (convergence) -> StreamK -> CinemaK (expression).
 // Single source of truth for RC3's "connected product intelligence" --
 // GrowthEngineCard, ExpressionLayer, ConnectedProducts, and
 // ContinueYourJourney all resolve their maturity/destination/launch-state/
@@ -7,7 +7,7 @@
 // own hardcoded copy. A future growth engine or expression-layer product
 // only needs a registry entry with journeyRole/journeyOrder/
 // integrationStatus/nextProductIds set -- no component code changes.
-import { getProductById, PRODUCT_REGISTRY, type AvatarKProduct, type IntegrationStatus, type JourneyRole } from '@avatark/product-registry'
+import { getProductById, PRODUCT_REGISTRY, type AvatarKProduct, type IntegrationStatus, type JourneyRole, type ProductStatus } from '@avatark/product-registry'
 import { resolveProductUrl } from './registry.ts'
 import { ENTER_ECHO_HREF } from '../content/links.ts'
 import type { PlatformStatus } from '@/components/ecosystem/StatusBadge'
@@ -18,6 +18,12 @@ export interface PlatformNode {
   href: string | null
   purpose: string | null
   status: PlatformStatus
+  // A subtle, separate maturity read (Live/Beta/Preview/Internal) derived
+  // from the registry's own `status` -- distinct from `status` above (this
+  // node's platform *integration* confidence). RC4: shown only when it
+  // says something `status` doesn't already say, so the two don't repeat
+  // the same word on the same card.
+  maturityLabel: string
   experiences: { id: string; name: string }[]
   nextIds: string[]
 }
@@ -30,13 +36,15 @@ const INTEGRATION_LABELS: Record<IntegrationStatus, PlatformStatus> = {
   vision: 'VISION',
 }
 
-// This narrative calls the product the shared registry lists as `Atlas`
-// (id `atlas`, displayName "Atlas") "AtlasK" instead, to read consistently
-// alongside PrometheusK/GameK/ArenaK/StreamK/CinemaK. Registry displayName
-// stays the source of truth for every other consumer; only this page's
-// journey graph overrides it, same rationale the pre-RC3 resolver documented.
-const NARRATIVE_NAME_OVERRIDES: Record<string, string> = {
-  atlas: 'AtlasK',
+// RC4: a friendlier public label for the registry's own product-maturity
+// axis (distinct from integrationStatus above). "Research"/"alpha" reads
+// as internal jargon on a public institutional page -- "Preview" says the
+// same thing to a visitor.
+const MATURITY_LABELS: Record<ProductStatus, string> = {
+  live: 'Live',
+  beta: 'Beta',
+  alpha: 'Preview',
+  internal: 'Internal',
 }
 
 // Echo has no registry entry (it isn't built as its own product yet -- see
@@ -50,6 +58,7 @@ const ECHO_NODE: PlatformNode = {
   href: ENTER_ECHO_HREF,
   purpose: 'A person’s wisdom becoming useful to another life.',
   status: 'LIVE',
+  maturityLabel: 'Live',
   experiences: [],
   // The three Growth Engines, in the same order getGrowthEngines() returns
   // them -- Echo's fan-out is the one edge in this graph that can't be read
@@ -60,10 +69,11 @@ const ECHO_NODE: PlatformNode = {
 function toPlatformNode(product: AvatarKProduct): PlatformNode {
   return {
     id: product.id,
-    name: NARRATIVE_NAME_OVERRIDES[product.id] ?? product.displayName,
+    name: product.displayName,
     href: resolveProductUrl(product),
     purpose: product.tagline ?? product.description,
     status: product.integrationStatus ? INTEGRATION_LABELS[product.integrationStatus] : 'VISION',
+    maturityLabel: MATURITY_LABELS[product.status],
     experiences: product.experiences ?? [],
     nextIds: product.nextProductIds ?? [],
   }
@@ -73,6 +83,15 @@ export function getPlatformNode(id: string): PlatformNode | null {
   if (id === 'echo') return ECHO_NODE
   const product = getProductById(id)
   return product ? toPlatformNode(product) : null
+}
+
+// A node's maturityLabel is only worth surfacing when it says something the
+// integration-status badge next to it doesn't already say (e.g. GameK:
+// badge "LIVE", maturity "Beta" -- worth showing both). When they'd read as
+// the same word twice (PrometheusK: badge "LIVE", maturity "Live"), showing
+// only the badge keeps the card from repeating itself.
+export function distinctMaturityLabel(node: PlatformNode): string | null {
+  return node.maturityLabel.toUpperCase() === node.status ? null : node.maturityLabel
 }
 
 // Filters + orders the registry by its position on this institutional

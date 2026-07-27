@@ -57,7 +57,7 @@ const NODES: DiagramNode[] = [
   { id: 'echo', label: 'Echo', stage: 'echo' },
   { id: 'prometheusk', label: 'PrometheusK', sublabel: 'Practice', stage: 'engines' },
   { id: 'gamek', label: 'GameK', sublabel: 'Exploration', stage: 'engines' },
-  { id: 'atlask', label: 'AtlasK', sublabel: 'Knowledge', stage: 'engines' },
+  { id: 'atlask', label: 'Atlas', sublabel: 'Knowledge', stage: 'engines' },
   { id: 'arenak', label: 'ArenaK', stage: 'arena' },
   { id: 'streamk', label: 'StreamK', stage: 'stream' },
   { id: 'cinemak', label: 'CinemaK', stage: 'cinema' },
@@ -146,7 +146,7 @@ function renderDiagram(positions: Record<string, Point>, radius: number) {
 }
 
 const DIAGRAM_ARIA_LABEL =
-  'AvatarK, the institutional home, leads to Echo, the consumer entry point. Echo opens into three equal Growth Engines: PrometheusK for practice, GameK for exploration, and AtlasK for knowledge. All three converge into ArenaK, the community layer, which flows into StreamK, the media layer, and then CinemaK, the long-form storytelling layer.'
+  'AvatarK, the institutional home, leads to Echo, the consumer entry point. Echo opens into three equal Growth Engines: PrometheusK for practice, GameK for exploration, and Atlas for knowledge. All three converge into ArenaK, the community layer, which flows into StreamK, the media layer, and then CinemaK, the long-form storytelling layer.'
 
 export function PlatformDiagram() {
   return (

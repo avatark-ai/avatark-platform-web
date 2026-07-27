@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { DepartureLink } from '@/components/motion/DepartureLink'
 import { RevealOnView } from '@/components/motion/RevealOnView'
-import { getConvergenceLayer, getExpressionLayer as getExpressionNodes, getJourneyTransitions, type PlatformNode } from '@/lib/products/platformGraph'
+import { getConvergenceLayer, getExpressionLayer as getExpressionNodes, getJourneyTransitions, distinctMaturityLabel, type PlatformNode } from '@/lib/products/platformGraph'
 import { StatusBadge } from './StatusBadge'
 
 // ArenaK (convergence) -> StreamK -> CinemaK (expression): the layer where
@@ -9,8 +9,13 @@ import { StatusBadge } from './StatusBadge'
 // state/recommended-next all resolve from lib/products/platformGraph.ts
 // (RC3) -- only descriptor/bullets stay curated prose here, this page's own
 // editorial framing rather than portable platform metadata.
+//
+// RC4: "Field Atlas" (ArenaK's future community-mapping capability) is
+// listed as one of ArenaK's own bullets, not as a separate ecosystem
+// product -- Atlas (the DT4I knowledge platform, a Growth Engine) keeps its
+// name; nothing here collides with it.
 const LAYER_COPY: Record<string, { descriptor: string; bullets: string[] }> = {
-  arenak: { descriptor: 'Community Platform', bullets: ['Community', 'Competition', 'Challenges', 'Recognition'] },
+  arenak: { descriptor: 'Community Platform', bullets: ['Community', 'Competition', 'Challenges', 'Recognition', 'Field Atlas'] },
   streamk: { descriptor: 'Media Platform', bullets: ['Stories', 'Events', 'Live experiences'] },
   cinemak: { descriptor: 'Story Platform', bullets: ['Documentaries', 'Series', 'Films'] },
 }
@@ -22,6 +27,7 @@ function getLayers(): PlatformNode[] {
 function LayerCard({ node }: { node: PlatformNode }) {
   const copy = LAYER_COPY[node.id]
   const external = node.href?.startsWith('http') ?? false
+  const maturityLabel = distinctMaturityLabel(node)
   const nextProducts = getJourneyTransitions()
     .find((t) => t.sources.some((s) => s.id === node.id))
     ?.targets.map((target) => ({ name: target.name, href: target.href }))
@@ -44,6 +50,11 @@ function LayerCard({ node }: { node: PlatformNode }) {
       <h3 className="text-xl font-semibold" style={{ color: 'var(--ink)' }}>
         {node.name}
       </h3>
+      {maturityLabel && (
+        <p className="text-[11px] uppercase tracking-wide" style={{ color: 'var(--ink-dim)' }}>
+          {maturityLabel}
+        </p>
+      )}
       {node.purpose && (
         <p className="text-sm leading-6" style={{ color: 'var(--ink-dim)' }}>
           {node.purpose}

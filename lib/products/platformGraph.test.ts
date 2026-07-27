@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { getPlatformNode, getGrowthEngines, getExpressionLayer, getConvergenceLayer, getJourneyTransitions } from './platformGraph.ts'
+import { getPlatformNode, getGrowthEngines, getExpressionLayer, getConvergenceLayer, getJourneyTransitions, distinctMaturityLabel } from './platformGraph.ts'
 
 test('getPlatformNode resolves the synthetic Echo node', () => {
   const echo = getPlatformNode('echo')
@@ -27,9 +27,23 @@ test('getGrowthEngines returns PrometheusK, GameK, AtlasK in journeyOrder', () =
   )
 })
 
-test('the atlas product narrates as "AtlasK", not the registry\'s raw "Atlas" displayName', () => {
+test('RC4: the atlas product keeps the registry\'s own "Atlas" displayName, not a narrative rename', () => {
   const atlas = getGrowthEngines().find((e) => e.id === 'atlas')
-  assert.equal(atlas?.name, 'AtlasK')
+  assert.equal(atlas?.name, 'Atlas')
+})
+
+test('distinctMaturityLabel hides the maturity label when it repeats the integration-status badge word', () => {
+  const prometheusk = getPlatformNode('prometheusk')
+  assert.equal(prometheusk?.status, 'LIVE')
+  assert.equal(prometheusk?.maturityLabel, 'Live')
+  assert.equal(distinctMaturityLabel(prometheusk!), null)
+})
+
+test('distinctMaturityLabel surfaces the maturity label when it diverges from the integration-status badge', () => {
+  const gamek = getPlatformNode('gamek')
+  assert.equal(gamek?.status, 'LIVE')
+  assert.equal(gamek?.maturityLabel, 'Beta')
+  assert.equal(distinctMaturityLabel(gamek!), 'Beta')
 })
 
 test('GameK carries its learning experiences', () => {
