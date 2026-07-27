@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 }
 
 // The platform architecture, presented: AvatarK -> Echo -> three equal
-// Growth Engines (PrometheusK/GameK/AtlasK) -> the Expression Layer
+// Growth Engines (PrometheusK/GameK/Atlas) -> the Expression Layer
 // (ArenaK -> StreamK -> CinemaK). Presentation only -- content lives in
 // PlatformArchitecture and its components/ecosystem/* children; this page
 // only supplies the masthead and the closing Founder continuity link,
@@ -19,7 +19,7 @@ export default function EcosystemPage() {
   return (
     <InstitutionalLayout>
       <section className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
-        <div className="mx-auto flex w-full max-w-[var(--editorial-width)] flex-col items-center gap-6 px-6 py-14 text-center sm:py-16">
+        <div className="mx-auto flex w-full max-w-[var(--editorial-width)] flex-col items-center gap-5 px-6 py-10 text-center sm:py-12">
           <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl md:text-6xl">
             The AvatarK Ecosystem
           </h1>

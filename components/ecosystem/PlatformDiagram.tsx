@@ -152,7 +152,7 @@ export function PlatformDiagram() {
   return (
     <RevealOnView sessionKey="platform-diagram">
       <div
-        className="mx-auto max-w-3xl rounded-lg border p-6 sm:p-8"
+        className="mx-auto max-w-4xl rounded-lg border p-8 sm:p-10"
         style={{ borderColor: 'var(--paper-line)', background: 'var(--surface-card)' }}
       >
         <svg viewBox="0 0 760 460" className="hidden h-auto w-full sm:block" role="img" aria-label={DIAGRAM_ARIA_LABEL}>

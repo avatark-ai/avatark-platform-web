@@ -2,10 +2,10 @@ import Link from 'next/link'
 import { SectionContainer } from '@/components/foundation/Container'
 import { RevealOnView } from '@/components/motion/RevealOnView'
 import { ENTER_ECHO_HREF } from '@/lib/content/links'
-import { getGrowthEngines, getJourneyTransitions, distinctMaturityLabel } from '@/lib/products/platformGraph'
+import { getGrowthEngines, getJourneyTransitions, getPlatformNode, distinctMaturityLabel } from '@/lib/products/platformGraph'
 import { PlatformDiagram } from './PlatformDiagram'
 import { GrowthEngineCard } from './GrowthEngineCard'
-import { ConnectedProducts } from './ConnectedProducts'
+import { PlatformServices } from './PlatformServices'
 import { ExpressionLayer } from './ExpressionLayer'
 import { ContinueYourJourney } from './ContinueYourJourney'
 
@@ -42,36 +42,42 @@ const ENGINE_COPY: Record<string, { descriptor: string; description: string; cta
   },
 }
 
+// StudioK/SetpointK: real registry products, but not on the AvatarK -> Echo
+// -> ... -> CinemaK journey chain itself (no journeyRole) -- they build and
+// measure the ecosystem above rather than being another step in it. Reuses
+// getPlatformNode() (works for any registry id, journeyRole or not) and the
+// same GrowthEngineCard shape as every other card on this page, just with
+// no feature chips and no "Continues to" line, since neither applies here.
+const CREATOR_INTELLIGENCE_COPY: Record<string, { descriptor: string; ctaLabel: string }> = {
+  studiok: { descriptor: 'Creation Engine', ctaLabel: 'Open StudioK' },
+  setpointk: { descriptor: 'Intelligence Layer', ctaLabel: 'Open SetpointK' },
+}
+
+function getCreatorIntelligenceNodes() {
+  return Object.keys(CREATOR_INTELLIGENCE_COPY)
+    .map((id) => getPlatformNode(id))
+    .filter((node) => node !== null)
+}
+
 export function PlatformArchitecture() {
   return (
     <>
-      {/* Section 1: Entry */}
+      {/* Architecture Diagram -- the visual centerpiece; everything else on
+          this page explains one part of what it already shows. */}
       <section className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
         <SectionContainer className="text-center">
           <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
-            Entry
+            Architecture
           </p>
           <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">AvatarK → Echo</h2>
-          <p className="mx-auto mt-4 max-w-xl text-base leading-7" style={{ color: 'var(--ink-dim)' }}>
-            Everyone begins here.
-          </p>
 
-          <div className="mt-10">
+          <div className="mt-6">
             <PlatformDiagram />
           </div>
 
-          {/* RC4: names StudioK/SetpointK's supporting (not journey-chain)
-              role -- they build and measure the ecosystem above rather than
-              sitting on the AvatarK -> Echo -> ... -> CinemaK chain
-              themselves, so a quiet caption here is more honest than adding
-              them to the diagram as if they were another chain step. */}
-          <p className="mx-auto mt-6 max-w-md text-xs leading-6" style={{ color: 'var(--ink-dim)' }}>
-            StudioK builds the ecosystem. SetpointK measures and supports human state.
-          </p>
-
           <Link
             href={ENTER_ECHO_HREF}
-            className="mt-8 inline-block rounded-md px-6 py-3 text-sm font-semibold transition hover:opacity-90 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="mt-6 inline-block rounded-md px-6 py-3 text-sm font-semibold transition hover:opacity-90 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ background: 'var(--ink)', color: 'var(--paper)', outlineColor: 'var(--gold)' }}
           >
             Enter Echo
@@ -79,14 +85,14 @@ export function PlatformArchitecture() {
         </SectionContainer>
       </section>
 
-      {/* Section 2: Growth Engines -- choose a path out of Echo. */}
+      {/* Growth Engines -- choose a path out of Echo. */}
       <section className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
         <SectionContainer>
           <p className="text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
             Growth Engines
           </p>
 
-          <RevealOnView className="motion-emerge-stagger mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <RevealOnView className="motion-emerge-stagger mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {getGrowthEngines().map((engine) => {
               const copy = ENGINE_COPY[engine.id]
               const nextProducts = getJourneyTransitions()
@@ -113,33 +119,59 @@ export function PlatformArchitecture() {
         </SectionContainer>
       </section>
 
-      {/* Connected Products -- names the platform primitives every Growth
-          Engine shares, so the page states outright what the rest of it
-          only implies. */}
-      <section className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
-        <SectionContainer>
-          {/* --ink-dim, not --gold: this heading is new (Platform Milestone
-              1) and gold text against this section's --paper background
-              measures ~1.86:1, under WCAG AA's 4.5:1 -- --ink-dim clears
-              ~6.85:1 here. */}
-          <h2 className="text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-dim)' }}>
-            Connected Products
-          </h2>
-          <div className="mt-8">
-            <ConnectedProducts />
-          </div>
-        </SectionContainer>
-      </section>
-
-      {/* Section 3: Expression Layer */}
+      {/* Expression Layer */}
       <section className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
         <SectionContainer>
           <p className="text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
             Expression Layer
           </p>
-          <div className="mt-8">
+          <div className="mt-6">
             <ExpressionLayer />
           </div>
+        </SectionContainer>
+      </section>
+
+      {/* Platform Services + Creator & Intelligence share one section --
+          both explain what sits *underneath* or *alongside* the journey
+          chain above, rather than being another step in it. */}
+      <section className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
+        <SectionContainer>
+          {/* --ink-dim, not --gold: gold text against this section's
+              --paper background measures ~1.86:1, under WCAG AA's 4.5:1 --
+              --ink-dim clears ~6.85:1 here. */}
+          <h2 className="text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-dim)' }}>
+            Platform Services
+          </h2>
+          <p className="mx-auto mt-2 max-w-lg text-center text-sm leading-6" style={{ color: 'var(--ink-dim)' }}>
+            Every product above is one surface of a single platform, not a separate product that happens to sit
+            next to the others. These are the services it shares.
+          </p>
+          <div className="mt-6">
+            <PlatformServices />
+          </div>
+
+          <h2 className="mt-12 text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-dim)' }}>
+            Creator & Intelligence
+          </h2>
+          <RevealOnView className="motion-emerge-stagger mx-auto mt-6 grid max-w-2xl grid-cols-1 gap-5 sm:grid-cols-2">
+            {getCreatorIntelligenceNodes().map((node) => {
+              const copy = CREATOR_INTELLIGENCE_COPY[node.id]
+              return (
+                <GrowthEngineCard
+                  key={node.id}
+                  breadcrumbTrail={['AvatarK', node.name]}
+                  engineName={node.name}
+                  descriptor={copy.descriptor}
+                  status={node.status}
+                  maturityLabel={distinctMaturityLabel(node)}
+                  description={node.purpose ?? ''}
+                  features={[]}
+                  ctaLabel={copy.ctaLabel}
+                  href={node.href}
+                />
+              )
+            })}
+          </RevealOnView>
         </SectionContainer>
       </section>
 
@@ -147,14 +179,10 @@ export function PlatformArchitecture() {
           next once you've already practiced, competed, or inspired someone. */}
       <section>
         <SectionContainer>
-          {/* --ink-dim, not --gold: this heading is new (Platform Milestone
-              1) and gold text against this section's --paper background
-              measures ~1.86:1, under WCAG AA's 4.5:1 -- --ink-dim clears
-              ~6.85:1 here. */}
           <h2 className="text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-dim)' }}>
             Continue Your Journey
           </h2>
-          <div className="mt-8">
+          <div className="mt-6">
             <ContinueYourJourney />
           </div>
         </SectionContainer>
