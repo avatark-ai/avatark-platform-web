@@ -4,6 +4,8 @@ import OrbReveal from "@/components/OrbReveal";
 import { getEchoBySlug, getPracticeBySlug } from "@/lib/content/echo";
 import { echoCategoryEyebrow } from "@/lib/onboarding/guide";
 import { isPracticeHandoffAvailable } from "@/lib/onboarding/practiceHandoff";
+import { createJourneyManifest } from "@/lib/journey/manifest";
+import { recoverJourney } from "@/lib/journey/recovery";
 import { DISCOVER_HREF } from "@/lib/echo/links";
 import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
 import { GuestJourneyTracker } from "@/components/echo/onboarding/GuestJourneyTracker";
@@ -36,6 +38,26 @@ export default async function WitnessPage({
   if (cohort) beginUrl.searchParams.set("cohort", cohort);
   const borrowUrl = `${beginUrl.pathname}${beginUrl.search}`;
   const available = isPracticeHandoffAvailable(practice.slug);
+
+  // recoverJourney's "missing_practice" reason fires exactly when a
+  // manifest names a practice (always true here -- notFound() already
+  // ran above) that isn't handoff-available -- i.e. recovery is non-null
+  // here iff `!available`. Reads that decision instead of the raw
+  // boolean below, per lib/journey/recovery.ts.
+  const journeyManifest = createJourneyManifest({
+    journeyId: invitation ?? practice.slug,
+    source: invitation ? "invitation" : "direct",
+    entryPoint: "witness",
+    invitationId: invitation,
+    practiceId: practice.slug,
+    cohortId: cohort,
+  });
+  const recovery = recoverJourney({
+    invitationStatus: null,
+    manifest: journeyManifest,
+    practiceAvailable: available,
+    watchFirstAvailable: true,
+  });
 
   return (
     <EchoPageShell layout="plain">
@@ -87,7 +109,7 @@ export default async function WitnessPage({
           {practice.whatYouMayNotice}
         </p>
 
-        {available ? (
+        {!recovery ? (
           <OrbReveal>
             <a
               href={borrowUrl}
