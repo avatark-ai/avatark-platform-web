@@ -5,6 +5,9 @@ export type {
   ProductVisibility,
   ProductLink,
   ProductCapabilityKey,
+  JourneyRole,
+  IntegrationStatus,
+  ProductExperience,
 } from './types.ts'
 export { CAPABILITY_KEYS } from './types.ts'
 

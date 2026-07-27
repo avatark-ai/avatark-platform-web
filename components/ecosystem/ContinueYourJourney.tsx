@@ -1,57 +1,68 @@
 import Link from 'next/link'
 import { DepartureLink } from '@/components/motion/DepartureLink'
 import { RevealOnView } from '@/components/motion/RevealOnView'
-import { resolveEcosystemProduct } from '@/lib/content/ecosystemGroups'
+import { getJourneyTransitions } from '@/lib/products/platformGraph'
 
-// Part 4 of Platform Milestone 1: framed as conditional next-steps tied to
-// what a person just did, not a dated roadmap -- deliberately distinct from
-// the Expression Layer above it (which states what ArenaK/StreamK/CinemaK
-// *are*; this states what to do *next*, once you've already practiced,
-// competed, or inspired someone).
-const PROMPTS = [
-  { id: 'arenak', question: 'Finished a Practice?', cta: 'Join ArenaK' },
-  { id: 'streamk', question: 'Completed a Challenge?', cta: 'Share on StreamK' },
-  { id: 'cinemak', question: 'Inspired Others?', cta: 'Become part of CinemaK' },
-] as const
+// RC3: recommendations are now computed from the platform journey graph
+// (lib/products/platformGraph.ts) instead of three hardcoded prompts --
+// each card is a real transition in that graph (Echo's fan-out into the
+// Growth Engines, the Growth Engines converging on ArenaK, ArenaK -> StreamK,
+// StreamK -> CinemaK), so this list changes automatically as the registry's
+// journeyRole/nextProductIds graph changes, with no edits needed here.
+function joinNames(names: string[]): string {
+  if (names.length <= 1) return names[0] ?? ''
+  if (names.length === 2) return `${names[0]} or ${names[1]}`
+  return `${names.slice(0, -1).join(', ')}, or ${names[names.length - 1]}`
+}
 
 export function ContinueYourJourney() {
+  const transitions = getJourneyTransitions()
+
   return (
     <RevealOnView className="motion-emerge-stagger flex flex-col items-center gap-6">
-      {PROMPTS.map((prompt) => {
-        const product = resolveEcosystemProduct(prompt.id)
-        const external = product.href?.startsWith('http') ?? false
+      {transitions.map((transition) => {
+        const sourceLabel = joinNames(transition.sources.map((s) => s.name))
+        const key = `${transition.sources.map((s) => s.id).join('+')}->${transition.targets.map((t) => t.id).join('+')}`
 
         return (
-          <div key={prompt.id} className="flex flex-col items-center gap-2 text-center">
+          <div key={key} className="flex flex-col items-center gap-2 text-center">
             <p className="text-lg font-medium" style={{ color: 'var(--ink)' }}>
-              {prompt.question}
+              {sourceLabel}
             </p>
             <span aria-hidden="true" className="text-xl" style={{ color: 'var(--gold)' }}>
               ↓
             </span>
-            {product.href ? (
-              external ? (
-                <DepartureLink
-                  href={product.href}
-                  className="link-underline-draw rounded-sm text-base font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                  style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
-                >
-                  {prompt.cta} →
-                </DepartureLink>
-              ) : (
-                <Link
-                  href={product.href}
-                  className="link-underline-draw rounded-sm text-base font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                  style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
-                >
-                  {prompt.cta} →
-                </Link>
-              )
-            ) : (
-              <span className="text-base font-semibold" style={{ color: 'var(--ink-dim)' }}>
-                {prompt.cta}
-              </span>
-            )}
+            <p className="text-base font-semibold">
+              {transition.targets.map((target, index) => {
+                const external = target.href?.startsWith('http') ?? false
+                return (
+                  <span key={target.id}>
+                    {index > 0 && (index === transition.targets.length - 1 ? ', or ' : ', ')}
+                    {target.href ? (
+                      external ? (
+                        <DepartureLink
+                          href={target.href}
+                          className="link-underline-draw rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                          style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+                        >
+                          {target.name}
+                        </DepartureLink>
+                      ) : (
+                        <Link
+                          href={target.href}
+                          className="link-underline-draw rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                          style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+                        >
+                          {target.name}
+                        </Link>
+                      )
+                    ) : (
+                      <span style={{ color: 'var(--ink-dim)' }}>{target.name}</span>
+                    )}
+                  </span>
+                )
+              })}
+            </p>
           </div>
         )
       })}

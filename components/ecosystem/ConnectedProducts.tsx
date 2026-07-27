@@ -1,4 +1,5 @@
 import { RevealOnView } from '@/components/motion/RevealOnView'
+import { getGrowthEngines } from '@/lib/products/platformGraph'
 
 // Part 3 of Platform Milestone 1: beneath the Growth Engines, name the
 // platform primitives every engine actually shares, so the page states
@@ -9,35 +10,32 @@ import { RevealOnView } from '@/components/motion/RevealOnView'
 // practice-match enforcement on the PrometheusK handoff); GameK and AtlasK
 // have no such confirmed gate today, so listing it there would overstate
 // what this repo actually knows.
-const CONNECTED = [
-  {
-    id: 'prometheusk',
-    engineName: 'PrometheusK',
-    uses: ['Echo Identity', 'Shared Account', 'Shared Motion', 'Shared Navigation', 'Shared Invitations'],
-  },
-  {
-    id: 'gamek',
-    engineName: 'GameK',
-    uses: ['Echo Identity', 'Shared Account', 'Shared Motion', 'Shared Navigation'],
-  },
-  {
-    id: 'atlas',
-    engineName: 'AtlasK',
-    uses: ['Echo Identity', 'Shared Account', 'Shared Motion', 'Shared Navigation'],
-  },
-] as const
+//
+// RC3: the engine list itself now comes from getGrowthEngines() (the same
+// registry-backed graph the Growth Engine cards above use), so adding a
+// fourth Growth Engine to the registry surfaces it here automatically. Only
+// the "uses" list -- which platform primitives each one actually shares --
+// stays curated, since it isn't a registry-tracked fact; DEFAULT_USES covers
+// any future engine without its own entry here yet.
+const USES: Record<string, string[]> = {
+  prometheusk: ['Echo Identity', 'Shared Account', 'Shared Motion', 'Shared Navigation', 'Shared Invitations'],
+  gamek: ['Echo Identity', 'Shared Account', 'Shared Motion', 'Shared Navigation'],
+  atlas: ['Echo Identity', 'Shared Account', 'Shared Motion', 'Shared Navigation'],
+}
+const DEFAULT_USES = ['Echo Identity', 'Shared Account', 'Shared Motion', 'Shared Navigation']
 
 export function ConnectedProducts() {
+  const engines = getGrowthEngines()
   return (
     <RevealOnView className="motion-emerge-stagger grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      {CONNECTED.map((entry) => (
+      {engines.map((engine) => (
         <div
-          key={entry.id}
+          key={engine.id}
           className="rounded-lg border p-5"
           style={{ borderColor: 'var(--paper-line)', background: 'var(--surface-card)' }}
         >
           <h3 className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>
-            {entry.engineName}
+            {engine.name}
           </h3>
           {/* --ink-dim, not --gold: gold text against this card's
               --surface-card background measures ~1.98:1, under WCAG AA's
@@ -46,7 +44,7 @@ export function ConnectedProducts() {
             Uses
           </p>
           <ul className="mt-2 flex flex-col gap-1.5">
-            {entry.uses.map((use) => (
+            {(USES[engine.id] ?? DEFAULT_USES).map((use) => (
               <li key={use} className="text-sm" style={{ color: 'var(--ink-dim)' }}>
                 {use}
               </li>

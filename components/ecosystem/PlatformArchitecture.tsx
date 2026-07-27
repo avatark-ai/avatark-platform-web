@@ -2,60 +2,45 @@ import Link from 'next/link'
 import { SectionContainer } from '@/components/foundation/Container'
 import { RevealOnView } from '@/components/motion/RevealOnView'
 import { ENTER_ECHO_HREF } from '@/lib/content/links'
-import { resolveEcosystemProduct } from '@/lib/content/ecosystemGroups'
+import { getGrowthEngines, getJourneyTransitions } from '@/lib/products/platformGraph'
 import { PlatformDiagram } from './PlatformDiagram'
 import { GrowthEngineCard } from './GrowthEngineCard'
 import { ConnectedProducts } from './ConnectedProducts'
 import { ExpressionLayer } from './ExpressionLayer'
 import { ContinueYourJourney } from './ContinueYourJourney'
-import type { PlatformStatus } from './StatusBadge'
 
-// Growth Engine copy, kept here rather than in content/foundation/*.md --
-// this is a distinct, curated architecture narrative (AvatarK -> Echo ->
-// three Growth Engines -> Expression Layer), not the registry-driven
+// Growth Engine editorial copy, kept here rather than in content/foundation/
+// *.md -- this is a distinct, curated architecture narrative (AvatarK ->
+// Echo -> three Growth Engines -> Expression Layer), not the registry-driven
 // Begin/Practice/Play/.../Care grid ecosystem.md already owns (that content
 // still feeds the nav dropdown, footer, and homepage teaser unchanged).
-// `AtlasK` is this narrative's name for the product the shared registry
-// still lists as `Atlas` (id `atlas`) -- resolveEcosystemProduct is used
-// only for its href, never its display name, so the two naming schemes
-// don't collide.
-//
-// `status` is this repo's own honest read of how real each destination is
-// today (Platform Milestone 1, Part 5) -- not a copy of the shared
-// registry's `status` field (which uses a different alpha/beta/live scale
-// for a different purpose). PrometheusK and GameK are the two products this
-// repo has confirmed live integrations with; AtlasK/ArenaK/StreamK/CinemaK
-// scale down from there, matching ecosystem.md's own "not yet integrated"
-// notes for Atlas and the product registry's alpha status for the rest.
-const GROWTH_ENGINES = [
-  {
-    id: 'prometheusk',
-    engineName: 'PrometheusK',
+// Every fact this narrative can get from the registry -- maturity,
+// destination, launch state, recommended next product, GameK's learning
+// experiences -- comes from lib/products/platformGraph.ts (RC3) instead of
+// being duplicated here; only descriptor/description/ctaLabel/fallback
+// feature bullets remain curated prose, since those are this page's own
+// editorial framing, not portable platform metadata.
+const ENGINE_COPY: Record<string, { descriptor: string; description: string; ctaLabel: string; featuresLabel?: string; fallbackFeatures: string[] }> = {
+  prometheusk: {
     descriptor: 'Practice Engine',
-    status: 'LIVE' as PlatformStatus,
     description: 'Structured practices that change behavior.',
-    features: ['Practice Engine', 'Featured Practice', 'Practice Library', 'Living Echo'],
     ctaLabel: 'Open PrometheusK',
+    fallbackFeatures: ['Practice Engine', 'Featured Practice', 'Practice Library', 'Living Echo'],
   },
-  {
-    id: 'gamek',
-    engineName: 'GameK',
+  gamek: {
     descriptor: 'Exploration Engine',
-    status: 'LIVE' as PlatformStatus,
     description: 'Interactive worlds for discovering flow, geometry, decision making, creativity and challenge.',
-    features: ['FlowK', 'PathK', 'GeometriK', 'ChronicleK', 'Navigator'],
     ctaLabel: 'Enter GameK',
+    featuresLabel: 'Learning Experiences',
+    fallbackFeatures: ['FlowK', 'PathK', 'GeometriK', 'ChronicleK'],
   },
-  {
-    id: 'atlas',
-    engineName: 'AtlasK',
+  atlas: {
     descriptor: 'Knowledge Engine',
-    status: 'PREVIEW' as PlatformStatus,
     description: 'Research, insights, maps, twins, and understanding.',
-    features: ['Knowledge Maps', 'Digital Twins', 'Research', 'Projects'],
     ctaLabel: 'Explore Atlas',
+    fallbackFeatures: ['Knowledge Maps', 'Digital Twins', 'Research', 'Projects'],
   },
-] as const
+}
 
 export function PlatformArchitecture() {
   return (
@@ -93,19 +78,27 @@ export function PlatformArchitecture() {
           </p>
 
           <RevealOnView className="motion-emerge-stagger mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {GROWTH_ENGINES.map((engine) => (
-              <GrowthEngineCard
-                key={engine.id}
-                breadcrumbTrail={['AvatarK', 'Echo', engine.engineName]}
-                engineName={engine.engineName}
-                descriptor={engine.descriptor}
-                status={engine.status}
-                description={engine.description}
-                features={[...engine.features]}
-                ctaLabel={engine.ctaLabel}
-                href={resolveEcosystemProduct(engine.id).href}
-              />
-            ))}
+            {getGrowthEngines().map((engine) => {
+              const copy = ENGINE_COPY[engine.id]
+              const nextProducts = getJourneyTransitions()
+                .find((t) => t.sources.some((s) => s.id === engine.id))
+                ?.targets.map((target) => ({ name: target.name, href: target.href }))
+              return (
+                <GrowthEngineCard
+                  key={engine.id}
+                  breadcrumbTrail={['AvatarK', 'Echo', engine.name]}
+                  engineName={engine.name}
+                  descriptor={copy.descriptor}
+                  status={engine.status}
+                  description={copy.description}
+                  features={engine.experiences.length > 0 ? engine.experiences.map((e) => e.name) : copy.fallbackFeatures}
+                  featuresLabel={copy.featuresLabel}
+                  ctaLabel={copy.ctaLabel}
+                  href={engine.href}
+                  nextProducts={nextProducts}
+                />
+              )
+            })}
           </RevealOnView>
         </SectionContainer>
       </section>

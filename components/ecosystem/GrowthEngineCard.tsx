@@ -4,10 +4,12 @@ import { PlatformBreadcrumb } from './PlatformBreadcrumb'
 import { StatusBadge, type PlatformStatus } from './StatusBadge'
 
 // One of the three equal Growth Engine cards (PrometheusK, GameK, AtlasK).
-// `href` is always resolved by the caller via resolveEcosystemProduct so
-// this card never fabricates a destination -- same resolver the
-// pre-existing /ecosystem grid and the homepage's EcosystemPreview already
-// share, so this card can't drift from the real product registry either.
+// `href` and `nextProducts` are always resolved by the caller from
+// lib/products/platformGraph.ts (itself reading @avatark/product-registry)
+// so this card never fabricates a destination or a relationship -- same
+// resolver the pre-existing /ecosystem grid and the homepage's
+// EcosystemPreview already share, so this card can't drift from the real
+// product registry either.
 export function GrowthEngineCard({
   breadcrumbTrail,
   engineName,
@@ -15,8 +17,10 @@ export function GrowthEngineCard({
   status,
   description,
   features,
+  featuresLabel,
   href,
   ctaLabel,
+  nextProducts,
 }: {
   breadcrumbTrail: string[]
   engineName: string
@@ -24,8 +28,16 @@ export function GrowthEngineCard({
   status: PlatformStatus
   description: string
   features: string[]
+  // Optional eyebrow above the feature chips (e.g. GameK's "Learning
+  // Experiences" for FlowK/PathK/GeometriK/ChronicleK). Omitted elsewhere,
+  // matching every other Growth Engine card's existing unlabeled chip row.
+  featuresLabel?: string
   href: string | null
   ctaLabel: string
+  // Recommended next product(s) this engine's journey typically continues
+  // into (e.g. PrometheusK -> ArenaK). Empty when this engine has no
+  // confirmed next step yet.
+  nextProducts?: { name: string; href: string | null }[]
 }) {
   const external = href?.startsWith('http') ?? false
 
@@ -50,17 +62,51 @@ export function GrowthEngineCard({
       </p>
 
       {features.length > 0 && (
-        <ul className="mt-4 flex flex-wrap gap-2">
-          {features.map((feature) => (
-            <li
-              key={feature}
-              className="rounded-full border px-2.5 py-1 text-xs font-medium"
-              style={{ borderColor: 'var(--paper-line)', color: 'var(--ink-dim)' }}
-            >
-              {feature}
-            </li>
-          ))}
-        </ul>
+        <div className="mt-4">
+          {featuresLabel && (
+            <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-dim)' }}>
+              {featuresLabel}
+            </p>
+          )}
+          <ul className="mt-2 flex flex-wrap gap-2">
+            {features.map((feature) => (
+              <li
+                key={feature}
+                className="rounded-full border px-2.5 py-1 text-xs font-medium"
+                style={{ borderColor: 'var(--paper-line)', color: 'var(--ink-dim)' }}
+              >
+                {feature}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {nextProducts && nextProducts.length > 0 && (
+        <p className="mt-4 text-xs" style={{ color: 'var(--ink-dim)' }}>
+          Continues to{' '}
+          {nextProducts.map((product, index) => {
+            const nextExternal = product.href?.startsWith('http') ?? false
+            return (
+              <span key={product.name}>
+                {index > 0 && ', '}
+                {product.href ? (
+                  nextExternal ? (
+                    <DepartureLink href={product.href} className="link-underline-draw font-semibold" style={{ color: 'var(--ink)' }}>
+                      {product.name}
+                    </DepartureLink>
+                  ) : (
+                    <Link href={product.href} className="link-underline-draw font-semibold" style={{ color: 'var(--ink)' }}>
+                      {product.name}
+                    </Link>
+                  )
+                ) : (
+                  <span className="font-semibold">{product.name}</span>
+                )}
+              </span>
+            )
+          })}
+        </p>
       )}
 
       <div className="mt-6">

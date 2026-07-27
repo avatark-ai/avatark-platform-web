@@ -1,48 +1,30 @@
 import Link from 'next/link'
 import { DepartureLink } from '@/components/motion/DepartureLink'
 import { RevealOnView } from '@/components/motion/RevealOnView'
-import { resolveEcosystemProduct } from '@/lib/content/ecosystemGroups'
-import { StatusBadge, type PlatformStatus } from './StatusBadge'
+import { getConvergenceLayer, getExpressionLayer as getExpressionNodes, getJourneyTransitions, type PlatformNode } from '@/lib/products/platformGraph'
+import { StatusBadge } from './StatusBadge'
 
-// ArenaK -> StreamK -> CinemaK: the layer where private growth becomes
-// shared expression. Fixed, hand-authored structure (not data-driven from
-// outside) since it's exactly three products in exactly one order, same as
-// FragmentedVsLongitudinal hardcoding its own six labels rather than taking
-// them as a prop.
-const LAYERS = [
-  {
-    id: 'arenak',
-    descriptor: 'Community Platform',
-    status: 'COMING ONLINE' as PlatformStatus,
-    bullets: ['Community', 'Competition', 'Challenges', 'Recognition'],
-  },
-  {
-    id: 'streamk',
-    descriptor: 'Media Platform',
-    status: 'IN DEVELOPMENT' as PlatformStatus,
-    bullets: ['Stories', 'Events', 'Live experiences'],
-  },
-  {
-    id: 'cinemak',
-    descriptor: 'Story Platform',
-    status: 'VISION' as PlatformStatus,
-    bullets: ['Documentaries', 'Series', 'Films'],
-  },
-] as const
+// ArenaK (convergence) -> StreamK -> CinemaK (expression): the layer where
+// private growth becomes shared expression. Maturity/destination/launch-
+// state/recommended-next all resolve from lib/products/platformGraph.ts
+// (RC3) -- only descriptor/bullets stay curated prose here, this page's own
+// editorial framing rather than portable platform metadata.
+const LAYER_COPY: Record<string, { descriptor: string; bullets: string[] }> = {
+  arenak: { descriptor: 'Community Platform', bullets: ['Community', 'Competition', 'Challenges', 'Recognition'] },
+  streamk: { descriptor: 'Media Platform', bullets: ['Stories', 'Events', 'Live experiences'] },
+  cinemak: { descriptor: 'Story Platform', bullets: ['Documentaries', 'Series', 'Films'] },
+}
 
-function LayerCard({
-  id,
-  descriptor,
-  status,
-  bullets,
-}: {
-  id: string
-  descriptor: string
-  status: PlatformStatus
-  bullets: readonly string[]
-}) {
-  const product = resolveEcosystemProduct(id)
-  const external = product.href?.startsWith('http') ?? false
+function getLayers(): PlatformNode[] {
+  return [...getConvergenceLayer(), ...getExpressionNodes()]
+}
+
+function LayerCard({ node }: { node: PlatformNode }) {
+  const copy = LAYER_COPY[node.id]
+  const external = node.href?.startsWith('http') ?? false
+  const nextProducts = getJourneyTransitions()
+    .find((t) => t.sources.some((s) => s.id === node.id))
+    ?.targets.map((target) => ({ name: target.name, href: target.href }))
 
   return (
     <div
@@ -55,20 +37,20 @@ function LayerCard({
             card's --surface-card background measures ~1.98:1, under WCAG
             AA's 4.5:1 -- --ink-dim clears ~7.3:1 here. */}
         <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-dim)' }}>
-          {descriptor}
+          {copy.descriptor}
         </p>
-        <StatusBadge status={status} />
+        <StatusBadge status={node.status} />
       </div>
       <h3 className="text-xl font-semibold" style={{ color: 'var(--ink)' }}>
-        {product.name}
+        {node.name}
       </h3>
-      {product.purpose && (
+      {node.purpose && (
         <p className="text-sm leading-6" style={{ color: 'var(--ink-dim)' }}>
-          {product.purpose}
+          {node.purpose}
         </p>
       )}
       <ul className="flex flex-wrap justify-center gap-2">
-        {bullets.map((bullet) => (
+        {copy.bullets.map((bullet) => (
           <li
             key={bullet}
             className="rounded-full border px-2.5 py-1 text-xs font-medium"
@@ -78,39 +60,66 @@ function LayerCard({
           </li>
         ))}
       </ul>
-      {product.href &&
+      {node.href &&
         (external ? (
           <DepartureLink
-            href={product.href}
+            href={node.href}
             className="link-underline-draw rounded-sm text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
           >
-            Open {product.name} →
+            Open {node.name} →
           </DepartureLink>
         ) : (
           <Link
-            href={product.href}
+            href={node.href}
             className="link-underline-draw rounded-sm text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
           >
-            Open {product.name} →
+            Open {node.name} →
           </Link>
         ))}
+      {nextProducts && nextProducts.length > 0 && (
+        <p className="text-xs" style={{ color: 'var(--ink-dim)' }}>
+          Continues to{' '}
+          {nextProducts.map((next, index) => {
+            const nextExternal = next.href?.startsWith('http') ?? false
+            return (
+              <span key={next.name}>
+                {index > 0 && ', '}
+                {next.href ? (
+                  nextExternal ? (
+                    <DepartureLink href={next.href} className="link-underline-draw font-semibold" style={{ color: 'var(--ink)' }}>
+                      {next.name}
+                    </DepartureLink>
+                  ) : (
+                    <Link href={next.href} className="link-underline-draw font-semibold" style={{ color: 'var(--ink)' }}>
+                      {next.name}
+                    </Link>
+                  )
+                ) : (
+                  <span className="font-semibold">{next.name}</span>
+                )}
+              </span>
+            )
+          })}
+        </p>
+      )}
     </div>
   )
 }
 
 export function ExpressionLayer() {
+  const layers = getLayers()
   return (
     <RevealOnView className="motion-emerge-stagger flex flex-col items-center gap-4">
-      {LAYERS.map((layer, index) => (
-        <div key={layer.id} className="flex w-full flex-col items-center gap-4">
+      {layers.map((node, index) => (
+        <div key={node.id} className="flex w-full flex-col items-center gap-4">
           {index > 0 && (
             <span aria-hidden="true" className="text-xl" style={{ color: 'var(--gold)' }}>
               ↓
             </span>
           )}
-          <LayerCard id={layer.id} descriptor={layer.descriptor} status={layer.status} bullets={layer.bullets} />
+          <LayerCard node={node} />
         </div>
       ))}
     </RevealOnView>

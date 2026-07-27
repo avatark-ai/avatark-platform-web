@@ -18,6 +18,23 @@ export type ProductCategory =
 
 export type ProductVisibility = 'public' | 'internal'
 
+// Where a product sits in the AvatarK -> Echo -> Growth Engines -> ArenaK ->
+// StreamK -> CinemaK platform journey. Absent on products outside that
+// narrative chain (e.g. avatark itself, studiok, setpointk) -- they remain
+// valid registry entries, just not positioned on this particular graph.
+export type JourneyRole = 'entry' | 'growth-engine' | 'convergence' | 'expression'
+
+// How confirmed this product's platform integration is *today* -- a
+// separate axis from `status` (which is the product's own maturity).
+// GameK, for example, is `status: 'beta'` but its Echo/Platform integration
+// is already confirmed live, hence `integrationStatus: 'live'`.
+export type IntegrationStatus = 'live' | 'preview' | 'coming-online' | 'in-development' | 'vision'
+
+export interface ProductExperience {
+  id: string
+  name: string
+}
+
 export interface ProductLink {
   label: string
   href: string
@@ -63,6 +80,16 @@ export interface AvatarKProduct {
   helpLinks: ProductLink[]
   supportEmail: string | null
   documentation: string | null
+  /** This product's position in the platform journey graph. Undefined if it isn't part of that narrative. */
+  journeyRole?: JourneyRole
+  /** Sort order among sibling products sharing the same journeyRole. */
+  journeyOrder?: number
+  /** How confirmed this product's platform integration is today -- separate from `status`. */
+  integrationStatus?: IntegrationStatus
+  /** Ids of products this one's journey typically continues into. Empty/undefined means terminal. */
+  nextProductIds?: string[]
+  /** Sub-experiences inside this product (e.g. GameK's FlowK/PathK/GeometriK/ChronicleK), if any. */
+  experiences?: ProductExperience[]
 }
 
 export const CAPABILITY_KEYS = [

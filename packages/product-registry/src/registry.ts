@@ -110,6 +110,10 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     helpLinks: NO_LINKS,
     supportEmail: null,
     documentation: null,
+    journeyRole: 'growth-engine',
+    journeyOrder: 1,
+    integrationStatus: 'live',
+    nextProductIds: ['arenak'],
   },
   {
     id: 'gamek',
@@ -135,6 +139,25 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     helpLinks: NO_LINKS,
     supportEmail: null,
     documentation: null,
+    journeyRole: 'growth-engine',
+    journeyOrder: 2,
+    // 'live', not 'beta' (GameK's own `status`): this repo's confirmed
+    // integration with GameK (the cross-repo event contract above) is
+    // already real today, even though GameK's own product maturity isn't
+    // yet 'live'. integrationStatus tracks platform integration, not
+    // product maturity -- the two are allowed to diverge.
+    integrationStatus: 'live',
+    nextProductIds: ['arenak'],
+    // FlowK/PathK/GeometriK/ChronicleK: GameK's own learning experiences
+    // (confirmed via gamek-web's site structure, e.g. its `flowk` Vercel
+    // project at gamek.ai/flowk) -- named here once so any surface listing
+    // them stays in sync with GameK's real internal structure.
+    experiences: [
+      { id: 'flowk', name: 'FlowK' },
+      { id: 'pathk', name: 'PathK' },
+      { id: 'geometrik', name: 'GeometriK' },
+      { id: 'chroniclek', name: 'ChronicleK' },
+    ],
   },
   {
     id: 'arenak',
@@ -175,6 +198,10 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     helpLinks: NO_LINKS,
     supportEmail: null,
     documentation: null,
+    journeyRole: 'convergence',
+    journeyOrder: 1,
+    integrationStatus: 'coming-online',
+    nextProductIds: ['streamk'],
   },
   {
     id: 'streamk',
@@ -204,6 +231,10 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     helpLinks: NO_LINKS,
     supportEmail: null,
     documentation: null,
+    journeyRole: 'expression',
+    journeyOrder: 1,
+    integrationStatus: 'in-development',
+    nextProductIds: ['cinemak'],
   },
   {
     id: 'cinemak',
@@ -229,6 +260,10 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     helpLinks: NO_LINKS,
     supportEmail: null,
     documentation: null,
+    journeyRole: 'expression',
+    journeyOrder: 2,
+    integrationStatus: 'vision',
+    nextProductIds: [],
   },
   {
     id: 'studiok',
@@ -278,6 +313,10 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     helpLinks: NO_LINKS,
     supportEmail: null,
     documentation: null,
+    journeyRole: 'growth-engine',
+    journeyOrder: 3,
+    integrationStatus: 'preview',
+    nextProductIds: ['arenak'],
   },
   {
     id: 'setpointk',
