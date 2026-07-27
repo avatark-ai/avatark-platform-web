@@ -4,10 +4,14 @@
 // inventing its own. Reuses the exact bordered-pill shape already used for
 // ActivityCard's "Beta" pill and CanonRail's "Soon" pill -- no new colors,
 // no filled/solid badge, no colored dot: just that pill's border+text color
-// stepped down through the existing ink scale (gold -> ink -> ink-dim ->
-// paper-line) as a product moves from LIVE toward VISION.
+// stepped down through the existing ink scale (ink -> ink-dim -> paper-line)
+// as a product moves from LIVE toward VISION. LIVE uses --ink rather than
+// --gold: gold text/borders on this card's --surface-card background measure
+// ~1.98:1 contrast (checked against the actual rendered background), well
+// under WCAG AA's 4.5:1 for this size -- --ink clears that comfortably while
+// still reading as the most prominent tier.
 const STATUS_STYLE = {
-  LIVE: { color: 'var(--gold)', borderColor: 'var(--gold)' },
+  LIVE: { color: 'var(--ink)', borderColor: 'var(--ink)' },
   PREVIEW: { color: 'var(--ink)', borderColor: 'var(--ink)' },
   'COMING ONLINE': { color: 'var(--ink-dim)', borderColor: 'var(--ink-dim)' },
   'IN DEVELOPMENT': { color: 'var(--ink-dim)', borderColor: 'var(--ink-dim)' },

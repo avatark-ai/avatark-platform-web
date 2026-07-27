@@ -115,7 +115,11 @@ export function PlatformArchitecture() {
           only implies. */}
       <section className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
         <SectionContainer>
-          <h2 className="text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+          {/* --ink-dim, not --gold: this heading is new (Platform Milestone
+              1) and gold text against this section's --paper background
+              measures ~1.86:1, under WCAG AA's 4.5:1 -- --ink-dim clears
+              ~6.85:1 here. */}
+          <h2 className="text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-dim)' }}>
             Connected Products
           </h2>
           <div className="mt-8">
@@ -140,7 +144,11 @@ export function PlatformArchitecture() {
           next once you've already practiced, competed, or inspired someone. */}
       <section>
         <SectionContainer>
-          <h2 className="text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+          {/* --ink-dim, not --gold: this heading is new (Platform Milestone
+              1) and gold text against this section's --paper background
+              measures ~1.86:1, under WCAG AA's 4.5:1 -- --ink-dim clears
+              ~6.85:1 here. */}
+          <h2 className="text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-dim)' }}>
             Continue Your Journey
           </h2>
           <div className="mt-8">

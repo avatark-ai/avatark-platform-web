@@ -39,7 +39,10 @@ export function ConnectedProducts() {
           <h3 className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>
             {entry.engineName}
           </h3>
-          <p className="mt-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+          {/* --ink-dim, not --gold: gold text against this card's
+              --surface-card background measures ~1.98:1, under WCAG AA's
+              4.5:1 -- --ink-dim clears ~7.3:1 here. */}
+          <p className="mt-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-dim)' }}>
             Uses
           </p>
           <ul className="mt-2 flex flex-col gap-1.5">

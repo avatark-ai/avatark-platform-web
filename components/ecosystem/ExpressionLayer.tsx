@@ -50,7 +50,11 @@ function LayerCard({
       style={{ borderColor: 'var(--paper-line)', background: 'var(--surface-card)' }}
     >
       <div className="flex items-center justify-center gap-3">
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        {/* --ink-dim, not --gold: this descriptor line is new (LayerCard had
+            no eyebrow before Platform Milestone 1) and gold text against this
+            card's --surface-card background measures ~1.98:1, under WCAG
+            AA's 4.5:1 -- --ink-dim clears ~7.3:1 here. */}
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-dim)' }}>
           {descriptor}
         </p>
         <StatusBadge status={status} />
