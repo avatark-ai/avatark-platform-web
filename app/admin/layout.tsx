@@ -15,7 +15,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const ctx = await getAdminContext()
   if (!ctx) {
     return (
-      <div className="mx-auto max-w-md px-4 py-16">
+      <div className="mx-auto min-h-full max-w-md bg-white px-4 py-16 text-neutral-900">
         <p className="text-sm text-red-600" role="alert">
           You don&apos;t have access to Platform Admin.
         </p>
@@ -24,7 +24,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
+    <div className="mx-auto min-h-full max-w-6xl bg-white px-4 py-8 text-neutral-900">
       <h1 className="mb-4 text-xl font-semibold">Platform Admin</h1>
       <AdminNav />
       <div className="mt-6">{children}</div>

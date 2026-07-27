@@ -48,10 +48,17 @@ export function EchoShell({ site, children }: { site: SiteId; children: React.Re
       </a>
       <EchoHeader />
       <EchoContextNav />
-      <div id="echo-main-content" className="flex flex-1 flex-col pb-16 lg:pb-0">
+      <div
+        id="echo-main-content"
+        className="flex flex-1 flex-col pb-16 lg:pb-0"
+        style={{ background: "var(--midnight)" }}
+      >
         {/* Subtle page-entry settle -- the same EMERGE primitive/component
             institutional pages use, re-keyed per pathname so it also
-            doubles as a small transition between sibling Echo routes. */}
+            doubles as a small transition between sibling Echo routes.
+            This wrapper (unlike its {children}) never unmounts between
+            Echo routes, so its own midnight background -- not just each
+            page's own <main> -- covers any gap during that swap. */}
         <PageEnter>{children}</PageEnter>
       </div>
       <EchoFooter />

@@ -78,12 +78,31 @@
    body's overflow propagating to the viewport (the normal CSS behavior)
    did not actually stop the viewport from scrolling here, so this
    doesn't leave it to that propagation rule. */
+/* Echo is the dominant experience across almost every route (only
+   /admin/*, /founder*, /foundation, /canon*, /ecosystem, /roadmap, and
+   `/` on the institutional host render something else), so the document
+   root's OWN background is Echo's midnight -- not the generic
+   --background/--foreground pair (previously white, and previously
+   flipping to near-black only under prefers-color-scheme:dark). That
+   made body's true background depend on OS theme and default to white
+   for most visitors: the visible cause of a white flash between Echo
+   route segments (Suspense fallbacks, streamed navigations, and hard
+   loads all render straight onto <body> before any page content paints
+   over it) and on hard-navigated pages that don't set their own
+   background (e.g. /auth/sign-in). Institutional pages are unaffected --
+   InstitutionalLayout already sets its own `background: var(--paper)`
+   on the wrapper it renders for every institutional route, which wins
+   over this as soon as it paints. /admin is explicitly re-protected
+   with its own light background in app/admin/layout.tsx, since it never
+   set one of its own before (having always relied on this default being
+   white). */
 html {
   overflow-x: hidden;
+  background: var(--midnight);
 }
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--midnight);
+  color: var(--paper);
   font-family: Arial, Helvetica, sans-serif;
   overflow-x: hidden;
 }

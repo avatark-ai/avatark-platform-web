@@ -3,6 +3,7 @@ import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { callbackErrorMessage } from '@/lib/auth/callbackError'
+import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from '@/components/echo/shell/EchoPageShell'
 
 // Feature-flagged: Google OAuth is wired up end-to-end (this button plus
 // the callback's exchangeCodeForSession path both work for it), but no
@@ -57,52 +58,69 @@ function SignInForm() {
   }
 
   return (
-    <div className="max-w-sm mx-auto px-4 py-16">
-      <h1 className="text-2xl font-semibold mb-6">Sign in</h1>
-      {callbackError && (
-        <p className="mb-4 text-sm text-red-600" role="alert">{callbackError}</p>
-      )}
-      {status === 'sent' ? (
-        <p className="text-sm text-neutral-600">Check your email for a sign-in link.</p>
-      ) : (
-        <div className="space-y-3">
-          {GOOGLE_OAUTH_ENABLED && (
-            <>
-              <button
-                onClick={handleGoogleSignIn}
-                disabled={googleStatus === 'redirecting'}
-                className="w-full rounded-md border px-4 py-2 text-sm font-semibold disabled:opacity-50"
-              >
-                {googleStatus === 'redirecting' ? 'Redirecting…' : 'Continue with Google'}
-              </button>
-              {googleStatus === 'error' && <p className="text-sm text-red-600">Couldn&apos;t start Google sign-in. Try again.</p>}
+    <EchoPageShell layout="plain">
+      <div className={`flex flex-col gap-6 ${ECHO_READING_WIDTH_CLASS.form}`}>
+        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Sign in</h1>
+        {callbackError && (
+          <p className="text-sm" role="alert" style={{ color: '#f87171' }}>
+            {callbackError}
+          </p>
+        )}
+        {status === 'sent' ? (
+          <p className="text-sm" style={{ color: 'var(--text-dim)' }}>
+            Check your email for a sign-in link.
+          </p>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {GOOGLE_OAUTH_ENABLED && (
+              <>
+                <button
+                  onClick={handleGoogleSignIn}
+                  disabled={googleStatus === 'redirecting'}
+                  className="echo-cta-secondary w-full rounded-full border px-4 py-2.5 text-sm font-semibold disabled:opacity-50"
+                  style={{ borderColor: 'var(--surface-line)', color: 'var(--paper)' }}
+                >
+                  {googleStatus === 'redirecting' ? 'Redirecting…' : 'Continue with Google'}
+                </button>
+                {googleStatus === 'error' && (
+                  <p className="text-sm" style={{ color: '#f87171' }}>
+                    Couldn&apos;t start Google sign-in. Try again.
+                  </p>
+                )}
 
-              <div className="flex items-center gap-3 py-1 text-xs text-neutral-500">
-                <div className="h-px flex-1 bg-neutral-200" />
-                or
-                <div className="h-px flex-1 bg-neutral-200" />
-              </div>
-            </>
-          )}
+                <div className="flex items-center gap-3 py-1 text-xs" style={{ color: 'var(--text-dim)' }}>
+                  <div className="h-px flex-1" style={{ background: 'var(--surface-line)' }} />
+                  or
+                  <div className="h-px flex-1" style={{ background: 'var(--surface-line)' }} />
+                </div>
+              </>
+            )}
 
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            className="w-full rounded-md border px-3 py-2 text-sm"
-          />
-          <button
-            onClick={handleSignIn}
-            disabled={status === 'sending'}
-            className="w-full rounded-md bg-black px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
-          >
-            {status === 'sending' ? 'Sending…' : 'Send magic link'}
-          </button>
-          {status === 'error' && <p className="text-sm text-red-600">Something went wrong. Try again.</p>}
-        </div>
-      )}
-    </div>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="w-full rounded-xl border px-4 py-3 text-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{ borderColor: 'var(--surface-line)', background: 'var(--surface)', color: 'var(--paper)', outlineColor: 'var(--gold)' }}
+            />
+            <button
+              onClick={handleSignIn}
+              disabled={status === 'sending'}
+              className="echo-cta-primary w-full rounded-full px-4 py-3 text-center text-sm font-semibold disabled:opacity-50"
+              style={{ background: 'var(--gold)', color: 'var(--midnight)' }}
+            >
+              {status === 'sending' ? 'Sending…' : 'Send magic link'}
+            </button>
+            {status === 'error' && (
+              <p className="text-sm" style={{ color: '#f87171' }}>
+                Something went wrong. Try again.
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+    </EchoPageShell>
   )
 }
 
