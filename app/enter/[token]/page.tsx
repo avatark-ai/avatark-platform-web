@@ -151,6 +151,10 @@ export default async function EnterInvitationTokenPage({
 
   const finalHref = intention ? `${continueHref}&intention=${encodeURIComponent(intention)}` : continueHref;
   const answers = describeInvitation(invitation, preview);
+  const practiceSlug =
+    invitation.destination.type === "practice" || invitation.destination.type === "echo_practice"
+      ? invitation.destination.practiceSlug
+      : null;
 
   return (
     <EchoPageShell layout="plain">
@@ -163,7 +167,7 @@ export default async function EnterInvitationTokenPage({
           {preview.body}
         </p>
         <InvitationMetadataPanel answers={answers} />
-        <InvitationAcceptGate token={token} continueHref={finalHref} />
+        <InvitationAcceptGate token={token} continueHref={finalHref} practiceSlug={practiceSlug} />
       </div>
     </EchoPageShell>
   );

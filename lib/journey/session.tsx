@@ -14,10 +14,12 @@ import { resolveClientPrincipal, type ClientPrincipalResult } from '@/lib/auth/r
 import {
   readJourneyContext,
   recordIntentionContext,
+  recordInvitationAcceptance,
   touchLastSeen,
   EMPTY_JOURNEY_CONTEXT,
   type JourneyContext,
 } from '@/lib/journey/state'
+import { readGuestContext, markGuestContextClaimed } from '@/lib/journey/guestContext'
 
 interface JourneySession {
   principal: ClientPrincipalResult | { status: 'loading' }
@@ -42,8 +44,34 @@ export function JourneySessionProvider({ children }: { children: ReactNode }) {
       setPrincipal(result)
       if (result.status !== 'signed_in') return
 
-      const initialContext = readJourneyContext(result.metadata)
+      let initialContext = readJourneyContext(result.metadata)
       setContext(initialContext)
+
+      // Clean handoff for a guest who signed in: feed whatever they
+      // provisionally remembered (lib/journey/guestContext.ts) into the
+      // same real, signed-in recording path an already-signed-in visitor
+      // uses, then mark it claimed so it never replays. Best-effort, same
+      // convention as touchLastSeen below -- never blocks rendering.
+      const guestContext = readGuestContext()
+      if (guestContext && !guestContext.claimed) {
+        try {
+          const supabase = createClient()
+          if (guestContext.invitationToken) {
+            initialContext = await recordInvitationAcceptance(supabase, initialContext, guestContext.invitationToken)
+          }
+          if (guestContext.witness) {
+            initialContext = await recordIntentionContext(supabase, initialContext, {
+              intention: null,
+              witness: guestContext.witness,
+            })
+          }
+          if (!cancelled) setContext(initialContext)
+          markGuestContextClaimed()
+        } catch {
+          // ignored -- see comment above; the guest context stays
+          // unclaimed and is retried on the next signed-in mount.
+        }
+      }
 
       // Best-effort: recording that today's visit happened is a nicety
       // for "Welcome back," never load-bearing, so a failure here must
