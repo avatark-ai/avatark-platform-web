@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { echoCategoryEyebrow, getGuide } from "@/lib/onboarding/guide";
 import { listPracticesByEcho, pickPracticeForIntention } from "@/lib/content/echo";
+import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
 
 export default async function GuidePage({
   params,
@@ -32,11 +33,8 @@ export default async function GuidePage({
   const thresholdHref = `${thresholdUrl.pathname}${thresholdUrl.search}`;
 
   return (
-    <main
-      className="flex flex-1 flex-col items-center px-6 py-16"
-      style={{ background: "var(--midnight)", color: "var(--paper)" }}
-    >
-      <div className="flex w-full max-w-lg flex-col gap-6">
+    <EchoPageShell layout="plain">
+      <div className={`flex flex-col gap-6 ${ECHO_READING_WIDTH_CLASS.narrow}`}>
         <p
           className="text-xs font-semibold uppercase tracking-wide"
           style={{ color: "var(--gold)" }}
@@ -47,7 +45,7 @@ export default async function GuidePage({
         <h1 className="text-2xl font-semibold sm:text-3xl">Meet your guide</h1>
 
         <div
-          className="flex flex-col gap-2 rounded-md border p-4"
+          className="flex flex-col gap-2 rounded-2xl border p-4"
           style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}
         >
           <p className="text-sm font-semibold" style={{ color: "var(--paper)" }}>
@@ -68,12 +66,12 @@ export default async function GuidePage({
 
         <Link
           href={thresholdHref}
-          className="mt-2 rounded-md px-8 py-3 text-center text-base font-semibold transition-opacity hover:opacity-90"
+          className="mt-2 rounded-full px-8 py-3 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95"
           style={{ background: "var(--gold)", color: "var(--midnight)" }}
         >
           Continue to the threshold
         </Link>
       </div>
-    </main>
+    </EchoPageShell>
   );
 }

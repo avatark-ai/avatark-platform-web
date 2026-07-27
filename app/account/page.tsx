@@ -98,7 +98,7 @@ function AccountRoot({ principal }: { principal: Extract<AccountPrincipal, { sta
   const activeRailSection = RAIL_SECTIONS.find((s) => s.id === section)
 
   return (
-    <EchoPageShell width="wide" layout="plain" contentClassName="flex flex-col gap-8 sm:flex-row sm:items-start">
+    <EchoPageShell layout="plain" contentClassName="flex flex-col gap-8 sm:flex-row sm:items-start">
       <nav aria-label="Account" className="flex shrink-0 flex-row gap-1 overflow-x-auto sm:w-56 sm:flex-col sm:overflow-visible">
         {RAIL_SECTIONS.map((item) => {
           const active = item.id === section
@@ -245,7 +245,7 @@ function AccountClientGate() {
 
   if (loadError) {
     return (
-      <EchoPageShell width="form" layout="plain" contentClassName="flex flex-col gap-2">
+      <EchoPageShell layout="plain" contentClassName="flex flex-col gap-2">
         <p className="text-sm" role="alert" style={{ color: 'var(--gold)' }}>Couldn&apos;t load your account: {loadError}</p>
         <button onClick={() => window.location.reload()} className="self-start text-sm underline" style={{ color: 'var(--paper)' }}>Try again</button>
       </EchoPageShell>
@@ -254,7 +254,7 @@ function AccountClientGate() {
 
   if (principal.status === 'loading' || principal.status === 'signed_out') {
     return (
-      <EchoPageShell width="form" layout="plain">
+      <EchoPageShell layout="plain">
         <p className="text-sm" style={{ color: 'var(--text-dim)' }}>Loading…</p>
       </EchoPageShell>
     )
@@ -266,7 +266,7 @@ function AccountClientGate() {
 export default function AccountPage() {
   if (!ACCOUNT_MOUNT_ENABLED) {
     return (
-      <EchoPageShell width="form" layout="plain">
+      <EchoPageShell layout="plain">
         <p className="text-sm" style={{ color: 'var(--text-dim)' }}>Account is not yet available.</p>
       </EchoPageShell>
     )

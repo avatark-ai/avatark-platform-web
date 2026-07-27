@@ -2,7 +2,7 @@
 
 import { Suspense, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { EchoPageShell } from "@/components/echo/shell/EchoPageShell";
+import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
 
 // RC6A -- fixes the homepage "Enter an Invitation" CTA, which linked to
 // bare /enter with no page. Does not duplicate /enter/[token]'s
@@ -32,7 +32,8 @@ function EnterInvitationForm() {
   }
 
   return (
-    <EchoPageShell width="form" layout="plain" className="items-center" contentClassName="flex flex-col">
+    <EchoPageShell layout="plain">
+      <div className={`flex flex-col ${ECHO_READING_WIDTH_CLASS.narrow}`}>
         <p
           className="text-xs font-semibold uppercase tracking-wide"
           style={{ color: "var(--gold)" }}
@@ -95,6 +96,7 @@ function EnterInvitationForm() {
           </a>{" "}
           instead.
         </p>
+      </div>
     </EchoPageShell>
   );
 }

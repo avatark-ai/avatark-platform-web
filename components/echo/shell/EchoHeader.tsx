@@ -48,14 +48,14 @@ function MobileCategoryAccordion({
           href={category.href}
           onClick={onNavigate}
           aria-current={active ? "page" : undefined}
-          className={`flex-1 py-2 text-left text-sm font-medium ${LINK_CLASS}`}
+          className={`flex-1 py-3 text-left text-sm font-medium ${LINK_CLASS}`}
           style={{ color: active ? "var(--gold)" : "var(--paper)", ...FOCUS_STYLE }}
         >
           {category.label}
         </Link>
         <button
           type="button"
-          className="rounded-sm p-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="rounded-sm p-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{ color: "var(--text-dim)", ...FOCUS_STYLE }}
           aria-expanded={open}
           aria-controls={panelId}
@@ -74,7 +74,7 @@ function MobileCategoryAccordion({
               key={link.label}
               href={link.href}
               onClick={onNavigate}
-              className="rounded-sm py-1.5 text-sm transition-colors hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="rounded-sm py-2.5 text-sm transition-colors hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{ color: "var(--text-dim)", ...FOCUS_STYLE }}
             >
               {link.label}
@@ -171,7 +171,7 @@ export function EchoHeader() {
               </Link>
               <Link
                 href={START_HERE_HREF}
-                className="rounded-md px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="rounded-full px-4 py-2 text-sm font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={{ background: "var(--gold)", color: "var(--midnight)", ...FOCUS_STYLE }}
               >
                 Join Free
@@ -182,7 +182,7 @@ export function EchoHeader() {
 
         <button
           type="button"
-          className="rounded-sm lg:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="-mr-2 rounded-sm p-2.5 lg:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           aria-expanded={mobileOpen}
           aria-controls="echo-mobile-nav"
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
@@ -226,7 +226,7 @@ export function EchoHeader() {
                 <Link
                   href={START_HERE_HREF}
                   onClick={closeMobile}
-                  className="mt-1 rounded-md px-4 py-2 text-center text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  className="mt-1 rounded-full px-4 py-2 text-center text-sm font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                   style={{ background: "var(--gold)", color: "var(--midnight)", ...FOCUS_STYLE }}
                 >
                   Join Free

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useJourneySession } from "@/lib/journey/session";
 import { PRACTICE_LABEL, WITNESS_LABEL } from "@/lib/onboarding/witness";
 import { PROMETHEUSK_DISPLAY_NAME } from "@/lib/onboarding/prometheusk";
@@ -66,7 +67,9 @@ const TIMELINE_DOT = (filled: boolean) => (
   />
 );
 
-export function MyEchoView({ context }: { context: JourneyContext }) {
+const TAB_IDS = ["overview", "timeline", "practices", "reflections", "evidence", "contributions"] as const;
+
+export function MyEchoView({ context, initialTabId }: { context: JourneyContext; initialTabId?: string }) {
   const hasActivity = Boolean(context.witness || context.practiceCompletedAt);
 
   const tabs: TabDefinition[] = [
@@ -216,7 +219,7 @@ export function MyEchoView({ context }: { context: JourneyContext }) {
       </p>
 
       <div className="mt-12">
-        <Tabs tabs={tabs} />
+        <Tabs tabs={tabs} initialTabId={initialTabId} />
       </div>
     </div>
   );
@@ -224,5 +227,8 @@ export function MyEchoView({ context }: { context: JourneyContext }) {
 
 export function MyEchoPage() {
   const { context } = useJourneySession();
-  return <MyEchoView context={context} />;
+  const searchParams = useSearchParams();
+  const requestedTab = searchParams.get("tab");
+  const initialTabId = requestedTab && (TAB_IDS as readonly string[]).includes(requestedTab) ? requestedTab : undefined;
+  return <MyEchoView context={context} initialTabId={initialTabId} />;
 }

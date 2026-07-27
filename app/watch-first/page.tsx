@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { listPractices, listStories } from "@/lib/content/echo";
 import { practiceDetailHref } from "@/lib/echo/links";
-import { EchoPageShell } from "@/components/echo/shell/EchoPageShell";
+import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
 
 export const metadata: Metadata = {
   title: "Watch First — Echo",
@@ -14,14 +14,15 @@ export default function WatchFirstPage() {
   const practice = listPractices()[0] ?? null;
 
   return (
-    <EchoPageShell width="form" layout="plain" className="items-center" contentClassName="flex flex-col items-center gap-6 text-center">
+    <EchoPageShell layout="plain">
+      <div className={`flex flex-col gap-6 ${ECHO_READING_WIDTH_CLASS.narrow}`}>
         <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
           ECHO
         </p>
         <h1 className="text-2xl font-semibold sm:text-3xl">{featured ? featured.title : "Watch First"}</h1>
 
         <div
-          className="flex aspect-video w-full flex-col items-center justify-center gap-2 rounded-md border"
+          className="flex aspect-video w-full flex-col items-center justify-center gap-2 rounded-2xl border"
           style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}
         >
           {featured?.mediaUrl ? (
@@ -57,7 +58,7 @@ export default function WatchFirstPage() {
         {practice && (
           <Link
             href={practiceDetailHref(practice.slug)}
-            className="mt-2 rounded-md px-8 py-3 text-center text-base font-semibold transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="mt-2 self-start rounded-full px-8 py-3 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
           >
             Borrow the Practice
@@ -67,6 +68,7 @@ export default function WatchFirstPage() {
         <p className="text-xs uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
           Powered by StreamK and CinemaK
         </p>
+      </div>
     </EchoPageShell>
   );
 }

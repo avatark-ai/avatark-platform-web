@@ -10,6 +10,7 @@ import {
 import { echoCategoryEyebrow } from "@/lib/onboarding/guide";
 import { practiceDetailHref } from "@/lib/echo/links";
 import { Tabs, type TabDefinition } from "@/components/echo/shared/Tabs";
+import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
 
 export function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   return params.then(({ slug }) => {
@@ -116,8 +117,8 @@ export default async function EchoDetailPage({ params }: { params: Promise<{ slu
   ];
 
   return (
-    <main className="flex flex-1 flex-col px-6 py-20 sm:py-24" style={{ background: "var(--midnight)", color: "var(--paper)" }}>
-      <div className="mx-auto flex w-full max-w-2xl flex-col">
+    <EchoPageShell layout="plain">
+      <div className={`flex flex-col ${ECHO_READING_WIDTH_CLASS.editorial}`}>
         <span
           aria-hidden="true"
           className="mb-6 h-14 w-14 rounded-full border-2"
@@ -149,7 +150,7 @@ export default async function EchoDetailPage({ params }: { params: Promise<{ slu
           <Tabs tabs={tabs} />
         </div>
       </div>
-    </main>
+    </EchoPageShell>
   );
 }
 

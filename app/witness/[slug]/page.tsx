@@ -5,6 +5,7 @@ import { getEchoBySlug, getPracticeBySlug } from "@/lib/content/echo";
 import { echoCategoryEyebrow } from "@/lib/onboarding/guide";
 import { isPracticeHandoffAvailable } from "@/lib/onboarding/practiceHandoff";
 import { DISCOVER_HREF } from "@/lib/echo/links";
+import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
 
 export default async function WitnessPage({
   params,
@@ -36,11 +37,8 @@ export default async function WitnessPage({
   const available = isPracticeHandoffAvailable(practice.slug);
 
   return (
-    <main
-      className="flex flex-1 flex-col items-center px-6 py-16"
-      style={{ background: "var(--midnight)", color: "var(--paper)" }}
-    >
-      <div className="flex w-full max-w-lg flex-col gap-6">
+    <EchoPageShell layout="plain">
+      <div className={`flex flex-col gap-6 ${ECHO_READING_WIDTH_CLASS.narrow}`}>
         <p
           className="text-xs font-semibold uppercase tracking-wide"
           style={{ color: "var(--gold)" }}
@@ -55,7 +53,7 @@ export default async function WitnessPage({
         </p>
 
         <div
-          className="flex flex-col gap-2 rounded-md border p-4"
+          className="flex flex-col gap-2 rounded-2xl border p-4"
           style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}
         >
           <p className="text-sm font-semibold" style={{ color: "var(--paper)" }}>
@@ -91,21 +89,21 @@ export default async function WitnessPage({
           <OrbReveal>
             <a
               href={borrowUrl}
-              className="mt-2 rounded-md px-8 py-3 text-center text-base font-semibold transition-opacity hover:opacity-90"
+              className="mt-2 rounded-full px-8 py-3 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95"
               style={{ background: "var(--gold)", color: "var(--midnight)" }}
             >
               Borrow This Practice
             </a>
           </OrbReveal>
         ) : (
-          <div className="mt-2 flex flex-col gap-3 rounded-md border p-4" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
+          <div className="mt-2 flex flex-col gap-3 rounded-2xl border p-4" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
             <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
               This practice isn&apos;t available to begin on PrometheusK yet — we won&apos;t hand you off to a
               different practice than the one you chose.
             </p>
             <Link
-              href={`${DISCOVER_HREF}#practices`}
-              className="self-start rounded-md px-6 py-2.5 text-center text-sm font-semibold transition-opacity hover:opacity-90"
+              href={`${DISCOVER_HREF}?view=practices`}
+              className="self-start rounded-full px-6 py-2.5 text-center text-sm font-semibold transition-transform hover:scale-[1.02] hover:opacity-95"
               style={{ background: "var(--gold)", color: "var(--midnight)" }}
             >
               Explore Practices
@@ -113,6 +111,6 @@ export default async function WitnessPage({
           </div>
         )}
       </div>
-    </main>
+    </EchoPageShell>
   );
 }

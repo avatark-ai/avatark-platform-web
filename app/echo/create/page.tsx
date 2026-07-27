@@ -15,7 +15,7 @@ export default function EchoCreatePage() {
   ) as Record<(typeof THEMES)[number], string>;
 
   return (
-    <EchoPageShell width="wide" topPadding="compact" layout="plain" className="items-center" contentClassName="flex flex-col items-center">
+    <EchoPageShell topPadding="compact" layout="plain">
       <EchoCreationFlow themePracticeMap={themePracticeMap} />
     </EchoPageShell>
   );

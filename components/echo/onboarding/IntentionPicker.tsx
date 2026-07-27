@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { INTENTIONS, type IntentionId } from "@/lib/onboarding/intentions";
+import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
 
 // A brief on-page transition so choosing an option feels connected to
 // what comes next -- inherited unchanged from the previous /start page.
@@ -27,30 +28,24 @@ export function IntentionPicker({ intentionPracticeMap }: { intentionPracticeMap
   if (selected) {
     const chosen = INTENTIONS.find((intention) => intention.id === selected);
     return (
-      <main
-        className="flex flex-1 flex-col items-center justify-center px-6 py-20"
-        style={{ background: "var(--midnight)", color: "var(--paper)" }}
-      >
-        <div className="flex w-full max-w-md flex-col items-center gap-4 text-center" aria-live="polite">
+      <EchoPageShell layout="plain">
+        <div className={`flex flex-col gap-4 ${ECHO_READING_WIDTH_CLASS.narrow}`} aria-live="polite">
           <p className="text-lg leading-7">
             Based on what you selected — &ldquo;{chosen?.label}&rdquo; — here&apos;s where to begin.
           </p>
         </div>
-      </main>
+      </EchoPageShell>
     );
   }
 
   return (
-    <main
-      className="flex flex-1 flex-col items-center justify-center px-6 py-20"
-      style={{ background: "var(--midnight)", color: "var(--paper)" }}
-    >
-      <div className="flex w-full max-w-md flex-col items-center gap-6 text-center">
-        <div className="flex flex-col items-center gap-2">
+    <EchoPageShell layout="plain">
+      <div className={`flex flex-col gap-6 ${ECHO_READING_WIDTH_CLASS.narrow}`}>
+        <div className="flex flex-col gap-2">
           <p className="text-sm" style={{ color: "var(--text-dim)" }}>
             Every Echo begins with where you are today.
           </p>
-          <h1 className="text-2xl font-semibold sm:text-3xl">Which feels most true today?</h1>
+          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Which feels most true today?</h1>
         </div>
 
         <ul className="flex w-full flex-col gap-3">
@@ -59,7 +54,7 @@ export function IntentionPicker({ intentionPracticeMap }: { intentionPracticeMap
               <button
                 type="button"
                 onClick={() => choose(intention.id)}
-                className="w-full rounded-md border px-6 py-3 text-left text-base transition-colors hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="w-full rounded-2xl border px-6 py-3 text-left text-base transition-colors hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={{
                   borderColor: "var(--surface-line)",
                   background: "var(--surface)",
@@ -77,6 +72,6 @@ export function IntentionPicker({ intentionPracticeMap }: { intentionPracticeMap
           We&apos;ll recommend a starting practice. You can always change later.
         </p>
       </div>
-    </main>
+    </EchoPageShell>
   );
 }

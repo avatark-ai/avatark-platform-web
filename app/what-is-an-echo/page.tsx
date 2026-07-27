@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CREATE_MY_ECHO_HREF, DISCOVER_HREF, START_HERE_HREF } from "@/lib/echo/links";
-import { EchoPageShell } from "@/components/echo/shell/EchoPageShell";
+import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
 
 export const metadata: Metadata = {
   title: "What Is an Echo? — Echo",
@@ -37,7 +37,8 @@ const STAGES = [
 
 export default function WhatIsAnEchoPage() {
   return (
-    <EchoPageShell width="editorial">
+    <EchoPageShell layout="plain">
+      <div className={`flex flex-col gap-10 sm:gap-12 ${ECHO_READING_WIDTH_CLASS.editorial}`}>
       <div className="flex flex-col gap-3">
         <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
           ECHO
@@ -93,7 +94,7 @@ export default function WhatIsAnEchoPage() {
 
       <p className="text-sm">
         <Link
-          href={`${DISCOVER_HREF}#echoes`}
+          href={`${DISCOVER_HREF}?view=echoes`}
           className="underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
         >
@@ -112,6 +113,7 @@ export default function WhatIsAnEchoPage() {
           Learn about the AvatarK architecture →
         </Link>
       </p>
+      </div>
     </EchoPageShell>
   );
 }

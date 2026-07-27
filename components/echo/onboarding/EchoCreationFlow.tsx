@@ -37,13 +37,13 @@ export function EchoCreationFlow({ themePracticeMap }: { themePracticeMap: Recor
 
   if (step === 1) {
     return (
-      <div className="flex w-full max-w-lg flex-col items-center gap-7 text-center">
+      <div className="flex w-full max-w-xl flex-col items-start gap-7">
         <p className="text-sm" style={{ color: "var(--text-dim)" }}>
           Step 1 of 3
         </p>
         <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">What are you navigating now?</h1>
 
-        <ul className="flex w-full flex-wrap justify-center gap-3">
+        <ul className="flex w-full flex-wrap gap-3">
           {THEMES.map((option) => (
             <li key={option}>
               <button
@@ -82,7 +82,7 @@ export function EchoCreationFlow({ themePracticeMap }: { themePracticeMap: Recor
           type="button"
           disabled={!theme}
           onClick={() => setStep(2)}
-          className="rounded-full px-8 py-3 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="self-start rounded-full px-8 py-3 text-center text-base font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
         >
           Continue
@@ -93,7 +93,7 @@ export function EchoCreationFlow({ themePracticeMap }: { themePracticeMap: Recor
 
   if (step === 2) {
     return (
-      <div className="flex w-full max-w-lg flex-col items-center gap-7 text-center">
+      <div className="flex w-full max-w-xl flex-col items-start gap-7">
         <p className="text-sm" style={{ color: "var(--text-dim)" }}>
           Step 2 of 3
         </p>
@@ -124,7 +124,7 @@ export function EchoCreationFlow({ themePracticeMap }: { themePracticeMap: Recor
   const path = resolvePath(beginning ?? "practice", practiceSlug);
 
   return (
-    <div className="flex w-full max-w-lg flex-col items-center gap-7 text-center">
+    <div className="flex w-full max-w-xl flex-col items-start gap-7">
       <p className="text-sm" style={{ color: "var(--text-dim)" }}>
         Step 3 of 3
       </p>

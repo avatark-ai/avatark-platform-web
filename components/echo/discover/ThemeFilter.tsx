@@ -4,14 +4,23 @@ import { DISCOVER_HREF } from "@/lib/echo/links";
 // A single scrollable row, not a sticky wall of chips (spec: "avoid a wall
 // of sticky filter chips" / mobile: "simple scrollable category row").
 // Server-rendered links, not client state -- filtering happens via the
-// `theme` search param the page already reads.
-export function ThemeFilter({ themes, active }: { themes: string[]; active: string | null }) {
+// `theme` search param the page already reads. Real query-string links,
+// no `#` anchor: choosing a theme is a normal navigation that preserves
+// whichever view (Echoes/Practices/Collections/Topics) is currently open.
+function themeHref(view: string, theme: string | null): string {
+  const params = new URLSearchParams();
+  params.set("view", view);
+  if (theme) params.set("theme", theme);
+  return `${DISCOVER_HREF}?${params.toString()}`;
+}
+
+export function ThemeFilter({ themes, active, view }: { themes: string[]; active: string | null; view: string }) {
   if (themes.length === 0) return null;
 
   return (
     <div className="flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Filter by topic">
       <Link
-        href={`${DISCOVER_HREF}#themes`}
+        href={themeHref(view, null)}
         className="shrink-0 rounded-full border px-4 py-1.5 text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
         style={{
           borderColor: active ? "var(--surface-line)" : "var(--gold)",
@@ -25,7 +34,7 @@ export function ThemeFilter({ themes, active }: { themes: string[]; active: stri
       {themes.map((theme) => (
         <Link
           key={theme}
-          href={`${DISCOVER_HREF}?theme=${encodeURIComponent(theme)}#themes`}
+          href={themeHref(view, theme)}
           className="shrink-0 rounded-full border px-4 py-1.5 text-sm capitalize transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{
             borderColor: active === theme ? "var(--gold)" : "var(--surface-line)",

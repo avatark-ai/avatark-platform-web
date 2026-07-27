@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ENTER_INVITATION_HREF, SIGN_IN_HREF, WATCH_FIRST_HREF } from "@/lib/echo/links";
-import { EchoPageShell } from "@/components/echo/shell/EchoPageShell";
+import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
 
 const CHOICES = [
   {
@@ -25,26 +25,38 @@ const CHOICES = [
 
 export function StartHere() {
   return (
-    <EchoPageShell width="form" layout="plain" className="items-center" contentClassName="flex flex-col items-center gap-6 text-center">
+    <EchoPageShell layout="plain">
+      <div className={`flex flex-col gap-6 ${ECHO_READING_WIDTH_CLASS.narrow}`}>
         <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
           ECHO
         </p>
-        <h1 className="text-2xl font-semibold sm:text-3xl">Welcome to Echo</h1>
-        <p className="text-base leading-7" style={{ color: "var(--text-dim)" }}>
-          Echo helps you learn from lived experience, turn insight into practice and preserve what changes.
+        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Welcome to Echo</h1>
+        <p className="text-lg leading-8" style={{ color: "var(--text-dim)" }}>
+          Echo helps you learn from lived experience, turn insight into practice, and preserve what changes.
         </p>
-        <p className="text-lg font-medium">How would you like to begin?</p>
+        <p className="mt-2 text-base font-semibold" style={{ color: "var(--paper)" }}>
+          How would you like to begin?
+        </p>
 
-        <ul className="flex w-full flex-col gap-3">
+        <ul className="flex flex-col gap-3">
           {CHOICES.map((choice) => (
             <li key={choice.id}>
               <Link
                 href={choice.href}
-                className="flex w-full flex-col gap-1 rounded-md border px-6 py-4 text-left transition-colors hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="group flex w-full flex-col gap-1 rounded-2xl border px-6 py-4 transition-colors hover:border-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={{ borderColor: "var(--surface-line)", background: "var(--surface)", outlineColor: "var(--gold)" }}
               >
-                <span className="text-base font-semibold" style={{ color: "var(--paper)" }}>
-                  {choice.label}
+                <span className="flex items-center justify-between gap-3">
+                  <span className="text-base font-semibold" style={{ color: "var(--paper)" }}>
+                    {choice.label}
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="shrink-0 text-lg transition-transform group-hover:translate-x-0.5"
+                    style={{ color: "var(--gold)" }}
+                  >
+                    →
+                  </span>
                 </span>
                 <span className="text-sm" style={{ color: "var(--text-dim)" }}>
                   {choice.body}
@@ -54,13 +66,17 @@ export function StartHere() {
           ))}
         </ul>
 
-        <Link
-          href={SIGN_IN_HREF}
-          className="text-sm underline underline-offset-4 hover:no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-          style={{ color: "var(--text-dim)", outlineColor: "var(--gold)" }}
-        >
-          I already have an account
-        </Link>
+        <p className="text-sm" style={{ color: "var(--text-dim)" }}>
+          Already have an account?{" "}
+          <Link
+            href={SIGN_IN_HREF}
+            className="font-semibold underline underline-offset-4 hover:no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
+          >
+            Sign in
+          </Link>
+        </p>
+      </div>
     </EchoPageShell>
   );
 }

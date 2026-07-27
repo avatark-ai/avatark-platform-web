@@ -7,32 +7,31 @@
 // route (never opened/closed by hover), and is visually subordinate to the
 // primary header (smaller type, a differentiated surface).
 //
-// Hidden entirely below the lg breakpoint -- mobile gets its destinations
-// through EchoHeader's accordion drawer instead, per spec ("do not render
-// the desktop second bar on narrow mobile widths").
-import { useEffect, useState } from "react";
+// Active state is derived from pathname + query string only (never a
+// `#hash` or hover) -- see lib/echo/nav.ts's isContextLinkActive.
+//
+// Visible at every width as a single horizontally scrollable row (never a
+// full-height mega menu): on mobile this IS the contextual nav, distinct
+// from EchoHeader's accordion drawer (which covers switching between the
+// six PRIMARY categories, not siblings within the current one).
+import { Suspense, useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { getActiveCategory, isContextLinkActive } from "@/lib/echo/nav";
 
 const LINK_CLASS =
-  "whitespace-nowrap rounded-sm px-1 py-1 text-xs font-medium tracking-tight transition-colors hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
+  "whitespace-nowrap rounded-sm px-1 py-2.5 text-xs font-medium tracking-tight transition-colors hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
 const FOCUS_STYLE = { outlineColor: "var(--gold)" } as const;
 
-export function EchoContextNav() {
+function EchoContextNavInner() {
   const pathname = usePathname();
-  const [hash, setHash] = useState("");
+  const searchParams = useSearchParams();
+  const search = searchParams.toString();
+  const activeRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
-    function syncHash() {
-      setHash(window.location.hash);
-    }
-    syncHash();
-    window.addEventListener("hashchange", syncHash);
-    return () => window.removeEventListener("hashchange", syncHash);
-    // Re-sync on every route change too, since navigating to a new hash on
-    // the same page (e.g. Discover's anchors) doesn't always fire hashchange.
-  }, [pathname]);
+    activeRef.current?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }, [pathname, search]);
 
   const category = getActiveCategory(pathname);
   if (!category) return null;
@@ -40,19 +39,20 @@ export function EchoContextNav() {
   return (
     <div
       aria-label={`${category.label} navigation`}
-      className="hidden border-b lg:block"
+      className="border-b"
       style={{ borderColor: "var(--surface-line)", background: "color-mix(in srgb, var(--midnight) 92%, var(--surface))" }}
     >
       <nav
         aria-label={`${category.label} sections`}
-        className="mx-auto flex max-w-6xl items-center gap-5 overflow-x-auto px-6 py-2.5"
+        className="mx-auto flex max-w-6xl items-center gap-5 overflow-x-auto px-6"
       >
         {category.context.map((link) => {
-          const active = isContextLinkActive(link, pathname, hash);
+          const active = isContextLinkActive(link, pathname, search);
           return (
             <Link
               key={link.label}
               href={link.href}
+              ref={active ? activeRef : undefined}
               aria-current={active ? "page" : undefined}
               className={LINK_CLASS}
               style={{ color: active ? "var(--gold)" : "var(--text-dim)", ...FOCUS_STYLE }}
@@ -62,11 +62,24 @@ export function EchoContextNav() {
           );
         })}
         {category.attribution && (
-          <span className="ml-auto whitespace-nowrap text-xs" style={{ color: "var(--text-dim)" }}>
+          <span className="ml-auto hidden whitespace-nowrap text-xs sm:inline" style={{ color: "var(--text-dim)" }}>
             {category.attribution}
           </span>
         )}
       </nav>
     </div>
+  );
+}
+
+// useSearchParams requires a Suspense boundary -- EchoContextNav is
+// mounted from EchoShell above every page's own content, so this
+// boundary lives here rather than asking every route to provide one.
+// Rendering nothing while resolving avoids any layout shift: the bar's
+// height is owned by its border/padding, not by its content being ready.
+export function EchoContextNav() {
+  return (
+    <Suspense fallback={null}>
+      <EchoContextNavInner />
+    </Suspense>
   );
 }

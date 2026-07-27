@@ -1,11 +1,12 @@
 import { MyJourneyPage } from "@/components/echo/journey/MyJourneyView";
+import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
 
 export default function Page() {
   return (
-    <main className="flex flex-1 flex-col px-6 py-16" style={{ background: "var(--midnight)", color: "var(--paper)" }}>
-      <div className="mx-auto flex w-full max-w-lg flex-col">
+    <EchoPageShell layout="plain">
+      <div className={`flex flex-col ${ECHO_READING_WIDTH_CLASS.narrow}`}>
         <MyJourneyPage />
       </div>
-    </main>
+    </EchoPageShell>
   );
 }

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getEchoBySlug, getPracticeBySlug, listPractices } from "@/lib/content/echo";
 import { DISCOVER_HREF, echoDetailHref } from "@/lib/echo/links";
 import { isPracticeHandoffAvailable } from "@/lib/onboarding/practiceHandoff";
-import { EchoPageShell } from "@/components/echo/shell/EchoPageShell";
+import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
 
 export function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   return params.then(({ id }) => {
@@ -40,7 +40,8 @@ export default async function PracticeDetailPage({
   const beginHref = `${beginUrl.pathname}${beginUrl.search}`;
 
   return (
-    <EchoPageShell width="form" layout="plain" className="items-center" contentClassName="flex flex-col">
+    <EchoPageShell layout="plain">
+      <div className={`flex flex-col ${ECHO_READING_WIDTH_CLASS.narrow}`}>
         <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
           {practice.duration}
           {practice.modality ? ` · ${practice.modality}` : ""}
@@ -96,7 +97,7 @@ export default async function PracticeDetailPage({
               different practice than the one you chose. Explore what else Echo has ready today instead.
             </p>
             <Link
-              href={`${DISCOVER_HREF}#practices`}
+              href={`${DISCOVER_HREF}?view=practices`}
               className="self-start rounded-full px-6 py-2.5 text-center text-sm font-semibold transition-transform hover:scale-[1.02] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
             >
@@ -104,6 +105,7 @@ export default async function PracticeDetailPage({
             </Link>
           </div>
         )}
+      </div>
     </EchoPageShell>
   );
 }

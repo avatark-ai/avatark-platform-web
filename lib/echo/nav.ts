@@ -4,10 +4,11 @@
 // EchoHeader (desktop primary bar + mobile accordion) and EchoContextNav
 // (desktop/tablet context bar), so the two surfaces can't drift.
 //
-// Replaces the previous single-level dropdown model (EchoNavSection),
-// which this pass rejected: a large overlay panel covering page content.
-// Every href here resolves to a route this repo actually implements (or
-// an anchor on one of those routes); nothing here is a placeholder link.
+// Every href here resolves to a real, distinct route or an explicit
+// `?view=`/`?tab=` query-addressable state on a page that actually
+// branches on it (never a `#hash` anchor -- anchors caused inconsistent
+// scroll landing and made several sibling destinations indistinguishable
+// from one another, since a merged/scrolled page can't tell them apart).
 import {
   ACCOUNT_HREF,
   COMMUNITY_HREF,
@@ -60,10 +61,10 @@ export const PRIMARY_CATEGORIES: EchoPrimaryCategory[] = [
     href: DISCOVER_HREF,
     matchPrefixes: ["/discover", "/echo/"],
     context: [
-      { label: "Featured Echoes", href: `${DISCOVER_HREF}#echoes` },
-      { label: "Featured Practices", href: `${DISCOVER_HREF}#practices` },
-      { label: "Collections", href: `${DISCOVER_HREF}#collections` },
-      { label: "Topics", href: `${DISCOVER_HREF}#themes` },
+      { label: "Featured Echoes", href: `${DISCOVER_HREF}?view=echoes` },
+      { label: "Featured Practices", href: `${DISCOVER_HREF}?view=practices` },
+      { label: "Collections", href: `${DISCOVER_HREF}?view=collections` },
+      { label: "Topics", href: `${DISCOVER_HREF}?view=topics` },
     ],
   },
   {
@@ -73,8 +74,8 @@ export const PRIMARY_CATEGORIES: EchoPrimaryCategory[] = [
     matchPrefixes: ["/today", "/practice", "/journey"],
     context: [
       { label: "Today", href: TODAY_HREF },
-      { label: "Browse", href: `${DISCOVER_HREF}#practices` },
-      { label: "My Library", href: `${MY_ECHO_HREF}#practices` },
+      { label: "Browse", href: `${DISCOVER_HREF}?view=practices` },
+      { label: "My Library", href: `${MY_ECHO_HREF}?tab=practices` },
     ],
     attribution: "Powered by PrometheusK",
   },
@@ -84,11 +85,11 @@ export const PRIMARY_CATEGORIES: EchoPrimaryCategory[] = [
     href: COMMUNITY_HREF,
     matchPrefixes: ["/community"],
     context: [
-      { label: "Challenges", href: `${COMMUNITY_HREF}#challenges` },
-      { label: "Groups", href: `${COMMUNITY_HREF}#groups` },
-      { label: "Events", href: `${COMMUNITY_HREF}#events` },
-      { label: "Cohorts", href: `${COMMUNITY_HREF}#cohorts` },
-      { label: "Recognition", href: `${COMMUNITY_HREF}#recognition` },
+      { label: "Challenges", href: "/community/challenges" },
+      { label: "Groups", href: "/community/groups" },
+      { label: "Events", href: "/community/events" },
+      { label: "Cohorts", href: "/community/cohorts" },
+      { label: "Recognition", href: "/community/recognition" },
     ],
     attribution: "Powered by ArenaK",
   },
@@ -98,10 +99,10 @@ export const PRIMARY_CATEGORIES: EchoPrimaryCategory[] = [
     href: STORIES_HREF,
     matchPrefixes: ["/stories"],
     context: [
-      { label: "Watch", href: `${STORIES_HREF}#watch` },
-      { label: "Episodes", href: `${STORIES_HREF}#episodes` },
-      { label: "Live", href: `${STORIES_HREF}#live` },
-      { label: "Films", href: `${STORIES_HREF}#films` },
+      { label: "Watch", href: `${STORIES_HREF}?view=watch` },
+      { label: "Episodes", href: `${STORIES_HREF}?view=episodes` },
+      { label: "Live", href: `${STORIES_HREF}?view=live` },
+      { label: "Films", href: `${STORIES_HREF}?view=films` },
     ],
     attribution: "Powered by StreamK and CinemaK",
   },
@@ -140,16 +141,27 @@ export function getActiveCategory(pathname: string): EchoPrimaryCategory | undef
   );
 }
 
+function parseQuery(search: string): URLSearchParams {
+  return new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
+}
+
 /**
  * A context link is "active" when its own pathname matches the current
- * pathname AND (it carries no hash, or its hash matches the current one).
- * Anchor-only siblings on the same page (e.g. Discover's four `#`
- * destinations) intentionally never all light up at once -- only the one
- * matching the current hash does, once the caller tracks hash changes.
+ * pathname AND its query params (if any) are all present and equal in the
+ * current URL. Every Echo destination that branches on a query value
+ * (Discover's `view`, Practice's `tab`) always encodes that value
+ * explicitly in its own href (never a bare path meant as an implicit
+ * "default"), so there's no ambiguity between sibling links that share a
+ * pathname -- exactly one can ever match at a time.
  */
-export function isContextLinkActive(link: EchoContextLink, pathname: string, hash: string): boolean {
-  const [linkPath, linkHash] = link.href.split("#");
+export function isContextLinkActive(link: EchoContextLink, pathname: string, search: string): boolean {
+  const [linkPath, linkQuery] = link.href.split("?");
   if (basePath(pathname) !== linkPath) return false;
-  if (!linkHash) return true;
-  return linkHash === hash.replace(/^#/, "");
+  if (!linkQuery) return true;
+  const linkParams = new URLSearchParams(linkQuery);
+  const currentParams = parseQuery(search);
+  for (const [key, value] of linkParams) {
+    if (currentParams.get(key) !== value) return false;
+  }
+  return true;
 }
