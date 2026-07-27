@@ -19,8 +19,8 @@ import { resolveClientPrincipal, type ClientPrincipalResult } from "@/lib/auth/r
 import { createClient } from "@/lib/supabase/client";
 import { readJourneyContext, recordInvitationAcceptance } from "@/lib/journey/state";
 import { writeGuestContext } from "@/lib/journey/guestContext";
+import { enterInvitationLink } from "@/lib/journey/deepLinks";
 import { SIGN_IN_HREF } from "@/lib/echo/links";
-import { invitationSignInReturnPath } from "@/lib/invitations/signInReturn";
 
 export function InvitationAcceptGate({
   token,
@@ -101,7 +101,7 @@ export function InvitationAcceptGate({
           Continue as guest
         </Link>
         <Link
-          href={`${SIGN_IN_HREF}?return=${encodeURIComponent(invitationSignInReturnPath(token))}`}
+          href={`${SIGN_IN_HREF}?return=${encodeURIComponent(enterInvitationLink(token).href)}`}
           className="text-sm font-medium link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{ color: "var(--text-dim)", outlineColor: "var(--gold)" }}
         >
