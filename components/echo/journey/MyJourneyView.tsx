@@ -70,6 +70,11 @@ export function MyJourneyView({ context }: { context: JourneyContext }) {
                 "Began the journey."
               )}
             </p>
+            {context.invitationId && context.invitationAcceptedAt && (
+              <p className="text-sm" style={{ color: "var(--text-dim)" }}>
+                Accepted an invitation on {formatDate(context.invitationAcceptedAt)}.
+              </p>
+            )}
             {context.witness && (
               <p className="text-sm" style={{ color: "var(--text-dim)" }}>
                 Started {WITNESS_LABEL}.

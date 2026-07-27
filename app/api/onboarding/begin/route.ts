@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { randomBytes } from 'node:crypto'
+import { classifyInvitationStatus } from '@avatark/invitations'
 import { buildBorrowUrl } from '@/lib/onboarding/prometheusk'
 import { buildSafeReturnTo, resolvePracticeHandoffTarget } from '@/lib/onboarding/practiceHandoff'
 import { isIntentionId } from '@/lib/onboarding/intentions'
 import { ONBOARDING_STATE_COOKIE } from '@/lib/onboarding/stateCookie'
+import { echoInvitationResolver } from '@/lib/invitations/echoResolver'
 
 // RC5 -- the sole place this repo generates the onboarding state/nonce
 // and sets the cookie /continue later reads to verify a completion
@@ -32,6 +34,18 @@ export async function GET(request: NextRequest) {
   const target = resolvePracticeHandoffTarget(witness)
   if (!target) {
     return NextResponse.redirect(`${origin}/practice/${encodeURIComponent(witness)}?handoff=unavailable`)
+  }
+
+  // Echo only ever hands off a VALIDATED invitation to PrometheusK (see
+  // packages/invitations). An invitation carried this far that's since
+  // expired/been revoked/run out of uses must never quietly ride along
+  // to a real practice handoff -- land back on its own honest unavailable
+  // state instead, same principle as the practice-existence check above.
+  if (invitation) {
+    const resolved = await echoInvitationResolver.resolve(invitation)
+    if (!resolved || classifyInvitationStatus(resolved, new Date()) !== 'pending') {
+      return NextResponse.redirect(`${origin}/enter/${encodeURIComponent(invitation)}`)
+    }
   }
 
   const intention = isIntentionId(intentionParam) ? intentionParam : null

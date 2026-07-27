@@ -7,10 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --test lib/onboarding/receipt.test.ts lib/onboarding/practiceHandoff.test.ts lib/auth/safeReturnPath.test.ts lib/auth/callbackError.test.ts lib/admin/environment.test.ts lib/admin/emailDiagnostics.test.ts lib/admin/authDiagnostics.test.ts lib/admin/audit.test.ts lib/email/sendEmail.test.ts lib/email/templates.test.ts lib/products/health.test.ts lib/products/access.test.ts lib/activities/registry.test.ts lib/organizations/invitations.test.ts lib/identity/claims.test.ts lib/journey/continuity.test.ts packages/product-registry/src/validation.test.ts packages/product-registry/src/helpers.test.ts lib/sites/registry.test.ts lib/content/echo.test.ts"
+    "test": "node --experimental-strip-types --test lib/onboarding/receipt.test.ts lib/onboarding/practiceHandoff.test.ts lib/auth/safeReturnPath.test.ts lib/auth/callbackError.test.ts lib/admin/environment.test.ts lib/admin/emailDiagnostics.test.ts lib/admin/authDiagnostics.test.ts lib/admin/audit.test.ts lib/email/sendEmail.test.ts lib/email/templates.test.ts lib/products/health.test.ts lib/products/access.test.ts lib/activities/registry.test.ts lib/organizations/invitations.test.ts lib/identity/claims.test.ts lib/journey/continuity.test.ts packages/product-registry/src/validation.test.ts packages/product-registry/src/helpers.test.ts lib/sites/registry.test.ts lib/content/echo.test.ts packages/invitations/src/validation.test.ts packages/invitations/src/localResolver.test.ts lib/invitations/tokenFormat.test.ts lib/invitations/destination.test.ts lib/invitations/signInReturn.test.ts lib/journey/invitationAcceptance.test.ts"
   },
   "dependencies": {
     "@avatark/account": "file:avatark-account-0.1.1.tgz",
+    "@avatark/invitations": "workspace:*",
     "@avatark/product-registry": "workspace:*",
     "@supabase/ssr": "^0.12.1",
     "@supabase/supabase-js": "^2.110.5",

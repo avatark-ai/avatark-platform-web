@@ -11,6 +11,9 @@ importers:
       '@avatark/account':
         specifier: file:avatark-account-0.1.1.tgz
         version: file:avatark-account-0.1.1.tgz(next@16.2.10(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@avatark/invitations':
+        specifier: workspace:*
+        version: link:packages/invitations
       '@avatark/product-registry':
         specifier: workspace:*
         version: link:packages/product-registry
@@ -57,6 +60,12 @@ importers:
       tailwindcss:
         specifier: ^4
         version: 4.3.2
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/invitations:
+    devDependencies:
       typescript:
         specifier: ^5
         version: 5.9.3

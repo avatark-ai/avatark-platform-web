@@ -1,0 +1,19 @@
+{
+  "name": "@avatark/invitations",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared, framework-agnostic invitation contract -- ArenaK produces invitations, every other AvatarK product (Echo, StreamK, GameK, CinemaK, future ones) consumes them through this same typed boundary.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "test": "node --experimental-strip-types --test src/validation.test.ts src/localResolver.test.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  }
+}

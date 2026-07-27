@@ -1,5 +1,6 @@
 import { isIntentionId, type IntentionId } from "@/lib/onboarding/intentions";
 import { createClient } from "@/lib/supabase/client";
+import { shouldSkipInvitationAcceptance } from "./invitationAcceptance.ts";
 
 export interface JourneyContext {
   intention: IntentionId | null;
@@ -10,6 +11,13 @@ export interface JourneyContext {
   // has been verified server-side (see lib/onboarding/receipt.ts and
   // app/continue/page.tsx). Never set from a client-supplied flag.
   practiceCompletedAt: string | null;
+  // Set only once, by recordInvitationAcceptance below, the first time a
+  // signed-in visitor accepts a given invitation token (see
+  // lib/invitations/). Preserves lineage (Invitation -> Echo -> Practice
+  // -> Completion -> Journey) without a second, invitation-specific
+  // table -- same convention as every other JourneyContext field.
+  invitationId: string | null;
+  invitationAcceptedAt: string | null;
 }
 
 export const EMPTY_JOURNEY_CONTEXT: JourneyContext = {
@@ -18,6 +26,8 @@ export const EMPTY_JOURNEY_CONTEXT: JourneyContext = {
   startedAt: null,
   lastSeenAt: null,
   practiceCompletedAt: null,
+  invitationId: null,
+  invitationAcceptedAt: null,
 };
 
 // auth.users.user_metadata is Supabase's own existing, always-present
@@ -41,6 +51,8 @@ export function readJourneyContext(metadata: unknown): JourneyContext {
     startedAt: typeof raw.startedAt === "string" ? raw.startedAt : null,
     lastSeenAt: typeof raw.lastSeenAt === "string" ? raw.lastSeenAt : null,
     practiceCompletedAt: typeof raw.practiceCompletedAt === "string" ? raw.practiceCompletedAt : null,
+    invitationId: typeof raw.invitationId === "string" ? raw.invitationId : null,
+    invitationAcceptedAt: typeof raw.invitationAcceptedAt === "string" ? raw.invitationAcceptedAt : null,
   };
 }
 
@@ -80,6 +92,8 @@ export async function recordIntentionContext(
     startedAt: current.startedAt ?? new Date().toISOString(),
     lastSeenAt: current.lastSeenAt,
     practiceCompletedAt: current.practiceCompletedAt,
+    invitationId: current.invitationId,
+    invitationAcceptedAt: current.invitationAcceptedAt,
   };
 
   await withTimeout(
@@ -100,6 +114,36 @@ export async function touchLastSeen(
     supabase.auth.updateUser({ data: { journey: merged } }),
     10000,
     "saving your visit"
+  );
+  return merged;
+}
+
+// Records that a signed-in visitor accepted a given invitation --
+// called from the client-side invitation accept gate (see
+// components/echo/invitations/InvitationAcceptGate.tsx) once
+// resolveClientPrincipal confirms a session exists. Idempotent per
+// token: re-visiting the same already-accepted invitation (e.g.
+// refreshing the preview page) must never overwrite the original
+// acceptedAt with a later one, so this is a real no-op, not just a
+// harmless re-write, when `invitationId` already matches.
+export async function recordInvitationAcceptance(
+  supabase: SupabaseAuthClient,
+  current: JourneyContext,
+  invitationId: string
+): Promise<JourneyContext> {
+  if (shouldSkipInvitationAcceptance(current, invitationId)) return current;
+  const merged: JourneyContext = {
+    ...current,
+    invitationId,
+    invitationAcceptedAt: new Date().toISOString(),
+    // Accepting an invitation is itself a real beginning -- same as
+    // recordIntentionContext, never overwrites an already-set startedAt.
+    startedAt: current.startedAt ?? new Date().toISOString(),
+  };
+  await withTimeout(
+    supabase.auth.updateUser({ data: { journey: merged } }),
+    10000,
+    "saving your invitation"
   );
   return merged;
 }

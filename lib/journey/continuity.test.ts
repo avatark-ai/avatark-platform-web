@@ -16,6 +16,8 @@ const EMPTY: JourneyContext = {
   startedAt: null,
   lastSeenAt: null,
   practiceCompletedAt: null,
+  invitationId: null,
+  invitationAcceptedAt: null,
 };
 
 function context(overrides: Partial<JourneyContext>): JourneyContext {
