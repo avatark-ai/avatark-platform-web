@@ -4,7 +4,9 @@ import type { ReactNode } from "react";
 import { classifyInvitationStatus } from "@avatark/invitations";
 import { echoInvitationResolver } from "@/lib/invitations/echoResolver";
 import { invitationContinueHref, previewInvitationDestination } from "@/lib/invitations/destination";
+import { describeInvitation } from "@/lib/invitations/metadata";
 import { InvitationAcceptGate } from "@/components/echo/invitations/InvitationAcceptGate";
+import { InvitationMetadataPanel } from "@/components/echo/invitations/InvitationMetadataPanel";
 import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
 import { DISCOVER_HREF, START_HERE_HREF } from "@/lib/echo/links";
 
@@ -148,6 +150,7 @@ export default async function EnterInvitationTokenPage({
   }
 
   const finalHref = intention ? `${continueHref}&intention=${encodeURIComponent(intention)}` : continueHref;
+  const answers = describeInvitation(invitation, preview);
 
   return (
     <EchoPageShell layout="plain">
@@ -159,6 +162,7 @@ export default async function EnterInvitationTokenPage({
         <p className="text-lg leading-8" style={{ color: "var(--text-dim)" }}>
           {preview.body}
         </p>
+        <InvitationMetadataPanel answers={answers} />
         <InvitationAcceptGate token={token} continueHref={finalHref} />
       </div>
     </EchoPageShell>
