@@ -5,6 +5,10 @@ import { classifyInvitationStatus } from "@avatark/invitations";
 import { echoInvitationResolver } from "@/lib/invitations/echoResolver";
 import { invitationContinueHref, previewInvitationDestination } from "@/lib/invitations/destination";
 import { describeInvitation } from "@/lib/invitations/metadata";
+import { manifestFromInvitation } from "@/lib/journey/manifest";
+import { recoverJourney } from "@/lib/journey/recovery";
+import { practiceIntroLink } from "@/lib/journey/deepLinks";
+import { isPracticeHandoffAvailable } from "@/lib/onboarding/practiceHandoff";
 import { InvitationAcceptGate } from "@/components/echo/invitations/InvitationAcceptGate";
 import { InvitationMetadataPanel } from "@/components/echo/invitations/InvitationMetadataPanel";
 import { InvitationJourneyDiagram } from "@/components/echo/invitations/InvitationJourneyDiagram";
@@ -93,8 +97,33 @@ export default async function EnterInvitationTokenPage({
   }
 
   const status = classifyInvitationStatus(invitation, new Date());
+  const preview = previewInvitationDestination(invitation.destination);
+  const practiceSlug =
+    invitation.destination.type === "practice" || invitation.destination.type === "echo_practice"
+      ? invitation.destination.practiceSlug
+      : null;
 
-  if (status !== "pending") {
+  // The single decision object for this journey (lib/journey/manifest.ts),
+  // fed into recoverJourney (lib/journey/recovery.ts) below -- see that
+  // module for why "watchFirstAvailable: true" is an inert default here
+  // (manifestFromInvitation never sets watchFirstId, so that branch of
+  // recoverJourney can never fire for this manifest).
+  const journeyManifest = manifestFromInvitation(token, invitation, invitation.destination, preview);
+  const recovery = recoverJourney({
+    invitationStatus: status,
+    manifest: journeyManifest,
+    practiceAvailable: practiceSlug ? isPracticeHandoffAvailable(practiceSlug) : true,
+    watchFirstAvailable: true,
+  });
+
+  // recoverJourney only ever returns "expired_invitation"/"invalid_invitation"
+  // when the invitation status itself isn't "pending" -- never for any
+  // other reason -- so this is an exact replacement for a raw `status !==
+  // "pending"` check. The per-status copy below stays keyed on `status`
+  // (not `recovery.message`), since recovery's reason buckets are coarser
+  // than these five distinct messages -- only the gate comes from
+  // recovery, the wording doesn't.
+  if (recovery?.reason === "expired_invitation" || recovery?.reason === "invalid_invitation") {
     let title: string;
     let body: string;
     switch (status) {
@@ -127,8 +156,6 @@ export default async function EnterInvitationTokenPage({
     );
   }
 
-  const preview = previewInvitationDestination(invitation.destination);
-
   if (!preview.available) {
     return (
       <EchoPageShell layout="plain">
@@ -150,12 +177,18 @@ export default async function EnterInvitationTokenPage({
     );
   }
 
-  const finalHref = intention ? `${continueHref}&intention=${encodeURIComponent(intention)}` : continueHref;
+  // Practice/echo_practice destinations build their href via the shared
+  // deep link builder (lib/journey/deepLinks.ts) -- byte-identical to the
+  // manual `${continueHref}&intention=...` this replaces, verified against
+  // deepLinks.test.ts. The "echo" case has no per-route builder in
+  // deepLinks.ts (only /enter, /watch-first, /witness, /practice, /journey
+  // are covered), so it keeps building its href the original way.
+  const finalHref = practiceSlug
+    ? practiceIntroLink(practiceSlug, { invitation: token, intention: intention ?? undefined }).href
+    : intention
+      ? `${continueHref}&intention=${encodeURIComponent(intention)}`
+      : continueHref;
   const answers = describeInvitation(invitation, preview);
-  const practiceSlug =
-    invitation.destination.type === "practice" || invitation.destination.type === "echo_practice"
-      ? invitation.destination.practiceSlug
-      : null;
 
   return (
     <EchoPageShell layout="plain">
