@@ -3,6 +3,7 @@ import type { InvitationDestination } from "@avatark/invitations";
 // repo's plain `node --test` runner, same as lib/invitations/tokenFormat.ts.
 import { getEchoBySlug, getPracticeBySlug, getStoryBySlug } from "../content/echo.ts";
 import { isPracticeHandoffAvailable } from "../onboarding/practiceHandoff.ts";
+import { isStreamHandoffAvailable } from "../onboarding/streamHandoff.ts";
 
 /**
  * True when a destination either doesn't name a specific practice at
@@ -86,12 +87,21 @@ export function previewInvitationDestination(destination: InvitationDestination)
       };
     case "story": {
       const story = getStoryBySlug(destination.storySlug);
-      // Even a story that exists in content has no dedicated per-story
-      // Echo route yet (see docs/ECHO_ROUTE_MAP.md's "/watch/[episode]:
-      // Deferred") -- honest either way, not just when content is missing.
-      return story
-        ? { title: story.title, body: story.description, available: false }
-        : { title: "Story unavailable", body: "This story isn't available right now.", available: false };
+      if (!story) {
+        return { title: "Story unavailable", body: "This story isn't available right now.", available: false };
+      }
+      // Two separate gates must both clear before this is ever
+      // `available: true`: a verified StreamK content mapping (see
+      // lib/onboarding/streamHandoff.ts -- the seam is prepared, the
+      // registry is currently empty) and a real per-story Echo route
+      // (see docs/ECHO_ROUTE_MAP.md's "/watch/[episode]: Deferred" --
+      // doesn't exist yet either). Stays honestly unavailable regardless
+      // of which one is still missing, same as the practice case above
+      // never claims "available" only to dead-end one click later.
+      const body = isStreamHandoffAvailable(story.slug)
+        ? `${story.description} This story doesn't have a dedicated Echo route to continue to yet.`
+        : story.description;
+      return { title: story.title, body, available: false };
     }
     case "episode":
       return {
@@ -125,8 +135,13 @@ export function invitationContinueHref(destination: InvitationDestination, token
     }
     case "cohort":
     case "event":
-    case "story":
     case "episode":
+      return null;
+    // No per-story Echo route exists yet regardless of StreamK mapping
+    // status (see previewInvitationDestination's story case) -- stays a
+    // dead end until that route ships, not something this seam alone
+    // can unblock.
+    case "story":
       return null;
   }
 }
