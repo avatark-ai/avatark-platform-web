@@ -3,6 +3,7 @@
 import { Suspense, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
+import { enterInvitationLink } from "@/lib/journey/deepLinks";
 
 // RC6A -- fixes the homepage "Enter an Invitation" CTA, which linked to
 // bare /enter with no page. Does not duplicate /enter/[token]'s
@@ -26,9 +27,7 @@ function EnterInvitationForm() {
       setError("Enter the code from your invitation to continue.");
       return;
     }
-    const url = new URL(`/enter/${encodeURIComponent(trimmed)}`, "https://placeholder.invalid");
-    if (intention) url.searchParams.set("intention", intention);
-    router.push(`${url.pathname}${url.search}`);
+    router.push(enterInvitationLink(trimmed, { intention: intention ?? undefined }).href);
   }
 
   return (
