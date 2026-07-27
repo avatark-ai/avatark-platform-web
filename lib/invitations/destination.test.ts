@@ -1,7 +1,25 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { invitationContinueHref, previewInvitationDestination } from "./destination.ts";
+import { invitationContinueHref, invitationMatchesWitness, previewInvitationDestination } from "./destination.ts";
 import type { InvitationDestination } from "@avatark/invitations";
+
+test("invitationMatchesWitness: a practice invitation only matches its own named practice", () => {
+  const destination: InvitationDestination = { type: "practice", practiceSlug: "the-promise-to-myself" };
+  assert.equal(invitationMatchesWitness(destination, "the-promise-to-myself"), true);
+  assert.equal(invitationMatchesWitness(destination, "some-other-practice"), false);
+});
+
+test("invitationMatchesWitness: an echo_practice invitation only matches its own named practice", () => {
+  const destination: InvitationDestination = { type: "echo_practice", echoSlug: "the-returner", practiceSlug: "the-promise-to-myself" };
+  assert.equal(invitationMatchesWitness(destination, "the-promise-to-myself"), true);
+  assert.equal(invitationMatchesWitness(destination, "some-other-practice"), false);
+});
+
+test("invitationMatchesWitness: destinations that don't name a specific practice never conflict with witness", () => {
+  assert.equal(invitationMatchesWitness({ type: "echo", echoSlug: "the-returner" }, "anything"), true);
+  assert.equal(invitationMatchesWitness({ type: "cohort", cohortId: "c1" }, "anything"), true);
+  assert.equal(invitationMatchesWitness({ type: "event", eventId: "e1" }, "anything"), true);
+});
 
 test("practice destination previews real content but is honestly unavailable when the PrometheusK handoff isn't (never substitutes another practice)", () => {
   // "the-promise-to-myself" is Echo's one real seed practice, and its

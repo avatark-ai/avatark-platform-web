@@ -6,6 +6,7 @@ import { buildSafeReturnTo, resolvePracticeHandoffTarget } from '@/lib/onboardin
 import { isIntentionId } from '@/lib/onboarding/intentions'
 import { ONBOARDING_STATE_COOKIE } from '@/lib/onboarding/stateCookie'
 import { echoInvitationResolver } from '@/lib/invitations/echoResolver'
+import { invitationMatchesWitness } from '@/lib/invitations/destination'
 
 // RC5 -- the sole place this repo generates the onboarding state/nonce
 // and sets the cookie /continue later reads to verify a completion
@@ -43,7 +44,17 @@ export async function GET(request: NextRequest) {
   // state instead, same principle as the practice-existence check above.
   if (invitation) {
     const resolved = await echoInvitationResolver.resolve(invitation)
-    if (!resolved || classifyInvitationStatus(resolved, new Date()) !== 'pending') {
+    // An invitation naming a specific practice (practice/echo_practice)
+    // must never be honored for a DIFFERENT `witness` -- otherwise a
+    // mismatched pairing (tampered URL, or a future caller bug) would
+    // let an invitation for one practice silently authorize a handoff to
+    // another. Never checked before now, because no practice mapping
+    // existed yet for this to actually matter; still a real gap in the
+    // "never substitute another practice" guarantee, not just a
+    // theoretical one, since the very next practice mapping added would
+    // have been exploitable through it.
+    const usable = !!resolved && classifyInvitationStatus(resolved, new Date()) === 'pending' && invitationMatchesWitness(resolved.destination, witness)
+    if (!usable) {
       return NextResponse.redirect(`${origin}/enter/${encodeURIComponent(invitation)}`)
     }
   }

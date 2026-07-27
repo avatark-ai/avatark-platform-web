@@ -4,6 +4,21 @@ import type { InvitationDestination } from "@avatark/invitations";
 import { getEchoBySlug, getPracticeBySlug, getStoryBySlug } from "../content/echo.ts";
 import { isPracticeHandoffAvailable } from "../onboarding/practiceHandoff.ts";
 
+/**
+ * True when a destination either doesn't name a specific practice at
+ * all (nothing to enforce) or names exactly the practice slug being
+ * launched. Used by /api/onboarding/begin to make sure an invitation for
+ * one practice can never authorize a handoff to a different one -- the
+ * "never substitute another practice" guarantee, enforced against the
+ * invitation itself, not just against practice-existence.
+ */
+export function invitationMatchesWitness(destination: InvitationDestination, witness: string): boolean {
+  if (destination.type === "practice" || destination.type === "echo_practice") {
+    return destination.practiceSlug === witness;
+  }
+  return true;
+}
+
 export interface DestinationPreview {
   title: string;
   body: string;
