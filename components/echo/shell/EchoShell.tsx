@@ -3,9 +3,11 @@
 // The one place that decides whether a given path/host combination gets
 // the Echo shell (header, footer, bottom nav) at all. Institutional pages
 // (/, when the resolved site is institutional; /founder and its sub-routes;
-// /foundation; /canon; /ecosystem; /roadmap) and the admin surface
-// (/admin/*, which renders its own AdminNav) render only their own
-// children, exactly like the old components/SiteHeader.tsx's
+// /foundation; /canon; /ecosystem; /roadmap), the admin surface
+// (/admin/*, which renders its own AdminNav), and the unlinked developer
+// tooling under /dev/* (Integration Sprint RC1's dashboard/simulator --
+// a developer tool, not a participant-facing Echo page) render only
+// their own children, exactly like the old components/SiteHeader.tsx's
 // self-exclusion -- generalized here to be host-aware for `/`, since that
 // path alone can be either experience depending on the resolved site.
 import { usePathname } from "next/navigation";
@@ -33,7 +35,10 @@ export function EchoShell({ site, children }: { site: SiteId; children: React.Re
   const pathname = usePathname();
 
   const isEchoRoute =
-    !pathname.startsWith("/admin") && !isInstitutionalOnlyPath(pathname) && !(pathname === "/" && site === "institutional");
+    !pathname.startsWith("/admin") &&
+    !pathname.startsWith("/dev") &&
+    !isInstitutionalOnlyPath(pathname) &&
+    !(pathname === "/" && site === "institutional");
 
   if (!isEchoRoute) return <>{children}</>;
 
