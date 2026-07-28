@@ -22,7 +22,7 @@ export function ProductStatusCard({
         boxShadow: active ? "0 0 0 1px var(--gold)" : undefined,
       }}
     >
-      <div className="flex items-center justify-between gap-2">
+      <div className={compact ? "flex flex-col items-start gap-1.5" : "flex items-center justify-between gap-2"}>
         <span className="text-sm font-semibold" style={{ color: "var(--paper)" }}>
           {entry.stage}
         </span>
