@@ -4,6 +4,7 @@ import {
   ECOSYSTEM_STAGE_ORDER,
   ecosystemStageForProduct,
   healthStatusFromAdapterResult,
+  STAGE_OWNER,
 } from "./ecosystemMap.ts";
 import { INTEGRATION_STAGE_ORDER } from "./stages.ts";
 
@@ -37,4 +38,10 @@ test("healthStatusFromAdapterResult: available + accepted reads as ready", () =>
 
 test("healthStatusFromAdapterResult: available + not accepted reads as waiting", () => {
   assert.equal(healthStatusFromAdapterResult({ accepted: false, availability: "available", message: "" }), "waiting");
+});
+
+test("STAGE_OWNER names every ecosystem stage, never a blank", () => {
+  for (const stage of ECOSYSTEM_STAGE_ORDER) {
+    assert.ok(STAGE_OWNER[stage]?.length > 0, `${stage} has no owner`);
+  }
 });

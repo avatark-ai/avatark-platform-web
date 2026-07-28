@@ -70,3 +70,19 @@ export function healthStatusFromAdapterResult(result: AdapterDescribeResult): In
   if (result.availability === "not_implemented") return "missing_contract";
   return result.accepted ? "ready" : "waiting";
 }
+
+// Who owns fixing a gap at each stage -- for the Pending Actions/
+// Recommendations UX pass only, never a new integration claim. Only
+// states a repo name where this repo's own docs already confirm one
+// (PrometheusK -> prometheusk-web, Arena -> a separate dt4m-os repo, per
+// docs/INTEGRATION_READINESS_REPORT.md and handoffContracts.ts's own
+// comments); Stream/Cinema get a product name only, no invented repo.
+export const STAGE_OWNER: Record<EcosystemStageId, string> = {
+  Avatar: "This repo (avatark-platform-web)",
+  Echo: "This repo (avatark-platform-web)",
+  Prometheus: "PrometheusK (prometheusk-web)",
+  "Living Echo": "PrometheusK (prometheusk-web) -- Living Echo is its own internal record",
+  Arena: "ArenaK (separate dt4m-os repo)",
+  Stream: "StreamK",
+  Cinema: "CinemaK",
+};
