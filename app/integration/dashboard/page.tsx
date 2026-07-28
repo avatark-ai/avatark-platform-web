@@ -7,47 +7,32 @@ import { productForStep, boundaryCrossing } from "@/lib/integrations/stages";
 import { describeIntegrationHealth } from "@/lib/integrations/health";
 import { describeJourneySummary } from "@/lib/integrations/summary";
 import { completedBoundaryCrossings } from "@/lib/integrations/journeyHistory";
-import { ecosystemStageForProduct, healthStatusFromAdapterResult } from "@/lib/integrations/ecosystemMap";
-import { JourneyCard } from "@/components/integration/JourneyCard";
-import { EcosystemMap } from "@/components/integration/EcosystemMap";
-import { IntegrationHealthPanel } from "@/components/integration/IntegrationHealthPanel";
-import { TimelineCard, type TimelineEntryData } from "@/components/integration/TimelineCard";
-import { HandoffCard, type HandoffCardData } from "@/components/integration/HandoffCard";
-import { RecommendationCard } from "@/components/integration/RecommendationCard";
+import { ecosystemStageForProduct, healthStatusFromAdapterResult, STAGE_OWNER } from "@/lib/integrations/ecosystemMap";
+import type { TimelineEntryData } from "@/components/integration/TimelineCard";
+import type { HandoffCardData } from "@/components/integration/HandoffCard";
+import type { PendingActionData } from "@/components/integration/PendingActionRow";
+import { IntegrationDashboardClient } from "@/components/integration/IntegrationDashboardClient";
 
 export const metadata: Metadata = {
   title: "Integration Dashboard",
 };
 
-function SectionHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <h2 className="text-lg font-semibold" style={{ color: "var(--paper)" }}>
-      {children}
-    </h2>
-  );
-}
-
-function EmptyNote({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="text-sm" style={{ color: "var(--text-dim)" }}>
-      {children}
-    </p>
-  );
-}
-
 // A single representative example journey's read-out across the whole
 // ecosystem -- read-only, no backend, no persistence, no new APIs. Every
-// number/status here is computed live from the frozen Journey
-// Orchestrator (lib/journey/*) and Integration Layer (lib/integrations/*)
-// -- this page adds no new business logic, only assembles their existing
-// outputs into the sections/cards the mission asked for. The example
-// manifest below is deliberately placed mid-journey (at "reflection",
-// past Watch First and the practice intro) so every section has
-// something real to show, including the one honest blocker this repo's
-// own INTEGRATION_READINESS_REPORT.md already documents: Echo's one seed
-// practice ("the-promise-to-myself") has no verified PrometheusK mapping,
-// so `practiceAvailable` is false and the Overall Journey Status reads
-// "Blocked" -- not a bug in this page, a real, current ecosystem gap.
+// status here is computed live from the frozen Journey Orchestrator
+// (lib/journey/*) and Integration Layer (lib/integrations/*); this page
+// adds no new business logic, only assembles their outputs (plus the
+// small UX-only summary/action synthesis in describeJourneySummary and
+// below) for the client component that renders the interactive
+// Summary/Technical view toggle. The example manifest sits mid-journey
+// (at "reflection", past Watch First and the practice intro) so every
+// section has something real to show, including this repo's own
+// documented gap (INTEGRATION_READINESS_REPORT.md): Echo's one seed
+// practice ("the-promise-to-myself") has no verified PrometheusK
+// mapping, so Journey Status honestly reads "Blocked" -- not a bug,
+// a real, current ecosystem gap, scoped correctly (see summary.ts) so it
+// never implies Arena/Stream (both untouched by this journey yet) are
+// what's blocking.
 export default function IntegrationDashboardPage() {
   const manifest = createJourneyManifest({
     journeyId: "example-journey",
@@ -72,7 +57,7 @@ export default function IntegrationDashboardPage() {
     },
     health
   );
-  const { view, overallStatus, recommendations } = summary;
+  const { view, journeyStatus, integrationReadiness, primaryBlocker, recommendations } = summary;
   const currentStage = ecosystemStageForProduct(view.currentProduct);
 
   const timelineEntries: TimelineEntryData[] = JOURNEY_STEP_ORDER.map((step) => ({
@@ -80,7 +65,6 @@ export default function IntegrationDashboardPage() {
     product: productForStep(step),
     state: manifest.completedSteps.includes(step) ? "completed" : step === manifest.nextStep ? "current" : "pending",
   }));
-  const recentlyCompleted = timelineEntries.filter((entry) => entry.state === "completed").slice(-3);
 
   const completedHandoffs: HandoffCardData[] = completedBoundaryCrossings(manifest).map(({ from, to, crossing }) => {
     const handoff = crossing.buildHandoff(manifest);
@@ -98,30 +82,65 @@ export default function IntegrationDashboardPage() {
     };
   });
 
-  const pendingHandoffs: HandoffCardData[] = view.nextOptions.map((option) => {
-    const crossing = boundaryCrossing(view.currentStep, option.step);
-    const described = crossing ? crossing.describeWithAdapter(option.handoff) : null;
+  // Only the single immediate pending crossing (if any) gets the full
+  // HandoffCard treatment here -- every pending next option (crossing or
+  // not) also gets a one-line PendingActionRow below, but that row never
+  // repeats this card's payload/message, so the same transition can
+  // appear in both sections without duplicating content.
+  const pendingCrossingHandoffs: HandoffCardData[] = view.nextOptions
+    .filter((option) => option.crossesBoundary)
+    .map((option) => {
+      const crossing = boundaryCrossing(view.currentStep, option.step)!;
+      const described = crossing.describeWithAdapter(option.handoff);
+      return {
+        key: `pending-${view.currentStep}-${option.step}`,
+        kind: "pending",
+        from: view.currentStep,
+        to: option.step,
+        toProduct: option.product,
+        crossesBoundary: true,
+        handoff: option.handoff,
+        adapterStatus: healthStatusFromAdapterResult(described),
+        adapterMessage: described.message,
+      };
+    });
+
+  const crossProductHandoffs: HandoffCardData[] = [...completedHandoffs, ...pendingCrossingHandoffs];
+
+  const pendingActions: PendingActionData[] = view.nextOptions.map((option) => {
+    if (!option.crossesBoundary) {
+      return {
+        key: `action-${view.currentStep}-${option.step}`,
+        from: view.currentStep,
+        to: option.step,
+        product: option.product,
+        actionLabel: `Advance to ${option.step.replace(/_/g, " ")} within ${option.product}.`,
+        owner: STAGE_OWNER[ecosystemStageForProduct(option.product)],
+        status: null,
+      };
+    }
+    const crossing = boundaryCrossing(view.currentStep, option.step)!;
+    const described = crossing.describeWithAdapter(option.handoff);
+    const status = healthStatusFromAdapterResult(described);
+    const actionLabel =
+      status === "ready"
+        ? `Ready to hand off to ${option.product}.`
+        : status === "waiting"
+          ? `Waiting on ${option.product} content/config mapping.`
+          : `Not yet integrated with ${option.product}.`;
     return {
-      key: `pending-${view.currentStep}-${option.step}`,
-      kind: "pending",
+      key: `action-${view.currentStep}-${option.step}`,
       from: view.currentStep,
       to: option.step,
-      toProduct: option.product,
-      crossesBoundary: option.crossesBoundary,
-      handoff: option.handoff,
-      adapterStatus: described ? healthStatusFromAdapterResult(described) : null,
-      adapterMessage: described?.message ?? null,
+      product: option.product,
+      actionLabel,
+      owner: STAGE_OWNER[ecosystemStageForProduct(option.product)],
+      status,
     };
   });
 
-  const crossProductHandoffs = [...completedHandoffs, ...pendingHandoffs.filter((h) => h.crossesBoundary)];
-  const pendingActions = pendingHandoffs;
-
   return (
-    <main
-      className="mx-auto flex max-w-5xl flex-col gap-10 px-6 py-12"
-      style={{ background: "var(--midnight)", color: "var(--paper)" }}
-    >
+    <main className="mx-auto flex min-w-0 w-full max-w-6xl flex-col gap-8 px-6 py-12" style={{ background: "var(--midnight)", color: "var(--paper)" }}>
       <div className="flex flex-col gap-2">
         <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
           Integration Dashboard
@@ -133,79 +152,19 @@ export default function IntegrationDashboardPage() {
         </p>
       </div>
 
-      <JourneyCard
-        overallStatus={overallStatus}
+      <IntegrationDashboardClient
+        journeyStatus={journeyStatus}
+        integrationReadiness={integrationReadiness}
+        primaryBlocker={primaryBlocker}
         currentStage={currentStage}
         currentProduct={view.currentProduct}
         currentStep={view.currentStep}
+        health={health}
+        timelineEntries={timelineEntries}
+        crossProductHandoffs={crossProductHandoffs}
+        pendingActions={pendingActions}
+        recommendations={recommendations}
       />
-
-      <section className="flex flex-col gap-4">
-        <SectionHeading>Ecosystem Map</SectionHeading>
-        <EcosystemMap health={health} activeStage={currentStage} />
-      </section>
-
-      <section className="flex flex-col gap-4">
-        <SectionHeading>Integration Health</SectionHeading>
-        <IntegrationHealthPanel health={health} />
-      </section>
-
-      <section className="flex flex-col gap-3">
-        <SectionHeading>Journey Timeline</SectionHeading>
-        <div className="flex flex-col gap-2">
-          {timelineEntries.map((entry) => (
-            <TimelineCard key={entry.step} entry={entry} />
-          ))}
-        </div>
-      </section>
-
-      <section className="flex flex-col gap-3">
-        <SectionHeading>Recently Completed</SectionHeading>
-        {recentlyCompleted.length === 0 ? (
-          <EmptyNote>Nothing completed yet.</EmptyNote>
-        ) : (
-          <div className="flex flex-col gap-2">
-            {recentlyCompleted.map((entry) => (
-              <TimelineCard key={entry.step} entry={entry} />
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section className="flex flex-col gap-3">
-        <SectionHeading>Cross-product Handoffs</SectionHeading>
-        {crossProductHandoffs.length === 0 ? (
-          <EmptyNote>No cross-product handoffs apply to this journey&apos;s current position.</EmptyNote>
-        ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {crossProductHandoffs.map((data) => (
-              <HandoffCard key={data.key} data={data} />
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section className="flex flex-col gap-3">
-        <SectionHeading>Pending Actions</SectionHeading>
-        {pendingActions.length === 0 ? (
-          <EmptyNote>n/a -- this journey has reached its terminal step.</EmptyNote>
-        ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {pendingActions.map((data) => (
-              <HandoffCard key={data.key} data={data} />
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section className="flex flex-col gap-3">
-        <SectionHeading>Recommendations</SectionHeading>
-        <div className="flex flex-col gap-2">
-          {recommendations.map((recommendation) => (
-            <RecommendationCard key={recommendation.id} recommendation={recommendation} />
-          ))}
-        </div>
-      </section>
     </main>
   );
 }
