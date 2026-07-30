@@ -3,7 +3,20 @@
 import { Suspense, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
+import { EcosystemFlow } from "@/components/echo/shared/EcosystemFlow";
 import { enterInvitationLink } from "@/lib/journey/deepLinks";
+
+const INVITATION_ORIGINS = [
+  "an event",
+  "a workshop",
+  "a story",
+  "a group",
+  "a challenge",
+  "a QR code",
+  "a friend",
+  "an organization",
+  "a conference",
+] as const;
 
 // RC6A -- fixes the homepage "Enter an Invitation" CTA, which linked to
 // bare /enter with no page. Does not duplicate /enter/[token]'s
@@ -45,6 +58,17 @@ function EnterInvitationForm() {
         <p className="mt-4 text-lg leading-8" style={{ color: "var(--text-dim)" }}>
           An invitation connects you to an Echo, practice, cohort, event or
           story — someone passed this along, meant for you specifically.
+        </p>
+
+        <p className="mt-3 text-sm leading-6" style={{ color: "var(--text-dim)" }}>
+          Invitations aren&apos;t just email — this one may have come from{" "}
+          {INVITATION_ORIGINS.map((origin, index) => (
+            <span key={origin}>
+              {origin}
+              {index < INVITATION_ORIGINS.length - 2 ? ", " : index === INVITATION_ORIGINS.length - 2 ? ", or " : ""}
+            </span>
+          ))}
+          . Wherever it came from, the code below is all you need.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-3">
@@ -95,6 +119,10 @@ function EnterInvitationForm() {
           </a>{" "}
           instead.
         </p>
+
+        <div className="mt-10 border-t pt-6" style={{ borderColor: "var(--surface-line)" }}>
+          <EcosystemFlow />
+        </div>
       </div>
     </EchoPageShell>
   );

@@ -5,7 +5,15 @@ import { useSearchParams } from "next/navigation";
 import { useJourneySession } from "@/lib/journey/session";
 import { PRACTICE_LABEL, WITNESS_LABEL } from "@/lib/onboarding/witness";
 import { PROMETHEUSK_DISPLAY_NAME } from "@/lib/onboarding/prometheusk";
-import { DISCOVER_HREF, ENTER_INVITATION_HREF, LIVING_ECHO_HREF, WATCH_FIRST_HREF } from "@/lib/echo/links";
+import {
+  COMMUNITY_HREF,
+  DISCOVER_HREF,
+  ENTER_INVITATION_HREF,
+  LIVING_ECHO_HREF,
+  STORIES_HREF,
+  TODAY_HREF,
+  WATCH_FIRST_HREF,
+} from "@/lib/echo/links";
 import { Tabs, type TabDefinition } from "@/components/echo/shared/Tabs";
 import type { JourneyContext } from "@/lib/journey/state";
 
@@ -22,6 +30,32 @@ function EmptyPanel({ title, body }: { title: string; body: string }) {
       <p className="mt-1.5 text-sm leading-6" style={{ color: "var(--text-dim)" }}>
         {body}
       </p>
+    </div>
+  );
+}
+
+// A single tile in the Living Echo summary -- a condensed, one-line-body
+// version of what each Overview link points to. Everything summarized;
+// the deep link is where the real detail lives (a My Echo tab, or
+// PrometheusK itself for practice/reflection detail). Never fabricates
+// activity: `body` is always computed from real JourneyContext fields or
+// is an honest "nothing yet" line, same discipline as EmptyPanel above.
+function SummaryTile({ eyebrow, body, linkHref, linkLabel }: { eyebrow: string; body: string; linkHref: string; linkLabel: string }) {
+  return (
+    <div className="flex flex-col gap-2 rounded-2xl border p-5" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
+      <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
+        {eyebrow}
+      </p>
+      <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
+        {body}
+      </p>
+      <Link
+        href={linkHref}
+        className="mt-1 w-fit text-sm font-semibold link-underline-draw focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+        style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
+      >
+        {linkLabel} →
+      </Link>
     </div>
   );
 }
@@ -77,7 +111,7 @@ export function MyEchoView({ context, initialTabId }: { context: JourneyContext;
       id: "overview",
       label: "Overview",
       content: hasActivity ? (
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-6">
           <p className="max-w-md text-lg leading-8" style={{ color: "var(--paper)" }}>
             My Echo is not a profile or a score — it&apos;s a record of what you&apos;ve practiced, reflected on, and
             begun to carry forward.
@@ -89,6 +123,53 @@ export function MyEchoView({ context, initialTabId }: { context: JourneyContext;
           >
             View Living Echo <span aria-hidden="true">→</span>
           </Link>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <SummaryTile
+              eyebrow="Recent Practices"
+              body={
+                context.witness
+                  ? `You've borrowed and begun: ${WITNESS_LABEL}.`
+                  : "Nothing borrowed yet — practices you take up from an Echo will show up here."
+              }
+              linkHref="?tab=practices"
+              linkLabel="View Practices"
+            />
+            <SummaryTile
+              eyebrow="Recent Reflections"
+              body={`Written during your practice on ${PROMETHEUSK_DISPLAY_NAME}. A summary appears here once there's more history to show.`}
+              linkHref="?tab=reflections"
+              linkLabel="View Reflections"
+            />
+            <SummaryTile
+              eyebrow="Latest Invitation"
+              body={
+                context.invitationAcceptedAt
+                  ? `Accepted on ${formatDate(context.invitationAcceptedAt)}.`
+                  : "No invitation on record yet — accepting one links it to your Echo Timeline."
+              }
+              linkHref="?tab=timeline"
+              linkLabel="View Echo Timeline"
+            />
+            <SummaryTile
+              eyebrow="Communities"
+              body="Challenges, groups, cohorts and recognition — practiced together, powered by ArenaK."
+              linkHref={COMMUNITY_HREF}
+              linkLabel="Explore Community"
+            />
+            <SummaryTile
+              eyebrow="Recent Stories"
+              body="Stories shared by others who passed a practice forward, published through StreamK."
+              linkHref={STORIES_HREF}
+              linkLabel="Watch Stories"
+            />
+            <SummaryTile
+              eyebrow="Current Recommendations"
+              body="Today already knows what's next for you, computed from where your journey actually is."
+              linkHref={TODAY_HREF}
+              linkLabel="See Today"
+            />
+          </div>
         </div>
       ) : (
         <BeginningState />
@@ -96,9 +177,22 @@ export function MyEchoView({ context, initialTabId }: { context: JourneyContext;
     },
     {
       id: "timeline",
-      label: "Timeline",
+      label: "Echo Timeline",
       content: context.startedAt ? (
         <ol className="flex flex-col gap-6">
+          {context.invitationAcceptedAt && (
+            <li className="flex gap-4">
+              {TIMELINE_DOT(true)}
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
+                  {formatDate(context.invitationAcceptedAt)}
+                </p>
+                <p className="mt-1 text-base" style={{ color: "var(--paper)" }}>
+                  Accepted an invitation.
+                </p>
+              </div>
+            </li>
+          )}
           <li className="flex gap-4">
             {TIMELINE_DOT(true)}
             <div>
@@ -219,7 +313,12 @@ export function MyEchoView({ context, initialTabId }: { context: JourneyContext;
       </p>
 
       <div className="mt-12">
-        <Tabs tabs={tabs} initialTabId={initialTabId} />
+        {/* Keyed on the requested tab: a SummaryTile link on this same
+            page only changes the `tab` query param (no remount by
+            default), but Tabs' active-tab state is only ever seeded
+            once, on mount, from initialTabId -- keying forces a fresh
+            Tabs instance so those links actually switch tabs. */}
+        <Tabs key={initialTabId ?? "overview"} tabs={tabs} initialTabId={initialTabId} />
       </div>
     </div>
   );

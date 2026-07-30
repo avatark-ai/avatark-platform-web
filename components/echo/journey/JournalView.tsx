@@ -71,8 +71,8 @@ export function JournalView({ context }: { context: JourneyContext }) {
       </p>
       <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Your journal</h1>
       <p className="mt-2 max-w-md text-lg leading-8" style={{ color: "var(--text-dim)" }}>
-        Written reflections happen during your practice on {PROMETHEUSK_DISPLAY_NAME}. This page collects what
-        actually happened.
+        This journal is collected automatically from your reflections in {PROMETHEUSK_DISPLAY_NAME}. AvatarK
+        summarizes what happened here — {PROMETHEUSK_DISPLAY_NAME} is where reflections are actually written.
       </p>
 
       <div className="mt-8 flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Filter journal entries">

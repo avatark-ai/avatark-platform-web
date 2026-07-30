@@ -114,7 +114,7 @@ export const PRIMARY_CATEGORIES: EchoPrimaryCategory[] = [
     context: [
       { label: "My Echo", href: MY_ECHO_HREF },
       { label: "Journal", href: JOURNAL_HREF },
-      { label: "Progress", href: MY_JOURNEY_HREF },
+      { label: "Milestones", href: MY_JOURNEY_HREF },
       { label: "Account", href: ACCOUNT_HREF },
     ],
   },

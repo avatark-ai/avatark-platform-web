@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
-import { ENTER_INVITATION_HREF, SIGN_IN_HREF, WATCH_FIRST_HREF } from "@/lib/echo/links";
+import { ENTER_INVITATION_HREF, MY_ECHO_HREF, SIGN_IN_HREF, WATCH_FIRST_HREF } from "@/lib/echo/links";
 import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
+import { EcosystemFlow } from "@/components/echo/shared/EcosystemFlow";
+import { useSignedInIdentity } from "@/lib/auth/useSignedInIdentity";
 
 const CHOICES = [
   {
@@ -24,6 +28,9 @@ const CHOICES = [
 ] as const;
 
 export function StartHere() {
+  const identity = useSignedInIdentity();
+  const signedIn = identity.status === "signed_in";
+
   return (
     <EchoPageShell layout="plain">
       <div className={`flex flex-col gap-6 ${ECHO_READING_WIDTH_CLASS.narrow}`}>
@@ -31,6 +38,22 @@ export function StartHere() {
         <p className="text-lg leading-8" style={{ color: "var(--text-dim)" }}>
           Echo helps you learn from lived experience, turn insight into practice, and preserve what changes.
         </p>
+
+        {signedIn && (
+          <div className="flex flex-col items-start gap-3 rounded-2xl border p-5" style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}>
+            <p className="text-sm" style={{ color: "var(--text-dim)" }}>
+              You are signed in as <span className="font-semibold" style={{ color: "var(--paper)" }}>{identity.displayName}</span>.
+            </p>
+            <Link
+              href={MY_ECHO_HREF}
+              className="rounded-full px-6 py-2.5 text-center text-sm font-semibold echo-cta-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
+            >
+              Continue My Echo →
+            </Link>
+          </div>
+        )}
+
         <p className="text-base font-semibold" style={{ color: "var(--paper)" }}>
           How would you like to begin?
         </p>
@@ -63,16 +86,22 @@ export function StartHere() {
           ))}
         </ul>
 
-        <p className="text-sm" style={{ color: "var(--text-dim)" }}>
-          Already have an account?{" "}
-          <Link
-            href={SIGN_IN_HREF}
-            className="font-semibold underline underline-offset-4 hover:no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
-          >
-            Sign in
-          </Link>
-        </p>
+        {!signedIn && identity.status !== "loading" && (
+          <p className="text-sm" style={{ color: "var(--text-dim)" }}>
+            Already have an account?{" "}
+            <Link
+              href={SIGN_IN_HREF}
+              className="font-semibold underline underline-offset-4 hover:no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{ color: "var(--gold)", outlineColor: "var(--gold)" }}
+            >
+              Sign in
+            </Link>
+          </p>
+        )}
+
+        <div className="border-t pt-6" style={{ borderColor: "var(--surface-line)" }}>
+          <EcosystemFlow />
+        </div>
       </div>
     </EchoPageShell>
   );

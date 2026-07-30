@@ -10,11 +10,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { resolveClientPrincipal, type ClientPrincipalResult } from "@/lib/auth/resolveClientPrincipal";
-import { ACCOUNT_HREF, SIGN_IN_HREF, START_HERE_HREF } from "@/lib/echo/links";
+import { SIGN_IN_HREF, START_HERE_HREF } from "@/lib/echo/links";
 import { getActiveCategory, PRIMARY_CATEGORIES, type EchoPrimaryCategory } from "@/lib/echo/nav";
 import { useEchoMobileMenu } from "./EchoShellState";
-
-const ACCOUNT_MOUNT_ENABLED = process.env.NEXT_PUBLIC_ACCOUNT_MOUNT_ENABLED === "true";
+import { EchoAvatarMenu } from "./EchoAvatarMenu";
 
 const LINK_CLASS =
   "rounded-sm text-sm font-medium tracking-tight transition-colors hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
@@ -159,11 +158,7 @@ export function EchoHeader() {
 
         <div className="hidden items-center gap-4 lg:flex">
           {signedIn ? (
-            ACCOUNT_MOUNT_ENABLED && (
-              <Link href={ACCOUNT_HREF} className={LINK_CLASS} style={{ color: "var(--paper)", ...FOCUS_STYLE }}>
-                Account
-              </Link>
-            )
+            <EchoAvatarMenu />
           ) : principal.status !== "loading" ? (
             <>
               <Link href={signInHref(pathname)} className={LINK_CLASS} style={{ color: "var(--paper)", ...FOCUS_STYLE }}>
@@ -213,11 +208,7 @@ export function EchoHeader() {
 
           <div className="mt-3 flex flex-col gap-2 border-t pt-3" style={{ borderColor: "var(--surface-line)" }}>
             {signedIn ? (
-              ACCOUNT_MOUNT_ENABLED && (
-                <Link href={ACCOUNT_HREF} onClick={closeMobile} className={`py-2 ${LINK_CLASS}`} style={{ color: "var(--paper)", ...FOCUS_STYLE }}>
-                  Account
-                </Link>
-              )
+              <EchoAvatarMenu />
             ) : principal.status !== "loading" ? (
               <>
                 <Link href={signInHref(pathname)} onClick={closeMobile} className={`py-2 ${LINK_CLASS}`} style={{ color: "var(--gold)", ...FOCUS_STYLE }}>

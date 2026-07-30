@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { arenakHref } from "@/lib/echo/links";
 import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
+import { EcosystemFlow } from "@/components/echo/shared/EcosystemFlow";
 
 export const metadata: Metadata = {
   title: "Community — Echo",
@@ -14,6 +15,18 @@ const ENTRIES = [
   { href: "/community/events", title: "Events", body: "Live or scheduled moments for practice, reflection, conversation, or witness." },
   { href: "/community/cohorts", title: "Cohorts", body: "People moving through the same practice or threshold on a shared timeline." },
   { href: "/community/recognition", title: "Recognition", body: "Quiet acknowledgment of genuine practice, evidence, contribution, or service." },
+] as const;
+
+const ARENAK_CREATIONS = ["Events", "Workshops", "Challenges", "Groups", "Cohorts", "Recognition", "Invitations"] as const;
+
+const HOW_COMMUNITIES_BEGIN = [
+  { title: "Create an event in ArenaK", body: "An organizer sets up an event, workshop, challenge, group, or cohort." },
+  { title: "Generate invitations", body: "ArenaK issues invitations tied to that event." },
+  { title: "Invite friends, students, audience or attendees", body: "The organizer passes those invitations along however fits — a link, a QR code, a conference, a class." },
+  { title: "Participants arrive in AvatarK", body: "Each invitation lands here, in Echo, where the practice actually begins." },
+  { title: "Practice happens in PrometheusK", body: "The real work — completing a practice, reflecting on it — happens on PrometheusK." },
+  { title: "Results return to ArenaK", body: "Completion and contribution flow back to the event, challenge, or cohort that started it." },
+  { title: "Stories can later be published through StreamK", body: "What was learned can be shared forward as a story, for the next person to discover." },
 ] as const;
 
 export default function CommunityPage() {
@@ -29,6 +42,19 @@ export default function CommunityPage() {
         <p className="text-lg leading-8" style={{ color: "var(--text-dim)" }}>
           Once a practice has changed something, Community is where it can be shared — practiced together, tested
           in a challenge, or simply recognized. The natural next step after practice, not a separate destination.
+        </p>
+        <p className="text-base leading-7" style={{ color: "var(--text-dim)" }}>
+          Community experiences here are powered by <span className="font-semibold" style={{ color: "var(--paper)" }}>ArenaK</span> — the
+          engine organizers actually use to build them. ArenaK is where an organizer creates{" "}
+          {ARENAK_CREATIONS.map((item, index) => (
+            <span key={item}>
+              <span className="font-semibold" style={{ color: "var(--paper)" }}>
+                {item.toLowerCase()}
+              </span>
+              {index < ARENAK_CREATIONS.length - 2 ? ", " : index === ARENAK_CREATIONS.length - 2 ? " and " : ""}
+            </span>
+          ))}
+          . Most people arrive here through one of those invitations, not by browsing this page first.
         </p>
       </div>
 
@@ -54,6 +80,37 @@ export default function CommunityPage() {
             </p>
           </Link>
         ))}
+      </div>
+
+      <div className={`flex flex-col gap-5 border-t pt-8 ${ECHO_READING_WIDTH_CLASS.editorial}`} style={{ borderColor: "var(--surface-line)" }}>
+        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
+          How communities begin
+        </p>
+        <ol className="flex flex-col gap-4">
+          {HOW_COMMUNITIES_BEGIN.map((step, index) => (
+            <li key={step.title} className="flex gap-4">
+              <span
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs font-semibold"
+                style={{ borderColor: "var(--surface-line)", color: "var(--gold)" }}
+                aria-hidden="true"
+              >
+                {index + 1}
+              </span>
+              <div className="flex flex-col gap-0.5">
+                <p className="text-sm font-semibold" style={{ color: "var(--paper)" }}>
+                  {step.title}
+                </p>
+                <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
+                  {step.body}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <div className={ECHO_READING_WIDTH_CLASS.editorial}>
+        <EcosystemFlow />
       </div>
 
       <div className="flex flex-col items-start gap-2 border-t pt-6" style={{ borderColor: "var(--surface-line)" }}>

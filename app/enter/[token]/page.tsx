@@ -13,6 +13,7 @@ import { InvitationAcceptGate } from "@/components/echo/invitations/InvitationAc
 import { InvitationMetadataPanel } from "@/components/echo/invitations/InvitationMetadataPanel";
 import { InvitationJourneyDiagram } from "@/components/echo/invitations/InvitationJourneyDiagram";
 import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
+import { EcosystemFlow } from "@/components/echo/shared/EcosystemFlow";
 import { DISCOVER_HREF, START_HERE_HREF } from "@/lib/echo/links";
 
 export const metadata: Metadata = {
@@ -203,6 +204,9 @@ export default async function EnterInvitationTokenPage({
         <InvitationMetadataPanel answers={answers} />
         <InvitationJourneyDiagram currentStep="preview" />
         <InvitationAcceptGate token={token} continueHref={finalHref} practiceSlug={practiceSlug} />
+        <div className="border-t pt-6" style={{ borderColor: "var(--surface-line)" }}>
+          <EcosystemFlow />
+        </div>
       </div>
     </EchoPageShell>
   );

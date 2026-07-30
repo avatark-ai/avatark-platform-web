@@ -1,17 +1,10 @@
 'use client'
-import { Suspense, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { callbackErrorMessage } from '@/lib/auth/callbackError'
+import { fetchAuthProviderCapabilities } from '@/lib/auth/authProviderCapabilities'
 import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from '@/components/echo/shell/EchoPageShell'
-
-// Feature-flagged: Google OAuth is wired up end-to-end (this button plus
-// the callback's exchangeCodeForSession path both work for it), but no
-// Google client ID/secret is configured in Supabase Auth for any
-// environment yet. Hidden by default so real visitors aren't offered a
-// sign-in method that would fail -- flip NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED
-// to 'true' once Supabase's Google provider is actually configured.
-const GOOGLE_OAUTH_ENABLED = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED === 'true'
 
 function SignInForm() {
   const searchParams = useSearchParams()
@@ -27,6 +20,22 @@ function SignInForm() {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   const [googleStatus, setGoogleStatus] = useState<'idle' | 'redirecting' | 'error'>('idle')
+  // Dynamically reflects whatever the mounted auth module (Supabase Auth
+  // for this project) actually reports, rather than a hardcoded flag --
+  // see lib/auth/authProviderCapabilities.ts. Defaults to hidden until
+  // resolved, same "don't offer a method that might fail" caution the
+  // static flag used to provide.
+  const [googleAvailable, setGoogleAvailable] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    fetchAuthProviderCapabilities().then((capabilities) => {
+      if (!cancelled) setGoogleAvailable(capabilities.google)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   function buildCallbackUrl() {
     const callbackUrl = new URL('/auth/callback', window.location.origin)
@@ -72,7 +81,7 @@ function SignInForm() {
           </p>
         ) : (
           <div className="flex flex-col gap-3">
-            {GOOGLE_OAUTH_ENABLED && (
+            {googleAvailable && (
               <>
                 <button
                   onClick={handleGoogleSignIn}
