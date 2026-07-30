@@ -19,7 +19,7 @@ export function FounderChapterNav({ chapterId }: { chapterId: string }) {
   return (
     <nav
       aria-label="Founder chapter navigation"
-      className="mt-4 flex items-center justify-between border-t pt-6"
+      className="mt-10 flex items-center justify-between border-t pt-8"
       style={{ borderColor: 'var(--paper-line)' }}
     >
       {previous ? (

@@ -1,19 +1,18 @@
 import Link from 'next/link'
-import { CANON_GATEWAY_CARD_IDS, CANON_NAV_ITEMS } from '@/lib/content/canonNav'
+import { CANON_FUTURE_ITEMS, CANON_GATEWAY_CARD_IDS, CANON_NAV_ITEMS } from '@/lib/content/canonNav'
 import { RevealOnView } from '@/components/motion/RevealOnView'
 
 // Bridge from the Canon overview into the three reader pages -- these are
-// now local institutional routes, not canon.avatark.ai deep links, so a
-// click stays inside the institutional shell. Copy is sourced from
-// canonNav.ts so the destination matrix stays the single place these
-// routes/descriptions live. The one remaining external destination is the
-// explicit "Enter the Full Canon" CTA at the bottom, for readers who want
-// the complete legacy environment.
+// local institutional routes, so a click stays inside the institutional
+// shell. Copy is sourced from canonNav.ts so the destination matrix stays
+// the single place these routes/descriptions live. The Canon now lives
+// entirely inside AvatarK: there is no outbound "Enter the Full Canon" CTA
+// anymore. In its place, a "Coming Next" list names the living chapters
+// still being written into this gateway.
 export function CanonGateway() {
   const cards = CANON_GATEWAY_CARD_IDS.map((id) => CANON_NAV_ITEMS.find((item) => item.id === id)).filter(
     (item): item is (typeof CANON_NAV_ITEMS)[number] => item !== undefined && item.institutionalHref !== undefined
   )
-  const fullCanon = CANON_NAV_ITEMS.find((item) => item.id === 'explore-full-canon')
 
   return (
     <div>
@@ -35,16 +34,22 @@ export function CanonGateway() {
           </Link>
         ))}
       </RevealOnView>
-      {fullCanon?.legacyHref && (
-        <a
-          href={fullCanon.legacyHref}
-          aria-label={`${fullCanon.label} (opens canon.avatark.ai)`}
-          className="mt-6 inline-block rounded-md px-6 py-3 text-sm font-semibold transition hover:opacity-90 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-          style={{ background: 'var(--gold)', color: 'var(--midnight)', outlineColor: 'var(--ink)' }}
-        >
-          Enter the Full Canon →
-        </a>
-      )}
+
+      <div className="mt-10 border-t pt-8" style={{ borderColor: 'var(--paper-line)' }}>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+          Coming Next
+        </p>
+        <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-3">
+          {CANON_FUTURE_ITEMS.map((item) => (
+            <li key={item.id} className="text-sm font-medium" style={{ color: 'var(--ink-dim)' }}>
+              {item.label}
+            </li>
+          ))}
+        </ul>
+        <p className="mt-5 max-w-xl text-sm leading-6" style={{ color: 'var(--ink-dim)' }}>
+          These are living chapters that will appear here.
+        </p>
+      </div>
     </div>
   )
 }

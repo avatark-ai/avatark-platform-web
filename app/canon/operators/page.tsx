@@ -1,10 +1,8 @@
 import type { Metadata } from 'next'
 import { CanonPageLayout } from '@/components/foundation/canon/CanonPageLayout'
 import { CanonFormula } from '@/components/foundation/canon/CanonFormula'
-import { OpenInFullCanon } from '@/components/foundation/canon/OpenInFullCanon'
 import { RevealOnView } from '@/components/motion/RevealOnView'
 import { OPERATORS_CONTENT } from '@/lib/content/canonReaders'
-import { findCanonNavItem } from '@/lib/content/canonNav'
 
 export const metadata: Metadata = {
   title: 'Operators — The Canon',
@@ -12,7 +10,6 @@ export const metadata: Metadata = {
 }
 
 export default function OperatorsPage() {
-  const navItem = findCanonNavItem('operators')
   const { title, intro, operators, canonicalConstraint } = OPERATORS_CONTENT
 
   return (
@@ -64,8 +61,6 @@ export default function OperatorsPage() {
           {canonicalConstraint.note}
         </p>
       </div>
-
-      {navItem?.legacyHref && <OpenInFullCanon href={navItem.legacyHref} label="Open Operators in the Full Canon" />}
     </CanonPageLayout>
   )
 }

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ACCOUNT_HREF, START_HERE_HREF, WHY_AVATARK_HREF } from "@/lib/echo/links";
 
 const LINK_CLASS =
-  "rounded-sm text-sm transition-colors duration-150 hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
+  "rounded-sm text-sm transition-colors duration-200 hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
 const FOCUS_STYLE = { outlineColor: "var(--gold)" } as const;
 
 const ACCOUNT_MOUNT_ENABLED = process.env.NEXT_PUBLIC_ACCOUNT_MOUNT_ENABLED === "true";
@@ -45,7 +45,7 @@ export function EchoFooter() {
 
           <Link
             href={START_HERE_HREF}
-            className="group inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-[transform,box-shadow,opacity] duration-200 ease-out hover:-translate-y-0.5 hover:opacity-95 hover:shadow-[0_8px_20px_-8px_var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="group inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-[transform,box-shadow,opacity] duration-200 ease-[var(--motion-ease-settle)] hover:-translate-y-0.5 hover:opacity-95 hover:shadow-[0_8px_20px_-8px_var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ background: "var(--gold)", color: "var(--midnight)", outlineColor: "var(--gold)" }}
           >
             Begin My Echo

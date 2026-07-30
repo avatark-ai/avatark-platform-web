@@ -2,9 +2,7 @@ import type { Metadata } from 'next'
 import { CanonPageLayout } from '@/components/foundation/canon/CanonPageLayout'
 import { CanonFormula } from '@/components/foundation/canon/CanonFormula'
 import { CanonPairGrid } from '@/components/foundation/canon/CanonPairGrid'
-import { OpenInFullCanon } from '@/components/foundation/canon/OpenInFullCanon'
 import { DYNAMICS_CONTENT } from '@/lib/content/canonReaders'
-import { findCanonNavItem } from '@/lib/content/canonNav'
 
 export const metadata: Metadata = {
   title: 'Dynamics — The Canon',
@@ -12,7 +10,6 @@ export const metadata: Metadata = {
 }
 
 export default function DynamicsPage() {
-  const navItem = findCanonNavItem('dynamics')
   const { title, intro, dominanceDistributions, canonicalConstraint, stabilityAxes, regimes, transitions, imbalance, closing } =
     DYNAMICS_CONTENT
 
@@ -128,8 +125,6 @@ export default function DynamicsPage() {
           {closing.body}
         </p>
       </div>
-
-      {navItem?.legacyHref && <OpenInFullCanon href={navItem.legacyHref} label="Open Dynamics in the Full Canon" />}
     </CanonPageLayout>
   )
 }

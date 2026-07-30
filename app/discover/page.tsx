@@ -75,7 +75,7 @@ export default async function DiscoverPage({
           strip. Topics stays here since it's a filter *within* whichever
           view is active, not a view switch itself. */}
       <div className="flex flex-col gap-3">
-        <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
+        <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
           Topics
         </h2>
         <ThemeFilter themes={allThemes()} active={theme} view={view} />
@@ -142,7 +142,7 @@ export default async function DiscoverPage({
       {view === "topics" && (
         <>
           <section className="flex flex-col gap-8">
-            <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
+            <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
               Featured
             </h2>
 
@@ -175,7 +175,7 @@ export default async function DiscoverPage({
           {collections.length > 0 && (
             <section className="flex flex-col gap-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
+                <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
                   Collections
                 </h2>
                 <Link
@@ -196,7 +196,7 @@ export default async function DiscoverPage({
 
           <section className="flex flex-col gap-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
+              <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
                 Recently Added
               </h2>
               <Link
@@ -232,7 +232,7 @@ export default async function DiscoverPage({
           </section>
 
           <section className="flex flex-col gap-6 border-t pt-10" style={{ borderColor: "var(--surface-line)" }}>
-            <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-dim)" }}>
+            <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--gold)" }}>
               Continue Exploring
             </h2>
             <div className="grid gap-5 sm:grid-cols-3">

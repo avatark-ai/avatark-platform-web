@@ -6,12 +6,12 @@ import { usePathname } from 'next/navigation'
 import { CANON_FUTURE_ITEMS, CANON_INTERNAL_SECTION_IDS, CANON_NAV_ITEMS, type CanonNavItem } from '@/lib/content/canonNav'
 
 const PUBLISHED_ITEMS = CANON_NAV_ITEMS.filter((item) => item.group === 'published')
-const FULL_CANON_ITEM = CANON_NAV_ITEMS.find((item) => item.group === 'full-canon')
 
 // The persistent left rail used by every /canon/* route (see
-// CanonPageLayout.tsx). Three groups, same as the Canon rail spec:
-// Published routes/anchors, "More in the Canon" future chapters (visible,
-// muted, never linked), and a single Full Canon fallback.
+// CanonPageLayout.tsx). Two groups: Published routes/anchors, and "More in
+// the Canon" -- living chapters still being written, visible but never
+// linked. The Canon now lives entirely inside AvatarK, so there is no
+// external fallback destination in this rail.
 //
 // Active state is route-based for real pages (Sacred Geometry, Operators,
 // Dynamics, Alignment) via usePathname, same pattern as
@@ -114,27 +114,13 @@ export function CanonRail() {
                 className="rounded-full border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
                 style={{ borderColor: 'var(--paper-line)', color: 'var(--gold)' }}
               >
-                Soon
+                Growing
               </span>
-              <span className="sr-only">— this chapter of the Canon is forthcoming, not yet published</span>
+              <span className="sr-only">— this chapter of the Canon is being written, not yet published</span>
             </li>
           ))}
         </ul>
       </div>
-
-      {FULL_CANON_ITEM && FULL_CANON_ITEM.legacyHref && (
-        <div className="border-t pt-5" style={{ borderColor: 'var(--paper-line)' }}>
-          <a
-            href={FULL_CANON_ITEM.legacyHref}
-            aria-label={`${FULL_CANON_ITEM.label} (opens the complete Canon at canon.avatark.ai)`}
-            className="link-underline-draw inline-flex items-center gap-1.5 rounded-sm text-sm font-semibold transition-colors hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{ color: 'var(--gold)', outlineColor: 'var(--gold)' }}
-          >
-            {FULL_CANON_ITEM.label}
-            <span aria-hidden="true">↗</span>
-          </a>
-        </div>
-      )}
     </nav>
   )
 }

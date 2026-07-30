@@ -141,7 +141,7 @@ export function GrowthEngineCard({
           )
         ) : (
           <span className="text-sm font-semibold" style={{ color: 'var(--ink-dim)' }}>
-            {ctaLabel} (coming soon)
+            {ctaLabel} (in development)
           </span>
         )}
       </div>

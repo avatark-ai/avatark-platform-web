@@ -83,6 +83,11 @@ export function FourAxesGeometry({ axes, activeIndex }: { axes: CanonAxis[]; act
     return {
       stroke: emphasized ? 'var(--gold)' : 'var(--paper-line)',
       strokeWidth: emphasized ? 2.5 : 2,
+      strokeLinecap: 'round' as const,
+      // Non-scaling so the lines stay crisp at the diagram's smallest
+      // rendered size (narrow mobile viewports) instead of thinning out
+      // proportionally with the viewBox scale.
+      vectorEffect: 'non-scaling-stroke' as const,
       transition: 'stroke 200ms var(--motion-ease-settle), stroke-width 200ms var(--motion-ease-settle)',
     }
   }
@@ -141,6 +146,7 @@ export function FourAxesGeometry({ axes, activeIndex }: { axes: CanonAxis[]; act
               fill={active ? 'var(--gold)' : 'var(--paper)'}
               stroke="var(--gold)"
               strokeWidth={active ? 3.5 : 3}
+              vectorEffect="non-scaling-stroke"
               style={{ transition: 'r 200ms var(--motion-ease-settle), fill 200ms var(--motion-ease-settle), stroke-width 200ms var(--motion-ease-settle)' }}
             />
             {pulse && pulse.index === index && (
@@ -152,6 +158,7 @@ export function FourAxesGeometry({ axes, activeIndex }: { axes: CanonAxis[]; act
                 fill="none"
                 stroke="var(--gold)"
                 strokeWidth={2}
+                vectorEffect="non-scaling-stroke"
                 className="motion-ripple-node is-pulsing"
               />
             )}

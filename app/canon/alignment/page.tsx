@@ -1,9 +1,7 @@
 import type { Metadata } from 'next'
 import { CanonPageLayout } from '@/components/foundation/canon/CanonPageLayout'
 import { CanonPairGrid } from '@/components/foundation/canon/CanonPairGrid'
-import { OpenInFullCanon } from '@/components/foundation/canon/OpenInFullCanon'
 import { ALIGNMENT_CONTENT } from '@/lib/content/canonReaders'
-import { findCanonNavItem } from '@/lib/content/canonNav'
 
 export const metadata: Metadata = {
   title: 'Alignment — The Canon',
@@ -11,7 +9,6 @@ export const metadata: Metadata = {
 }
 
 export default function AlignmentPage() {
-  const navItem = findCanonNavItem('alignment')
   const { eyebrow, title, intro, canonicalRole, measures, loop, misalignmentSignals, summary } = ALIGNMENT_CONTENT
 
   return (
@@ -90,8 +87,6 @@ export default function AlignmentPage() {
           {summary.body}
         </p>
       </div>
-
-      {navItem?.legacyHref && <OpenInFullCanon href={navItem.legacyHref} label="Open Alignment in the Full Canon" />}
     </CanonPageLayout>
   )
 }

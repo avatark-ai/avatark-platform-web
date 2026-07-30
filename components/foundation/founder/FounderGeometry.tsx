@@ -14,7 +14,7 @@ export function FounderGeometry() {
   const { axes } = getCanonContent()
 
   return (
-    <RevealOnView className="mx-auto my-12 max-w-lg sm:max-w-2xl">
+    <RevealOnView className="mx-auto mt-10 max-w-lg sm:max-w-2xl">
       <FourAxesGeometry axes={axes} />
       {/* RC4: a single quiet caption naming the two axes this geometry
           layers together -- the diagram itself is unchanged, this is

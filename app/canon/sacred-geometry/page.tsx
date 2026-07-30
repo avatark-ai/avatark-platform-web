@@ -1,10 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CanonPageLayout } from '@/components/foundation/canon/CanonPageLayout'
-import { OpenInFullCanon } from '@/components/foundation/canon/OpenInFullCanon'
 import { RevealOnView } from '@/components/motion/RevealOnView'
 import { CANON_PLATES } from '@/lib/content/canonPlates'
-import { findCanonNavItem } from '@/lib/content/canonNav'
 
 export const metadata: Metadata = {
   title: 'Sacred Geometry — The Canon',
@@ -12,8 +10,6 @@ export const metadata: Metadata = {
 }
 
 export default function SacredGeometryPage() {
-  const navItem = findCanonNavItem('sacred-geometry')
-
   return (
     <CanonPageLayout>
       <div>
@@ -70,8 +66,6 @@ export default function SacredGeometryPage() {
           </Link>
         ))}
       </RevealOnView>
-
-      {navItem?.legacyHref && <OpenInFullCanon href={navItem.legacyHref} label="Open Sacred Geometry in the Full Canon" />}
     </CanonPageLayout>
   )
 }

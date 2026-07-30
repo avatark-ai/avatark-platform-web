@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { getProductById } from '@avatark/product-registry'
 import { resolveEcosystemProduct } from '@/lib/content/ecosystemGroups'
-import { ENTER_ECHO_HREF, SIGN_IN_HREF } from '@/lib/content/links'
 import { DepartureLink } from '@/components/motion/DepartureLink'
 
 const LINK_CLASS =
@@ -75,12 +74,10 @@ export function InstitutionalFooter() {
   const avatark = getProductById('avatark')
   const supportEmail = avatark?.supportEmail ?? null
 
-  const foundationLinks: FooterLink[] = [
-    { label: 'Why AvatarK', href: '/foundation' },
-    { label: 'Canon', href: '/canon' },
-    { label: 'Founder Letter', href: '/founder' },
-  ]
-
+  // Foundation/Canon/Founder/Enter Echo/Sign In already live in the header
+  // nav (InstitutionalHeader.tsx) -- this footer stays a closing strip, not
+  // a second navigation surface, so it only carries what the header
+  // doesn't: the full sibling-product list, and footer-only company links.
   const ecosystemLinks: FooterLink[] = [
     ecosystemFooterLink('echo'),
     ecosystemFooterLink('prometheusk'),
@@ -91,11 +88,6 @@ export function InstitutionalFooter() {
     ecosystemFooterLink('setpointk'),
     ecosystemFooterLink('atlas'),
     ecosystemFooterLink('studiok'),
-  ]
-
-  const experienceLinks: FooterLink[] = [
-    { label: 'Enter Echo', href: ENTER_ECHO_HREF },
-    { label: 'Sign In', href: SIGN_IN_HREF },
   ]
 
   const companyLinks: FooterLink[] = [
@@ -110,10 +102,8 @@ export function InstitutionalFooter() {
   return (
     <footer style={{ borderTop: '1px solid var(--surface-line)', background: 'var(--midnight)' }}>
       <div className="mx-auto max-w-[var(--shell-width)] px-6 py-8">
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
-          <FooterColumn title="Foundation" links={foundationLinks} />
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
           <FooterColumn title="Ecosystem" links={ecosystemLinks} />
-          <FooterColumn title="Experience" links={experienceLinks} />
           <FooterColumn title="Company" links={companyLinks} />
         </div>
 

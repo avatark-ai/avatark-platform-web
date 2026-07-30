@@ -75,6 +75,8 @@ export function LivingSpiral() {
               fill="none"
               stroke="var(--silver-accent)"
               strokeWidth={1.5}
+              strokeLinejoin="round"
+              vectorEffect="non-scaling-stroke"
               strokeDasharray={loopLength}
               strokeDashoffset={loopLength}
               className="motion-draw"
@@ -105,7 +107,15 @@ export function LivingSpiral() {
                     style={{ '--motion-delay': `${DRAW_MS + TRAVEL_MS}ms` } as React.CSSProperties}
                   />
                 )}
-                <circle cx={stage.x} cy={stage.y} r={8} fill="var(--paper)" stroke="var(--gold)" strokeWidth={2} />
+                <circle
+                  cx={stage.x}
+                  cy={stage.y}
+                  r={8}
+                  fill="var(--paper)"
+                  stroke="var(--gold)"
+                  strokeWidth={2}
+                  vectorEffect="non-scaling-stroke"
+                />
                 <text
                   x={stage.x + stage.dx}
                   y={stage.y + stage.dy}

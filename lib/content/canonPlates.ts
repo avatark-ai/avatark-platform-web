@@ -22,8 +22,6 @@ export interface CanonPlate {
   axiom?: string
   invariant?: string
   body?: string[]
-  // Legacy detail URL -- only set where legacy content actually exists.
-  legacyHref?: string
 }
 
 export const CANON_PLATES: CanonPlate[] = [
@@ -41,7 +39,6 @@ export const CANON_PLATES: CanonPlate[] = [
       'Without orientation, perception collapses into undifferentiated experience. With orientation, structure becomes observable.',
       'Orientation is the first constraint: it names what counts as data before any meaning is assigned.',
     ],
-    legacyHref: 'https://canon.avatark.ai/canon/plates/sacred-geometry/plates/plate-i-orientation',
   },
   {
     numeral: 'II',

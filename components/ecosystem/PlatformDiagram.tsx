@@ -152,7 +152,7 @@ export function PlatformDiagram() {
   return (
     <RevealOnView sessionKey="platform-diagram">
       <div
-        className="mx-auto max-w-5xl rounded-lg border p-8 sm:p-10"
+        className="mx-auto max-w-5xl rounded-lg border p-6 sm:p-8"
         style={{ borderColor: 'var(--paper-line)', background: 'var(--surface-card)' }}
       >
         {/* RC4 final polish: desktop viewBox tightened from "0 0 760 460"

@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CanonPageLayout } from '@/components/foundation/canon/CanonPageLayout'
-import { OpenInFullCanon } from '@/components/foundation/canon/OpenInFullCanon'
 import { CANON_PLATES, getAdjacentPlates, getCanonPlate } from '@/lib/content/canonPlates'
 
 export function generateStaticParams() {
@@ -127,8 +126,6 @@ export default async function SacredGeometryPlatePage({ params }: { params: Prom
             </Link>
           )}
         </nav>
-
-        {plate.legacyHref && <div className="mt-8"><OpenInFullCanon href={plate.legacyHref} label={`Open Plate ${plate.numeral} in the Full Canon`} /></div>}
       </article>
     </CanonPageLayout>
   )

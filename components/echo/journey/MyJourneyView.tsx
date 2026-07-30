@@ -5,6 +5,7 @@ import { useJourneySession } from "@/lib/journey/session";
 import { INTENTIONS } from "@/lib/onboarding/intentions";
 import { WITNESS_LABEL } from "@/lib/onboarding/witness";
 import { COMMUNITY_HREF, LIVING_ECHO_HREF, MY_ECHO_HREF, TODAY_HREF } from "@/lib/echo/links";
+import { GeometryOfBecoming } from "@/components/echo/journey/GeometryOfBecoming";
 import type { JourneyContext } from "@/lib/journey/state";
 
 const STAGES = ["Invitation", "Story", "Practice", "Reflection", "Contribution"] as const;
@@ -101,24 +102,29 @@ export function MyJourneyView({ context }: { context: JourneyContext }) {
           Milestones
         </p>
         <ol className="flex flex-wrap items-center gap-x-3 gap-y-3 text-sm font-medium" style={{ color: "var(--paper)" }}>
-          {STAGES.map((stage, index) => (
-            <li key={stage} className="flex items-center gap-3">
-              <span
-                className="rounded-full border px-4 py-1.5"
-                style={{
-                  borderColor: index <= reached ? "var(--gold)" : "var(--surface-line)",
-                  color: index <= reached ? "var(--paper)" : "var(--text-dim)",
-                }}
-              >
-                {stage}
-              </span>
-              {index < STAGES.length - 1 && (
-                <span aria-hidden="true" style={{ color: "var(--gold)" }}>
-                  →
+          {STAGES.map((stage, index) => {
+            const current = index === reached;
+            const passed = index < reached;
+            return (
+              <li key={stage} className="flex items-center gap-3">
+                <span
+                  className="rounded-full border px-4 py-1.5 transition-colors duration-200"
+                  style={{
+                    borderColor: current || passed ? "var(--gold)" : "var(--surface-line)",
+                    background: current ? "var(--gold)" : "transparent",
+                    color: current ? "var(--midnight)" : passed ? "var(--paper)" : "var(--text-dim)",
+                  }}
+                >
+                  {stage}
                 </span>
-              )}
-            </li>
-          ))}
+                {index < STAGES.length - 1 && (
+                  <span aria-hidden="true" style={{ color: "var(--gold)" }}>
+                    →
+                  </span>
+                )}
+              </li>
+            );
+          })}
         </ol>
         <p className="text-sm leading-6" style={{ color: "var(--text-dim)" }}>
           {intentionLabel ? `Named what mattered: "${intentionLabel}."` : "This grows as you return to practice and reflection — never a count to chase."}
@@ -179,6 +185,8 @@ export function MyJourneyView({ context }: { context: JourneyContext }) {
           linkLabel="See today's recommendation"
         />
       </div>
+
+      <GeometryOfBecoming />
     </div>
   );
 }

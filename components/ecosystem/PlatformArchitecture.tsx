@@ -149,7 +149,7 @@ export function PlatformArchitecture() {
             <PlatformServices />
           </div>
 
-          <h2 className="mt-10 text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-dim)' }}>
+          <h2 className="mt-8 text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-dim)' }}>
             Creator & Intelligence
           </h2>
           <RevealOnView className="motion-emerge-stagger mx-auto mt-5 grid max-w-2xl grid-cols-1 gap-5 sm:grid-cols-2">

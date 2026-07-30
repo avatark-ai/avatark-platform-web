@@ -29,7 +29,7 @@ export function ActivityCard({ card }: { card: ActivityCardData }) {
         )}
         {disabled && (
           <span className="text-xs font-medium" style={{ color: "var(--text-dim)" }}>
-            Coming soon
+            In development
           </span>
         )}
       </div>
