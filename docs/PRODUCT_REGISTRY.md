@@ -85,6 +85,45 @@ every existing consumer works with zero edits and zero visual change:
 This is the "read from the registry instead of static objects where practical" integration: the static
 object *is* the registry now, one layer down, rather than each call site being rewired individually.
 
+## Phase 3 — Cross-Product Integration Foundation extension (2026-07-31)
+
+The mission that produced this package originally deferred two target fields
+(`docs/PLATFORM_CONTRACTS.md`'s "Gap vs. the mission's target contract": "these are named here as
+target contract fields to add when a real requirement exists, not invented speculatively"). This
+phase is that real requirement — shifting the repo's focus from package construction to ecosystem
+integration means the previously-deferred fields are now implemented, not just documented as a gap.
+
+`AvatarKProduct` gained 6 fields, all additive (no existing field renamed or removed):
+
+- `previewDomain: string | null` — a confirmed fixed preview/staging domain, distinct from
+  `domain`. Null for all 9 products today: no such fixed address has been confirmed anywhere in
+  this ecosystem's docs (only a generic `<gamek-preview-origin>` placeholder exists,
+  `docs/GAMEK_SHARED_PLATFORM_SETUP.md`) — a per-deployment Vercel preview URL is not a registry
+  fact, since it's unique per build.
+- `supportsAuth`, `supportsAccount`, `supportsInvitations`, `supportsLivingEcho`,
+  `supportsNavigation` — 5 new capability flags, added to `CAPABILITY_KEYS` (now 18 total, up from
+  13). Every value was derived from an existing, cited fact in `docs/PLATFORM_CONTRACTS.md` /
+  `docs/PLATFORM_INTEGRATION_MATRIX.md` — see each product's own in-line comment in `registry.ts`
+  for its citation. Net result: `avatark` and `gamek` are `true` across `supportsAuth`/
+  `supportsAccount`/`supportsNavigation` (the two products with confirmed, complete platform
+  integration); `supportsInvitations` is broader (`avatark`, `gamek`, `prometheusk`, `streamk`,
+  `studiok`, `arenak` — matching the Invitations section's "Consumed by" list plus ArenaK's own
+  ownership); `supportsLivingEcho` is `true` only for `prometheusk`, its sole confirmed producer.
+
+`supportsAuth` is deliberately distinct from the pre-existing `requiresAuth` (which is `true` for
+every product, including ones like SetpointK that gate access via their own, unrelated auth system)
+— `supportsAuth` means "confirmed to consume AvatarK's own shared identity/auth contract," a much
+narrower, rarer fact.
+
+New machine-readable **Ecosystem Capability Matrix** (`capabilityMatrix.ts`) — see
+`docs/CROSS_PRODUCT_INTEGRATION.md` for the full design (11 capabilities, 7 derived directly from
+registry flags, 4 hand-authored and cited individually since no registry field backs them yet:
+journey, publisher, admin, creator).
+
+New tests: `capabilityMatrix.test.ts` (7 tests). Existing `validation.test.ts`'s `baseProduct()`
+fixture updated to include the 6 new required fields (a pre-existing test fixture, not new
+coverage). `pnpm typecheck`/`lint`/`test` (343/343)/`build` all pass clean with these additions.
+
 ## Remaining integration opportunities
 
 - **Admin Products page** could add columns for the new fields (category, capabilities, visibility)

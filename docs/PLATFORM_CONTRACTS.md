@@ -143,20 +143,23 @@ avatar-account`, not in this repo.** It reaches this repo (and `gamek-web`) as a
 agnostic — no Next.js/env assumptions inside it).
 
 **Contract shape** — `AvatarKProduct` (`packages/product-registry/src/types.ts`), current real fields:
-`id, slug, displayName, tagline, description, status (alpha|beta|live|internal), domain, icon,
-accentColor, logo, category, owner, repository, visibility (public|internal), requiresAuth`, 13
-`supportsX` capability flags (`CAPABILITY_KEYS`), `navigationLinks/footerLinks/helpLinks,
-supportEmail, documentation`, plus journey-graph fields `journeyRole, journeyOrder,
-integrationStatus, nextProductIds, experiences`.
+`id, slug, displayName, tagline, description, status (alpha|beta|live|internal), domain,
+previewDomain, icon, accentColor, logo, category, owner, repository, visibility (public|internal),
+requiresAuth`, 18 `supportsX` capability flags (`CAPABILITY_KEYS`, up from 13 — see
+`docs/CROSS_PRODUCT_INTEGRATION.md`'s Product Registry section for the 5 added in the ecosystem-
+integration phase), `navigationLinks/footerLinks/helpLinks, supportEmail, documentation`, plus
+journey-graph fields `journeyRole, journeyOrder, integrationStatus, nextProductIds, experiences`.
 
-**Gap vs. the mission's target contract:** the mission names `Product, Status, Route, Icon, Theme,
-Visibility, Capabilities, Required entitlement` as what the registry contains. Mapping onto what
-actually exists: `Product→id/slug/displayName`, `Status→status`, `Icon→icon`, `Theme→accentColor`,
-`Visibility→visibility`, `Capabilities→the 13 supportsX flags` are all real today. **`Route` and
-`Required entitlement` have no field in `AvatarKProduct` today** — `domain` is the closest existing
-analog to a route (a full origin, not an in-app path), and there is no per-product entitlement
-requirement anywhere (see Entitlements below — there's nothing to require yet). These are named here
-as target contract fields to add when a real requirement exists, not invented speculatively.
+**Gap vs. the mission's target contract, as of the original Platform Contracts pass:** the mission
+named `Product, Status, Route, Icon, Theme, Visibility, Capabilities, Required entitlement` as what
+the registry contains. Mapping onto what actually exists: `Product→id/slug/displayName`,
+`Status→status`, `Icon→icon`, `Theme→accentColor`, `Visibility→visibility`,
+`Capabilities→the supportsX flags` are all real today. **`Route` and `Required entitlement` still
+have no field in `AvatarKProduct`** — `domain`/`previewDomain` are the closest existing analogs to a
+route (a full origin, not an in-app path), and there is no per-product entitlement requirement
+anywhere (see Entitlements below — there's nothing to require yet). Unlike this section's earlier
+"13 flags" snapshot, the *capability* half of this gap was later closed for real — see
+`docs/CROSS_PRODUCT_INTEGRATION.md`.
 
 **Current registry (9 entries)** — see `docs/PLATFORM_INTEGRATION_MATRIX.md` for the full per-product
 breakdown of status/capabilities/owner used across this doc set.

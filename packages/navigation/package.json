@@ -2,7 +2,7 @@
   "name": "@avatark/navigation",
   "version": "0.1.0",
   "private": true,
-  "description": "Shared navigation contract: viewer-state vocabulary (anonymous/signed_in/admin) and 'next product' resolution built on @avatark/product-registry's nextProductIds. Contract only this phase -- InstitutionalHeader/EchoHeader/EchoAvatarMenu/AdminNav remain separate, unmigrated UI implementations, and the 'return to Avatar' decision (lib/journey/continuity.ts) stays app-specific, not packaged, since it depends on this app's own PrometheusK-URL/intention/witness content.",
+  "description": "Shared cross-product navigation contract: viewer-state vocabulary, 'next product' resolution, the Redirect Manager (return/callback/preview/production domain helpers -- no product hard-codes another's URL), the Product Switcher's canonical entry-building API, and the Deep Link Resolver (watch/practice/echo/arena/studio/game). InstitutionalHeader/EchoHeader/EchoAvatarMenu/AdminNav remain separate, unmigrated UI implementations, and the 'return to Avatar' decision (lib/journey/continuity.ts) stays app-specific, not packaged, since it depends on this app's own intention/witness content.",
   "exports": {
     ".": {
       "types": "./src/index.ts",
@@ -11,7 +11,8 @@
   },
   "types": "./src/index.ts",
   "dependencies": {
-    "@avatark/product-registry": "workspace:*"
+    "@avatark/product-registry": "workspace:*",
+    "@avatark/auth": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5"
@@ -20,6 +21,7 @@
     "dist"
   ],
   "scripts": {
+    "test": "node --experimental-strip-types --test src/redirect.test.ts src/switcher.test.ts src/crossProductLinks.test.ts",
     "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
   },
   "publishConfig": {

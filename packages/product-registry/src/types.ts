@@ -49,6 +49,16 @@ export interface AvatarKProduct {
   status: ProductStatus
   /** Best-known canonical production domain. Null when no confirmed default exists. */
   domain: string | null
+  /**
+   * A confirmed, fixed preview/staging domain distinct from `domain` -- e.g. a stable
+   * `preview.<product>.ai` alias, not a per-deployment Vercel preview URL (those are
+   * unique per build and cannot be a registry fact). Null for every product today: no
+   * such fixed preview address has been confirmed anywhere in this ecosystem's docs
+   * (`docs/GAMEK_SHARED_PLATFORM_SETUP.md` names only a generic `<gamek-preview-origin>`
+   * placeholder, not a real fixed hostname). See `@avatark/navigation`'s Redirect
+   * Manager for how a consumer resolves this vs. `domain`.
+   */
+  previewDomain: string | null
   /** Placeholder design token (icon key into whatever icon set the consuming app uses) pending real brand assets. */
   icon: string
   /** Placeholder design token (hex) pending real brand assets. */
@@ -62,6 +72,29 @@ export interface AvatarKProduct {
   repository: string | null
   visibility: ProductVisibility
   requiresAuth: boolean
+  /**
+   * Confirmed to consume AvatarK's own shared identity/auth contract (`lib/identity/`,
+   * `lib/auth/`) today -- distinct from `requiresAuth` (which is true for every product,
+   * including ones like SetpointK that gate access via their *own*, unrelated auth
+   * system). See `docs/PLATFORM_CONTRACTS.md`'s Identity/Authentication sections and
+   * `docs/PLATFORM_INTEGRATION_MATRIX.md`'s Auth column for the per-product facts this
+   * flag is derived from.
+   */
+  supportsAuth: boolean
+  /** Confirmed to consume `@avatark/account` (this repo's canonical shared Account experience) today. See `docs/PLATFORM_CONTRACTS.md`'s Account section. */
+  supportsAccount: boolean
+  /** Confirmed real or target relationship (as producer or consumer) with `@avatark/invitations`, ArenaK's owned Invitations contract. See `docs/PLATFORM_CONTRACTS.md`'s Invitations section ("Owned by ArenaK. Consumed by: ..."). */
+  supportsInvitations: boolean
+  /**
+   * Confirmed to produce or consume **Living Echo** -- PrometheusK's own recorded
+   * practice trace (`docs/PLATFORM_CONTRACTS.md`'s Living Echo section). Deliberately
+   * a distinct field from `supportsEcho` below, which is a different, pre-existing
+   * ecosystem-wide capability flag that predates this disambiguation; see
+   * `docs/PLATFORM_PRODUCT_ADOPTION_MATRIX.md` row 3/5 for why the two are not merged.
+   */
+  supportsLivingEcho: boolean
+  /** Confirmed to consume the shared cross-product navigation contract (Product Switcher / Avatar Menu / product-context nav, `@avatark/navigation`) today. See `docs/PLATFORM_INTEGRATION_MATRIX.md`'s Game row ("Avatar Menu", "Product Context"). */
+  supportsNavigation: boolean
   supportsOrganizations: boolean
   supportsMarketplace: boolean
   supportsBilling: boolean
@@ -93,6 +126,11 @@ export interface AvatarKProduct {
 }
 
 export const CAPABILITY_KEYS = [
+  'supportsAuth',
+  'supportsAccount',
+  'supportsInvitations',
+  'supportsLivingEcho',
+  'supportsNavigation',
   'supportsOrganizations',
   'supportsMarketplace',
   'supportsBilling',

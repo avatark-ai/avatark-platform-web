@@ -7,7 +7,13 @@ export type {
   InvitationToken,
   InvitationAcceptance,
   InvitationResolver,
+  EntryDoor,
+  TargetProduct,
+  ReturnProduct,
+  InvitationCampaign,
+  InvitationContext,
 } from "./types.ts";
+export { createInvitationContext } from "./types.ts";
 
 export { classifyInvitationStatus, isInvitationUsable } from "./validation.ts";
 

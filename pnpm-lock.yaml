@@ -196,6 +196,9 @@ importers:
 
   packages/navigation:
     dependencies:
+      '@avatark/auth':
+        specifier: workspace:*
+        version: link:../auth
       '@avatark/product-registry':
         specifier: workspace:*
         version: link:../product-registry

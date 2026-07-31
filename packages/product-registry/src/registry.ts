@@ -12,6 +12,11 @@ export const NO_BILLING_SYSTEM_NOTE = 'No billing/subscription system exists yet
 // implements a literal digital-twin experience, so that flag is left
 // false at the base rather than per product.
 const NO_CAPABILITIES = {
+  supportsAuth: false,
+  supportsAccount: false,
+  supportsInvitations: false,
+  supportsLivingEcho: false,
+  supportsNavigation: false,
   supportsOrganizations: false,
   supportsMarketplace: false,
   supportsBilling: false,
@@ -27,6 +32,11 @@ const NO_CAPABILITIES = {
   supportsDigitalTwin: false,
 } satisfies Pick<
   AvatarKProduct,
+  | 'supportsAuth'
+  | 'supportsAccount'
+  | 'supportsInvitations'
+  | 'supportsLivingEcho'
+  | 'supportsNavigation'
   | 'supportsOrganizations'
   | 'supportsMarketplace'
   | 'supportsBilling'
@@ -63,6 +73,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
       'The shared layer every AvatarK product integrates with: identity, authentication, account, organizations, roles, permissions, product access, and platform administration. Domain finalized as this repo\'s real, linked Vercel project origin (`.vercel/repo.json`\'s project name is `avatark-platform-web`; `prometheusk-web`\'s own RC5 receipt allowlist -- `lib/onboarding/returnOrigin.ts`\'s `DEFAULT_ALLOWED_ORIGINS` -- already trusts this exact origin as Platform\'s production address, confirming it is not a guess but the address another repo already depends on today, 2026-07-21). A custom branded domain (e.g. avatark.ai/avatark.io, both used inconsistently by other, non-canonical surfaces per the cross-repo audit) remains an open, undecided naming/DNS question -- not resolved or invented here.',
     status: 'live',
     domain: 'https://avatark-platform-web.vercel.app',
+    previewDomain: null,
     icon: 'sparkles',
     accentColor: '#111827',
     logo: null,
@@ -72,6 +83,17 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     visibility: 'public',
     requiresAuth: true,
     ...NO_CAPABILITIES,
+    // Native: this repo owns Identity/Auth, consumes @avatark/account itself,
+    // is the real ArenaK-invitation consumer, and owns cross-product navigation
+    // -- see docs/PLATFORM_CONTRACTS.md's Identity/Authentication/Account/
+    // Invitations sections. supportsLivingEcho stays false: Living Echo is
+    // PrometheusK's alone, and this repo's relationship to it is confirmed
+    // link-only, not producer/consumer (docs/PLATFORM_INTEGRATION_MATRIX.md's
+    // Avatar row, Living Echo column).
+    supportsAuth: true,
+    supportsAccount: true,
+    supportsInvitations: true,
+    supportsNavigation: true,
     supportsOrganizations: true,
     navigationLinks: [
       { label: 'Home', href: '/' },
@@ -92,6 +114,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
       'The practice product: guided practices, reflection, evidence/contribution tracking, challenges, and Living Echo -- the recorded trace of a person’s practice over time.',
     status: 'live',
     domain: 'https://prometheusk.avatark.io',
+    previewDomain: null,
     icon: 'flame',
     accentColor: '#c2410c',
     logo: null,
@@ -101,6 +124,13 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     visibility: 'public',
     requiresAuth: true,
     ...NO_CAPABILITIES,
+    // supportsAuth/supportsAccount stay false: PrometheusK runs its own
+    // separate Supabase project and does not consume this repo's shared
+    // identity/account contract (docs/PLATFORM_INTEGRATION_MATRIX.md's
+    // Prometheus row: "separate Supabase project" / "unconfirmed"). The one
+    // confirmed producer relationship in this ecosystem: Living Echo.
+    supportsInvitations: true,
+    supportsLivingEcho: true,
     supportsRecommendations: true,
     supportsEcho: true,
     supportsPractices: true,
@@ -124,6 +154,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
       'Tracks world progress and consumer game state, and exchanges completion events with PrometheusK via a defined export/inbound contract.',
     status: 'beta',
     domain: 'https://gamek.ai',
+    previewDomain: null,
     icon: 'gamepad-2',
     accentColor: '#7c3aed',
     logo: null,
@@ -133,6 +164,14 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     visibility: 'public',
     requiresAuth: true,
     ...NO_CAPABILITIES,
+    // GameK Phase 1 platform integration is confirmed complete: Shared
+    // Auth, Shared Account, Product Context, Avatar Menu, My Journey
+    // deep-link, Arena Invitation handoff (docs/PLATFORM_INTEGRATION_MATRIX.md's
+    // Game row) -- the most-integrated non-Avatar product in the ecosystem.
+    supportsAuth: true,
+    supportsAccount: true,
+    supportsInvitations: true,
+    supportsNavigation: true,
     supportsEvents: true,
     navigationLinks: NO_LINKS,
     footerLinks: NO_LINKS,
@@ -181,6 +220,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     // that destination is ready, since every consumer (header, ecosystem,
     // footer) resolves through it.
     domain: 'https://arenak.ai',
+    previewDomain: null,
     icon: 'trophy',
     accentColor: '#b45309',
     logo: null,
@@ -190,6 +230,10 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     visibility: 'public',
     requiresAuth: true,
     ...NO_CAPABILITIES,
+    // ArenaK owns the Invitations contract as producer (docs/PLATFORM_CONTRACTS.md's
+    // Invitations section) -- supportsInvitations reflects ownership, not
+    // consumption, the one product in this registry where that distinction matters.
+    supportsInvitations: true,
     supportsEvents: true,
     supportsChallenges: true,
     supportsLeagues: true,
@@ -215,6 +259,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     // is real, not that the product is mature enough for a status bump.
     status: 'alpha',
     domain: 'https://streamk.ai',
+    previewDomain: null,
     icon: 'video',
     accentColor: '#0369a1',
     logo: null,
@@ -224,6 +269,11 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     visibility: 'public',
     requiresAuth: true,
     ...NO_CAPABILITIES,
+    // Named as a target Invitations consumer in docs/PLATFORM_CONTRACTS.md
+    // ("Owned by ArenaK. Consumed by: AvatarK, GameK, PrometheusK, StreamK,
+    // StudioK") -- no confirmed real implementation, same target-vocabulary
+    // convention as supportsRecommendations elsewhere in this registry.
+    supportsInvitations: true,
     supportsStreaming: true,
     supportsContent: true,
     navigationLinks: NO_LINKS,
@@ -244,6 +294,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     description: 'Film and cinema-format media. Scope not yet integrated with Platform.',
     status: 'alpha',
     domain: 'https://cinemak.ai',
+    previewDomain: null,
     icon: 'clapperboard',
     accentColor: '#831843',
     logo: null,
@@ -274,6 +325,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
       'Creation tools. Scope not yet integrated with Platform. No confirmed local repository found in this workspace -- a real, actively-deployed Vercel project exists under a name that doesn’t match this ecosystem’s planning documents.',
     status: 'alpha',
     domain: 'https://studiok.dt4m.ai',
+    previewDomain: null,
     icon: 'palette',
     accentColor: '#0d9488',
     logo: null,
@@ -283,6 +335,8 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     visibility: 'internal',
     requiresAuth: true,
     ...NO_CAPABILITIES,
+    // Named as a target Invitations consumer, same citation as StreamK above.
+    supportsInvitations: true,
     supportsContent: true,
     navigationLinks: NO_LINKS,
     footerLinks: NO_LINKS,
@@ -298,6 +352,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     description: 'Exploration/reference product. Scope not yet integrated with Platform.',
     status: 'alpha',
     domain: 'https://atlas.dt4i.ai',
+    previewDomain: null,
     icon: 'map',
     accentColor: '#166534',
     logo: null,
@@ -327,6 +382,7 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
       'Wellness/goal-setting product. Historically backed by its own Cognito auth; not yet integrated with Platform identity. No local repository found in this workspace.',
     status: 'internal',
     domain: 'https://setpointk.ai',
+    previewDomain: null,
     icon: 'compass',
     accentColor: '#4338ca',
     logo: null,
