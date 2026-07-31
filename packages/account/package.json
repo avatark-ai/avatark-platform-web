@@ -1,0 +1,45 @@
+{
+  "name": "@avatark/account",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Canonical, host-neutral AvatarK Account UI and adapter contracts. This repo owns this package; forked from prometheusk-web's @avatark/account 0.1.1 (see PROVENANCE.md). Not yet wired into app/account/page.tsx -- that migration is a separate phase.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./styles.css": "./styles.css"
+  },
+  "types": "./src/index.ts",
+  "dependencies": {},
+  "peerDependencies": {
+    "react": "^18.3.0 || ^19.0.0",
+    "react-dom": "^18.3.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19",
+    "typescript": "^5"
+  },
+  "files": [
+    "dist",
+    "styles.css"
+  ],
+  "scripts": {
+    "test": "node --experimental-strip-types --test src/publicApi.test.ts src/importBoundary.test.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      },
+      "./styles.css": "./styles.css"
+    }
+  }
+}

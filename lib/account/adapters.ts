@@ -111,15 +111,13 @@ export const avatarKPlatformAdapters: AccountAdapters = {
     // @avatark/product-registry's SUBSCRIPTION_MODEL_NOTE) -- Free is
     // genuinely the only plan that exists, not a placeholder, sourced from
     // @avatark/membership's shared plan-tier vocabulary rather than a raw
-    // string literal. practices/borrowed/echoes are PrometheusK-specific
-    // concepts this host has no data for; the caller (MembershipTab)
-    // always passes 0 for them here, so echoing them back is accurate,
-    // not fabricated.
+    // string literal. `stats` (generic StatEntry[], not PrometheusK-shaped
+    // usagePractices/borrowedCount) is accepted per the canonical
+    // MembershipAdapter contract but unused: AvatarK Platform has no
+    // activity/echoes/extension data of its own to summarize.
     getSummary: () => ({
       planName: MEMBERSHIP_PLAN_LABEL.free,
-      usagePractices: 0,
       creatorStatus: 'Member',
-      borrowedCount: 0,
     }),
     // Real product_access rows via RLS's own-row policy (migration 014) --
     // no service-role client needed, the signed-in user can read their own
@@ -160,7 +158,9 @@ export const avatarKPlatformAdapters: AccountAdapters = {
     // Real platform_roles for the signed-in user (e.g. 'admin'), read from
     // a cache warmed by getRelationships above -- see that method's
     // comment for why this can't fetch directly (the interface requires
-    // this to be synchronous).
+    // this to be synchronous). `stats` is accepted per the canonical
+    // contract but unused -- roles here come from platform_roles, not
+    // from usage stats.
     getRoles: () => cachedPlatformRoles ?? [],
     getBenefits: () => [],
   },

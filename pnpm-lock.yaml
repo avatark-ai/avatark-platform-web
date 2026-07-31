@@ -9,14 +9,20 @@ importers:
   .:
     dependencies:
       '@avatark/account':
-        specifier: file:avatark-account-0.1.1.tgz
-        version: file:avatark-account-0.1.1.tgz(next@16.2.10(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: workspace:*
+        version: link:packages/account
       '@avatark/account-ui':
         specifier: workspace:*
         version: link:packages/account-ui
+      '@avatark/appearance':
+        specifier: workspace:*
+        version: link:packages/appearance
       '@avatark/auth':
         specifier: workspace:*
         version: link:packages/auth
+      '@avatark/auth-ui':
+        specifier: workspace:*
+        version: link:packages/auth-ui
       '@avatark/bootstrap':
         specifier: workspace:*
         version: link:packages/bootstrap
@@ -32,6 +38,9 @@ importers:
       '@avatark/living-echo':
         specifier: workspace:*
         version: link:packages/living-echo
+      '@avatark/locale':
+        specifier: workspace:*
+        version: link:packages/locale
       '@avatark/membership':
         specifier: workspace:*
         version: link:packages/membership
@@ -103,6 +112,22 @@ importers:
         specifier: ^5
         version: 5.9.3
 
+  packages/account:
+    dependencies:
+      react:
+        specifier: ^18.3.0 || ^19.0.0
+        version: 19.2.4
+      react-dom:
+        specifier: ^18.3.0 || ^19.0.0
+        version: 19.2.4(react@19.2.4)
+    devDependencies:
+      '@types/react':
+        specifier: ^19
+        version: 19.2.17
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
   packages/account-ui:
     dependencies:
       '@avatark/journey':
@@ -128,8 +153,36 @@ importers:
         specifier: ^5
         version: 5.9.3
 
+  packages/appearance:
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
   packages/auth:
     devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/auth-ui:
+    dependencies:
+      '@avatark/auth':
+        specifier: workspace:*
+        version: link:../auth
+      '@avatark/product-registry':
+        specifier: workspace:*
+        version: link:../product-registry
+      react:
+        specifier: '>=18'
+        version: 19.2.4
+      react-dom:
+        specifier: '>=18'
+        version: 19.2.4(react@19.2.4)
+    devDependencies:
+      '@types/react':
+        specifier: ^19
+        version: 19.2.17
       typescript:
         specifier: ^5
         version: 5.9.3
@@ -185,6 +238,12 @@ importers:
         specifier: ^5
         version: 5.9.3
 
+  packages/locale:
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
   packages/membership:
     devDependencies:
       typescript:
@@ -230,6 +289,10 @@ importers:
         version: 5.9.3
 
   packages/organizations:
+    dependencies:
+      '@avatark/membership':
+        specifier: workspace:*
+        version: link:../membership
     devDependencies:
       typescript:
         specifier: ^5
@@ -265,14 +328,6 @@ packages:
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
-
-  '@avatark/account@file:avatark-account-0.1.1.tgz':
-    resolution: {integrity: sha512-TFOoNFkQylGwfZbws7mkE8+kWXhnec+oS1XAM6arCXmfgQ2ec+uYCs223Uh12eATYM91ZToDRGIxcdxvt+IO4w==, tarball: file:avatark-account-0.1.1.tgz}
-    version: 0.1.1
-    peerDependencies:
-      next: ^14.2.33 || ^15.0.0 || ^16.0.0
-      react: ^18.3.0 || ^19.0.0
-      react-dom: ^18.3.0 || ^19.0.0
 
   '@babel/code-frame@7.29.7':
     resolution: {integrity: sha512-Aup7aUOfpbAUg2ROOJN6Iw5f9DMBlzu0mIkm/malLQFN/YQgO48wCj0Kxa3sEHJvPVFg7siR+qRInwXd2qhQKw==}
@@ -2315,12 +2370,6 @@ packages:
 snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
-
-  '@avatark/account@file:avatark-account-0.1.1.tgz(next@16.2.10(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
-    dependencies:
-      next: 16.2.10(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
 
   '@babel/code-frame@7.29.7':
     dependencies:

@@ -12,10 +12,12 @@ const BUILD_ORDER = [
   // Leaves: zero @avatark/* dependencies.
   "auth", "identity", "product-registry", "timeline", "recommendations",
   "membership", "invitations", "notifications", "organizations", "motion",
+  "account", "locale", "appearance",
   // One hop: each depends only on leaves above.
   "navigation",     // -> product-registry
   "living-echo",    // -> timeline, recommendations
   "journey",        // -> auth, invitations
+  "auth-ui",        // -> auth, product-registry
   // Two hops: depends on packages built in the previous tier.
   "account-ui",     // -> journey, membership, product-registry
   "bootstrap",      // -> product-registry, navigation

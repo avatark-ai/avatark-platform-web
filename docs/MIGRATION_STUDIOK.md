@@ -1,3 +1,5 @@
+> **Superseded by `docs/migrations/IDENTITY_STUDIOK.md`** (AvatarK Identity RC1, Part 18) — restructured onto the mission's required template plus the new canonical Auth/Account packages.
+
 # Migration guide — StudioK
 
 **Read this first:** StudioK has **no confirmed local repository in this workspace** — a real,

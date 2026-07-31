@@ -23,7 +23,10 @@ export function NotificationBell({ unreadCount, children, className }: Notificat
         aria-label={unreadCount > 0 ? `${unreadCount} unread notifications` : "Notifications"}
         onClick={() => setOpen((value) => !value)}
       >
-        <span data-avatark-part="unread-count">{unreadCount}</span>
+        <span data-avatark-part="unread-count" aria-hidden="true">{unreadCount}</span>
+        <span data-avatark-part="unread-count-sr" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap" }}>
+          {unreadCount > 0 ? `${unreadCount} unread notifications` : "No unread notifications"}
+        </span>
       </button>
       {open && <div data-avatark-part="notification-panel">{children}</div>}
     </div>

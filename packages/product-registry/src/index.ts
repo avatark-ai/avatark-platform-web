@@ -45,3 +45,19 @@ export {
   useVisibleProducts,
   useProductCapability,
 } from './hooks.ts'
+
+export {
+  PRODUCT_IDENTITY_CONFIGS,
+  getProductIdentityConfig,
+  isAllowedLocalRoute,
+  validateProductIdentityConfig,
+  deploymentStatusOf,
+  integrationStatusOf,
+} from './identityConfig.ts'
+export type {
+  ProductIdentityConfig,
+  ProductIdentityConfigValidation,
+  DeploymentStatus,
+  MissionIntegrationStatus,
+  ProductAccessState,
+} from './identityConfig.ts'

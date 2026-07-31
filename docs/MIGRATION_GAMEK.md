@@ -1,3 +1,5 @@
+> **Superseded by `docs/migrations/IDENTITY_GAMEK.md`** (AvatarK Identity RC1, Part 18), which restructures and extends this doc with the canonical `@avatark/auth-ui`/`@avatark/account` package migration, product identity config, and manual verification steps. This doc's RC3/RC4 bootstrap content below remains accurate and cited from the new guide.
+
 # Migration guide — GameK (`gamek-web`)
 
 **Read this first:** this repo has no access to `gamek-web`'s actual source — everything below is

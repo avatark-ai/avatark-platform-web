@@ -1,0 +1,57 @@
+/* @avatark/account — package-owned stylesheet.
+   Every rule below has a fallback baked into the component's inline
+   style already (var(--aka-*, <real-value>)) -- importing this file is
+   recommended for visual polish, but the package renders acceptably
+   without it. A host wanting to match its own brand should override
+   the CSS variables listed here, not fork this file. */
+
+:root {
+  --aka-accent: #d4af5f;
+  --aka-text-primary: #f5f2ea;
+  --aka-text-dim: #8b8b98;
+  --aka-surface: #12121a;
+  --aka-surface-line: #1c1c26;
+  --aka-bg-base: #0a0a0f;
+}
+
+.aka-card {
+  background: var(--aka-surface);
+  border: 1px solid var(--aka-surface-line);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.aka-input {
+  width: 100%;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--aka-surface-line);
+  padding: 8px 12px;
+  font-size: 14px;
+  color: var(--aka-text-primary);
+}
+
+.aka-label { display: block; font-size: 12px; color: var(--aka-text-dim); }
+.aka-section-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--aka-text-dim); }
+.aka-eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+.aka-heading { font-size: 24px; font-weight: 600; margin-top: 4px; }
+.aka-subtext { font-size: 14px; }
+.aka-meta-row { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 8px; font-size: 12px; }
+.aka-mb-6 { margin-bottom: 24px; }
+.aka-max-w-account { max-width: 880px; }
+.aka-mx-auto { margin-left: auto; margin-right: auto; }
+.aka-px-4 { padding-left: 16px; padding-right: 16px; }
+.aka-py-8 { padding-top: 32px; padding-bottom: 32px; }
+.aka-text-sm { font-size: 14px; }
+.aka-text-dim { color: var(--aka-text-dim); }
+
+.aka-tablist { display: flex; gap: 4px; overflow-x: auto; border-bottom: 1px solid var(--aka-surface-line); margin-bottom: 16px; }
+.aka-tab { padding: 8px 12px; font-size: 14px; border-bottom: 2px solid transparent; background: transparent; white-space: nowrap; }
+
+.aka-cta-button { display: inline-block; margin-top: 12px; border-radius: 8px; background: var(--aka-accent); padding: 10px 20px; font-size: 14px; font-weight: 600; color: #0a0a0f; }
+.aka-flex-between { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.aka-block { display: block; }
+.aka-text-center { text-align: center; }
+.aka-text-xs { font-size: 12px; }
+.aka-space-y-2 > * + * { margin-top: 8px; }
+.aka-py-10 { padding-top: 40px; padding-bottom: 40px; }

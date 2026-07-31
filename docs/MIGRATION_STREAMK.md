@@ -1,3 +1,5 @@
+> **Superseded by `docs/migrations/IDENTITY_STREAMK.md`** (AvatarK Identity RC1, Part 18) — restructured onto the mission's required template plus the new canonical Auth/Account packages.
+
 # Migration guide — StreamK (`streamk-web`)
 
 **Read this first:** this repo has confirmed StreamK's domain is reachable

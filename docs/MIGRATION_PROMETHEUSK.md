@@ -1,3 +1,5 @@
+> **Superseded by `docs/migrations/IDENTITY_PROMETHEUSK.md`** (AvatarK Identity RC1, Part 18) — **important ownership correction**: this doc (below) still says PrometheusK is `@avatark/account`'s canonical source. That is no longer accurate — `avatark-platform-web` forked the package into `packages/account` this session and is now the canonical owner; PrometheusK is expected to become a consumer. See the new doc for the corrected guidance; the Bearer-token architecture boundary and the confirmed `sanitizeNext` defect below both still apply unchanged.
+
 # Migration guide — PrometheusK (`prometheusk-web`)
 
 **Read this first:** this repo has no access to `prometheusk-web`'s actual source — everything below

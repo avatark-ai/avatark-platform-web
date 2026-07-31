@@ -20,8 +20,8 @@ export function AvatarMenu({ displayName, email, onSignOut, children, className 
 
   return (
     <div className={className} data-avatark-component="avatar-menu">
-      <button type="button" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
-        {displayName.charAt(0).toUpperCase()}
+      <button type="button" aria-expanded={open} aria-label={`Account menu for ${displayName}`} onClick={() => setOpen((value) => !value)}>
+        <span aria-hidden="true">{displayName.charAt(0).toUpperCase()}</span>
       </button>
       {open && (
         <div data-avatark-part="menu-panel">

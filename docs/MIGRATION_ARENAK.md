@@ -1,3 +1,5 @@
+> **Superseded by `docs/migrations/IDENTITY_ARENAK.md`** (AvatarK Identity RC1, Part 18) — same caveats, restructured onto the mission's required template plus the new canonical Auth/Account packages.
+
 # Migration guide — ArenaK
 
 **Read this first:** ArenaK's real implementation lives in a separate `dt4m-os` repo's
