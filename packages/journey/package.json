@@ -11,12 +11,30 @@
   },
   "types": "./src/index.ts",
   "scripts": {
-    "test": "node --experimental-strip-types --test src/stateMachine.test.ts src/manifest.test.ts src/deepLinks.test.ts src/recovery.test.ts src/handoffContracts.test.ts src/invitationAcceptance.test.ts src/guestContext.test.ts"
+    "test": "node --experimental-strip-types --test src/stateMachine.test.ts src/manifest.test.ts src/deepLinks.test.ts src/recovery.test.ts src/handoffContracts.test.ts src/invitationAcceptance.test.ts src/guestContext.test.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
   },
   "dependencies": {
-    "@avatark/auth": "workspace:*"
+    "@avatark/auth": "workspace:*",
+    "@avatark/invitations": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
   }
 }

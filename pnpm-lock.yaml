@@ -148,6 +148,9 @@ importers:
       '@avatark/auth':
         specifier: workspace:*
         version: link:../auth
+      '@avatark/invitations':
+        specifier: workspace:*
+        version: link:../invitations
     devDependencies:
       typescript:
         specifier: ^5

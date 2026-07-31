@@ -22,6 +22,12 @@ const eslintConfig = defineConfig([
     // full checkouts, including their own generated .next/ build output).
     // Not this repo's source -- must never be linted as if it were.
     ".claude/**",
+    // Compiled output from scripts/build-packages.mjs (see
+    // docs/PLATFORM_PACKAGE_DISTRIBUTION.md) -- generated JS, not source;
+    // gitignored, but still present on disk for anyone who has run a
+    // package build locally before linting.
+    "packages/*/dist/**",
+    "dist-packages/**",
   ]),
 ]);
 

@@ -3,7 +3,10 @@ import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { AccountAdaptersProvider, AvatarKAccount, type AccountTabKey } from '@avatark/account'
+import { AvatarMenu, IdentityBadge, MembershipBadge, NotificationBell, ProductSwitcher } from '@avatark/account-ui'
+import { PRODUCT_REGISTRY } from '@avatark/product-registry'
 import { avatarKPlatformAdapters } from '@/lib/account/adapters'
+import { resolveProductUrl } from '@/lib/products/registry'
 import type { AccountPrincipal } from '@/lib/auth/principal'
 import { EchoPageShell } from '@/components/echo/shell/EchoPageShell'
 
@@ -77,12 +80,11 @@ function SupportView() {
   )
 }
 
-function AccountRoot({ principal }: { principal: Extract<AccountPrincipal, { status: 'signed_in' }> }) {
+function AccountRoot({ principal, roles }: { principal: Extract<AccountPrincipal, { status: 'signed_in' }>; roles: string[] }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const rawSection = searchParams.get('section')
   const section: Section = isSection(rawSection) ? rawSection : 'profile'
-  const [signingOut, setSigningOut] = useState(false)
 
   function goToSection(next: Section) {
     if (next === section) return
@@ -90,77 +92,115 @@ function AccountRoot({ principal }: { principal: Extract<AccountPrincipal, { sta
   }
 
   async function handleSignOut() {
-    setSigningOut(true)
     await avatarKPlatformAdapters.auth.signOut()
     window.location.href = '/auth/sign-in'
   }
 
   const activeRailSection = RAIL_SECTIONS.find((s) => s.id === section)
 
-  return (
-    <EchoPageShell layout="plain" contentClassName="flex flex-col gap-8 sm:flex-row sm:items-start">
-      <nav aria-label="Account" className="flex shrink-0 flex-row gap-1 overflow-x-auto sm:w-56 sm:flex-col sm:overflow-visible">
-        {RAIL_SECTIONS.map((item) => {
-          const active = item.id === section
-          return (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => goToSection(item.id)}
-              aria-current={active ? 'page' : undefined}
-              className={`${RAIL_LINK_CLASS} whitespace-nowrap`}
-              style={{
-                background: active ? 'color-mix(in srgb, var(--gold) 14%, transparent)' : 'transparent',
-                color: active ? 'var(--gold)' : 'var(--paper)',
-                ...FOCUS_STYLE,
-              }}
-            >
-              {item.label}
-            </button>
-          )
-        })}
-        <div className="my-1 border-t sm:mx-1" style={{ borderColor: 'var(--surface-line)' }} />
-        <button
-          type="button"
-          onClick={handleSignOut}
-          disabled={signingOut}
-          className={`${RAIL_LINK_CLASS} whitespace-nowrap disabled:opacity-50`}
-          style={{ color: 'var(--text-dim)', ...FOCUS_STYLE }}
-        >
-          {signingOut ? 'Signing out…' : 'Sign Out'}
-        </button>
-      </nav>
+  function goToProduct(productId: string) {
+    const product = PRODUCT_REGISTRY.find((p) => p.id === productId)
+    const url = product ? resolveProductUrl(product) : null
+    if (url) window.location.href = url
+  }
 
-      <div className="min-w-0 flex-1">
-        {section === 'feedback' ? (
-          <FeedbackView />
-        ) : section === 'support' ? (
-          <SupportView />
-        ) : (
-          // The package's own internal tab strip is hidden here -- this
-          // rail is the one and only navigation for the account
-          // workspace, so the package's tablist would otherwise
-          // duplicate it. activeTab/onActiveTabChange (not the package's
-          // own clicked tabs) are the sole source of truth.
-          <div className="echo-account-embed">
-            <style>{`.echo-account-embed .aka-tablist { display: none; }`}</style>
-            <AccountAdaptersProvider adapters={avatarKPlatformAdapters}>
-              <AvatarKAccount
-                principal={principal}
-                currentProduct="avatark"
-                productName="AvatarK"
-                activeTab={activeRailSection?.tab}
-                onActiveTabChange={(next) => {
-                  const nextSection = tabToSection(next)
-                  if (nextSection) goToSection(nextSection)
+  return (
+    <EchoPageShell layout="plain" contentClassName="flex flex-col gap-6">
+      {/* Required shared @avatark/account-ui controls, composed here --
+          headless/unstyled by design, so this scoped stylesheet gives them
+          the same visual language as the rest of this page (var(--gold)/
+          var(--paper)/var(--surface-line)) without forking the components
+          themselves. AccountDrawer is deliberately not used here: this
+          page is a full-page tabbed workspace, not an overlay/drawer
+          pattern -- see docs/AUTH_REFERENCE_IMPLEMENTATION.md and
+          docs/PLATFORM_PACKAGE_DISTRIBUTION.md for where it and
+          AvatarMenu's simpler-than-EchoAvatarMenu contract are each the
+          right (or wrong) fit. */}
+      <style>{`
+        .avatark-account-header [data-avatark-component="identity-badge"] { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--paper); }
+        .avatark-account-header [data-avatark-part="roles"] { display: flex; gap: 0.25rem; }
+        .avatark-account-header [data-avatark-part="role"] { border-radius: 9999px; padding: 0.05rem 0.5rem; font-size: 0.7rem; color: var(--gold); background: color-mix(in srgb, var(--gold) 16%, transparent); }
+        .avatark-account-header [data-avatark-component="membership-badge"] { border-radius: 9999px; padding: 0.15rem 0.6rem; font-size: 0.75rem; color: var(--midnight); background: var(--gold); }
+        .avatark-account-header [data-avatark-component="product-switcher"] { display: flex; gap: 0.25rem; overflow-x: auto; }
+        .avatark-account-header [data-avatark-part="product-option"] { white-space: nowrap; border-radius: 9999px; border: 1px solid var(--surface-line); padding: 0.25rem 0.7rem; font-size: 0.75rem; color: var(--text-dim); background: transparent; }
+        .avatark-account-header [data-avatark-part="product-option"][data-current="true"] { color: var(--gold); border-color: var(--gold); }
+        .avatark-account-header [data-avatark-component="notification-bell"] button { border-radius: 9999px; border: 1px solid var(--surface-line); padding: 0.35rem 0.6rem; font-size: 0.75rem; color: var(--text-dim); background: transparent; }
+        .avatark-account-header [data-avatark-component="avatar-menu"] > button { display: flex; align-items: center; gap: 0.5rem; border-radius: 9999px; padding: 0.25rem 0.75rem 0.25rem 0.25rem; font-size: 0.875rem; color: var(--paper); background: transparent; }
+        .avatark-account-header [data-avatark-part="menu-panel"] { position: absolute; right: 0; z-index: 20; margin-top: 0.5rem; display: flex; width: 12rem; flex-direction: column; border-radius: 0.75rem; border: 1px solid var(--surface-line); background: var(--midnight); padding: 0.375rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+        .avatark-account-header [data-avatark-part="menu-identity"] { padding: 0.5rem 1rem; font-size: 0.75rem; color: var(--text-dim); }
+        .avatark-account-header [data-avatark-part="sign-out"] { text-align: left; padding: 0.6rem 1rem; font-size: 0.875rem; color: var(--text-dim); }
+        .avatark-account-header [data-avatark-component="avatar-menu"] { position: relative; }
+      `}</style>
+      <div className="avatark-account-header flex flex-wrap items-center justify-between gap-3 border-b pb-4" style={{ borderColor: 'var(--surface-line)' }}>
+        <div className="flex items-center gap-3">
+          <IdentityBadge displayName={principal.displayName} roles={roles} />
+          <MembershipBadge plan="free" />
+        </div>
+        <div className="flex items-center gap-3">
+          <ProductSwitcher products={PRODUCT_REGISTRY} currentProductId="avatark" onSelect={goToProduct} />
+          {/* unreadCount is honestly 0 -- @avatark/notifications has no real
+              implementation anywhere in the ecosystem yet (see
+              docs/ADAPTER_CONFORMANCE_CONTRACTS.md); this is not a mock
+              claiming a working notification feed. */}
+          <NotificationBell unreadCount={0} />
+          <AvatarMenu displayName={principal.displayName} email={principal.email} onSignOut={handleSignOut} />
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-8 sm:flex-row sm:items-start">
+        <nav aria-label="Account" className="flex shrink-0 flex-row gap-1 overflow-x-auto sm:w-56 sm:flex-col sm:overflow-visible">
+          {RAIL_SECTIONS.map((item) => {
+            const active = item.id === section
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => goToSection(item.id)}
+                aria-current={active ? 'page' : undefined}
+                className={`${RAIL_LINK_CLASS} whitespace-nowrap`}
+                style={{
+                  background: active ? 'color-mix(in srgb, var(--gold) 14%, transparent)' : 'transparent',
+                  color: active ? 'var(--gold)' : 'var(--paper)',
+                  ...FOCUS_STYLE,
                 }}
-                onSignedOut={() => {
-                  window.location.href = '/auth/sign-in'
-                }}
-              />
-            </AccountAdaptersProvider>
-          </div>
-        )}
+              >
+                {item.label}
+              </button>
+            )
+          })}
+        </nav>
+
+        <div className="min-w-0 flex-1">
+          {section === 'feedback' ? (
+            <FeedbackView />
+          ) : section === 'support' ? (
+            <SupportView />
+          ) : (
+            // The package's own internal tab strip is hidden here -- this
+            // rail is the one and only navigation for the account
+            // workspace, so the package's tablist would otherwise
+            // duplicate it. activeTab/onActiveTabChange (not the package's
+            // own clicked tabs) are the sole source of truth.
+            <div className="echo-account-embed">
+              <style>{`.echo-account-embed .aka-tablist { display: none; }`}</style>
+              <AccountAdaptersProvider adapters={avatarKPlatformAdapters}>
+                <AvatarKAccount
+                  principal={principal}
+                  currentProduct="avatark"
+                  productName="AvatarK"
+                  activeTab={activeRailSection?.tab}
+                  onActiveTabChange={(next) => {
+                    const nextSection = tabToSection(next)
+                    if (nextSection) goToSection(nextSection)
+                  }}
+                  onSignedOut={() => {
+                    window.location.href = '/auth/sign-in'
+                  }}
+                />
+              </AccountAdaptersProvider>
+            </div>
+          )}
+        </div>
       </div>
     </EchoPageShell>
   )
@@ -169,6 +209,12 @@ function AccountRoot({ principal }: { principal: Extract<AccountPrincipal, { sta
 function AccountClientGate() {
   const [principal, setPrincipal] = useState<AccountPrincipal>({ status: 'loading' })
   const [loadError, setLoadError] = useState<string | null>(null)
+  // Real platform_roles for the signed-in user (own-row RLS, migration
+  // 014) -- fetched independently of lib/account/adapters.ts's
+  // cachedPlatformRoles (that cache is only warmed once the embedded
+  // @avatark/account package's Membership tab calls getRelationships(),
+  // which may not have happened yet by the time this header renders).
+  const [roles, setRoles] = useState<string[]>([])
 
   useEffect(() => {
     // Real bug found via a live browser test (curl-level checks cannot
@@ -225,6 +271,8 @@ function AccountClientGate() {
           displayName: profile?.displayName ?? user.email?.split('@')[0] ?? 'Member',
           email: user.email ?? '',
         })
+        const { data: roleRows } = await supabase.from('platform_roles').select('role').eq('user_id', user.id)
+        if (!cancelled) setRoles((roleRows ?? []).map((r) => r.role as string))
       } catch (err) {
         if (!cancelled) setLoadError(err instanceof Error ? err.message : String(err))
       }
@@ -260,7 +308,7 @@ function AccountClientGate() {
     )
   }
 
-  return <AccountRoot principal={principal} />
+  return <AccountRoot principal={principal} roles={roles} />
 }
 
 export default function AccountPage() {

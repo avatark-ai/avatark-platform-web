@@ -1,9 +1,49 @@
 # Shared Profile Source-of-Truth Defect
 
-Status: defect documentation only. **Not fixed in this repository.** The
-fix belongs to `gamek-web` — this document exists so that repo's owner has
-an exact, evidenced description to act on, and so this repo's own
-documentation doesn't understate the gap.
+Status: **two defects, one fixed here, one still owned by `gamek-web`.**
+
+## Fixed in this repository (Workstream D): role/organization/location were silently dropped
+
+`public.profiles` (`002_profiles.sql`) never had columns for `role`,
+`organization`, or `location`, even though the shared `@avatark/account`
+package's `ProfileTab` UI collects and sends all three on Save. Because the
+columns didn't exist, `app/api/account/profile/route.ts` hardcoded all
+three to `null` on every GET and silently dropped them from every PATCH —
+a user who typed a Role, clicked Save, and reloaded the Profile tab saw it
+blanked out. Not a cosmetic gap: reproducible data loss, in-repo, unrelated
+to the cross-repo `gamek-web` defect below.
+
+Fixed by:
+- `supabase/migrations/017_profile_role_org_location.sql` — adds
+  `role text`, `organization text`, `location text` to `profiles`, governed
+  by the same existing owner-only RLS policies and grants (no new policy
+  needed; `005_rls.sql`'s `auth.uid() = id` policies and `007_grants.sql`'s
+  `SELECT, INSERT, UPDATE` grant already cover the whole row).
+- `lib/account/profileMapping.ts` — extracted, unit-tested pure mapping
+  (`toProfileResponse`/`toProfileUpdates`) so `app/api/account/profile/route.ts`
+  now reads/writes all six canonical fields instead of hardcoding three to
+  null. See `lib/account/profileMapping.test.ts`.
+
+Verified directly (disposable local Postgres, migrations run verbatim, not
+inferred from reading the SQL — same method as
+`docs/PLATFORM_DATABASE_VERIFICATION.md`):
+- Migration applies cleanly and is idempotent (re-run: `NOTICE: column ...
+  already exists, skipping` on all three columns, zero errors).
+- Bootstrap behavior for a missing profile row: inserting a fresh
+  `auth.users` row auto-creates a `profiles` row via
+  `handle_new_platform_user()` (`006_auth_bootstrap.sql`,
+  `009_privacy_bootstrap_fix.sql`) with `display_name` derived from the
+  email's local part and `role`/`organization`/`location` correctly `NULL`
+  (the trigger only ever sets `display_name` — everything else is
+  genuinely unset until the person fills it in, not silently defaulted to
+  a fabricated value).
+
+## Not fixed here: the cross-repo `gamek-web` defect
+
+The fix belongs to `gamek-web` — this document exists so that repo's owner
+has an exact, evidenced description to act on, and so this repo's own
+documentation doesn't understate the gap. Per this workstream's explicit
+boundary ("Do not modify gamek-web"), no file in `gamek-web` was touched.
 
 ## The defect
 

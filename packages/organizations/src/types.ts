@@ -49,3 +49,23 @@ export interface MembershipAuthority {
   canRemoveMembers: boolean
   canAssignRoles: boolean
 }
+
+// Real row shapes, matching the actual live schema
+// (supabase/migrations/010_organizations.sql) -- unlike OrganizationType
+// and the *Authority interfaces above (target-only, unenforced vocabulary),
+// these mirror columns that exist and are read/written today by
+// app/admin/organizations/**. No `type` field: the real `organizations`
+// table has none (see OrganizationType's own comment).
+export interface Organization {
+  id: string
+  name: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface OrganizationMember {
+  orgId: string
+  userId: string
+  role: string
+  createdAt: string
+}

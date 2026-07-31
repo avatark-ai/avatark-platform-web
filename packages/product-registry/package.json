@@ -11,7 +11,8 @@
   },
   "types": "./src/index.ts",
   "scripts": {
-    "test": "node --experimental-strip-types --test src/validation.test.ts src/helpers.test.ts"
+    "test": "node --experimental-strip-types --test src/validation.test.ts src/helpers.test.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
   },
   "peerDependencies": {
     "react": ">=18"
@@ -19,5 +20,21 @@
   "devDependencies": {
     "@types/react": "^19",
     "typescript": "^5"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
   }
 }

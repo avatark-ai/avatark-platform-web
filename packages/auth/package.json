@@ -11,9 +11,26 @@
   },
   "types": "./src/index.ts",
   "scripts": {
-    "test": "node --experimental-strip-types --test src/safeReturnPath.test.ts src/callbackError.test.ts"
+    "test": "node --experimental-strip-types --test src/safeReturnPath.test.ts src/callbackError.test.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
   },
   "devDependencies": {
     "typescript": "^5"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
   }
 }

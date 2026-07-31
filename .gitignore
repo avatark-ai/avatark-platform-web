@@ -41,3 +41,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# @avatark/* package build/pack output (scripts/build-packages.mjs,
+# scripts/pack-packages.mjs) -- regenerated on demand, not source.
+packages/*/dist
+/dist-packages
