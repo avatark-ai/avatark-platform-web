@@ -1,0 +1,40 @@
+{
+  "name": "@avatark/bootstrap",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Platform Adoption Kit: a single bootstrapProduct() call that composes the registry lookup, Redirect Manager, and Product Switcher into one product's own initialization; a static environment validator (Supabase URL/key, Site/Callback/Preview URL, missing vars, capability mismatches); a conformance checker covering the Product Conformance Checklist; and reference adapters for AvatarK/PrometheusK/GameK/ArenaK/StreamK/StudioK. See docs/PRODUCT_BOOTSTRAP.md.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@avatark/product-registry": "workspace:*",
+    "@avatark/navigation": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "node --experimental-strip-types --test src/envValidator.test.ts src/bootstrap.test.ts src/conformance.test.ts src/referenceAdapters.test.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
+  }
+}

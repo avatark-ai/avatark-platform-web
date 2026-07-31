@@ -22,6 +22,16 @@ build one), but a *reproducible, scripted* one with real compiled output,
 checksums, and a documented upgrade/rollback procedure — the thing the
 existing precedent was missing, not a different distribution model.
 
+**RC4 update:** a 15th package, `@avatark/bootstrap` (the Platform Adoption
+Kit — see `docs/PRODUCT_BOOTSTRAP.md`), was added using this exact same
+mechanism (`scripts/build-packages.mjs`/`pack-packages.mjs` both updated to
+include it, in dependency-ordered position after `navigation`). Everything
+below describing "the 14 packages" is an accurate historical snapshot of
+this document's original audit — read `docs/PRODUCT_REGISTRY.md`'s and
+`docs/CROSS_PRODUCT_INTEGRATION.md`'s own "Phase" sections for what changed
+in each package's contents since, and the refreshed checksum table below
+for the current, real state of all 15.
+
 ## What was found before any fix (the audit)
 
 Every one of the 14 packages, before this session:
@@ -62,12 +72,14 @@ Every one of the 14 packages, before this session:
 
 ```
 account-ui   -> journey, membership, product-registry
+bootstrap    -> product-registry, navigation
 journey      -> auth, invitations
 living-echo  -> timeline, recommendations
-navigation   -> product-registry
-(auth, identity, product-registry, timeline, recommendations, membership,
- invitations, notifications, organizations, motion have zero @avatark/*
- dependencies -- they are the leaves)
+navigation   -> product-registry, auth
+(identity, product-registry, timeline, recommendations, membership,
+ invitations, notifications, organizations, motion, auth have zero @avatark/*
+ dependencies -- they are the leaves; navigation's edge to auth was added in
+ RC3, see docs/CROSS_PRODUCT_INTEGRATION.md)
 ```
 
 This is also the required **build order** (leaves first), encoded directly
@@ -136,24 +148,31 @@ of this repo and copies the resulting tarball(s) into their own repo root
 — the same manual step `@avatark/account` already requires today, just
 now backed by a real build instead of a hand-authored one.
 
-### Checksums from the last verified build (2026-07-31, commit at time of writing)
+### Checksums from the last verified build (2026-07-31, RC4 — 15 packages)
 
 | Package | Tarball | sha256 |
 |---|---|---|
 | `@avatark/account-ui` | `avatark-account-ui-0.1.0.tgz` | `1bf77a9930accd20d8d2cc5ae6b7dd4502574eebe685c1d4840b4807fd11e43b` |
 | `@avatark/auth` | `avatark-auth-0.1.0.tgz` | `521546017a21b7588162718f0b7f997029f94016b28380bcb6bdb8db09d12931` |
+| `@avatark/bootstrap` | `avatark-bootstrap-0.1.0.tgz` | `4e680f11318675bfafb23cdabdf16cc7a17c49195679d28aefdec3c8ff8eaeab` |
 | `@avatark/identity` | `avatark-identity-0.1.0.tgz` | `31c58aa4ac3eea23a6612ce8bc85c21a45d69e837111d35962619c572465359c` |
-| `@avatark/invitations` | `avatark-invitations-0.1.0.tgz` | `930f6463ce368c817f4d11275664d2c9c847077549194542504e452d771a426e` |
+| `@avatark/invitations` | `avatark-invitations-0.1.0.tgz` | `072a93fd7cd496dd33b10bae1ee978c904e7a4b1e195843f9c0be55c9f405aa6` |
 | `@avatark/journey` | `avatark-journey-0.1.0.tgz` | `35eaa6da730fade349d17321809b97b0ce20cc8f831b0f4d869a2e4a87147077` |
 | `@avatark/living-echo` | `avatark-living-echo-0.1.0.tgz` | `4288f62d22864cb19cbc4a540720da288740baeb02e7b39e8515fbb03858692d` |
 | `@avatark/membership` | `avatark-membership-0.1.0.tgz` | `bbdff187407b681d86a53d6cda5a7c33391b0e8485169bdb16064c2af3b9d390` |
 | `@avatark/motion` | `avatark-motion-0.1.0.tgz` | `243a999b6a56c601cfe32f86cfd68126c89877bdcacc91521c2dcdd055e24d9e` |
-| `@avatark/navigation` | `avatark-navigation-0.1.0.tgz` | `cfd5c0bf8c0383979353bdca9eba2e939d5e81881f6d96a95a4724d7668932c2` |
+| `@avatark/navigation` | `avatark-navigation-0.1.0.tgz` | `f40e2a14b9304d29f00d2a6851e36c58f8470d93b09ef82d4afadee9fee49a8b` |
 | `@avatark/notifications` | `avatark-notifications-0.1.0.tgz` | `81b472bee74d3bcdac3bf8d201b2ddeceb803c38c8d5fd56a8aa1630e4e1fea8` |
-| `@avatark/organizations` | `avatark-organizations-0.1.0.tgz` | `b0ce4278c8d08792bd80e592ca37dc2e6f66cd853c3a8a2ed896803e6b6bac26` |
-| `@avatark/product-registry` | `avatark-product-registry-0.1.0.tgz` | `00b6ae858deeafd4935cd6bb2789490adff6b853a7ed033fe0c9b705bdfaa395` |
+| `@avatark/organizations` | `avatark-organizations-0.1.0.tgz` | `e0e0ff9b23f77723da745f58453f243842f32dc2826bc20b4017c91ffbb76bbf` |
+| `@avatark/product-registry` | `avatark-product-registry-0.1.0.tgz` | `eb370684c0efe7ef619f8e4230283aef66d1b64030eb139734e6207ef7d9fe94` |
 | `@avatark/recommendations` | `avatark-recommendations-0.1.0.tgz` | `2ed5a4ec68a1d7ebe8c7243eef374c010502080dadb25ac63059d0fb4afd8127` |
 | `@avatark/timeline` | `avatark-timeline-0.1.0.tgz` | `1f7215648123968bd4531d25879572113c202442b36b037f2f94ed39dfe18104` |
+
+`invitations`/`navigation`/`organizations`/`product-registry` checksums changed from the original
+audit's snapshot above — real content changes from the RC3 (`docs/CROSS_PRODUCT_INTEGRATION.md`) and
+RC4 (`docs/PRODUCT_BOOTSTRAP.md`) passes, not drift. `identity`/`journey`/`living-echo`/`membership`/
+`motion`/`notifications`/`recommendations`/`timeline`/`account-ui`/`auth` are unchanged since the
+original audit.
 
 Reproduce: `pnpm install && pnpm build:packages && pnpm pack:packages`,
 then read `dist-packages/manifest.json`.

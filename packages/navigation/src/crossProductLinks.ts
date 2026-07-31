@@ -57,6 +57,18 @@ const CROSS_PRODUCT_TARGET: Record<Extract<DeepLinkKind, "arena" | "studio" | "g
   game: "gamek",
 };
 
+/**
+ * Every product id that participates in the Deep Link Resolver today --
+ * `LOCAL_PRODUCT_ID` (the three local kinds) plus every id named in
+ * `CROSS_PRODUCT_TARGET`. Exported so a conformance checker (see
+ * @avatark/bootstrap's conformance.ts) can decide whether "deep links" is
+ * even an applicable dimension for a given product, rather than guessing.
+ */
+export const DEEP_LINK_PARTICIPANT_IDS: readonly string[] = [
+  LOCAL_PRODUCT_ID,
+  ...new Set(Object.values(CROSS_PRODUCT_TARGET)),
+];
+
 function crossProductLink(
   kind: Extract<DeepLinkKind, "arena" | "studio" | "game">,
   path: string,

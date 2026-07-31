@@ -1,4 +1,4 @@
-// Builds all 14 @avatark/* packages to real dist/ output (compiled .js +
+// Builds every @avatark/* package to real dist/ output (compiled .js +
 // .d.ts), in dependency order, so cross-repo consumers can install a
 // tarball instead of raw TypeScript source (see
 // docs/PLATFORM_PACKAGE_DISTRIBUTION.md). Order is hand-listed rather than
@@ -18,6 +18,7 @@ const BUILD_ORDER = [
   "journey",        // -> auth, invitations
   // Two hops: depends on packages built in the previous tier.
   "account-ui",     // -> journey, membership, product-registry
+  "bootstrap",      // -> product-registry, navigation
 ];
 
 for (const name of BUILD_ORDER) {
@@ -25,4 +26,4 @@ for (const name of BUILD_ORDER) {
   execSync("pnpm run build", { cwd: `packages/${name}`, stdio: "inherit" });
 }
 
-console.log("\nAll 14 packages built.");
+console.log(`\nAll ${BUILD_ORDER.length} packages built.`);

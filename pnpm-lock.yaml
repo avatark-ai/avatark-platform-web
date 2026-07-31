@@ -17,6 +17,9 @@ importers:
       '@avatark/auth':
         specifier: workspace:*
         version: link:packages/auth
+      '@avatark/bootstrap':
+        specifier: workspace:*
+        version: link:packages/bootstrap
       '@avatark/identity':
         specifier: workspace:*
         version: link:packages/identity
@@ -126,6 +129,19 @@ importers:
         version: 5.9.3
 
   packages/auth:
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/bootstrap:
+    dependencies:
+      '@avatark/navigation':
+        specifier: workspace:*
+        version: link:../navigation
+      '@avatark/product-registry':
+        specifier: workspace:*
+        version: link:../product-registry
     devDependencies:
       typescript:
         specifier: ^5
