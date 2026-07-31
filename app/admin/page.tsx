@@ -5,6 +5,16 @@ import { PLATFORM_PRODUCTS } from '@/lib/products/registry'
 import { computeEnvironmentHealth } from '@/lib/admin/environment'
 import { computeEmailDiagnostics } from '@/lib/admin/emailDiagnostics'
 import { computeAuthDiagnostics } from '@/lib/admin/authDiagnostics'
+import { getAdminContext } from '@/lib/admin/authz'
+import {
+  resolveDiagnosticsTier,
+  buildDiagnosticsPayload,
+  buildSafeDiagnosticsCopy,
+  type DeveloperDiagnostics,
+} from '@/lib/admin/diagnosticsTiers'
+import { computePlatformStatus, worstPlatformStatus } from '@/lib/admin/platformStatus'
+import { PRODUCT_REGISTRY } from '@avatark/product-registry'
+import { CopyDiagnosticsButton } from './CopyDiagnosticsButton'
 
 async function getUserTotal(): Promise<string> {
   if (!isAdminClientConfigured()) return 'unknown (service role not configured)'
@@ -83,6 +93,59 @@ export default async function AdminDashboardPage() {
 
   const liveProducts = PLATFORM_PRODUCTS.filter((p) => p.availability === 'live').length
 
+  // Safe Diagnostics (AvatarK Identity RC1, Part 14): this page is already
+  // gated by the admin layout's binary getAdminContext() check, so this
+  // resolves to 'platform_operations' for every real caller today -- the
+  // tier check below is still the real enforcement point (docs/SAFE_DIAGNOSTICS.md),
+  // not dead code: it's what a future finer-grained 'developer' role would
+  // hit without any further changes here.
+  const adminCtx = await getAdminContext()
+  const tier = resolveDiagnosticsTier(adminCtx)
+  const currentEnv = env[0]
+  const statusEntries = computePlatformStatus({
+    environment: currentEnv,
+    auth,
+    email,
+    accountMountEnabled: process.env.NEXT_PUBLIC_ACCOUNT_MOUNT_ENABLED === 'true',
+    productRegistryProductCount: PRODUCT_REGISTRY.length,
+    invitationsConfigured: true,
+  })
+  const developerDiagnostics: DeveloperDiagnostics = {
+    product: 'avatark',
+    environment: currentEnv.name,
+    releaseVersion: process.env.NEXT_PUBLIC_RELEASE_VERSION ?? 'unknown',
+    commitSha: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? null,
+    buildTime: process.env.NEXT_PUBLIC_BUILD_TIME ?? null,
+    databaseLabel: currentEnv.name === 'production' ? 'avatark-prod' : 'avatark-test',
+    region: process.env.VERCEL_REGION ?? null,
+    providerEnablement: { google: auth.googleOAuthEnabled, magic_link: auth.magicLinkEnabled },
+    // Full per-package version inventory already exists at /integration/platform
+    // (lib/integrations/platformStatus.ts) -- not duplicated here.
+    packageVersions: {},
+    registryVersion: String(PRODUCT_REGISTRY.length),
+    statusSummary: worstPlatformStatus(statusEntries),
+    safeReturnRoute: '/admin',
+    currentOrganization: null,
+    membershipRoleCapabilitySummary: adminCtx ? `role=${adminCtx.role}` : 'none',
+    featureFlags: [
+      process.env.NEXT_PUBLIC_ACCOUNT_MOUNT_ENABLED === 'true' ? 'ACCOUNT_MOUNT_ENABLED' : null,
+      auth.googleOAuthEnabled ? 'GOOGLE_OAUTH_ENABLED' : null,
+    ].filter((f): f is string => f !== null),
+  }
+  const diagnostics = buildDiagnosticsPayload(
+    tier,
+    {
+      signedIn: true,
+      connectedMethod: 'none',
+      currentProduct: 'avatark',
+      systemStatus: worstPlatformStatus(statusEntries) === 'operational' ? 'operational' : 'degraded',
+    },
+    developerDiagnostics
+  )
+  const safeDiagnosticsCopy = diagnostics.developer
+    ? buildSafeDiagnosticsCopy(diagnostics.developer as unknown as Record<string, unknown>)
+    : null
+
   return (
     <div className="space-y-8">
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -129,6 +192,43 @@ export default async function AdminDashboardPage() {
           </table>
         </div>
       </section>
+
+      {diagnostics.developer && (
+        <section>
+          <div className="mb-2 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-neutral-700">
+              Platform status &amp; safe diagnostics
+              <span className="ml-2 rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-normal uppercase tracking-wide text-neutral-500">
+                {diagnostics.tier}
+              </span>
+            </h2>
+            {safeDiagnosticsCopy && <CopyDiagnosticsButton payload={safeDiagnosticsCopy} />}
+          </div>
+          <p className="mb-2 text-xs text-neutral-500">
+            Every row is a static configuration check, not a live uptime probe (docs/PLATFORM_STATUS_CONTRACT.md).
+          </p>
+          <div className="overflow-x-auto rounded-md border">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-neutral-50 text-xs uppercase text-neutral-500">
+                <tr>
+                  <th scope="col" className="px-3 py-2">Item</th>
+                  <th scope="col" className="px-3 py-2">Status</th>
+                  <th scope="col" className="px-3 py-2">Detail</th>
+                </tr>
+              </thead>
+              <tbody>
+                {statusEntries.map((s) => (
+                  <tr key={s.item} className="border-t">
+                    <td className="px-3 py-2 font-medium capitalize">{s.item.replace(/_/g, ' ')}</td>
+                    <td className="px-3 py-2 capitalize">{s.status.replace(/_/g, ' ')}</td>
+                    <td className="px-3 py-2 text-neutral-500">{s.detail}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
 
       <section>
         <div className="mb-2 flex items-center justify-between">

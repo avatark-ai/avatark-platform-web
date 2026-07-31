@@ -1,6 +1,32 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { resolveDiagnosticsTier, tierIncludes, isSecretShaped, buildSafeDiagnosticsCopy } from './diagnosticsTiers.ts'
+import { resolveDiagnosticsTier, tierIncludes, isSecretShaped, buildSafeDiagnosticsCopy, buildDiagnosticsPayload } from './diagnosticsTiers.ts'
+import type { ConsumerDiagnostics, DeveloperDiagnostics } from './diagnosticsTiers.ts'
+
+const CONSUMER_FIXTURE: ConsumerDiagnostics = {
+  signedIn: true,
+  connectedMethod: 'magic_link',
+  currentProduct: 'avatark',
+  systemStatus: 'operational',
+}
+
+const DEVELOPER_FIXTURE: DeveloperDiagnostics = {
+  product: 'avatark',
+  environment: 'preview',
+  releaseVersion: '0.1.0',
+  commitSha: 'abc1234',
+  buildTime: null,
+  databaseLabel: 'avatark-test',
+  region: null,
+  providerEnablement: { google: false, magicLink: true },
+  packageVersions: {},
+  registryVersion: '9',
+  statusSummary: 'operational',
+  safeReturnRoute: '/admin',
+  currentOrganization: null,
+  membershipRoleCapabilitySummary: 'role=admin',
+  featureFlags: [],
+}
 
 test('resolveDiagnosticsTier defaults to consumer when there is no admin context', () => {
   assert.equal(resolveDiagnosticsTier(null), 'consumer')
@@ -59,4 +85,20 @@ test('buildSafeDiagnosticsCopy strips every secret-shaped field from a realistic
   assert.doesNotMatch(copy, /postgresql:\/\//)
   assert.match(copy, /avatark-prod/)
   assert.match(copy, /0\.1\.0/)
+})
+
+test('buildDiagnosticsPayload withholds developer/platform-ops fields at consumer tier -- the real-route enforcement point', () => {
+  const payload = buildDiagnosticsPayload('consumer', CONSUMER_FIXTURE, DEVELOPER_FIXTURE)
+  assert.equal(payload.developer, null)
+  assert.deepEqual(payload.consumer, CONSUMER_FIXTURE)
+})
+
+test('buildDiagnosticsPayload includes developer fields at the developer tier', () => {
+  const payload = buildDiagnosticsPayload('developer', CONSUMER_FIXTURE, DEVELOPER_FIXTURE)
+  assert.deepEqual(payload.developer, DEVELOPER_FIXTURE)
+})
+
+test('buildDiagnosticsPayload includes developer fields at the platform_operations tier', () => {
+  const payload = buildDiagnosticsPayload('platform_operations', CONSUMER_FIXTURE, DEVELOPER_FIXTURE)
+  assert.deepEqual(payload.developer, DEVELOPER_FIXTURE)
 })

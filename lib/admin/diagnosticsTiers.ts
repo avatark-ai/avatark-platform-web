@@ -85,3 +85,24 @@ export function buildSafeDiagnosticsCopy(data: Record<string, unknown>): string 
   }
   return JSON.stringify(safe, null, 2)
 }
+
+export interface DiagnosticsPayload {
+  tier: DiagnosticsTier
+  consumer: ConsumerDiagnostics
+  // null whenever the resolved tier doesn't include 'developer' -- the
+  // actual enforcement point real routes must branch on before rendering
+  // any developer/platform-ops field.
+  developer: DeveloperDiagnostics | null
+}
+
+export function buildDiagnosticsPayload(
+  tier: DiagnosticsTier,
+  consumer: ConsumerDiagnostics,
+  developer: DeveloperDiagnostics
+): DiagnosticsPayload {
+  return {
+    tier,
+    consumer,
+    developer: tierIncludes(tier, 'developer') ? developer : null,
+  }
+}
