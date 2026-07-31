@@ -1,0 +1,16 @@
+{
+  "name": "@avatark/identity",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Provider-neutral identity contract (IdentityClaims/IdentityProvider) every AvatarK product integrates against instead of importing a specific auth backend directly.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "devDependencies": {
+    "typescript": "^5"
+  }
+}

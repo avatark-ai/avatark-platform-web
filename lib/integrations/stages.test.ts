@@ -1,7 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { JOURNEY_STEP_ORDER } from "../journey/stateMachine.ts";
-import { createJourneyManifest } from "../journey/manifest.ts";
+import { JOURNEY_STEP_ORDER, createJourneyManifest } from "@avatark/journey";
 import { productForStep, legalNextSteps, boundaryCrossing, INTEGRATION_STAGE_ORDER } from "./stages.ts";
 
 test("INTEGRATION_STAGE_ORDER is the 5 stages in mission order", () => {

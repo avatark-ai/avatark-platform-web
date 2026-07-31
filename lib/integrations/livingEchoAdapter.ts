@@ -1,4 +1,4 @@
-import type { PrometheusToLivingEchoHandoff } from "../journey/handoffContracts.ts";
+import type { PrometheusToLivingEchoHandoff } from "@avatark/journey";
 import type { AdapterDescribeResult, IntegrationAdapter } from "./adapterTypes.ts";
 
 // Real today, narrowly: the RC5 signed-completion-receipt loop

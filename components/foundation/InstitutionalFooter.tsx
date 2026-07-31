@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { getProductById } from '@avatark/product-registry'
 import { resolveEcosystemProduct } from '@/lib/content/ecosystemGroups'
-import { DepartureLink } from '@/components/motion/DepartureLink'
+import { DepartureLink } from '@avatark/motion'
 
 const LINK_CLASS =
   'rounded-sm text-sm transition-colors hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'

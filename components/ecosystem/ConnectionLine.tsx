@@ -1,4 +1,4 @@
-import { polylineLength, type Point } from '@/lib/motion/pathLength'
+import { polylineLength, type Point } from '@avatark/motion'
 
 // Reusable connector for PlatformDiagram/ExpressionLayer: computes its own
 // stroke-dasharray/dashoffset from its own points so the DRAW primitive

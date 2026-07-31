@@ -4,7 +4,7 @@
 // round-trips to the auth server) -- this hook never trusts a locally
 // cached claim.
 import { useEffect, useState } from 'react'
-import type { IdentityClaims } from './types'
+import type { IdentityClaims } from '@avatark/identity'
 
 export type IdentityState =
   | { status: 'loading' }

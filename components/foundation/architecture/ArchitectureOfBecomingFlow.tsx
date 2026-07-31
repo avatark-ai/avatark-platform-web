@@ -1,4 +1,4 @@
-import { RevealOnView } from '@/components/motion/RevealOnView'
+import { RevealOnView } from '@avatark/motion'
 
 // Diagram 3: the same flex+arrow step-sequence pattern already used for
 // Dynamics' transition cycles on /canon/dynamics -- plain CSS, no SVG

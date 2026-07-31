@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { createJourneyManifest } from "@/lib/journey/manifest";
+import { createJourneyManifest } from "@avatark/journey";
 import { describeDashboard } from "@/lib/integrations/dashboard";
 import { isPracticeHandoffAvailable } from "@/lib/onboarding/practiceHandoff";
 import { IntegrationDashboardView } from "@/components/dev/IntegrationDashboardView";

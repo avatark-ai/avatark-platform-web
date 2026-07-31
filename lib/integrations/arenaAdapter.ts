@@ -1,4 +1,4 @@
-import type { LivingEchoToArenaHandoff } from "../journey/handoffContracts.ts";
+import type { LivingEchoToArenaHandoff } from "@avatark/journey";
 import type { AdapterDescribeResult, IntegrationAdapter } from "./adapterTypes.ts";
 
 // No ArenaK integration exists anywhere in this repo -- a distinct,

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { createJourneyManifest } from "@/lib/journey/manifest";
-import { JOURNEY_STEP_ORDER } from "@/lib/journey/stateMachine";
+import { createJourneyManifest, JOURNEY_STEP_ORDER } from "@avatark/journey";
 import { isPracticeHandoffAvailable } from "@/lib/onboarding/practiceHandoff";
 import { isStreamHandoffAvailable } from "@/lib/onboarding/streamHandoff";
 import { productForStep, boundaryCrossing } from "@/lib/integrations/stages";

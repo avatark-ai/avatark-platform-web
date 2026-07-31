@@ -18,8 +18,7 @@ import Link from "next/link";
 import { resolveClientPrincipal, type ClientPrincipalResult } from "@/lib/auth/resolveClientPrincipal";
 import { createClient } from "@/lib/supabase/client";
 import { readJourneyContext, recordInvitationAcceptance } from "@/lib/journey/state";
-import { writeGuestContext } from "@/lib/journey/guestContext";
-import { enterInvitationLink } from "@/lib/journey/deepLinks";
+import { writeGuestContext, enterInvitationLink } from "@avatark/journey";
 import { SIGN_IN_HREF } from "@/lib/echo/links";
 
 export function InvitationAcceptGate({

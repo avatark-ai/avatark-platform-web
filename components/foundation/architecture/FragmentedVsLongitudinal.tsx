@@ -1,5 +1,4 @@
-import { RevealOnView } from '@/components/motion/RevealOnView'
-import { polylineLength } from '@/lib/motion/pathLength'
+import { RevealOnView, polylineLength } from '@avatark/motion'
 
 // Diagram 2: the same six labels rendered twice -- once scattered at
 // uneven heights with no connecting line ("currently separated"), once

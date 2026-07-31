@@ -11,7 +11,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ENTER_ECHO_HREF, SIGN_IN_HREF } from '@/lib/content/links'
-import { RippleLink } from '@/components/motion/RippleLink'
+import { RippleLink } from '@avatark/motion'
 
 const LINK_CLASS =
   'rounded-sm text-sm font-medium tracking-tight transition-colors duration-200 hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'

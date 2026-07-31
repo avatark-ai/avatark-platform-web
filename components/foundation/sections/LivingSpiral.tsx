@@ -1,7 +1,6 @@
 import { getLivingSpiralContent } from '@/lib/content/foundation'
 import { SectionContainer } from '@/components/foundation/Container'
-import { RevealOnView } from '@/components/motion/RevealOnView'
-import { polygonLength } from '@/lib/motion/pathLength'
+import { RevealOnView, polygonLength } from '@avatark/motion'
 
 // Layout-only geometry for the five stage nodes -- not editorial content,
 // so it stays here rather than in content/foundation/living-spiral.md.

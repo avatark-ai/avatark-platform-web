@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CanonContent } from '@/lib/content/foundation'
 import { SectionContainer } from '@/components/foundation/Container'
-import { RevealOnView } from '@/components/motion/RevealOnView'
+import { RevealOnView } from '@avatark/motion'
 import { FourAxesGeometry, FOUR_AXES_ENTRY_SETTLE_MS } from '@/components/foundation/geometry/FourAxesGeometry'
 
 // Desktop: tabs, one axis visible at a time, above a shared geometry

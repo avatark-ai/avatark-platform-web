@@ -1,4 +1,4 @@
-import { RevealOnView } from "@/components/motion/RevealOnView";
+import { RevealOnView } from "@avatark/motion";
 
 // Richer placeholder for a not-yet-built feature -- no backend logic, no
 // invented analytics. Explains the vision in the platform's own words and

@@ -1,5 +1,4 @@
-import { recoverJourney, type JourneyRecoveryAction, type JourneyRecoveryReason } from "../journey/recovery.ts";
-import type { JourneyManifest } from "../journey/manifest.ts";
+import { recoverJourney, type JourneyRecoveryAction, type JourneyRecoveryReason, type JourneyManifest } from "@avatark/journey";
 import { boundaryCrossing } from "./stages.ts";
 import { describeDashboard, type DashboardView, type DescribeDashboardInput } from "./dashboard.ts";
 import { ecosystemStageForProduct, healthStatusFromAdapterResult, STAGE_OWNER, type IntegrationHealthStatus } from "./ecosystemMap.ts";

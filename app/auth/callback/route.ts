@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { safeReturnPath } from '@/lib/auth/safeReturnPath'
-import { classifyCallbackFailure } from '@/lib/auth/callbackError'
+import { safeReturnPath, classifyCallbackFailure } from '@avatark/auth'
 
 function signInFailureRedirect(origin: string, returnPath: string, reason: string) {
   const url = new URL('/auth/sign-in', origin)

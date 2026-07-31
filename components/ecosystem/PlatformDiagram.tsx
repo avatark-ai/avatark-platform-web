@@ -1,5 +1,4 @@
-import type { Point } from '@/lib/motion/pathLength'
-import { RevealOnView } from '@/components/motion/RevealOnView'
+import { RevealOnView, type Point } from '@avatark/motion'
 import { ConnectionLine } from './ConnectionLine'
 
 // The one-page mental model for the whole ecosystem: AvatarK (institutional

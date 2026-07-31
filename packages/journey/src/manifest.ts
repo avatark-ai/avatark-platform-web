@@ -1,7 +1,4 @@
 import type { Invitation, InvitationDestination } from "@avatark/invitations";
-// Relative imports so this file stays directly runnable under this
-// repo's plain `node --test` runner, same as lib/invitations/*.ts.
-import type { DestinationPreview } from "../invitations/destination.ts";
 import type { GuestJourneyContext } from "./guestContext.ts";
 import { JOURNEY_STEP_ORDER, type JourneyStepId } from "./stateMachine.ts";
 
@@ -88,6 +85,15 @@ function destinationCohortId(destination: InvitationDestination): string | null 
   return destination.type === "cohort" ? destination.cohortId : null;
 }
 
+// Structural subset of lib/invitations/destination.ts's DestinationPreview
+// (that file, and the app-specific Echo content it previews, stays out
+// of this package) -- any real DestinationPreview satisfies this shape.
+export interface DestinationAvailability {
+  title: string;
+  body: string;
+  available: boolean;
+}
+
 /**
  * Bridges a freshly-resolved Invitation + its preview into a manifest, at
  * the moment it's shown on /enter/[token]. Deliberately does not decide
@@ -100,7 +106,7 @@ export function manifestFromInvitation(
   journeyId: string,
   invitation: Invitation,
   destination: InvitationDestination,
-  preview: DestinationPreview
+  preview: DestinationAvailability
 ): JourneyManifest {
   return createJourneyManifest({
     journeyId,

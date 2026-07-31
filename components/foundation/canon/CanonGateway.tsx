@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { CANON_FUTURE_ITEMS, CANON_GATEWAY_CARD_IDS, CANON_NAV_ITEMS } from '@/lib/content/canonNav'
-import { RevealOnView } from '@/components/motion/RevealOnView'
+import { RevealOnView } from '@avatark/motion'
 
 // Bridge from the Canon overview into the three reader pages -- these are
 // local institutional routes, so a click stays inside the institutional

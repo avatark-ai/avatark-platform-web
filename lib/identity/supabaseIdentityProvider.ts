@@ -1,11 +1,11 @@
 // Reference IdentityProvider implementation for AvatarK Platform itself,
 // backed by Supabase Auth. Products outside this repo cannot import this
-// file directly (it's server-only and lives in a single Next.js app, not
-// a published package) -- see IdentityProvider in ./types for why that's
-// an intentional, not-yet-solved next step, not an oversight.
+// file directly (it's server-only and lives in a single Next.js app) --
+// only the IdentityClaims/IdentityProvider contract itself is packaged,
+// as @avatark/identity.
 import { createClient } from '@/lib/supabase/server'
-import type { IdentityClaims, IdentityProvider } from './types'
-import { safeReturnPath } from '@/lib/auth/safeReturnPath'
+import type { IdentityClaims, IdentityProvider } from '@avatark/identity'
+import { safeReturnPath } from '@avatark/auth'
 import { loadIdentityExtras } from './claims'
 
 // Same-origin by default (Platform's own account/sign-in pages). Set to

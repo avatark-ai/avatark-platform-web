@@ -4,8 +4,7 @@ import { SectionContainer, EditorialContainer } from '@/components/foundation/Co
 import { TransactionsVsTransformation } from '@/components/foundation/architecture/TransactionsVsTransformation'
 import { FragmentedVsLongitudinal } from '@/components/foundation/architecture/FragmentedVsLongitudinal'
 import { ArchitectureOfBecomingFlow } from '@/components/foundation/architecture/ArchitectureOfBecomingFlow'
-import { RevealOnView } from '@/components/motion/RevealOnView'
-import { RippleLink } from '@/components/motion/RippleLink'
+import { RevealOnView, RippleLink } from '@avatark/motion'
 import { getArchitectureContent } from '@/lib/content/foundation'
 
 export const metadata: Metadata = {

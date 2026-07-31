@@ -1,5 +1,4 @@
-import { RevealOnView } from '@/components/motion/RevealOnView'
-import { polylineLength } from '@/lib/motion/pathLength'
+import { RevealOnView, polylineLength } from '@avatark/motion'
 
 // Diagram 1: two small SVGs sharing the same node positions on the x-axis --
 // Transactions are flat, isolated dots (nothing connects them); Transformation

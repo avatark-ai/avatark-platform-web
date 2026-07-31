@@ -1,0 +1,22 @@
+{
+  "name": "@avatark/motion",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared motion primitives: pure SVG path-length math (pathLength), and the four real client components (PageEnter, RevealOnView, RippleLink, DepartureLink) products can inherit. CSS keyframes/utility classes remain in each app's own stylesheet this phase -- not yet centralized.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "peerDependencies": {
+    "next": "^14.2.33 || ^15 || ^16",
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "devDependencies": {
+    "@types/react": "^19",
+    "typescript": "^5"
+  }
+}

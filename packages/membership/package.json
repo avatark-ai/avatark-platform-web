@@ -1,0 +1,16 @@
+{
+  "name": "@avatark/membership",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared membership plan-tier vocabulary (Free today; Paid/Enterprise/Education as future targets). Distinct from @avatark/account's MembershipSummary/ProductRelationship, which are that package's own UI-adapter shapes -- this is the underlying plan concept AvatarK owns. No billing implementation.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "devDependencies": {
+    "typescript": "^5"
+  }
+}

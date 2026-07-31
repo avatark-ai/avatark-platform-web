@@ -1,12 +1,14 @@
-import { JOURNEY_STEP_ORDER, canTransition, type JourneyStepId } from "../journey/stateMachine.ts";
-import type { JourneyManifest } from "../journey/manifest.ts";
 import {
+  JOURNEY_STEP_ORDER,
+  canTransition,
+  type JourneyStepId,
+  type JourneyManifest,
   buildEchoToStreamKHandoff,
   buildStreamKToPrometheusHandoff,
   buildPrometheusToLivingEchoHandoff,
   buildLivingEchoToArenaHandoff,
   type LivingEchoToArenaRecommendationReason,
-} from "../journey/handoffContracts.ts";
+} from "@avatark/journey";
 import { streamkAdapter } from "./streamkAdapter.ts";
 import { prometheusAdapter } from "./prometheusAdapter.ts";
 import { livingEchoAdapter } from "./livingEchoAdapter.ts";

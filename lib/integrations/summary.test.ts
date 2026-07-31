@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { createJourneyManifest } from "../journey/manifest.ts";
+import { createJourneyManifest } from "@avatark/journey";
 import { describeIntegrationHealth } from "./health.ts";
 import { describeJourneySummary } from "./summary.ts";
 

@@ -1,6 +1,6 @@
 import type { EcosystemStageId } from "@/lib/integrations/ecosystemMap";
 import type { IntegrationProduct } from "@/lib/integrations/stages";
-import type { JourneyStepId } from "@/lib/journey/stateMachine";
+import type { JourneyStepId } from "@avatark/journey";
 import type { OverallStatusView, IntegrationReadinessView } from "@/lib/integrations/summary";
 import { OverallStatusPill, HealthStatusPill } from "./status";
 

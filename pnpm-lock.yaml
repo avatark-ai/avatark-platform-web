@@ -11,9 +11,33 @@ importers:
       '@avatark/account':
         specifier: file:avatark-account-0.1.1.tgz
         version: file:avatark-account-0.1.1.tgz(next@16.2.10(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@avatark/auth':
+        specifier: workspace:*
+        version: link:packages/auth
+      '@avatark/identity':
+        specifier: workspace:*
+        version: link:packages/identity
       '@avatark/invitations':
         specifier: workspace:*
         version: link:packages/invitations
+      '@avatark/journey':
+        specifier: workspace:*
+        version: link:packages/journey
+      '@avatark/membership':
+        specifier: workspace:*
+        version: link:packages/membership
+      '@avatark/motion':
+        specifier: workspace:*
+        version: link:packages/motion
+      '@avatark/navigation':
+        specifier: workspace:*
+        version: link:packages/navigation
+      '@avatark/notifications':
+        specifier: workspace:*
+        version: link:packages/notifications
+      '@avatark/organizations':
+        specifier: workspace:*
+        version: link:packages/organizations
       '@avatark/product-registry':
         specifier: workspace:*
         version: link:packages/product-registry
@@ -64,7 +88,76 @@ importers:
         specifier: ^5
         version: 5.9.3
 
+  packages/auth:
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/identity:
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
   packages/invitations:
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/journey:
+    dependencies:
+      '@avatark/auth':
+        specifier: workspace:*
+        version: link:../auth
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/membership:
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/motion:
+    dependencies:
+      next:
+        specifier: ^14.2.33 || ^15 || ^16
+        version: 16.2.10(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: '>=18'
+        version: 19.2.4
+      react-dom:
+        specifier: '>=18'
+        version: 19.2.4(react@19.2.4)
+    devDependencies:
+      '@types/react':
+        specifier: ^19
+        version: 19.2.17
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/navigation:
+    dependencies:
+      '@avatark/product-registry':
+        specifier: workspace:*
+        version: link:../product-registry
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/notifications:
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/organizations:
     devDependencies:
       typescript:
         specifier: ^5

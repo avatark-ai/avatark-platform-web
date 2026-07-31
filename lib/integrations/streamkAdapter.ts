@@ -1,4 +1,4 @@
-import type { EchoToStreamKHandoff } from "../journey/handoffContracts.ts";
+import type { EchoToStreamKHandoff } from "@avatark/journey";
 import type { AdapterDescribeResult, IntegrationAdapter } from "./adapterTypes.ts";
 
 // No real per-story StreamK mapping exists -- lib/onboarding/streamHandoff.ts's

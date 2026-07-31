@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import type { EcosystemStageId } from "@/lib/integrations/ecosystemMap";
 import type { IntegrationHealthEntry } from "@/lib/integrations/health";
 import type { IntegrationProduct } from "@/lib/integrations/stages";
-import type { JourneyStepId } from "@/lib/journey/stateMachine";
+import type { JourneyStepId } from "@avatark/journey";
 import type { OverallStatusView, IntegrationReadinessView, Recommendation } from "@/lib/integrations/summary";
 import { JourneyCard } from "./JourneyCard";
 import { EcosystemMap } from "./EcosystemMap";

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { SectionContainer } from '@/components/foundation/Container'
-import { RevealOnView } from '@/components/motion/RevealOnView'
+import { RevealOnView } from '@avatark/motion'
 import { ENTER_ECHO_HREF } from '@/lib/content/links'
 import { getGrowthEngines, getJourneyTransitions, getPlatformNode, distinctMaturityLabel } from '@/lib/products/platformGraph'
 import { PlatformDiagram } from './PlatformDiagram'

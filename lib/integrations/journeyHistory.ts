@@ -1,5 +1,4 @@
-import type { JourneyStepId } from "../journey/stateMachine.ts";
-import type { JourneyManifest } from "../journey/manifest.ts";
+import type { JourneyStepId, JourneyManifest } from "@avatark/journey";
 import { boundaryCrossing, type BoundaryCrossing } from "./stages.ts";
 
 // ============================================================

@@ -1,6 +1,6 @@
 import { InstitutionalHeader } from '@/components/foundation/InstitutionalHeader'
 import { InstitutionalFooter } from '@/components/foundation/InstitutionalFooter'
-import { PageEnter } from '@/components/motion/PageEnter'
+import { PageEnter } from '@avatark/motion'
 
 // Shared shell for every institutional AvatarK.ai page (/, /foundation,
 // /canon, /founder, /ecosystem, /roadmap). Owns the <main> wrapper, so

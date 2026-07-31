@@ -1,6 +1,5 @@
 import Link from 'next/link'
-import { DepartureLink } from '@/components/motion/DepartureLink'
-import { RevealOnView } from '@/components/motion/RevealOnView'
+import { DepartureLink, RevealOnView } from '@avatark/motion'
 import { getConvergenceLayer, getExpressionLayer as getExpressionNodes, getJourneyTransitions, distinctMaturityLabel, type PlatformNode } from '@/lib/products/platformGraph'
 import { StatusBadge } from './StatusBadge'
 

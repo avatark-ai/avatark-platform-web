@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { createJourneyManifest } from "../journey/manifest.ts";
+import { createJourneyManifest } from "@avatark/journey";
 import { describeDashboard } from "./dashboard.ts";
 
 function baseInput(overrides: Partial<Parameters<typeof describeDashboard>[1]> = {}) {

@@ -1,6 +1,4 @@
-// Relative import so this file stays directly runnable under this
-// repo's plain `node --test` runner, same as lib/invitations/*.ts.
-import { safeReturnPath } from "../auth/safeReturnPath.ts";
+import { safeReturnPath } from "@avatark/auth";
 
 // A signed-out participant's provisional progress through an invitation,
 // remembered client-side only -- localStorage, never a backend identity.

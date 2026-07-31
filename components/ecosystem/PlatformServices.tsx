@@ -1,4 +1,4 @@
-import { RevealOnView } from '@/components/motion/RevealOnView'
+import { RevealOnView } from '@avatark/motion'
 
 // RC4 Final Polish: replaces ConnectedProducts.tsx, which repeated the same
 // four-item "Uses" list under every Growth Engine card and told a visitor

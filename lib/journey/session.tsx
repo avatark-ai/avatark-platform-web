@@ -19,7 +19,7 @@ import {
   EMPTY_JOURNEY_CONTEXT,
   type JourneyContext,
 } from '@/lib/journey/state'
-import { readGuestContext, markGuestContextClaimed } from '@/lib/journey/guestContext'
+import { readGuestContext, markGuestContextClaimed } from '@avatark/journey'
 
 interface JourneySession {
   principal: ClientPrincipalResult | { status: 'loading' }

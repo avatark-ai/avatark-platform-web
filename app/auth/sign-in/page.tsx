@@ -2,7 +2,7 @@
 import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { callbackErrorMessage } from '@/lib/auth/callbackError'
+import { callbackErrorMessage } from '@avatark/auth'
 import { fetchAuthProviderCapabilities } from '@/lib/auth/authProviderCapabilities'
 import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from '@/components/echo/shell/EchoPageShell'
 

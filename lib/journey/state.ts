@@ -1,6 +1,6 @@
 import { isIntentionId, type IntentionId } from "@/lib/onboarding/intentions";
 import { createClient } from "@/lib/supabase/client";
-import { shouldSkipInvitationAcceptance } from "./invitationAcceptance.ts";
+import { shouldSkipInvitationAcceptance } from "@avatark/journey";
 
 export interface JourneyContext {
   intention: IntentionId | null;

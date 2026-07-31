@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { DepartureLink } from '@/components/motion/DepartureLink'
+import { DepartureLink } from '@avatark/motion'
 import { StatusBadge, type PlatformStatus } from './StatusBadge'
 
 // One of the three equal Growth Engine cards (PrometheusK, GameK, AtlasK).

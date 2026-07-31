@@ -20,7 +20,7 @@
 // Per explicit product decision, this practice is left unmapped (an
 // honest "unavailable" state) rather than pointed at the wrong practice
 // again or at a weak guess.
-import { safeReturnPath } from "../auth/safeReturnPath.ts";
+import { safeReturnPath } from "@avatark/auth";
 
 export interface PracticeHandoffTarget {
   journeyId: string;

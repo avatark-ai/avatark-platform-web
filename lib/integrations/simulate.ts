@@ -1,5 +1,12 @@
-import { transition, JOURNEY_STEP_ORDER, type JourneyStepId } from "../journey/stateMachine.ts";
-import { createJourneyManifest, type JourneyManifest, type JourneySource, type JourneyEntryPoint } from "../journey/manifest.ts";
+import {
+  transition,
+  JOURNEY_STEP_ORDER,
+  type JourneyStepId,
+  createJourneyManifest,
+  type JourneyManifest,
+  type JourneySource,
+  type JourneyEntryPoint,
+} from "@avatark/journey";
 import { INTEGRATION_STAGE_ORDER, productForStep, boundaryCrossing, type IntegrationProduct } from "./stages.ts";
 
 // ============================================================

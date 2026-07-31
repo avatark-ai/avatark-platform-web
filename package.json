@@ -7,11 +7,19 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --test lib/onboarding/receipt.test.ts lib/onboarding/practiceHandoff.test.ts lib/auth/safeReturnPath.test.ts lib/auth/callbackError.test.ts lib/admin/environment.test.ts lib/admin/emailDiagnostics.test.ts lib/admin/authDiagnostics.test.ts lib/admin/audit.test.ts lib/email/sendEmail.test.ts lib/email/templates.test.ts lib/products/health.test.ts lib/products/access.test.ts lib/products/platformGraph.test.ts lib/activities/registry.test.ts lib/organizations/invitations.test.ts lib/identity/claims.test.ts lib/journey/continuity.test.ts packages/product-registry/src/validation.test.ts packages/product-registry/src/helpers.test.ts lib/sites/registry.test.ts lib/content/echo.test.ts packages/invitations/src/validation.test.ts packages/invitations/src/localResolver.test.ts lib/invitations/tokenFormat.test.ts lib/invitations/destination.test.ts lib/invitations/signInReturn.test.ts lib/invitations/metadata.test.ts lib/journey/invitationAcceptance.test.ts lib/journey/guestContext.test.ts lib/onboarding/streamHandoff.test.ts lib/journey/stateMachine.test.ts lib/journey/manifest.test.ts lib/journey/handoffContracts.test.ts lib/journey/deepLinks.test.ts lib/journey/recovery.test.ts lib/integrations/adapters.test.ts lib/integrations/stages.test.ts lib/integrations/dashboard.test.ts lib/integrations/simulate.test.ts lib/integrations/ecosystemMap.test.ts lib/integrations/health.test.ts lib/integrations/journeyHistory.test.ts lib/integrations/summary.test.ts"
+    "test": "node --experimental-strip-types --test lib/onboarding/receipt.test.ts lib/onboarding/practiceHandoff.test.ts packages/auth/src/safeReturnPath.test.ts packages/auth/src/callbackError.test.ts lib/admin/environment.test.ts lib/admin/emailDiagnostics.test.ts lib/admin/authDiagnostics.test.ts lib/admin/audit.test.ts lib/email/sendEmail.test.ts lib/email/templates.test.ts lib/products/health.test.ts lib/products/access.test.ts lib/products/platformGraph.test.ts lib/activities/registry.test.ts packages/organizations/src/invitations.test.ts lib/identity/claims.test.ts lib/journey/continuity.test.ts packages/product-registry/src/validation.test.ts packages/product-registry/src/helpers.test.ts lib/sites/registry.test.ts lib/content/echo.test.ts packages/invitations/src/validation.test.ts packages/invitations/src/localResolver.test.ts lib/invitations/tokenFormat.test.ts lib/invitations/destination.test.ts lib/invitations/signInReturn.test.ts lib/invitations/metadata.test.ts packages/journey/src/invitationAcceptance.test.ts packages/journey/src/guestContext.test.ts lib/onboarding/streamHandoff.test.ts packages/journey/src/stateMachine.test.ts packages/journey/src/manifest.test.ts packages/journey/src/handoffContracts.test.ts packages/journey/src/deepLinks.test.ts packages/journey/src/recovery.test.ts lib/integrations/adapters.test.ts lib/integrations/stages.test.ts lib/integrations/dashboard.test.ts lib/integrations/simulate.test.ts lib/integrations/ecosystemMap.test.ts lib/integrations/health.test.ts lib/integrations/journeyHistory.test.ts lib/integrations/summary.test.ts"
   },
   "dependencies": {
     "@avatark/account": "file:avatark-account-0.1.1.tgz",
+    "@avatark/auth": "workspace:*",
+    "@avatark/identity": "workspace:*",
     "@avatark/invitations": "workspace:*",
+    "@avatark/journey": "workspace:*",
+    "@avatark/membership": "workspace:*",
+    "@avatark/motion": "workspace:*",
+    "@avatark/navigation": "workspace:*",
+    "@avatark/notifications": "workspace:*",
+    "@avatark/organizations": "workspace:*",
     "@avatark/product-registry": "workspace:*",
     "@supabase/ssr": "^0.12.1",
     "@supabase/supabase-js": "^2.110.5",

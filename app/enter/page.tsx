@@ -4,7 +4,7 @@ import { Suspense, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
 import { EcosystemFlow } from "@/components/echo/shared/EcosystemFlow";
-import { enterInvitationLink } from "@/lib/journey/deepLinks";
+import { enterInvitationLink } from "@avatark/journey";
 
 const INVITATION_ORIGINS = [
   "an event",

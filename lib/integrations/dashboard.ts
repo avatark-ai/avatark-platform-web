@@ -1,7 +1,5 @@
 import type { InvitationStatus } from "@avatark/invitations";
-import type { JourneyStepId } from "../journey/stateMachine.ts";
-import type { JourneyManifest } from "../journey/manifest.ts";
-import { recoverJourney } from "../journey/recovery.ts";
+import { recoverJourney, type JourneyStepId, type JourneyManifest } from "@avatark/journey";
 import { productForStep, legalNextSteps, boundaryCrossing, type IntegrationProduct } from "./stages.ts";
 
 // ============================================================

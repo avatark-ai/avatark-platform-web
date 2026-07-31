@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { readGuestContext, writeGuestContext, type GuestJourneyStep } from "@/lib/journey/guestContext";
+import { readGuestContext, writeGuestContext, type GuestJourneyStep } from "@avatark/journey";
 
 // A silent client island for pages a guest journey passes through after
 // "Continue as guest" (see InvitationAcceptGate.tsx): Watch First and the

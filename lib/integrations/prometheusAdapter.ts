@@ -1,4 +1,4 @@
-import type { StreamKToPrometheusHandoff } from "../journey/handoffContracts.ts";
+import type { StreamKToPrometheusHandoff } from "@avatark/journey";
 import { isPracticeHandoffAvailable } from "../onboarding/practiceHandoff.ts";
 import type { AdapterDescribeResult, IntegrationAdapter } from "./adapterTypes.ts";
 

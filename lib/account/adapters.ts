@@ -7,6 +7,7 @@
 import type { AccountAdapters } from '@avatark/account'
 import { createClient } from '@/lib/supabase/client'
 import { PLATFORM_PRODUCTS } from '@/lib/products/registry'
+import { MEMBERSHIP_PLAN_LABEL } from '@avatark/membership'
 
 // See membership.getRelationships/getRoles below: the @avatark/account
 // package's MembershipAdapter.getRoles is synchronous, so real platform
@@ -107,12 +108,19 @@ export const avatarKPlatformAdapters: AccountAdapters = {
 
   membership: {
     // No billing system exists anywhere in this ecosystem yet (see
-    // lib/products/registry.ts's SUBSCRIPTION_MODEL_NOTE) -- 'Free' is
-    // genuinely the only plan that exists, not a placeholder. practices/
-    // borrowed/echoes are PrometheusK-specific concepts this host has no
-    // data for; the caller (MembershipTab) always passes 0 for them here,
-    // so echoing them back is accurate, not fabricated.
-    getSummary: () => ({ planName: 'Free', usagePractices: 0, creatorStatus: 'Member', borrowedCount: 0 }),
+    // @avatark/product-registry's SUBSCRIPTION_MODEL_NOTE) -- Free is
+    // genuinely the only plan that exists, not a placeholder, sourced from
+    // @avatark/membership's shared plan-tier vocabulary rather than a raw
+    // string literal. practices/borrowed/echoes are PrometheusK-specific
+    // concepts this host has no data for; the caller (MembershipTab)
+    // always passes 0 for them here, so echoing them back is accurate,
+    // not fabricated.
+    getSummary: () => ({
+      planName: MEMBERSHIP_PLAN_LABEL.free,
+      usagePractices: 0,
+      creatorStatus: 'Member',
+      borrowedCount: 0,
+    }),
     // Real product_access rows via RLS's own-row policy (migration 014) --
     // no service-role client needed, the signed-in user can read their own
     // grants directly. Also warms the platform-roles cache getRoles()

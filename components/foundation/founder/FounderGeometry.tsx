@@ -1,5 +1,5 @@
 import { getCanonContent } from '@/lib/content/foundation'
-import { RevealOnView } from '@/components/motion/RevealOnView'
+import { RevealOnView } from '@avatark/motion'
 import { FourAxesGeometry } from '@/components/foundation/geometry/FourAxesGeometry'
 
 // The one geometry illustration for the Founder page -- the Synthesis

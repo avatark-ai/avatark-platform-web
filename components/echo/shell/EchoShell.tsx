@@ -14,7 +14,7 @@
 // path alone can be either experience depending on the resolved site.
 import { usePathname } from "next/navigation";
 import type { SiteId } from "@/lib/sites/registry";
-import { PageEnter } from "@/components/motion/PageEnter";
+import { PageEnter } from "@avatark/motion";
 import { EchoHeader } from "./EchoHeader";
 import { EchoContextNav } from "./EchoContextNav";
 import { EchoFooter } from "./EchoFooter";

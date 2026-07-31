@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { CanonPageLayout } from '@/components/foundation/canon/CanonPageLayout'
 import { CanonFormula } from '@/components/foundation/canon/CanonFormula'
-import { RevealOnView } from '@/components/motion/RevealOnView'
+import { RevealOnView } from '@avatark/motion'
 import { OPERATORS_CONTENT } from '@/lib/content/canonReaders'
 
 export const metadata: Metadata = {

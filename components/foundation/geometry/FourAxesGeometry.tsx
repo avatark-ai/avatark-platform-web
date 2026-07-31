@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import type { CanonAxis } from '@/lib/content/foundation'
-import { polylineLength } from '@/lib/motion/pathLength'
+import { polylineLength } from '@avatark/motion'
 
 // Shared four-axis cross diagram -- Awareness/Adiyogi and Responsibility/
 // Rama on a horizontal line through Wisdom/Krishna at the center, with

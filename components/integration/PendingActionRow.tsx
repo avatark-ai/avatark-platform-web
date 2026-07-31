@@ -1,4 +1,4 @@
-import type { JourneyStepId } from "@/lib/journey/stateMachine";
+import type { JourneyStepId } from "@avatark/journey";
 import type { IntegrationProduct } from "@/lib/integrations/stages";
 import type { IntegrationHealthStatus } from "@/lib/integrations/ecosystemMap";
 import { HealthStatusPill } from "./status";

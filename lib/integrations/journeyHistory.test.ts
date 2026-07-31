@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { createJourneyManifest } from "../journey/manifest.ts";
+import { createJourneyManifest } from "@avatark/journey";
 import { completedBoundaryCrossings } from "./journeyHistory.ts";
 
 test("no completed steps and nextStep at the very start -- no crossings yet", () => {

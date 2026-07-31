@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CanonPageLayout } from '@/components/foundation/canon/CanonPageLayout'
-import { RevealOnView } from '@/components/motion/RevealOnView'
+import { RevealOnView } from '@avatark/motion'
 import { CANON_PLATES } from '@/lib/content/canonPlates'
 
 export const metadata: Metadata = {

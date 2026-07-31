@@ -1,5 +1,5 @@
 import type { CanonPair } from '@/lib/content/canonReaders'
-import { RevealOnView } from '@/components/motion/RevealOnView'
+import { RevealOnView } from '@avatark/motion'
 
 // Shared "label — body" card grid used across the Dynamics and Alignment
 // reader pages (regimes, imbalance signatures, Arena measures, misalignment

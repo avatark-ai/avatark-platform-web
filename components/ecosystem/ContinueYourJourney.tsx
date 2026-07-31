@@ -1,6 +1,5 @@
 import Link from 'next/link'
-import { DepartureLink } from '@/components/motion/DepartureLink'
-import { RevealOnView } from '@/components/motion/RevealOnView'
+import { DepartureLink, RevealOnView } from '@avatark/motion'
 import { getPlatformNode, getJourneyTransitions } from '@/lib/products/platformGraph'
 
 // RC4 final polish: still fully computed from the platform journey graph
