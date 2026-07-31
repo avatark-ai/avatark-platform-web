@@ -42,7 +42,7 @@ in `docs/GAMEK_SHARED_PLATFORM_SETUP.md`.
 | `SUPABASE_SERVICE_ROLE_KEY` | `lib/supabase/admin.ts:14,19` | Server-only. Not currently set in any environment reachable from this repo; every admin surface that needs it degrades to an explicit "unavailable" state rather than failing unsafely. |
 | `NEXT_PUBLIC_PLATFORM_ORIGIN` | `lib/identity/supabaseIdentityProvider.ts:14` | Same-origin (empty) until a hostname split happens. |
 | `PLATFORM_DATABASE_URL` | `supabase/scripts/run-platform-migrations.js:24` | Not set in any environment reachable from this repo — see `docs/SHARED_PLATFORM_MIGRATION_READINESS.md`. |
-| `NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED` | `app/auth/sign-in/page.tsx:13` | Default `false`; Google OAuth is implemented but no provider credentials are configured in Supabase Auth for any environment. |
+| `NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED` | `lib/admin/authDiagnostics.ts:35` only | Dead as a gate: `app/auth/sign-in/page.tsx` no longer reads this flag — it calls `lib/auth/authProviderCapabilities.ts`, which asks Supabase's own `/auth/v1/settings` at runtime. Confirmed against the live `avatark-platform-test` project (`hapoerzbcnagyfafqojg`): Google provider is **not enabled**, so the button is correctly hidden. See `docs/GOOGLE_OAUTH_DEPLOYMENT_CHECKLIST.md`. |
 | `ONBOARDING_RECEIPT_SECRET` | RC5 handoff (see `docs/RC5_HANDOFF_CONTRACT.md`) | Unrelated to the shared-identity work in this document; listed for completeness. |
 
 Callback route: `app/auth/callback/route.ts` (`GET`, exchanges `code` via

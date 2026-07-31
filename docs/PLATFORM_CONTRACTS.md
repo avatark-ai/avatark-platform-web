@@ -78,7 +78,7 @@ packaged, in `lib/auth/` and `app/auth/*`.
 | Provider | Status |
 |---|---|
 | Magic Link | Real, unconditional (`supabase.auth.signInWithOtp`, `app/auth/sign-in/page.tsx`) |
-| Google | Code exists (`supabase.auth.signInOAuth`) but hidden behind `NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED` (default off) and **no Google provider is configured in Supabase Auth** — do not describe as working until tested against a real config |
+| Google | Code exists (`supabase.auth.signInWithOAuth`) and the button's visibility is now driven live from Supabase (`lib/auth/authProviderCapabilities.ts` calls `/auth/v1/settings`), not the `NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED` flag. **No Google provider is configured in the `avatark-platform-test` Supabase project**, confirmed directly against its settings endpoint — that is why the button is absent, not a code defect. See `docs/GOOGLE_OAUTH_DEPLOYMENT_CHECKLIST.md` for the manual steps to turn it on. |
 | Apple | Not started |
 | Enterprise SSO | Not started |
 

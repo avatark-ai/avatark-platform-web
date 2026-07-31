@@ -6,11 +6,20 @@
 // drift from what's really configured in Supabase Auth. Read-only: this
 // never changes auth behavior, only what the sign-in page decides to
 // render.
+// 'unavailable' (couldn't reach or parse the settings endpoint) is kept
+// distinct from 'disabled' (Supabase answered and Google genuinely isn't
+// configured) -- the caller still hides the button either way (offering an
+// OAuth path we can't confirm works is worse than not offering it), but a
+// silent network/parsing failure must not be reported as an intentional
+// disable to anything inspecting this state.
+export type AuthProviderCheckStatus = 'enabled' | 'disabled' | 'unavailable';
+
 export interface AuthProviderCapabilities {
   google: boolean;
+  status: AuthProviderCheckStatus;
 }
 
-const UNAVAILABLE: AuthProviderCapabilities = { google: false };
+const UNAVAILABLE: AuthProviderCapabilities = { google: false, status: 'unavailable' };
 
 export async function fetchAuthProviderCapabilities(): Promise<AuthProviderCapabilities> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -21,7 +30,8 @@ export async function fetchAuthProviderCapabilities(): Promise<AuthProviderCapab
     const res = await fetch(`${supabaseUrl}/auth/v1/settings`, { headers: { apikey: anonKey } });
     if (!res.ok) return UNAVAILABLE;
     const data = await res.json();
-    return { google: Boolean(data?.external?.google) };
+    const google = Boolean(data?.external?.google);
+    return { google, status: google ? 'enabled' : 'disabled' };
   } catch {
     return UNAVAILABLE;
   }

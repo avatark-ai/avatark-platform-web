@@ -30,7 +30,15 @@ function SignInForm() {
   useEffect(() => {
     let cancelled = false
     fetchAuthProviderCapabilities().then((capabilities) => {
-      if (!cancelled) setGoogleAvailable(capabilities.google)
+      if (cancelled) return
+      setGoogleAvailable(capabilities.google)
+      if (capabilities.status === 'unavailable') {
+        // Couldn't confirm either way (network/parsing failure) -- distinct
+        // from Supabase genuinely reporting Google as disabled. Surfaced
+        // for anyone diagnosing the integration rather than silently
+        // treated the same as an intentional disable.
+        console.warn('[auth] Google provider capability check unavailable -- could not reach or parse Supabase auth settings')
+      }
     })
     return () => {
       cancelled = true
