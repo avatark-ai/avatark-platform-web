@@ -1,5 +1,11 @@
 # Onboarding Route Contract (RC1 Phase 1 Audit)
 
+> **Superseded snapshot.** This audit is dated 2026-07-15 and is now contradicted by current
+> code — most visibly, the table below marks `/start` and `/enter/[token]` as unbuilt; both are
+> real, live routes today (see `docs/ECHO_ROUTE_MAP.md`, `docs/ENTRY_ENGINE_ARCHITECTURE.md`). Kept
+> as a historical point-in-time record, not current-state evidence. For current contract state, see
+> `docs/PLATFORM_CONTRACTS.md` and `docs/CONSUMER_JOURNEY.md`.
+
 **Audited:** 2026-07-15, against real code in `avatark-platform-web`,
 `prometheusk-web`, and legacy `avatark-web`. No routes below are
 invented — every entry has a file reference. Where the prior
