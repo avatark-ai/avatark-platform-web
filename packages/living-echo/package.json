@@ -1,0 +1,20 @@
+{
+  "name": "@avatark/living-echo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared contract for Living Echo -- PrometheusK's own recorded trace of a person's practice over time, produced only there and never duplicated (see docs/PLATFORM_CONTRACTS.md). This package defines the shape every other product reads/embeds, not a second implementation. No Supabase, no API, no product-specific logic.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@avatark/recommendations": "workspace:*",
+    "@avatark/timeline": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  }
+}

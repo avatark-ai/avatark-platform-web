@@ -16,8 +16,28 @@ export type NotificationEventType =
   | "invitation_received"
   | "content_published"
 
+// Phase 2 -- a broader classification axis than NotificationEventType
+// (which names specific product actions). Category is what a user-facing
+// notification settings/inbox UI would group and filter by; several
+// NotificationEventTypes can share one category (e.g. practice_completed
+// and a future practice-reminder event both fall under "practice").
+// Additive, not a replacement -- NotificationEvent below keeps type as
+// its primary discriminant.
+export type NotificationCategory =
+  | "invitation"
+  | "reminder"
+  | "recommendation"
+  | "community"
+  | "recognition"
+  | "practice"
+  | "story"
+  | "challenge"
+  | "organization"
+  | "system"
+
 export interface NotificationEvent {
   type: NotificationEventType
+  category: NotificationCategory
   /** The product id (matches @avatark/product-registry's AvatarKProduct.id) that published this event. */
   sourceProductId: string
   subjectUserId: string

@@ -11,6 +11,9 @@ importers:
       '@avatark/account':
         specifier: file:avatark-account-0.1.1.tgz
         version: file:avatark-account-0.1.1.tgz(next@16.2.10(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@avatark/account-ui':
+        specifier: workspace:*
+        version: link:packages/account-ui
       '@avatark/auth':
         specifier: workspace:*
         version: link:packages/auth
@@ -23,6 +26,9 @@ importers:
       '@avatark/journey':
         specifier: workspace:*
         version: link:packages/journey
+      '@avatark/living-echo':
+        specifier: workspace:*
+        version: link:packages/living-echo
       '@avatark/membership':
         specifier: workspace:*
         version: link:packages/membership
@@ -41,6 +47,12 @@ importers:
       '@avatark/product-registry':
         specifier: workspace:*
         version: link:packages/product-registry
+      '@avatark/recommendations':
+        specifier: workspace:*
+        version: link:packages/recommendations
+      '@avatark/timeline':
+        specifier: workspace:*
+        version: link:packages/timeline
       '@supabase/ssr':
         specifier: ^0.12.1
         version: 0.12.1(@supabase/supabase-js@2.110.5)
@@ -88,6 +100,31 @@ importers:
         specifier: ^5
         version: 5.9.3
 
+  packages/account-ui:
+    dependencies:
+      '@avatark/journey':
+        specifier: workspace:*
+        version: link:../journey
+      '@avatark/membership':
+        specifier: workspace:*
+        version: link:../membership
+      '@avatark/product-registry':
+        specifier: workspace:*
+        version: link:../product-registry
+      react:
+        specifier: '>=18'
+        version: 19.2.4
+      react-dom:
+        specifier: '>=18'
+        version: 19.2.4(react@19.2.4)
+    devDependencies:
+      '@types/react':
+        specifier: ^19
+        version: 19.2.17
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
   packages/auth:
     devDependencies:
       typescript:
@@ -111,6 +148,19 @@ importers:
       '@avatark/auth':
         specifier: workspace:*
         version: link:../auth
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/living-echo:
+    dependencies:
+      '@avatark/recommendations':
+        specifier: workspace:*
+        version: link:../recommendations
+      '@avatark/timeline':
+        specifier: workspace:*
+        version: link:../timeline
     devDependencies:
       typescript:
         specifier: ^5
@@ -172,6 +222,18 @@ importers:
       '@types/react':
         specifier: ^19
         version: 19.2.17
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/recommendations:
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/timeline:
+    devDependencies:
       typescript:
         specifier: ^5
         version: 5.9.3
