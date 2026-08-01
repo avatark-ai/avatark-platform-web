@@ -9,8 +9,11 @@ import { type AccountTabKey, type CoreTabKey, type ExtensionTabKey, extensionTab
 import { ProfileTab } from './ProfileTab.tsx'
 import { SignInMethodsTab } from './SignInMethodsTab.tsx'
 import { ProductsTab } from './ProductsTab.tsx'
+import { AccessTab } from './AccessTab.tsx'
 import { MembershipTab } from './MembershipTab.tsx'
+import { OrganizationsTab } from './OrganizationsTab.tsx'
 import { PreferencesTab } from './PreferencesTab.tsx'
+import { NotificationsTab } from './NotificationsTab.tsx'
 import { PrivacyTab } from './PrivacyTab.tsx'
 import { DataExportTab } from './DataExportTab.tsx'
 import { ExtensionTab } from './ExtensionTab.tsx'
@@ -35,11 +38,16 @@ export function AvatarKAccount({ principal, currentProduct, productName, onSigne
   // existing public API initially."
   void productName
 
-  const REQUIRED_TABS: CoreTabKey[] = ['profile', 'signin', 'products', 'membership', 'preferences', 'data']
-  const visibleCoreTabs: CoreTabKey[] = [
-    ...REQUIRED_TABS,
-    ...(adapters.privacy ? ['privacy' as const] : []),
-  ]
+  // Canonical rail order (RC1.1, Part 2). access/organizations/notifications
+  // are optional, same graceful-omission pattern as the pre-existing
+  // privacy — a host that hasn't supplied the adapter simply doesn't get
+  // the tab, never a broken/empty one.
+  const CORE_TAB_ORDER: CoreTabKey[] = ['profile', 'products', 'access', 'membership', 'organizations', 'preferences', 'notifications', 'privacy', 'signin', 'data']
+  const CORE_TAB_AVAILABLE: Record<CoreTabKey, boolean> = {
+    profile: true, products: true, membership: true, preferences: true, signin: true, data: true,
+    access: !!adapters.access, organizations: !!adapters.organizations, notifications: !!adapters.notifications, privacy: !!adapters.privacy,
+  }
+  const visibleCoreTabs: CoreTabKey[] = CORE_TAB_ORDER.filter((k) => CORE_TAB_AVAILABLE[k])
 
   const extensionTabs = useMemo(() => {
     const tabs: { key: ExtensionTabKey; label: string }[] = []
@@ -139,8 +147,11 @@ export function AvatarKAccount({ principal, currentProduct, productName, onSigne
       {tab === 'profile' && <ProfileTab stats={stats} />}
       {tab === 'signin' && <SignInMethodsTab email={principal.email} onSignOut={handleSignOut} />}
       {tab === 'products' && <ProductsTab currentProduct={currentProduct} />}
+      {tab === 'access' && <AccessTab currentProduct={currentProduct} />}
       {tab === 'membership' && <MembershipTab stats={stats} currentProduct={currentProduct} memberSince={memberSince} />}
+      {tab === 'organizations' && <OrganizationsTab />}
       {tab === 'preferences' && <PreferencesTab />}
+      {tab === 'notifications' && <NotificationsTab />}
       {tab === 'privacy' && <PrivacyTab />}
       {tab === 'data' && <DataExportTab />}
       {isExtensionTabKey(tab) && tab === extensionTabKey('activity') && adapters.activity && <ActivityTab events={events} />}

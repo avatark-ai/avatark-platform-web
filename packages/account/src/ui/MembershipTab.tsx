@@ -1,14 +1,11 @@
 'use client'
-import { useEffect, useState } from 'react'
 import { useAccountAdapters } from '../contracts/context.tsx'
-import type { ProductRelationship, StatEntry } from '../contracts/adapters.ts'
+import type { StatEntry } from '../contracts/adapters.ts'
 
-const STATUS_LABEL: Record<ProductRelationship['status'], string> = {
-  member: 'Member', not_enrolled: 'Not enrolled', coming_soon: 'Coming Soon',
-}
-
-// `stats` is a host-supplied, generic labeled-value list (no hardcoded
-// product-specific metric names -- see PROVENANCE.md).
+// Explains the user's relationship to the *host product itself* --
+// plan/benefits/roles -- never product catalog or per-product access data
+// (that moved to ProductsTab/AccessTab, RC1.1 Part 6). `currentProduct`/
+// `memberSince` are accepted for stats/summary composition only.
 export function MembershipTab({
   stats, currentProduct, memberSince,
 }: {
@@ -16,11 +13,8 @@ export function MembershipTab({
   currentProduct: string; memberSince: string | null
 }) {
   const adapters = useAccountAdapters()
-  const [relationships, setRelationships] = useState<ProductRelationship[] | undefined>(undefined)
-
-  useEffect(() => {
-    adapters.membership.getRelationships(currentProduct, memberSince).then(setRelationships)
-  }, [adapters, currentProduct, memberSince])
+  void currentProduct
+  void memberSince
 
   const summary = adapters.membership.getSummary(stats)
   const roles = adapters.membership.getRoles(stats)
@@ -32,30 +26,10 @@ export function MembershipTab({
         <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-dim,#8b8b98)] mb-2">Current Plan</p>
         <div className="aka-card p-4">
           <p className="text-lg font-semibold text-[var(--text-primary,#f5f2ea)]">{summary.planName}</p>
-          <p className="text-xs text-[var(--text-dim,#8b8b98)] mt-1">Billing not yet enabled. No storage limits currently enforced.</p>
+          <p className="text-xs text-[var(--text-dim,#8b8b98)] mt-1">
+            Your current AvatarK membership is {summary.planName}. Paid membership and billing options are not yet available.
+          </p>
         </div>
-      </div>
-
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-dim,#8b8b98)] mb-2">AvatarK Products I Belong To</p>
-        {!relationships ? (
-          <div className="h-24 bg-[var(--surface,#12121a)] rounded-[10px] animate-pulse" />
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {relationships.map((r) => (
-              <div key={r.productId} className={`aka-card p-4 ${r.status !== 'member' ? 'opacity-70' : ''}`}>
-                <p className="text-sm font-semibold text-[var(--text-primary,#f5f2ea)]">{r.name}</p>
-                <p className="text-xs text-[var(--text-dim,#8b8b98)] mt-0.5">{STATUS_LABEL[r.status]}{r.role ? ` · ${r.role}` : ''}</p>
-                {r.since && <p className="text-xs text-[var(--text-dim,#8b8b98)]">Since {new Date(r.since).toLocaleDateString()}</p>}
-                {r.ctaHref ? (
-                  <a href={r.ctaHref} target="_blank" rel="noopener noreferrer" className="inline-block mt-1 text-sm text-[var(--gold,#d4af5f)]">{r.ctaLabel} ↗</a>
-                ) : (
-                  <span className="inline-block mt-1 text-sm text-[var(--gold,#d4af5f)]">{r.ctaLabel}</span>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
       </div>
 
       {roles.length > 0 && (
@@ -71,14 +45,20 @@ export function MembershipTab({
 
       <div>
         <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-dim,#8b8b98)] mb-2">Benefits</p>
-        <div className="space-y-2">
-          {benefits.map((b) => (
-            <div key={b.label} className="aka-card p-4 flex items-center justify-between opacity-60">
-              <span className="text-sm text-[var(--text-primary,#f5f2ea)]">{b.label}</span>
-              <span className="text-xs text-[var(--text-dim,#8b8b98)] text-right max-w-[220px]">{b.description}</span>
-            </div>
-          ))}
-        </div>
+        {benefits.length > 0 ? (
+          <div className="space-y-2">
+            {benefits.map((b) => (
+              <div key={b.label} className="aka-card p-4 flex items-center justify-between opacity-60">
+                <span className="text-sm text-[var(--text-primary,#f5f2ea)]">{b.label}</span>
+                <span className="text-xs text-[var(--text-dim,#8b8b98)] text-right max-w-[220px]">{b.description}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="aka-card p-4">
+            <p className="text-sm text-[var(--text-dim,#8b8b98)]">No platform-level membership benefits are defined yet.</p>
+          </div>
+        )}
       </div>
 
       {stats.length > 0 && (
@@ -94,6 +74,10 @@ export function MembershipTab({
           </div>
         </div>
       )}
+
+      <p className="text-xs text-[var(--text-dim,#8b8b98)]">
+        Looking for which AvatarK products you belong to or can access? See the Products and Access sections.
+      </p>
     </div>
   )
 }

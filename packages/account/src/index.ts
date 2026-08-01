@@ -8,6 +8,9 @@ export { AccountTabs } from './ui/AccountTabs.tsx'
 export { ACCOUNT_TAB_KEYS, ACCOUNT_TAB_LABELS, extensionTabKey, isExtensionTabKey } from './contracts/tabs.ts'
 export type { AccountTabKey, CoreTabKey, ExtensionTabKey } from './contracts/tabs.ts'
 export { ExtensionTab } from './ui/ExtensionTab.tsx'
+export { AccessTab } from './ui/AccessTab.tsx'
+export { OrganizationsTab } from './ui/OrganizationsTab.tsx'
+export { NotificationsTab } from './ui/NotificationsTab.tsx'
 // Legacy single-purpose extension tabs -- compat only, see extensions/*.tsx headers.
 export { ActivityTab } from './extensions/ActivityTab.tsx'
 export { EchoesTab } from './extensions/EchoesTab.tsx'
@@ -32,6 +35,7 @@ export type {
   ProductRelationship,
   MembershipSummary,
   MembershipAdapter,
+  SelectOption,
   AccountPreferences,
   PreferencesAdapter,
   PrivacySettings,
@@ -39,6 +43,18 @@ export type {
   PrivacyControlDefinition,
   PublicContentVisibility,
   PrivacyAdapter,
+  DeploymentStatus,
+  IntegrationStatus,
+  ProductAccessRequirement,
+  UserAccessState,
+  ProductAccessSummary,
+  AccessAdapter,
+  AccountOrganizationMembership,
+  AccountOrganizationContext,
+  OrganizationsAdapter,
+  NotificationCategoryPreference,
+  NotificationPreferencesState,
+  NotificationsAdapter,
   ActivityEvent,
   ActivityAdapter,
   AccountEcho,

@@ -6,8 +6,8 @@
 // has no Living Echo/reflection data of its own to honestly back them).
 import type { AccountAdapters } from '@avatark/account'
 import { createClient } from '@/lib/supabase/client'
-import { PLATFORM_PRODUCTS } from '@/lib/products/registry'
 import { MEMBERSHIP_PLAN_LABEL } from '@avatark/membership'
+import { computeProductAccessEntries, toProductsWithAccess } from '@/lib/products/accessModel'
 
 // See membership.getRelationships/getRoles below: the @avatark/account
 // package's MembershipAdapter.getRoles is synchronous, so real platform
@@ -47,6 +47,13 @@ export const avatarKPlatformAdapters: AccountAdapters = {
       const { data } = await supabase.auth.getUser()
       return (data.user?.identities ?? []).map((i) => i.provider)
     },
+    // Real fact, not a hardcoded claim: Supabase sets email_confirmed_at
+    // only once the address has actually been confirmed.
+    async isEmailVerified() {
+      const supabase = createClient()
+      const { data } = await supabase.auth.getUser()
+      return data.user?.email_confirmed_at != null
+    },
     async changeEmail(newEmail: string) {
       const supabase = createClient()
       const { error } = await supabase.auth.updateUser({ email: newEmail })
@@ -60,6 +67,13 @@ export const avatarKPlatformAdapters: AccountAdapters = {
     async signOut() {
       const supabase = createClient()
       await supabase.auth.signOut()
+    },
+    // Real, genuinely-available action: Supabase's own global sign-out
+    // revokes every refresh token for this user, not just this browser's.
+    async signOutAllDevices() {
+      const supabase = createClient()
+      const { error } = await supabase.auth.signOut({ scope: 'global' })
+      return error ? { error: { message: error.message } } : {}
     },
   },
 
@@ -96,13 +110,48 @@ export const avatarKPlatformAdapters: AccountAdapters = {
     listPublicContent: async () => [],
   },
 
+  // Real product_access rows via RLS's own-row policy (migration 014) --
+  // no service-role client needed. Warms the platform-roles cache
+  // getRoles()/computeProductAccessEntries's avatarkRoles read from (see
+  // fetchAndCachePlatformRoles below): getRoles() must be synchronous per
+  // the package's own type contract, so there's no way to await a fresh
+  // query inside it -- this piggybacks the async fetch on the one call
+  // the package already awaits before re-rendering with fresh data.
   productAccess: {
     async list(currentProductId: string) {
-      return PLATFORM_PRODUCTS.map((p) => ({
-        ...p,
-        entitlement: p.id === currentProductId ? 'active' as const : p.availability === 'live' ? 'available' as const : 'coming_soon' as const,
-        ctaLabel: p.id === currentProductId ? "You're here" : p.availability === 'live' ? 'Open' : 'Coming Soon',
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      await fetchAndCachePlatformRoles(user?.id ?? null)
+      if (!user) return toProductsWithAccess(computeProductAccessEntries({ currentProductId, grants: [], avatarkRoles: [] }))
+
+      const { data: accessRows } = await supabase
+        .from('product_access')
+        .select('product_id, status, granted_at')
+        .eq('user_id', user.id)
+      const grants = (accessRows ?? []).map((r) => ({
+        productId: r.product_id as string, status: r.status as string, grantedAt: r.granted_at as string,
       }))
+      return toProductsWithAccess(computeProductAccessEntries({ currentProductId, grants, avatarkRoles: cachedPlatformRoles ?? [] }))
+    },
+  },
+
+  // Consumer-readable expansion of the same truthful state model (Part 5)
+  // -- shares computeProductAccessEntries with productAccess.list above
+  // rather than re-deriving it, so the two sections can never disagree.
+  access: {
+    async list(currentProductId: string) {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return computeProductAccessEntries({ currentProductId, grants: [], avatarkRoles: [] })
+
+      const { data: accessRows } = await supabase
+        .from('product_access')
+        .select('product_id, status, granted_at')
+        .eq('user_id', user.id)
+      const grants = (accessRows ?? []).map((r) => ({
+        productId: r.product_id as string, status: r.status as string, grantedAt: r.granted_at as string,
+      }))
+      return computeProductAccessEntries({ currentProductId, grants, avatarkRoles: cachedPlatformRoles ?? [] })
     },
   },
 
@@ -119,41 +168,32 @@ export const avatarKPlatformAdapters: AccountAdapters = {
       planName: MEMBERSHIP_PLAN_LABEL.free,
       creatorStatus: 'Member',
     }),
-    // Real product_access rows via RLS's own-row policy (migration 014) --
-    // no service-role client needed, the signed-in user can read their own
-    // grants directly. Also warms the platform-roles cache getRoles()
-    // reads from (see fetchAndCachePlatformRoles below): getRoles() must
-    // be synchronous per the package's own type contract, so there's no
-    // way to await a fresh query inside it -- this piggybacks the async
-    // fetch on the one call the package already awaits before re-rendering
-    // with fresh data.
+    // Kept for MembershipAdapter API compatibility -- MembershipTab no
+    // longer renders this (product relationships moved to Products/Access,
+    // RC1.1 Part 6), but any other consumer of this contract still gets a
+    // real, non-fabricated answer, derived from the same source as
+    // productAccess.list/access.list.
     async getRelationships(currentProductId, memberSince) {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
-      await fetchAndCachePlatformRoles(user?.id ?? null)
       if (!user) return []
-
       const { data: accessRows } = await supabase
         .from('product_access')
         .select('product_id, status, granted_at')
         .eq('user_id', user.id)
-      const accessByProduct = new Map((accessRows ?? []).map((r) => [r.product_id as string, r]))
-
-      return PLATFORM_PRODUCTS.map((p) => {
-        const grant = accessByProduct.get(p.id)
-        const isCurrent = p.id === currentProductId
-        const status: 'member' | 'not_enrolled' | 'coming_soon' =
-          p.availability !== 'live' ? 'coming_soon' : isCurrent || grant?.status === 'active' ? 'member' : 'not_enrolled'
-        return {
-          productId: p.id,
-          name: p.name,
-          status,
-          role: null,
-          since: isCurrent ? memberSince : (grant?.granted_at as string | undefined) ?? null,
-          ctaLabel: status === 'member' ? (isCurrent ? "You're here" : 'Open') : status === 'coming_soon' ? 'Coming Soon' : 'Learn more',
-          ctaHref: status !== 'coming_soon' && !isCurrent ? p.url : null,
-        }
-      })
+      const grants = (accessRows ?? []).map((r) => ({
+        productId: r.product_id as string, status: r.status as string, grantedAt: r.granted_at as string,
+      }))
+      const entries = computeProductAccessEntries({ currentProductId, grants, avatarkRoles: cachedPlatformRoles ?? [] })
+      return entries.map((e) => ({
+        productId: e.productId,
+        name: e.productName,
+        status: e.nextAction.kind === 'current' ? 'member' as const : e.userAccessState === 'active' ? 'member' as const : 'not_enrolled' as const,
+        role: e.roles[0] ?? null,
+        since: e.nextAction.kind === 'current' ? memberSince : e.validFrom,
+        ctaLabel: e.nextAction.label,
+        ctaHref: e.nextAction.href,
+      }))
     },
     // Real platform_roles for the signed-in user (e.g. 'admin'), read from
     // a cache warmed by getRelationships above -- see that method's
@@ -163,6 +203,20 @@ export const avatarKPlatformAdapters: AccountAdapters = {
     // from usage stats.
     getRoles: () => cachedPlatformRoles ?? [],
     getBenefits: () => [],
+  },
+
+  organizations: {
+    async get() {
+      return authFetch('/api/account/organizations')
+    },
+    async switchOrganization(organizationId) {
+      return authFetch('/api/account/organizations', { method: 'POST', body: JSON.stringify({ organizationId }) })
+    },
+  },
+
+  notifications: {
+    get: () => authFetch('/api/account/notifications'),
+    updateCategory: (category, enabled) => authFetch('/api/account/notifications', { method: 'PATCH', body: JSON.stringify({ category, enabled }) }),
   },
 
   export: {

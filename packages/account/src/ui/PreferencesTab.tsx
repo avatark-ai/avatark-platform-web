@@ -3,13 +3,11 @@ import { useEffect, useState } from 'react'
 import { useAccountAdapters } from '../contracts/context.tsx'
 import type { AccountPreferences } from '../contracts/adapters.ts'
 
-// en-US/en-IN match the frozen locale registry (docs/LOCALE_ARCHITECTURE.md);
-// en-GB kept as a third real, shippable English variant. Non-English
-// locales are intentionally absent here until they reach `available`
-// status -- see @avatark/locale.
-const LOCALES = [['en-US', 'English (US)'], ['en-IN', 'English (India)'], ['en-GB', 'English (UK)']]
 const TIMEZONES = ['America/Los_Angeles', 'America/New_York', 'Asia/Kolkata', 'Europe/London']
 
+// Notification enablement itself lives in the Notifications section
+// (categorized, RC1.1 Part 8) -- this tab no longer has its own separate
+// undifferentiated checkbox for it.
 export function PreferencesTab() {
   const adapters = useAccountAdapters()
   const [prefs, setPrefs] = useState<AccountPreferences | null>(null)
@@ -36,16 +34,25 @@ export function PreferencesTab() {
 
   if (!prefs) return <div className="h-24 bg-[var(--surface,#12121a)] rounded-[10px] animate-pulse" />
 
+  // Falls back to a single safe default when a host hasn't supplied a real
+  // registry yet -- never a hardcoded list of options this package can't
+  // vouch for.
+  const appearanceModes = prefs.availableAppearanceModes ?? [{ value: 'dark', label: 'Dark' }]
+  const locales = prefs.availableLocales ?? [{ value: prefs.locale, label: prefs.locale }]
+  const landingDestinations = prefs.availableLandingDestinations ?? [{ value: prefs.defaultLandingPage, label: prefs.defaultLandingPage }]
+
   return (
     <div className="space-y-3 max-w-md">
       <label className="aka-card p-4 flex items-center justify-between">
-        <span className="text-sm text-[var(--text-primary,#f5f2ea)]">Theme</span>
-        <span className="text-sm text-[var(--text-dim,#8b8b98)]">Dark <span className="text-[10px]">(Light coming soon)</span></span>
+        <span className="text-sm text-[var(--text-primary,#f5f2ea)]">Appearance</span>
+        <select value={prefs.theme} onChange={(e) => update({ theme: e.target.value })} className="bg-transparent text-sm text-[var(--text-dim,#8b8b98)]">
+          {appearanceModes.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
+        </select>
       </label>
       <label className="aka-card p-4 flex items-center justify-between">
         <span className="text-sm text-[var(--text-primary,#f5f2ea)]">Locale</span>
         <select value={prefs.locale} onChange={(e) => update({ locale: e.target.value })} className="bg-transparent text-sm text-[var(--text-dim,#8b8b98)]">
-          {LOCALES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+          {locales.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
         </select>
       </label>
       <label className="aka-card p-4 flex items-center justify-between">
@@ -55,18 +62,14 @@ export function PreferencesTab() {
         </select>
       </label>
       <label className="aka-card p-4 flex items-center justify-between">
-        <span className="text-sm text-[var(--text-primary,#f5f2ea)]">Email notifications</span>
-        <input type="checkbox" checked={prefs.notificationsEnabled} onChange={(e) => update({ notificationsEnabled: e.target.checked })} />
-      </label>
-      <p className="text-xs text-[var(--text-dim,#8b8b98)] px-1">Notification delivery infrastructure isn&apos;t active yet — this sets your preference for when it is.</p>
-      <label className="aka-card p-4 flex items-center justify-between">
         <span className="text-sm text-[var(--text-primary,#f5f2ea)]">Reduced motion</span>
         <input type="checkbox" checked={prefs.reducedMotion} onChange={(e) => update({ reducedMotion: e.target.checked })} />
       </label>
       <label className="aka-card p-4 flex items-center justify-between">
         <span className="text-sm text-[var(--text-primary,#f5f2ea)]">Default landing page</span>
-        <input value={prefs.defaultLandingPage} onChange={(e) => update({ defaultLandingPage: e.target.value })}
-          className="bg-transparent text-sm text-[var(--text-dim,#8b8b98)] text-right" />
+        <select value={prefs.defaultLandingPage} onChange={(e) => update({ defaultLandingPage: e.target.value })} className="bg-transparent text-sm text-[var(--text-dim,#8b8b98)]">
+          {landingDestinations.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
+        </select>
       </label>
       {saving && <p className="text-xs text-[var(--text-dim,#8b8b98)]">Saving…</p>}
     </div>

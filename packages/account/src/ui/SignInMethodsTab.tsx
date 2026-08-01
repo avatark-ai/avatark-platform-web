@@ -16,13 +16,24 @@ import { useAccountAdapters } from '../contracts/context.tsx'
 export function SignInMethodsTab({ email, onSignOut }: { email: string; onSignOut: () => void }) {
   const adapters = useAccountAdapters()
   const [connectedProviders, setConnectedProviders] = useState<string[]>([])
+  const [emailVerified, setEmailVerified] = useState<boolean | null>(null)
   const [linkError, setLinkError] = useState('')
   const [changing, setChanging] = useState(false)
   const [newEmail, setNewEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const [signOutAllState, setSignOutAllState] = useState<'idle' | 'working' | 'error'>('idle')
 
   useEffect(() => { adapters.auth.getIdentities().then(setConnectedProviders) }, [adapters])
+  useEffect(() => { adapters.auth.isEmailVerified().then(setEmailVerified) }, [adapters])
+
+  async function handleSignOutAllDevices() {
+    if (!adapters.auth.signOutAllDevices) return
+    setSignOutAllState('working')
+    const { error } = await adapters.auth.signOutAllDevices()
+    if (error) { setSignOutAllState('error'); return }
+    onSignOut()
+  }
 
   async function handleChangeEmail() {
     if (!newEmail.trim()) return
@@ -47,9 +58,32 @@ export function SignInMethodsTab({ email, onSignOut }: { email: string; onSignOu
       <div className="aka-card p-4 flex items-center justify-between">
         <div>
           <p className="text-sm text-[var(--text-primary,#f5f2ea)]">Email Magic Link</p>
-          <p className="text-xs text-[var(--text-dim,#8b8b98)]">{email} · Primary · Verified · Current Session</p>
+          <p className="text-xs text-[var(--text-dim,#8b8b98)]">
+            {email} · Primary · {emailVerified === null ? 'Checking…' : emailVerified ? 'Verified' : 'Not verified'} · Current Session
+          </p>
         </div>
         <button onClick={onSignOut} className="text-sm text-[var(--text-dim,#8b8b98)] hover:text-[var(--gold,#d4af5f)]">Sign Out</button>
+      </div>
+
+      <div className="aka-card p-4 flex items-center justify-between">
+        <div>
+          <p className="text-sm text-[var(--text-primary,#f5f2ea)]">Active sessions</p>
+          <p className="text-xs text-[var(--text-dim,#8b8b98)] mt-0.5 max-w-sm">
+            This browser can&apos;t list your other signed-in sessions individually — you can end all of them at once, including this one.
+          </p>
+          {signOutAllState === 'error' && <p className="text-xs text-red-400 mt-1">Couldn&apos;t sign out of all devices. Try again.</p>}
+        </div>
+        {adapters.auth.signOutAllDevices ? (
+          <button
+            onClick={handleSignOutAllDevices}
+            disabled={signOutAllState === 'working'}
+            className="text-sm text-[var(--gold,#d4af5f)] disabled:opacity-50 whitespace-nowrap"
+          >
+            {signOutAllState === 'working' ? 'Signing out…' : 'Sign out all devices'}
+          </button>
+        ) : (
+          <span className="text-xs text-[var(--text-dim,#8b8b98)] whitespace-nowrap">Not yet available</span>
+        )}
       </div>
 
       <div className="aka-card p-4">

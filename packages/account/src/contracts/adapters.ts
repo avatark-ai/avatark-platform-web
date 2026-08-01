@@ -22,9 +22,13 @@ export interface AdapterResult<T> {
 // ── Auth (REQUIRED) ─────────────────────────────────────────
 export interface AuthAdapter {
   getIdentities(): Promise<string[]>
+  /** Real verification fact (e.g. Supabase's `email_confirmed_at !== null`) -- never a hardcoded "Verified" claim. */
+  isEmailVerified(): Promise<boolean>
   changeEmail(newEmail: string): Promise<{ error?: { message: string } }>
   linkGoogleIdentity(): Promise<{ error?: { message: string } }>
   signOut(): Promise<void>
+  /** Optional: only present when a host can genuinely revoke every session, not just this browser's (Part 10). Absent, not a disabled/fake button, when no real adapter exists. */
+  signOutAllDevices?(): Promise<{ error?: { message: string } }>
 }
 
 // ── Profile (REQUIRED) ───────────────────────────────────────
@@ -51,6 +55,17 @@ export type ProductAvailability = 'live' | 'coming_soon'
 
 export type EntitlementState = 'active' | 'available' | 'requested' | 'invite_only' | 'coming_soon' | 'unavailable'
 
+// Three independent axes (RC1.1, Part 4) — never collapsed into one
+// binary "live"/"coming soon" flag by this package or a host. A product
+// can be `deploymentStatus: 'live'` (DNS-reachable) while
+// `integrationStatus: 'pending_shared_identity'` (not yet wired to
+// canonical identity) and `productAccessRequirement:
+// 'entitlement_and_consent_required'` (an arbitrary signed-in user still
+// isn't let in) — all three true at once, none implying the others.
+export type DeploymentStatus = 'live' | 'preview' | 'internal' | 'planned' | 'unknown'
+export type IntegrationStatus = 'canonical' | 'pilot' | 'pending' | 'legacy' | 'unknown'
+export type ProductAccessRequirement = 'available' | 'entitlement_dependent' | 'entitlement_and_consent_required'
+
 export interface AccountProduct {
   id: string
   name: string
@@ -61,15 +76,104 @@ export interface AccountProduct {
   icon?: string
   launchCta?: string
   setupCta?: string
+  /** Optional, additive: real DNS/production-reachability fact, independent of `availability`. Undefined for a host that hasn't supplied it yet — never inferred from `availability`. */
+  deploymentStatus?: DeploymentStatus
+  /** Optional, additive: how confirmed this product's canonical-identity integration is today. */
+  integrationStatus?: IntegrationStatus
+  /** Optional, additive: whether an arbitrary signed-in user can reach this product at all, independent of deployment/integration. */
+  accessRequirement?: ProductAccessRequirement
+  /** User-facing roles known for this product, if any — never fabricated when unknown. */
+  roles?: string[]
 }
 
 export interface ProductWithAccess extends AccountProduct {
   entitlement: EntitlementState
   ctaLabel: string
+  ctaHref?: string | null
 }
 
 export interface ProductAccessAdapter {
   list(currentProductId: string): Promise<ProductWithAccess[]>
+}
+
+// ── Access / Entitlements (OPTIONAL, Part 5) ──────────────────
+// A consumer-readable expansion of ProductWithAccess above, scoped to
+// "what does *my* access to each product actually look like" rather than
+// the product catalog itself (ProductsTab's job). Every field is honestly
+// absent (null/[]) rather than fabricated when this host has no real data
+// source for it yet — see docs/IDENTITY_RC11_ACCOUNT_AUDIT.md's database
+// reality check for exactly which fields that applies to today.
+export type UserAccessState =
+  | 'no_grant' | 'not_requested' | 'requested' | 'invited'
+  | 'active' | 'suspended' | 'expired' | 'revoked'
+
+export interface ProductAccessSummary {
+  productId: string
+  productName: string
+  deploymentStatus: DeploymentStatus
+  integrationStatus: IntegrationStatus
+  /** Product-level fact: does this product require entitlement/consent at all. */
+  accessRequirement: ProductAccessRequirement
+  /** User-level fact: this signed-in user's actual grant state for the product — never assumed from accessRequirement. */
+  userAccessState: UserAccessState
+  /** Null when the granting mechanism isn't recorded (no `source` column exists yet) — never guessed. */
+  source: string | null
+  organizationName: string | null
+  roles: string[]
+  capabilities: string[]
+  validFrom: string | null
+  validUntil: string | null
+  suspensionReason: string | null
+  expiryReason: string | null
+  nextAction: { kind: 'open' | 'learn_more' | 'current'; label: string; href: string | null }
+}
+
+export interface AccessAdapter {
+  list(currentProductId: string): Promise<ProductAccessSummary[]>
+}
+
+// ── Organizations (OPTIONAL, Part 7) ──────────────────────────
+// Minimal, host-neutral organization-context view. Self-contained (does
+// not import @avatark/organizations — see package.json's zero-dependency
+// rule) so this package stays independently type-checkable.
+export interface AccountOrganizationMembership {
+  organizationId: string
+  organizationName: string
+  role: string
+  source: string
+  validFrom: string | null
+}
+
+export interface AccountOrganizationContext {
+  memberships: AccountOrganizationMembership[]
+  currentOrganizationId: string | null
+}
+
+export interface OrganizationsAdapter {
+  get(): Promise<AdapterResult<AccountOrganizationContext>>
+  switchOrganization(organizationId: string | null): Promise<AdapterResult<AccountOrganizationContext>>
+}
+
+// ── Notifications (OPTIONAL, Part 8) ──────────────────────────
+// Category vocabulary mirrors @avatark/notifications'
+// NOTIFICATION_PREFERENCE_CATEGORY_REGISTRY but is redeclared locally for
+// the same zero-dependency reason as everything else in this file — a
+// host composes both without either package importing the other.
+export interface NotificationCategoryPreference {
+  category: string
+  label: string
+  mandatory: boolean
+  enabled: boolean
+}
+
+export interface NotificationPreferencesState {
+  deliveryActive: boolean
+  categories: NotificationCategoryPreference[]
+}
+
+export interface NotificationsAdapter {
+  get(): Promise<AdapterResult<NotificationPreferencesState>>
+  updateCategory(category: string, enabled: boolean): Promise<AdapterResult<NotificationPreferencesState>>
 }
 
 // ── Membership (REQUIRED) ─────────────────────────────────────
@@ -114,13 +218,28 @@ export interface MembershipAdapter {
 }
 
 // ── Preferences (REQUIRED) ────────────────────────────────────
+// Options lists are host-supplied (never hardcoded in this package) so a
+// host's real, reviewed locale/appearance registries stay the single
+// source of truth for what's actually selectable -- see
+// docs/IDENTITY_RC11_ACCOUNT_AUDIT.md for the bug this replaced (a
+// hardcoded `en-GB` option with no real translation behind it).
+export interface SelectOption {
+  value: string
+  label: string
+}
+
 export interface AccountPreferences {
   theme: string
   locale: string
   timezone: string | null
   notificationsEnabled: boolean
   reducedMotion: boolean
+  /** A safe, host-registered destination id -- never an arbitrary URL a user typed. */
   defaultLandingPage: string
+  /** Undefined for a host that hasn't supplied a real registry yet -- the tab falls back to a single safe default, never a hardcoded, possibly-stale list. */
+  availableLocales?: SelectOption[]
+  availableAppearanceModes?: SelectOption[]
+  availableLandingDestinations?: SelectOption[]
 }
 
 export interface PreferencesAdapter {
@@ -145,7 +264,12 @@ export interface PrivacyControlDefinition {
   id: string
   label: string
   description?: string
-  type: 'boolean' | 'select'
+  // 'date' (RC1.1, Part 11, additive): so a policy-dependent consent
+  // control can express a real revocation/effective date (e.g. SetpointK's
+  // care-team-access or research-participation consent) without a value
+  // encoded as a magic string. Existing consumers that only ever branch on
+  // 'boolean'/'select' are unaffected — this is a new, additive variant.
+  type: 'boolean' | 'select' | 'date'
   value: boolean | string
   options?: { value: string; label: string }[]
 }
@@ -302,6 +426,9 @@ export interface AccountAdapters {
   membership: MembershipAdapter
   preferences: PreferencesAdapter
   privacy?: PrivacyAdapter
+  access?: AccessAdapter
+  organizations?: OrganizationsAdapter
+  notifications?: NotificationsAdapter
   /** @deprecated use `extensions` with slotId 'activity' */
   activity?: ActivityAdapter
   /** @deprecated use `extensions` with slotId 'echoes' */

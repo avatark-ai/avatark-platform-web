@@ -23,7 +23,10 @@ export function NotificationBell({ unreadCount, children, className }: Notificat
         aria-label={unreadCount > 0 ? `${unreadCount} unread notifications` : "Notifications"}
         onClick={() => setOpen((value) => !value)}
       >
-        <span data-avatark-part="unread-count" aria-hidden="true">{unreadCount}</span>
+        {/* Never render a bare "0" -- a visible digit only appears once there's
+            something to report. A host without a real unread count (or a real
+            icon in its own CSS) should not have to guard against this itself. */}
+        {unreadCount > 0 && <span data-avatark-part="unread-count" aria-hidden="true">{unreadCount}</span>}
         <span data-avatark-part="unread-count-sr" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap" }}>
           {unreadCount > 0 ? `${unreadCount} unread notifications` : "No unread notifications"}
         </span>

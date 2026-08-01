@@ -3,7 +3,7 @@ import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { AccountAdaptersProvider, AvatarKAccount, type AccountTabKey } from '@avatark/account'
-import { AvatarMenu, IdentityBadge, MembershipBadge, NotificationBell, ProductSwitcher } from '@avatark/account-ui'
+import { AvatarMenu, IdentityBadge, MembershipBadge, ProductSwitcher } from '@avatark/account-ui'
 import { PRODUCT_REGISTRY } from '@avatark/product-registry'
 import { avatarKPlatformAdapters } from '@/lib/account/adapters'
 import { resolveProductUrl } from '@/lib/products/registry'
@@ -20,13 +20,19 @@ const ACCOUNT_MOUNT_ENABLED = process.env.NEXT_PUBLIC_ACCOUNT_MOUNT_ENABLED === 
 // used as-is rather than forked); Feedback and Support are host-added,
 // at the same level, not nested under a second "Account" tab. Sign Out
 // is an action, not a section.
-type Section = 'profile' | 'products' | 'membership' | 'preferences' | 'privacy' | 'security' | 'data' | 'feedback' | 'support'
+type Section =
+  | 'profile' | 'products' | 'access' | 'membership' | 'organizations'
+  | 'preferences' | 'notifications' | 'privacy' | 'security' | 'data'
+  | 'feedback' | 'support'
 
 const RAIL_SECTIONS: { id: Section; label: string; tab?: AccountTabKey }[] = [
   { id: 'profile', label: 'Profile', tab: 'profile' },
   { id: 'products', label: 'Products', tab: 'products' },
+  { id: 'access', label: 'Access', tab: 'access' },
   { id: 'membership', label: 'Membership', tab: 'membership' },
+  { id: 'organizations', label: 'Organizations', tab: 'organizations' },
   { id: 'preferences', label: 'Preferences', tab: 'preferences' },
+  { id: 'notifications', label: 'Notifications', tab: 'notifications' },
   { id: 'privacy', label: 'Privacy', tab: 'privacy' },
   { id: 'security', label: 'Security', tab: 'signin' },
   { id: 'data', label: 'Data & Export', tab: 'data' },
@@ -124,8 +130,8 @@ function AccountRoot({ principal, roles }: { principal: Extract<AccountPrincipal
         .avatark-account-header [data-avatark-component="product-switcher"] { display: flex; gap: 0.25rem; overflow-x: auto; }
         .avatark-account-header [data-avatark-part="product-option"] { white-space: nowrap; border-radius: 9999px; border: 1px solid var(--surface-line); padding: 0.25rem 0.7rem; font-size: 0.75rem; color: var(--text-dim); background: transparent; }
         .avatark-account-header [data-avatark-part="product-option"][data-current="true"] { color: var(--gold); border-color: var(--gold); }
-        .avatark-account-header [data-avatark-component="notification-bell"] button { border-radius: 9999px; border: 1px solid var(--surface-line); padding: 0.35rem 0.6rem; font-size: 0.75rem; color: var(--text-dim); background: transparent; }
         .avatark-account-header [data-avatark-component="avatar-menu"] > button { display: flex; align-items: center; gap: 0.5rem; border-radius: 9999px; padding: 0.25rem 0.75rem 0.25rem 0.25rem; font-size: 0.875rem; color: var(--paper); background: transparent; }
+        .avatark-account-header [data-avatark-component="avatar-menu"] > button > span:first-child { display: flex; height: 1.75rem; width: 1.75rem; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; background: color-mix(in srgb, var(--gold) 22%, transparent); color: var(--gold); }
         .avatark-account-header [data-avatark-part="menu-panel"] { position: absolute; right: 0; z-index: 20; margin-top: 0.5rem; display: flex; width: 12rem; flex-direction: column; border-radius: 0.75rem; border: 1px solid var(--surface-line); background: var(--midnight); padding: 0.375rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
         .avatark-account-header [data-avatark-part="menu-identity"] { padding: 0.5rem 1rem; font-size: 0.75rem; color: var(--text-dim); }
         .avatark-account-header [data-avatark-part="sign-out"] { text-align: left; padding: 0.6rem 1rem; font-size: 0.875rem; color: var(--text-dim); }
@@ -138,17 +144,19 @@ function AccountRoot({ principal, roles }: { principal: Extract<AccountPrincipal
         </div>
         <div className="flex items-center gap-3">
           <ProductSwitcher products={PRODUCT_REGISTRY} currentProductId="avatark" onSelect={goToProduct} />
-          {/* unreadCount is honestly 0 -- @avatark/notifications has no real
-              implementation anywhere in the ecosystem yet (see
-              docs/ADAPTER_CONFORMANCE_CONTRACTS.md); this is not a mock
-              claiming a working notification feed. */}
-          <NotificationBell unreadCount={0} />
+          {/* No header notification bell: @avatark/notifications has no real
+              delivery/unread-count implementation anywhere in the ecosystem
+              yet (see docs/ADAPTER_CONFORMANCE_CONTRACTS.md) -- a bell that
+              can only ever show a hardcoded 0 with an empty dropdown is a
+              fabricated control, not a degraded-but-honest one. Preferences
+              for notification categories live in the Notifications section
+              below; reintroduce this once a real unread source exists. */}
           <AvatarMenu displayName={principal.displayName} email={principal.email} onSignOut={handleSignOut} />
         </div>
       </div>
 
       <div className="flex flex-col gap-8 sm:flex-row sm:items-start">
-        <nav aria-label="Account" className="flex shrink-0 flex-row gap-1 overflow-x-auto sm:w-56 sm:flex-col sm:overflow-visible">
+        <nav aria-label="Account" className="flex min-w-0 shrink-0 flex-row gap-1 overflow-x-auto sm:w-56 sm:flex-col sm:overflow-visible">
           {RAIL_SECTIONS.map((item) => {
             const active = item.id === section
             return (

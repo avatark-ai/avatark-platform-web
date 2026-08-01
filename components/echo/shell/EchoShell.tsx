@@ -58,7 +58,23 @@ export function EchoShell({ site, children }: { site: SiteId; children: React.Re
       <EchoContextNav />
       <div
         id="echo-main-content"
-        className="flex flex-1 flex-col pb-16 lg:pb-0"
+        // w-full is load-bearing, not decorative: this div is a direct
+        // flex child of <body>'s flex-col (app/layout.tsx). Without an
+        // explicit width, a flex item under `align-items: stretch` still
+        // grows to fit an unshrinkable descendant (e.g. a wide
+        // `overflow-x-auto` row with many nowrap items) rather than
+        // clamping to the stretched size and letting that descendant
+        // scroll internally -- min-width:0 further down the chain (see
+        // PageEnter's wrapper, app/globals.css's comment) does not stop
+        // this, since the growth happens at this level's own cross-axis
+        // sizing, not a descendant's. Once this div overflows, body's
+        // page-level `overflow-x: hidden` (app/globals.css) clips the
+        // excess instead of leaving it scrollable -- real content
+        // silently becomes unreachable on narrow viewports, not just
+        // visually messy. Confirmed via a direct repro (RC1.1's 10-item
+        // account nav rail overflowing at 390px width, see
+        // docs/IDENTITY_RC11_ACCOUNT_AUDIT.md).
+        className="flex w-full flex-1 flex-col pb-16 lg:pb-0"
         style={{ background: "var(--midnight)" }}
       >
         {/* Subtle page-entry settle -- the same EMERGE primitive/component
