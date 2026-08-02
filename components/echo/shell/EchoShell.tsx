@@ -6,12 +6,15 @@
 // /foundation; /canon; /ecosystem; /roadmap), the admin surface
 // (/admin/*, which renders its own AdminNav), the unlinked developer
 // tooling under /dev/* (Integration Sprint RC1's dashboard/simulator --
-// a developer tool, not a participant-facing Echo page), and the
+// a developer tool, not a participant-facing Echo page), the
 // Integration Dashboard under /integration/* (an ecosystem-status view,
-// same "not a participant journey page" reasoning as /dev) render only
-// their own children, exactly like the old components/SiteHeader.tsx's
-// self-exclusion -- generalized here to be host-aware for `/`, since that
-// path alone can be either experience depending on the resolved site.
+// same "not a participant journey page" reasoning as /dev), and the Ai4
+// conference demo under /ai4/* (components/ai4/PresentationShell renders
+// its own full-bleed chrome -- a guided kiosk journey, not another Echo
+// sub-page) render only their own children, exactly like the old
+// components/SiteHeader.tsx's self-exclusion -- generalized here to be
+// host-aware for `/`, since that path alone can be either experience
+// depending on the resolved site.
 import { usePathname } from "next/navigation";
 import type { SiteId } from "@/lib/sites/registry";
 import { PageEnter } from "@avatark/motion";
@@ -40,6 +43,7 @@ export function EchoShell({ site, children }: { site: SiteId; children: React.Re
     !pathname.startsWith("/admin") &&
     !pathname.startsWith("/dev") &&
     !pathname.startsWith("/integration") &&
+    !pathname.startsWith("/ai4") &&
     !isInstitutionalOnlyPath(pathname) &&
     !(pathname === "/" && site === "institutional");
 

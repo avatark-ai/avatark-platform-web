@@ -7,6 +7,12 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    // Ai4 Conference Demo: /ai4 is a public, presentation-only experience
+    // (components/ai4/PresentationShell) that must run with no dependency
+    // on Supabase, auth, or environment-variable availability -- excluded
+    // here so the session-refresh middleware never runs for it at all,
+    // rather than making updateSession tolerate missing/unreachable
+    // Supabase config. No other route's behavior changes.
+    '/((?!_next/static|_next/image|favicon.ico|ai4|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
