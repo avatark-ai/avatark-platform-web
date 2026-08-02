@@ -186,3 +186,57 @@ document.
    workspace-package structure exists.
 7. Confirm real public URLs for ArenaK/StreamK/CinemaK/StudioK/Atlas/
    SetpointK so their registry entries stop being `null`.
+8. Apply migration `020_capability_grants.sql` (corrected) to
+   `avatark-platform-test` per `docs/AVATARK_PLATFORM_TEST_MIGRATION_020_RUNBOOK.md`,
+   then run that runbook's §13 application-verification steps against a
+   real signed-in session — see the 2026-08-02 addendum below.
+
+## 2026-08-02 addendum — migrations 010–019 applied; capability grants (020) redesigned, not yet applied
+
+Since the "As of" date above, and independent of this document's other
+still-open gaps:
+
+- **Migrations 010–019 are now confirmed applied to `avatark-platform-test`**
+  (010–018 via a manual SQL runbook,
+  `docs/AVATARK_PLATFORM_TEST_MIGRATION_010_018_RUNBOOK.md`; 019, avatar
+  storage, applied in a separate later pass) — closing the specific
+  "010–016 genuinely unverified against a live database" gap named earlier
+  in this document for that range. Priority 3 above (`run-platform-
+  migrations.js` itself has still never actually been executed against any
+  real project) remains open and unrelated — these migrations were applied
+  by hand-run SQL, not via the runner script.
+- **`020_capability_grants.sql`, the next migration in sequence, was found
+  to have a genuine schema defect before ever being applied anywhere**:
+  its original composite primary key (`PRIMARY KEY (user_id, capability,
+  scope_type, scope_id)`) made `scope_id` implicitly `NOT NULL`, but the
+  file's own design required `scope_id = NULL` for platform-scoped grants
+  — a platform-scoped row could never have been inserted. Corrected in
+  place (surrogate `uuid` primary key + an explicit CHECK constraint doing
+  the actual data-shape enforcement) — confirmed against
+  `avatark-platform-test`'s own `schema_migrations` table that the
+  original was never applied, so no ledger/data risk existed in correcting
+  it directly. Full audit, corrected schema, and real verification against
+  a disposable Postgres 16 instance (clean apply, idempotency, every
+  constraint/uniqueness/RLS/grant scenario) live in
+  `docs/AVATARK_PLATFORM_TEST_MIGRATION_020_RUNBOOK.md`. **020 has not been
+  applied to `avatark-platform-test` or anywhere else** — this remains a
+  manual SQL step, same as 010–018 were before their own runbook was
+  executed.
+- **A real capability resolver, admin grant/revoke API, and Access-tab/
+  diagnostics wiring were built against the corrected schema**
+  (`lib/capabilities/`, `app/api/admin/capabilities/**`), default-denying
+  on every failure mode (no grant, revoked, expired, malformed scope,
+  unknown capability, adapter error/missing table) and covered by 46 new
+  unit/integration tests, all passing. This is genuinely wired into
+  `packages/account/src/ui/AccessTab.tsx` (via
+  `lib/products/accessModel.ts`) and `app/admin/page.tsx`'s diagnostics —
+  but since `020` itself is not yet applied anywhere, none of this has
+  been exercised against a real `capability_grants` row in any real
+  environment. Today, every real caller sees the same honest empty state
+  it saw before this work (no capabilities recorded yet) — this is by
+  design, not a regression.
+- **This does not change any `READY_FOR_PRODUCT_ADOPTION` verdict.**
+  Capability grants are a narrow, forward-compatible layer — no existing
+  RC1/RC1.1 mission requirement is gated on them, and neither release-gate
+  document's blocker (real authenticated-browser-session verification) is
+  affected by this work.

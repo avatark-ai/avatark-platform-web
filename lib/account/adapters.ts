@@ -8,6 +8,7 @@ import type { AccountAdapters } from '@avatark/account'
 import { createClient } from '@/lib/supabase/client'
 import { MEMBERSHIP_PLAN_LABEL } from '@avatark/membership'
 import { computeProductAccessEntries, toProductsWithAccess } from '@/lib/products/accessModel'
+import { listActiveCapabilityGrants } from '@/lib/capabilities/queries'
 
 // See membership.getRelationships/getRoles below: the @avatark/account
 // package's MembershipAdapter.getRoles is synchronous, so real platform
@@ -144,14 +145,23 @@ export const avatarKPlatformAdapters: AccountAdapters = {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return computeProductAccessEntries({ currentProductId, grants: [], avatarkRoles: [] })
 
-      const { data: accessRows } = await supabase
-        .from('product_access')
-        .select('product_id, status, granted_at')
-        .eq('user_id', user.id)
+      const [{ data: accessRows }, capabilityGrants] = await Promise.all([
+        supabase
+          .from('product_access')
+          .select('product_id, status, granted_at')
+          .eq('user_id', user.id),
+        // RLS-scoped own-row read (migration 020's "capability_grants_select_own"
+        // policy), same trust boundary as product_access/platform_roles above.
+        // Resolves to [] both when the user genuinely has no grants yet and
+        // when the table itself doesn't exist yet in this environment (see
+        // lib/capabilities/queries.ts) -- either way, an honest empty
+        // "Capabilities" list, never a crash.
+        listActiveCapabilityGrants(supabase, user.id),
+      ])
       const grants = (accessRows ?? []).map((r) => ({
         productId: r.product_id as string, status: r.status as string, grantedAt: r.granted_at as string,
       }))
-      return computeProductAccessEntries({ currentProductId, grants, avatarkRoles: cachedPlatformRoles ?? [] })
+      return computeProductAccessEntries({ currentProductId, grants, avatarkRoles: cachedPlatformRoles ?? [], capabilityGrants })
     },
   },
 

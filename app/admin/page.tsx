@@ -5,7 +5,8 @@ import { PLATFORM_PRODUCTS } from '@/lib/products/registry'
 import { computeEnvironmentHealth } from '@/lib/admin/environment'
 import { computeEmailDiagnostics } from '@/lib/admin/emailDiagnostics'
 import { computeAuthDiagnostics } from '@/lib/admin/authDiagnostics'
-import { getAdminContext } from '@/lib/admin/authz'
+import { getAdminContext, type AdminContext } from '@/lib/admin/authz'
+import { listActiveCapabilityGrants } from '@/lib/capabilities/queries'
 import {
   resolveDiagnosticsTier,
   buildDiagnosticsPayload,
@@ -70,6 +71,25 @@ async function getRecentAuditEvents(): Promise<{ events: RecentAuditEvent[]; ema
   return { events: data as RecentAuditEvent[], emails }
 }
 
+// Raw capability ids only -- this is a protected diagnostics surface
+// (platform_operations tier), not the consumer-facing Access tab, so no
+// friendly-label mapping applies here (mission: "protected diagnostics
+// may show raw capability identifiers"). Only platform-scope grants are
+// shown: this summary is about the signed-in admin's own platform-level
+// standing, not a per-product breakdown (that lives on the Access tab).
+// Resolves to [] both when this admin genuinely holds no capability
+// grants yet (the case in every real environment today -- migration 020
+// has not been applied anywhere) and when the table doesn't exist yet or
+// the service-role client isn't configured -- all three are honestly
+// indistinguishable from "nothing to show" at this call site.
+async function getOwnPlatformCapabilities(adminCtx: AdminContext | null): Promise<string[]> {
+  if (!adminCtx || !isAdminClientConfigured()) return []
+  const admin = createAdminClient()
+  if (!admin) return []
+  const grants = await listActiveCapabilityGrants(admin, adminCtx.userId)
+  return grants.filter((g) => g.scopeType === 'platform').map((g) => g.capability)
+}
+
 function StatCard({ label, value, detail }: { label: string; value: string; detail?: string }) {
   return (
     <div className="rounded-md border p-4">
@@ -101,6 +121,7 @@ export default async function AdminDashboardPage() {
   // hit without any further changes here.
   const adminCtx = await getAdminContext()
   const tier = resolveDiagnosticsTier(adminCtx)
+  const ownPlatformCapabilities = await getOwnPlatformCapabilities(adminCtx)
   const currentEnv = env[0]
   const statusEntries = computePlatformStatus({
     environment: currentEnv,
@@ -126,7 +147,9 @@ export default async function AdminDashboardPage() {
     statusSummary: worstPlatformStatus(statusEntries),
     safeReturnRoute: '/admin',
     currentOrganization: null,
-    membershipRoleCapabilitySummary: adminCtx ? `role=${adminCtx.role}` : 'none',
+    membershipRoleCapabilitySummary: adminCtx
+      ? `role=${adminCtx.role}${ownPlatformCapabilities.length > 0 ? `; capabilities=${ownPlatformCapabilities.join(',')}` : ''}`
+      : 'none',
     featureFlags: [
       process.env.NEXT_PUBLIC_ACCOUNT_MOUNT_ENABLED === 'true' ? 'ACCOUNT_MOUNT_ENABLED' : null,
       auth.googleOAuthEnabled ? 'GOOGLE_OAUTH_ENABLED' : null,

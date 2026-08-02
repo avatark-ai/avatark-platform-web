@@ -17,6 +17,8 @@ import type {
   ProductWithAccess,
 } from '@avatark/account'
 import { resolveProductUrl } from './registry'
+import { capabilitiesForProductEntry, friendlyCapabilityLabel } from '@/lib/capabilities/labels'
+import type { CapabilityGrantRow } from '@/lib/capabilities/types'
 
 // Canonical-package-adoption status per product (RC1.1, Part 4's explicit
 // registry treatment). This is NOT the same axis as the pre-existing
@@ -65,6 +67,8 @@ export interface ProductAccessInputs {
   grants: RealAccessGrant[]
   /** Real platform_roles for the signed-in user -- only ever surfaced for 'avatark' itself, since that's the only product this repo has real role data for. */
   avatarkRoles: string[]
+  /** Real capability_grants rows (migration 020) for the signed-in user, active ones only -- see lib/capabilities/queries.ts's listActiveCapabilityGrants. Optional/defaults to empty: capability_grants has no writers yet in any real environment, so an honest empty list, not a fabricated one, is the correct default until a grant actually exists. */
+  capabilityGrants?: CapabilityGrantRow[]
 }
 
 export function computeProductAccessEntries(inputs: ProductAccessInputs): ProductAccessSummary[] {
@@ -90,7 +94,14 @@ export function computeProductAccessEntries(inputs: ProductAccessInputs): Produc
       source: grant ? 'administrator' : accessRequirement === 'available' ? 'public' : null,
       organizationName: null, // product_access has no organization_id column today -- never fabricated
       roles: product.id === 'avatark' ? inputs.avatarkRoles : [],
-      capabilities: [], // no capability-per-grant data source exists yet
+      // Real capability_grants rows (migration 020), friendly-labeled for
+      // this consumer-facing surface -- capabilitiesForProductEntry only
+      // ever matches this product's own product-scope grants (plus
+      // platform-scope grants, under the 'avatark' entry only), never a
+      // different product's or an organization's, per the resolver's own
+      // exact-scope-match rule (lib/capabilities/resolver.ts). Empty until
+      // a real grant exists, same honest-default posture as before.
+      capabilities: capabilitiesForProductEntry(product.id, inputs.capabilityGrants ?? []).map(friendlyCapabilityLabel),
       validFrom: grant?.grantedAt ?? null,
       validUntil: null, // no column exists yet
       suspensionReason: null,

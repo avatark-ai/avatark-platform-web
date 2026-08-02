@@ -36,12 +36,14 @@ function assertPlatformTestDatabase() {
 }
 
 // Expected migration order, per the checkpoint's own numbering. This list
-// had drifted behind supabase/migrations/ -- 010 through 015 (organizations,
-// roles, product access, audit, and their RLS/grants) were added in a later
-// session but never added here, meaning this runner could never actually
-// apply them. Fixed here to match the real files on disk; still DESIGN
-// ONLY in the sense that no PLATFORM_DATABASE_URL is configured in any
-// environment reachable from this repo today, so it still hasn't been run.
+// has repeatedly drifted behind supabase/migrations/: 010-015 (organizations,
+// roles, product access, audit, and their RLS/grants), then again 017-020
+// (profile role/org/location, RC1.1 preferences, avatar storage, capability
+// grants) were each added to the migrations directory in a later session but
+// never added here, meaning this runner could never actually apply them.
+// Fixed both times to match the real files on disk; still DESIGN ONLY in the
+// sense that no PLATFORM_DATABASE_URL is configured in any environment
+// reachable from this repo today, so none of this has ever actually been run.
 const MIGRATION_ORDER = [
   '001_extensions.sql',
   '002_profiles.sql',
@@ -59,6 +61,10 @@ const MIGRATION_ORDER = [
   '014_admin_rls.sql',
   '015_admin_grants.sql',
   '016_organization_invitations.sql',
+  '017_profile_role_org_location.sql',
+  '018_account_preferences_rc11.sql',
+  '019_avatar_storage.sql',
+  '020_capability_grants.sql',
 ]
 
 async function main() {
