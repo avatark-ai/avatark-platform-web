@@ -20,7 +20,7 @@ export type ReflectionChip = (typeof REFLECTION_CHIPS)[number];
 const REFLECTION_KEY = "ai4-demo-reflection";
 const STEP_KEY = "ai4-demo-step";
 
-export const AI4_STEP_COUNT = 7;
+export const AI4_STEP_COUNT = 9;
 
 function isReflectionChip(value: string | null): value is ReflectionChip {
   return value !== null && (REFLECTION_CHIPS as readonly string[]).includes(value);

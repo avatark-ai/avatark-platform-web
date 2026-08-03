@@ -12,8 +12,8 @@ import {
   type ReflectionChip,
 } from "@/lib/ai4/reflection";
 
-// The guided Ai4 conference journey: one shell, seven in-place beats
-// (components/ai4/steps/*), never seven separate page loads. Step and
+// The guided Ai4 conference journey: one shell, nine in-place beats
+// (components/ai4/steps/*), never nine separate page loads. Step and
 // reflection state persist to localStorage only, so a mid-demo refresh (a
 // real risk on conference Wi-Fi) resumes exactly where the visitor left
 // off instead of dropping them back to a blank first screen.

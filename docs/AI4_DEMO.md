@@ -18,9 +18,9 @@ routes, auth, or database.
 
 **`/ai4`**
 
-That single route hosts the entire journey. It is not seven separate pages —
+That single route hosts the entire journey. It is not nine separate pages —
 it is one guided cinematic shell (`components/ai4/PresentationShell.tsx`)
-that steps through seven in-place beats.
+that steps through nine in-place beats.
 
 ## Guided flow
 
@@ -30,9 +30,11 @@ that steps through seven in-place beats.
 | 02 | Reflect | `components/ai4/steps/Reflect.tsx` | Chip picker: Belonging · Wonder · Duty · Courage · Loss · Compassion · Hope · Return |
 | 03 | Continue | `components/ai4/steps/Continue.tsx` | Conceptual bridge: Story → Reflection → Living World |
 | 04 | Enter the Living Forest | `components/ai4/steps/EnterForest.tsx` | CSS/SVG procedural-world concept preview |
-| 05 | Practice | `components/ai4/steps/Practice.tsx` | Short breathing/ritual interaction |
-| 06 | Echo | `components/ai4/steps/Echo.tsx` | The chosen reflection becomes a persistent "Echo" |
-| 07 | Return | `components/ai4/steps/Return.tsx` | Closing beat — the system remembers, reason to come back |
+| 05 | Living Worlds | `components/ai4/steps/LivingWorlds.tsx` | Five premium cards: Between Heartbeats, Adhi Yogi, Krishna, Rama, Prometheus — each its own persistent living world |
+| 06 | Practice | `components/ai4/steps/Practice.tsx` | Short breathing/ritual interaction |
+| 07 | Echo | `components/ai4/steps/Echo.tsx` | The chosen reflection becomes a persistent "Echo" |
+| 08 | Platform Architecture | `components/ai4/steps/PlatformArchitecture.tsx` | Architecture reveal: AvatarK → Living Worlds → GameK (FlowK/PathK/GeometryK/ChronicleK) → PrometheusK (Reflection → Practice → Creation → Echo → Legacy) |
+| 09 | Return | `components/ai4/steps/Return.tsx` | Closing beat — every story continues, reason to come back |
 
 Controls (all in `PresentationShell.tsx`): Previous / Next buttons,
 clickable progress dots, `←`/`→` keyboard navigation, and a "Restart Demo"
@@ -77,7 +79,7 @@ point at a real project for `/ai4` to work.
 
 ## What is implemented
 
-- The full 7-step guided journey, keyboard + button navigation, progress
+- The full 9-step guided journey, keyboard + button navigation, progress
   indicator, and Restart Demo.
 - Reflection selection, persisted locally and threaded into later steps'
   copy (Living Forest, Echo, Return all reference the chosen word).
@@ -87,6 +89,14 @@ point at a real project for `/ai4` to work.
   Vrindavan, Rama's forest exile, Ayodhya outskirts, Yamuna river
   environments, sacred groves, future original AvatarK stories). None of
   those six are claimed as built.
+- A Living Worlds step naming five persistent worlds (Living Symphony,
+  Living Stillness, Living Vrindavan, Living Forest, Living Forge) as cards
+  — story, world, and theme only, no product branding.
+- A Platform Architecture step revealing the shared engine underneath every
+  world: AvatarK → Living Worlds → GameK's four dimensions (FlowK/PathK/
+  GeometryK/ChronicleK) → PrometheusK as the knowledge layer (Reflection →
+  Practice → Creation → Echo → Legacy). Concept only — no product marketing
+  pages, no individual product routes.
 - Full independence from authentication and from Supabase middleware.
 - Verified: clean typecheck/lint/build, no console errors, no horizontal
   overflow at desktop (1280px) or mobile (390px) widths, refresh-safe.
@@ -110,6 +120,14 @@ point at a real project for `/ai4` to work.
 - **Living Forest**: no game engine, no 3D, no procedural generation — a
   hand-built CSS/SVG scene communicating the concept, explicitly labeled
   as such.
+- **Living Worlds**: five named worlds shown as static cards (story, world
+  name, theme) — no world is playable from this step, and no product or
+  route backs any of them yet.
+- **Platform Architecture**: a static concept diagram of the shared engine
+  (AvatarK → Living Worlds → GameK → PrometheusK) — not a live systems
+  diagram, not linked to any real product page, and none of GameK's four
+  named dimensions (FlowK, PathK, GeometryK, ChronicleK) are wired to
+  actual product routes from here.
 
 ## Conference operating instructions
 

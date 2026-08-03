@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
-// Shared kicker/title/subtitle scaffold so each of the 7 beats
+// Shared kicker/title/subtitle scaffold so each of the 9 beats
 // (components/ai4/steps/*) only has to supply its own copy and unique
-// visual, not re-derive the same heading layout seven times.
+// visual, not re-derive the same heading layout nine times.
 export function StepFrame({
   kicker,
   title,

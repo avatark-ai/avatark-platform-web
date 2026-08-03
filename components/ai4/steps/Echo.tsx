@@ -3,7 +3,7 @@ import type { StepProps } from "./types";
 
 export function Echo({ reflection }: StepProps) {
   return (
-    <StepFrame kicker="06 · Echo" title="Your reflection becomes part of a continuing memory.">
+    <StepFrame kicker="07 · Echo" title="Your reflection becomes part of a continuing memory.">
       <div
         className="flex w-full max-w-sm flex-col gap-3 rounded-2xl border p-6 text-left"
         style={{ borderColor: "var(--surface-line)", background: "var(--surface)" }}

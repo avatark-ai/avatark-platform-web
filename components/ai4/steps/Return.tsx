@@ -3,18 +3,28 @@ import type { StepProps } from "./types";
 
 export function Return({ reflection }: StepProps) {
   return (
-    <StepFrame kicker="07 · Return" title="The system remembers. That's the reason to come back.">
-      <p className="max-w-[520px] text-base leading-7 sm:text-lg" style={{ color: "var(--text-dim)" }}>
-        {reflection
-          ? `Next time, the forest already knows you carried “${reflection}” with you. The story continues where you left it.`
-          : "Every return begins with what you carried last time. The story continues where you left it."}
-      </p>
-      <p className="text-sm font-medium" style={{ color: "var(--gold)" }}>
-        Watch. Reflect. Continue.
-      </p>
-      <p className="mt-2 text-xs" style={{ color: "var(--text-dim)" }}>
-        Built on the AvatarK platform — StreamK · CinemaK · StudioK · GameK · ArenaK · PrometheusK
-      </p>
+    <StepFrame kicker="09 · Return" title="Every story continues.">
+      <div className="flex max-w-[480px] flex-col gap-2 text-base leading-7 sm:text-lg" style={{ color: "var(--text-dim)" }}>
+        <p>Reflection becomes memory.</p>
+        <p>Memory becomes living worlds.</p>
+        <p>Living worlds become places you return to.</p>
+      </div>
+      {reflection ? (
+        <p className="motion-emerge-instant text-xs font-medium uppercase tracking-wide" style={{ color: "var(--gold)" }}>
+          You carried “{reflection}” with you.
+        </p>
+      ) : null}
+      <div className="mt-4 flex flex-col items-center gap-1">
+        <p className="text-sm font-semibold" style={{ color: "var(--gold)" }}>
+          One platform.
+        </p>
+        <p className="text-sm" style={{ color: "var(--text-dim)" }}>
+          Many living worlds.
+        </p>
+        <p className="text-sm" style={{ color: "var(--text-dim)" }}>
+          Every story continues.
+        </p>
+      </div>
     </StepFrame>
   );
 }
