@@ -18,7 +18,7 @@ const mockPrincipal = { status: 'signed_in' as const, id: 'dev-preview-user', di
 
 type Section =
   | 'profile' | 'products' | 'access' | 'membership' | 'organizations'
-  | 'preferences' | 'notifications' | 'privacy' | 'security' | 'data'
+  | 'preferences' | 'notifications' | 'privacy' | 'security' | 'systemInformation' | 'data'
   | 'extension-demo'
 
 // 'extension-demo' exercises the generic ExtensionAdapter mechanism
@@ -36,6 +36,7 @@ const RAIL_SECTIONS: { id: Section; label: string; tab: AccountTabKey }[] = [
   { id: 'notifications', label: 'Notifications', tab: 'notifications' },
   { id: 'privacy', label: 'Privacy', tab: 'privacy' },
   { id: 'security', label: 'Security', tab: 'signin' },
+  { id: 'systemInformation', label: 'System Information', tab: 'systemInformation' },
   { id: 'data', label: 'Data & Export', tab: 'data' },
   { id: 'extension-demo', label: 'Mock Extension', tab: extensionTabKey('mock-extension') },
 ]

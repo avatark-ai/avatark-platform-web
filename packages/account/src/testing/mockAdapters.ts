@@ -1,6 +1,6 @@
 // Real, honest test doubles -- every method returns genuinely well-formed
 // data by default; error and empty states are opt-in via options.
-import type { AccountAdapters, StatEntry, ProductWithAccess, ProductAccessSummary } from '../contracts/adapters.ts'
+import type { AccountAdapters, StatEntry, ProductWithAccess, ProductAccessSummary, AccountOrganizationInvitation } from '../contracts/adapters.ts'
 
 // Fixture products spanning every combination of the three-axis model
 // (RC1.1, Part 4) -- deliberately synthetic ids/names, never a real
@@ -19,6 +19,19 @@ const MOCK_ACCESS: ProductAccessSummary[] = [
   { productId: 'mock-host', productName: 'Mock Host', deploymentStatus: 'live', integrationStatus: 'canonical', accessRequirement: 'available', userAccessState: 'active', source: 'public', organizationName: null, roles: ['admin'], capabilities: [], validFrom: null, validUntil: null, suspensionReason: null, expiryReason: null, nextAction: { kind: 'current', label: "You're here", href: null } },
   { productId: 'mock-product-d', productName: 'Mock Product D', deploymentStatus: 'live', integrationStatus: 'pending', accessRequirement: 'entitlement_dependent', userAccessState: 'active', source: 'invitation', organizationName: 'Mock University', roles: ['Organizer'], capabilities: ['Create events', 'Invite participants'], validFrom: new Date('2026-01-01').toISOString(), validUntil: null, suspensionReason: null, expiryReason: null, nextAction: { kind: 'open', label: 'Open', href: 'https://mock-d.example.invalid' } },
   { productId: 'mock-product-e', productName: 'Mock Product E', deploymentStatus: 'live', integrationStatus: 'pending', accessRequirement: 'entitlement_and_consent_required', userAccessState: 'no_grant', source: null, organizationName: null, roles: [], capabilities: [], validFrom: null, validUntil: null, suspensionReason: null, expiryReason: null, nextAction: { kind: 'learn_more', label: 'Learn more', href: 'https://mock-e.example.invalid' } },
+]
+
+const MOCK_INVITATIONS: AccountOrganizationInvitation[] = [
+  {
+    id: 'mock-invitation-1',
+    token: 'mock-token-1',
+    organizationId: 'org-mock-2',
+    organizationName: 'Mock Guild',
+    role: 'member',
+    invitedByEmail: 'admin@example.invalid',
+    createdAt: new Date('2026-01-01').toISOString(),
+    expiresAt: new Date('2026-12-31').toISOString(),
+  },
 ]
 
 export interface MockAdapterOptions {
@@ -76,6 +89,23 @@ export function createMockAdapters(opts: MockAdapterOptions = {}): AccountAdapte
         memberships: [{ organizationId: 'org-mock-1', organizationName: 'Mock University', role: 'Organizer', source: 'invitation', validFrom: new Date('2026-01-01').toISOString() }],
         currentOrganizationId: organizationId,
       } }),
+      listInvitations: () => wait(forceError ? { error: 'Mock invitation fetch failure' } : { data: MOCK_INVITATIONS }),
+      acceptInvitation: () => wait(forceError
+        ? { error: 'Mock invitation accept failure' }
+        : { data: {
+            memberships: [
+              { organizationId: 'org-mock-1', organizationName: 'Mock University', role: 'Organizer', source: 'invitation', validFrom: new Date('2026-01-01').toISOString() },
+              { organizationId: 'org-mock-2', organizationName: 'Mock Guild', role: 'member', source: 'invitation', validFrom: new Date().toISOString() },
+            ],
+            currentOrganizationId: null,
+          } }),
+      declineInvitation: () => wait(forceError ? { error: 'Mock invitation decline failure' } : {}),
+      leaveOrganization: (organizationId) => wait(forceError
+        ? { error: 'Mock leave failure' }
+        : { data: {
+            memberships: [{ organizationId: 'org-mock-1', organizationName: 'Mock University', role: 'Organizer', source: 'invitation', validFrom: new Date('2026-01-01').toISOString() }].filter((m) => m.organizationId !== organizationId),
+            currentOrganizationId: null,
+          } }),
     },
     preferences: {
       get: () => wait(forceError
@@ -151,6 +181,43 @@ export function createMockAdapters(opts: MockAdapterOptions = {}): AccountAdapte
     },
     gettingStarted: opts.omitOptional ? undefined : {
       getStatus: () => wait({ data: { completed: true, stepsRemaining: [] } }),
+    },
+    systemInformation: opts.omitOptional ? undefined : {
+      get: () => wait(forceError
+        ? { error: 'Mock system information fetch failure' }
+        : { data: {
+            visibilityTier: 'safe',
+            environment: 'local',
+            productId: 'mock-host',
+            productName: 'Mock Host',
+            appVersion: '0.0.0-mock',
+            buildDate: new Date('2026-01-01').toISOString(),
+            deploymentIdShort: 'mock-dep123',
+            authProviders: ['google'],
+            currentOrganizationId: null,
+            currentOrganizationName: null,
+            accountPackageVersion: '0.0.0-mock',
+            authUiPackageVersion: '0.0.0-mock',
+            registryVersion: '5 products loaded',
+            platformStatusSummary: 'All platform services operational.',
+            storageAvailability: 'operational',
+            capabilityServiceAvailability: 'operational',
+            invitationServiceAvailability: 'operational',
+            statusUrl: '/mock/status',
+            supportUrl: 'mailto:support@example.invalid',
+            vercelEnvironment: null,
+            commitShaShort: null,
+            buildTimestamp: null,
+            supabaseProjectLabel: null,
+            migrationLevel: null,
+            services: null,
+            callbackOrigin: null,
+            currentSiteOrigin: null,
+            packageVersions: null,
+            registryRevision: null,
+            lastHealthCheckAt: null,
+            adminUrl: null,
+          } }),
     },
   }
 

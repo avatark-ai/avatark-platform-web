@@ -68,6 +68,12 @@ export type {
   AccountSupportConfig,
   AccountLinksConfig,
   AccountAdapters,
+  AccountOrganizationInvitation,
+  SystemInformationVisibilityTier,
+  SystemServiceStatus,
+  SystemInformationServiceStates,
+  SystemInformationSnapshot,
+  SystemInformationAdapter,
 } from './contracts/adapters.ts'
 export { DATA_EXPORT_SCOPES, ACCOUNT_CLOSURE_SCOPES } from './contracts/adapters.ts'
 

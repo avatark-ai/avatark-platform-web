@@ -13,7 +13,7 @@
 // out of REQUIRED_TABS.
 export type CoreTabKey =
   | 'profile' | 'products' | 'access' | 'membership' | 'organizations'
-  | 'preferences' | 'notifications' | 'privacy' | 'signin' | 'data'
+  | 'preferences' | 'notifications' | 'privacy' | 'signin' | 'systemInformation' | 'data'
 
 export type ExtensionTabKey = `ext:${string}`
 
@@ -21,7 +21,7 @@ export type AccountTabKey = CoreTabKey | ExtensionTabKey
 
 export const ACCOUNT_TAB_KEYS: CoreTabKey[] = [
   'profile', 'products', 'access', 'membership', 'organizations',
-  'preferences', 'notifications', 'privacy', 'signin', 'data',
+  'preferences', 'notifications', 'privacy', 'signin', 'systemInformation', 'data',
 ]
 
 export const ACCOUNT_TAB_LABELS: { key: CoreTabKey; label: string }[] = [
@@ -34,6 +34,7 @@ export const ACCOUNT_TAB_LABELS: { key: CoreTabKey; label: string }[] = [
   { key: 'notifications', label: 'Notifications' },
   { key: 'privacy', label: 'Privacy' },
   { key: 'signin', label: 'Security' },
+  { key: 'systemInformation', label: 'System Information' },
   { key: 'data', label: 'Data & Export' },
 ]
 

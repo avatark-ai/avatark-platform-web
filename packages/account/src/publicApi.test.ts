@@ -17,10 +17,10 @@ import { DATA_EXPORT_SCOPES, ACCOUNT_CLOSURE_SCOPES } from './contracts/adapters
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 
-test('ACCOUNT_TAB_KEYS lists exactly the 10 core sections (no product-specific tabs baked in)', () => {
+test('ACCOUNT_TAB_KEYS lists exactly the 11 core sections (no product-specific tabs baked in)', () => {
   assert.deepEqual(tabs.ACCOUNT_TAB_KEYS, [
     'profile', 'products', 'access', 'membership', 'organizations',
-    'preferences', 'notifications', 'privacy', 'signin', 'data',
+    'preferences', 'notifications', 'privacy', 'signin', 'systemInformation', 'data',
   ])
 })
 

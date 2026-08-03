@@ -16,6 +16,7 @@ import { PreferencesTab } from './PreferencesTab.tsx'
 import { NotificationsTab } from './NotificationsTab.tsx'
 import { PrivacyTab } from './PrivacyTab.tsx'
 import { DataExportTab } from './DataExportTab.tsx'
+import { SystemInformationTab } from './SystemInformationTab.tsx'
 import { ExtensionTab } from './ExtensionTab.tsx'
 import { ActivityTab } from '../extensions/ActivityTab.tsx'
 import { EchoesTab } from '../extensions/EchoesTab.tsx'
@@ -42,10 +43,11 @@ export function AvatarKAccount({ principal, currentProduct, productName, onSigne
   // are optional, same graceful-omission pattern as the pre-existing
   // privacy — a host that hasn't supplied the adapter simply doesn't get
   // the tab, never a broken/empty one.
-  const CORE_TAB_ORDER: CoreTabKey[] = ['profile', 'products', 'access', 'membership', 'organizations', 'preferences', 'notifications', 'privacy', 'signin', 'data']
+  const CORE_TAB_ORDER: CoreTabKey[] = ['profile', 'products', 'access', 'membership', 'organizations', 'preferences', 'notifications', 'privacy', 'signin', 'systemInformation', 'data']
   const CORE_TAB_AVAILABLE: Record<CoreTabKey, boolean> = {
     profile: true, products: true, membership: true, preferences: true, signin: true, data: true,
     access: !!adapters.access, organizations: !!adapters.organizations, notifications: !!adapters.notifications, privacy: !!adapters.privacy,
+    systemInformation: !!adapters.systemInformation,
   }
   const visibleCoreTabs: CoreTabKey[] = CORE_TAB_ORDER.filter((k) => CORE_TAB_AVAILABLE[k])
 
@@ -153,6 +155,7 @@ export function AvatarKAccount({ principal, currentProduct, productName, onSigne
       {tab === 'preferences' && <PreferencesTab />}
       {tab === 'notifications' && <NotificationsTab />}
       {tab === 'privacy' && <PrivacyTab />}
+      {tab === 'systemInformation' && <SystemInformationTab />}
       {tab === 'data' && <DataExportTab />}
       {isExtensionTabKey(tab) && tab === extensionTabKey('activity') && adapters.activity && <ActivityTab events={events} />}
       {isExtensionTabKey(tab) && tab === extensionTabKey('echoes') && adapters.echoes && (

@@ -222,11 +222,35 @@ export const avatarKPlatformAdapters: AccountAdapters = {
     async switchOrganization(organizationId) {
       return authFetch('/api/account/organizations', { method: 'POST', body: JSON.stringify({ organizationId }) })
     },
+    async listInvitations() {
+      const result = await authFetch('/api/account/organizations/invitations')
+      if (result.error) return result
+      return { data: result.data.invitations }
+    },
+    async acceptInvitation(token) {
+      const result = await authFetch('/api/account/organizations/invitations/accept', { method: 'POST', body: JSON.stringify({ token }) })
+      if (result.error) return result
+      return authFetch('/api/account/organizations')
+    },
+    async declineInvitation(token) {
+      const result = await authFetch('/api/account/organizations/invitations/decline', { method: 'POST', body: JSON.stringify({ token }) })
+      if (result.error) return { error: result.error }
+      return {}
+    },
+    async leaveOrganization(organizationId) {
+      const result = await authFetch('/api/account/organizations/leave', { method: 'POST', body: JSON.stringify({ organizationId }) })
+      if (result.error) return result
+      return authFetch('/api/account/organizations')
+    },
   },
 
   notifications: {
     get: () => authFetch('/api/account/notifications'),
     updateCategory: (category, enabled) => authFetch('/api/account/notifications', { method: 'PATCH', body: JSON.stringify({ category, enabled }) }),
+  },
+
+  systemInformation: {
+    get: () => authFetch('/api/account/system-info'),
   },
 
   export: {

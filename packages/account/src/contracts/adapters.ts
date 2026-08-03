@@ -149,9 +149,34 @@ export interface AccountOrganizationContext {
   currentOrganizationId: string | null
 }
 
+// A pending invitation to join an organization, not yet accepted/declined.
+// `invitedByEmail` is null when the inviter can't be safely resolved (a
+// host must never fabricate an inviter identity) -- see
+// docs/ACCOUNT_ORGANIZATION_INVITATION_INTEGRATION.md for why this schema
+// has no "originating product" field: organization invitations are
+// platform-level, not issued by or scoped to a specific product today.
+export interface AccountOrganizationInvitation {
+  id: string
+  /** Opaque invitation code/token -- what "Enter invitation code" accepts, and what acceptInvitation/declineInvitation take, not `id`. */
+  token: string
+  organizationId: string
+  organizationName: string
+  role: string
+  invitedByEmail: string | null
+  createdAt: string
+  expiresAt: string
+}
+
 export interface OrganizationsAdapter {
   get(): Promise<AdapterResult<AccountOrganizationContext>>
   switchOrganization(organizationId: string | null): Promise<AdapterResult<AccountOrganizationContext>>
+  /** Optional: a host with no invitation subsystem wired up yet may omit this -- the tab renders no pending-invitations section rather than a fake empty one. */
+  listInvitations?(): Promise<AdapterResult<AccountOrganizationInvitation[]>>
+  /** `token`, same value as "Enter invitation code" -- a listed pending invitation and a manually-entered code accept through the same path. */
+  acceptInvitation?(token: string): Promise<AdapterResult<AccountOrganizationContext>>
+  declineInvitation?(token: string): Promise<AdapterResult<void>>
+  /** Optional: omitted entirely (not merely a no-op) when a host has no leave policy implemented -- the tab must never show a Leave control with no real backend behind it. */
+  leaveOrganization?(organizationId: string): Promise<AdapterResult<AccountOrganizationContext>>
 }
 
 // ── Notifications (OPTIONAL, Part 8) ──────────────────────────
@@ -416,6 +441,73 @@ export interface GettingStartedAdapter {
   getStatus(): Promise<AdapterResult<{ completed: boolean; stepsRemaining: string[] }>>
 }
 
+// ── System Information (OPTIONAL) ─────────────────────────────
+// Reusable across every product that mounts this package -- the server
+// decides `visibilityTier`; a host's adapter must never let client input
+// widen it (see docs/ACCOUNT_SYSTEM_INFORMATION_ARCHITECTURE.md). Every
+// admin-only field is `null` at the 'safe' tier, not merely hidden by the
+// UI -- the tab must never receive privileged data it then has to
+// remember not to render.
+export type SystemInformationVisibilityTier = 'safe' | 'admin'
+
+// 'unknown' is a first-class, honest outcome -- never collapsed into
+// 'unavailable'. A host with no real signal for a service must return
+// 'unknown', not guess.
+export type SystemServiceStatus = 'operational' | 'degraded' | 'unavailable' | 'unknown'
+
+export interface SystemInformationServiceStates {
+  identity: SystemServiceStatus
+  account: SystemServiceStatus
+  storage: SystemServiceStatus
+  capabilities: SystemServiceStatus
+  invitations: SystemServiceStatus
+  organizations: SystemServiceStatus
+  audit: SystemServiceStatus
+}
+
+export interface SystemInformationSnapshot {
+  visibilityTier: SystemInformationVisibilityTier
+  environment: 'local' | 'preview' | 'test' | 'production' | 'unknown'
+  productId: string
+  productName: string
+
+  // Safe tier
+  appVersion: string | null
+  buildDate: string | null
+  deploymentIdShort: string | null
+  authProviders: string[]
+  currentOrganizationId: string | null
+  currentOrganizationName: string | null
+  accountPackageVersion: string | null
+  authUiPackageVersion: string | null
+  registryVersion: string | null
+  platformStatusSummary: string
+  storageAvailability: SystemServiceStatus
+  capabilityServiceAvailability: SystemServiceStatus
+  invitationServiceAvailability: SystemServiceStatus
+  statusUrl: string
+  supportUrl: string
+
+  // Admin tier only -- null at 'safe' visibility, always, not merely
+  // unrendered.
+  vercelEnvironment: string | null
+  commitShaShort: string | null
+  buildTimestamp: string | null
+  supabaseProjectLabel: string | null
+  migrationLevel: number | null
+  services: SystemInformationServiceStates | null
+  callbackOrigin: string | null
+  currentSiteOrigin: string | null
+  packageVersions: Record<string, string> | null
+  registryRevision: string | null
+  lastHealthCheckAt: string | null
+  adminUrl: string | null
+}
+
+export interface SystemInformationAdapter {
+  get(): Promise<AdapterResult<SystemInformationSnapshot>>
+}
+
 // ── The complete adapter set a host product supplies ──────────
 export interface AccountAdapters {
   support: AccountSupportConfig
@@ -437,4 +529,5 @@ export interface AccountAdapters {
   extensions?: ExtensionAdapter[]
   export: ExportAdapter
   gettingStarted?: GettingStartedAdapter
+  systemInformation?: SystemInformationAdapter
 }
