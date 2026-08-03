@@ -295,3 +295,46 @@ entirely additive to the account package and its host adapter:
   gap this document has flagged twice before.
 - Does not change any `READY_FOR_PRODUCT_ADOPTION` verdict — unrelated to
   this pass's scope.
+
+## 2026-08-03 addendum #2 — "Next priorities" #1 closed: direct platform-role
+## and product-access grant/revoke
+
+New `lib/admin/platformAccess.ts` (mirrors `lib/capabilities/adminGrants.ts`'s
+exact shape — validate, mutate via service-role client, audit-log on both
+success and failure) plus two new routes, `app/api/admin/users/[id]/roles`
+and `app/api/admin/users/[id]/access` (`POST` grants, `DELETE ?role=`/
+`?productId=` revokes), gated on the same `getAdminContext()` every admin
+route uses. `app/admin/users/page.tsx`'s existing read-only "Platform
+roles"/"Product access" sections gained inline grant forms and per-row
+Revoke buttons; its "Read-only." banner text is now accurate (most of the
+page still is, these two sections no longer are).
+
+Real safety guard added, no precedent needed: an admin cannot revoke their
+own `admin` platform role (`platformAccess.ts`'s `revokePlatformRole`
+refuses unconditionally when `actorId === userId && role === 'admin'`) —
+prevents an accidental self-lockout with no "are there other admins"
+check to lean on instead. Product access grant/revoke reuses the existing
+real `product_access.status` enum (`active`/`suspended`/`expired`/
+`revoked`, confirmed in `lib/products/accessModel.ts`) — grant is an
+upsert to `active` (re-activates rather than duplicating the row), revoke
+sets `status: 'revoked'` rather than deleting, preserving history.
+
+13 new unit tests (`lib/admin/platformAccess.test.ts`, in-memory fake
+Supabase client extended with upsert/delete + primary-key duplicate
+simulation for platform_roles' composite key). Verified the auth gate
+directly with `curl` against a local dev server (unauthenticated →
+`403` on all four operations, before ever reaching the
+`SUPABASE_SERVICE_ROLE_KEY`-configured check) — **could not** exercise a
+real grant/revoke end-to-end, same longstanding gap as every other admin
+write in this repo (no admin session or service-role key exists in this
+environment). lint/`tsc --noEmit`/`pnpm test` (571 tests)/`pnpm build` all
+clean.
+
+Still open from the "Next priorities" list above: #2 and #4 already
+resolved in earlier sessions but never struck through here (self-serve
+invitation acceptance shipped in `2ec6f48`; `@avatark/account` ownership
+was settled in the RC1 session's fork) — flagging so the next reader
+doesn't re-do either. #3/#5/#6/#7/#8 remain genuinely open and each still
+needs something this sandbox doesn't have (a real database URL, contact
+with `gamek-web`'s owner, a workspace-package decision, confirmed
+third-party domains, or migration-apply access).

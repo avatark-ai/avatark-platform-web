@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { PRODUCT_REGISTRY } from '@avatark/product-registry'
 
 interface SearchMatch {
   id: string
@@ -30,6 +31,12 @@ export default function AdminUsersPage() {
   const [scanned, setScanned] = useState<number | undefined>(undefined)
   const [detail, setDetail] = useState<UserDetail | null>(null)
   const [detailLoading, setDetailLoading] = useState(false)
+  const [roleInput, setRoleInput] = useState('')
+  const [roleActionError, setRoleActionError] = useState<string | null>(null)
+  const [roleActionPending, setRoleActionPending] = useState<string | null>(null)
+  const [productSelect, setProductSelect] = useState(PRODUCT_REGISTRY[0]?.id ?? '')
+  const [accessActionError, setAccessActionError] = useState<string | null>(null)
+  const [accessActionPending, setAccessActionPending] = useState<string | null>(null)
 
   async function handleSearch() {
     if (!query.trim()) return
@@ -71,9 +78,88 @@ export default function AdminUsersPage() {
     }
   }
 
+  async function refreshDetail() {
+    if (detail) await handleSelect(detail.id)
+  }
+
+  async function handleGrantRole() {
+    if (!detail || !roleInput.trim()) return
+    setRoleActionPending('grant')
+    setRoleActionError(null)
+    try {
+      const res = await fetch(`/api/admin/users/${detail.id}/roles`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: roleInput.trim() }),
+      })
+      const json = await res.json()
+      if (!res.ok) { setRoleActionError(json.error ?? `Grant failed (${res.status})`); return }
+      setRoleInput('')
+      await refreshDetail()
+    } catch (err) {
+      setRoleActionError(err instanceof Error ? err.message : String(err))
+    } finally {
+      setRoleActionPending(null)
+    }
+  }
+
+  async function handleRevokeRole(role: string) {
+    if (!detail) return
+    setRoleActionPending(role)
+    setRoleActionError(null)
+    try {
+      const res = await fetch(`/api/admin/users/${detail.id}/roles?role=${encodeURIComponent(role)}`, { method: 'DELETE' })
+      const json = await res.json()
+      if (!res.ok) { setRoleActionError(json.error ?? `Revoke failed (${res.status})`); return }
+      await refreshDetail()
+    } catch (err) {
+      setRoleActionError(err instanceof Error ? err.message : String(err))
+    } finally {
+      setRoleActionPending(null)
+    }
+  }
+
+  async function handleGrantAccess() {
+    if (!detail || !productSelect) return
+    setAccessActionPending('grant')
+    setAccessActionError(null)
+    try {
+      const res = await fetch(`/api/admin/users/${detail.id}/access`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: productSelect }),
+      })
+      const json = await res.json()
+      if (!res.ok) { setAccessActionError(json.error ?? `Grant failed (${res.status})`); return }
+      await refreshDetail()
+    } catch (err) {
+      setAccessActionError(err instanceof Error ? err.message : String(err))
+    } finally {
+      setAccessActionPending(null)
+    }
+  }
+
+  async function handleRevokeAccess(productId: string) {
+    if (!detail) return
+    setAccessActionPending(productId)
+    setAccessActionError(null)
+    try {
+      const res = await fetch(`/api/admin/users/${detail.id}/access?productId=${encodeURIComponent(productId)}`, { method: 'DELETE' })
+      const json = await res.json()
+      if (!res.ok) { setAccessActionError(json.error ?? `Revoke failed (${res.status})`); return }
+      await refreshDetail()
+    } catch (err) {
+      setAccessActionError(err instanceof Error ? err.message : String(err))
+    } finally {
+      setAccessActionPending(null)
+    }
+  }
+
   return (
     <div className="max-w-3xl space-y-6">
-      <p className="text-xs text-neutral-500">Read-only. No account is modified by anything on this page.</p>
+      <p className="text-xs text-neutral-500">
+        Most of this page is read-only. Platform roles and product access, below, can be granted or revoked directly.
+      </p>
 
       <div>
         <label htmlFor="user-search" className="mb-1 block text-sm font-semibold text-neutral-700">
@@ -139,16 +225,41 @@ export default function AdminUsersPage() {
           <div>
             <div className="mb-1 font-semibold">Platform roles</div>
             {detail.platformRoles.length > 0 ? (
-              <ul className="list-inside list-disc">
+              <ul className="space-y-1">
                 {detail.platformRoles.map((r) => (
-                  <li key={r.role}>
-                    {r.role} — granted {r.granted_at}
+                  <li key={r.role} className="flex items-center justify-between gap-2">
+                    <span>{r.role} — granted {r.granted_at}</span>
+                    <button
+                      onClick={() => handleRevokeRole(r.role)}
+                      disabled={roleActionPending !== null}
+                      className="text-xs text-red-600 disabled:opacity-50"
+                    >
+                      {roleActionPending === r.role ? 'Revoking…' : 'Revoke'}
+                    </button>
                   </li>
                 ))}
               </ul>
             ) : (
               <p className="text-neutral-500">No platform roles.</p>
             )}
+            <div className="mt-2 flex gap-2">
+              <input
+                type="text"
+                value={roleInput}
+                onChange={(e) => setRoleInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleGrantRole()}
+                placeholder="Role to grant (e.g. admin)"
+                className="flex-1 rounded-md border px-2 py-1 text-xs"
+              />
+              <button
+                onClick={handleGrantRole}
+                disabled={roleActionPending !== null || !roleInput.trim()}
+                className="rounded-md bg-black px-3 py-1 text-xs font-semibold text-white disabled:opacity-50"
+              >
+                {roleActionPending === 'grant' ? 'Granting…' : 'Grant'}
+              </button>
+            </div>
+            {roleActionError && <p className="mt-1 text-xs text-red-600" role="alert">{roleActionError}</p>}
           </div>
 
           <div>
@@ -169,16 +280,44 @@ export default function AdminUsersPage() {
           <div>
             <div className="mb-1 font-semibold">Product access</div>
             {detail.productAccess.length > 0 ? (
-              <ul className="list-inside list-disc">
+              <ul className="space-y-1">
                 {detail.productAccess.map((a) => (
-                  <li key={a.product_id}>
-                    {a.product_id} — {a.status}
+                  <li key={a.product_id} className="flex items-center justify-between gap-2">
+                    <span>{a.product_id} — {a.status}</span>
+                    {a.status !== 'revoked' && (
+                      <button
+                        onClick={() => handleRevokeAccess(a.product_id)}
+                        disabled={accessActionPending !== null}
+                        className="text-xs text-red-600 disabled:opacity-50"
+                      >
+                        {accessActionPending === a.product_id ? 'Revoking…' : 'Revoke'}
+                      </button>
+                    )}
                   </li>
                 ))}
               </ul>
             ) : (
               <p className="text-neutral-500">No product access grants.</p>
             )}
+            <div className="mt-2 flex gap-2">
+              <select
+                value={productSelect}
+                onChange={(e) => setProductSelect(e.target.value)}
+                className="flex-1 rounded-md border px-2 py-1 text-xs"
+              >
+                {PRODUCT_REGISTRY.map((p) => (
+                  <option key={p.id} value={p.id}>{p.displayName}</option>
+                ))}
+              </select>
+              <button
+                onClick={handleGrantAccess}
+                disabled={accessActionPending !== null || !productSelect}
+                className="rounded-md bg-black px-3 py-1 text-xs font-semibold text-white disabled:opacity-50"
+              >
+                {accessActionPending === 'grant' ? 'Granting…' : 'Grant'}
+              </button>
+            </div>
+            {accessActionError && <p className="mt-1 text-xs text-red-600" role="alert">{accessActionError}</p>}
           </div>
 
           <div>
