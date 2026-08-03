@@ -240,3 +240,58 @@ still-open gaps:
   RC1/RC1.1 mission requirement is gated on them, and neither release-gate
   document's blocker (real authenticated-browser-session verification) is
   affected by this work.
+
+## 2026-08-03 addendum — "Platform RC" pass: Current Context, Living Worlds,
+## normalized location, avatar upload, Platform Health rename
+
+Eight-phase build on `feature/avatar-platform-rc3` (commit `04241bc`, pushed),
+entirely additive to the account package and its host adapter:
+
+- **New optional adapters** on `@avatark/account`'s `AccountAdapters`:
+  `currentContext` (Living World/Journey/Episode/Practice — the host does
+  **not** implement this yet, since no real data exists; every field
+  correctly renders "Not active") and `livingWorlds` (host implements this
+  one with 5 static placeholder worlds — Living Forest/Vrindavan/Stillness/
+  Symphony/Forge — matching the mission's explicit ask, `status: 'Coming
+  Soon'`, `progress: 'Not Started'`). A new always-mounted `CurrentContextCard`
+  and a new optional `livingWorlds` tab render these; both are gated purely
+  on adapter presence, same pattern as every existing optional section.
+- **Profile.role** is now a real, server-validated enum
+  (`ACCOUNT_ROLE_OPTIONS`, 11 values) instead of free text — a pre-existing
+  legacy value is preserved and re-savable unchanged (checked against the
+  row's current value before rejecting), just not selectable as new free
+  text.
+- **Profile.location** is now six normalized columns (migration `022_
+  profile_location_normalized.sql`, additive-only, old `location` column
+  untouched) instead of one free-text string — backed by a new,
+  self-contained `packages/account/src/data/geography.ts` (no new runtime
+  dependency; full country list, but state coverage is only real for
+  US/Canada/India/Australia and city coverage only for US/India — every
+  other combination gracefully falls back to a plain text field, never a
+  dropdown claiming coverage it doesn't have).
+- **Avatar upload** is real: `ProfileAdapter.uploadAvatar`/`removeAvatar`
+  (both optional) implemented directly against migration 019's existing
+  owner-scoped storage RLS — no new API route, no service-role client.
+  This closes the "Direct file upload is a future capability" gap that
+  existed since 019 was written; URL paste remains as a collapsed advanced
+  fallback.
+- **"System Information" is now labelled "Platform Health"** (internal
+  tab key `systemInformation` unchanged, same precedent as `signin` →
+  "Security") with one new field, `userTier` (real value, `MEMBERSHIP_
+  PLAN_LABEL.free` — the only plan that exists). Every other field the
+  mission asked for already existed.
+- Verified end-to-end via `/dev/account` + real headless-browser
+  screenshots **and interaction** (typed into Country/State/City,
+  confirmed the cascading dropdown-vs-free-text fallback and timezone
+  auto-fill actually work in a real DOM, not just unit tests) — same
+  standalone-Playwright approach as RC1.1's own verification, since this
+  environment still has no authenticated test session.
+- `lint`/`tsc --noEmit`/`pnpm test` (566 tests, up from 558)/`pnpm build`/
+  `pnpm run build:packages` all clean.
+- **Migration 022 has not been applied anywhere** — same open status as
+  020 before it. `HIGHEST_BUNDLED_MIGRATION` bumped to 22; also fixed
+  `run-platform-migrations.js`'s list, which had drifted behind the real
+  migrations directory *again* (missing both 021 and 022) — same recurring
+  gap this document has flagged twice before.
+- Does not change any `READY_FOR_PRODUCT_ADOPTION` verdict — unrelated to
+  this pass's scope.
