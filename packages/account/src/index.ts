@@ -11,6 +11,8 @@ export { ExtensionTab } from './ui/ExtensionTab.tsx'
 export { AccessTab } from './ui/AccessTab.tsx'
 export { OrganizationsTab } from './ui/OrganizationsTab.tsx'
 export { NotificationsTab } from './ui/NotificationsTab.tsx'
+export { LivingWorldsTab } from './ui/LivingWorldsTab.tsx'
+export { CurrentContextCard } from './ui/CurrentContextCard.tsx'
 // Legacy single-purpose extension tabs -- compat only, see extensions/*.tsx headers.
 export { ActivityTab } from './extensions/ActivityTab.tsx'
 export { EchoesTab } from './extensions/EchoesTab.tsx'
@@ -23,6 +25,7 @@ export type { AccountPrincipal } from './contracts/principal.ts'
 export type {
   AdapterResult,
   AuthAdapter,
+  AccountLocation,
   AccountProfile,
   ProfileAdapter,
   ProductAvailability,
@@ -69,13 +72,18 @@ export type {
   AccountLinksConfig,
   AccountAdapters,
   AccountOrganizationInvitation,
+  CurrentContextState,
+  CurrentContextAdapter,
+  LivingWorld,
+  LivingWorldsAdapter,
   SystemInformationVisibilityTier,
   SystemServiceStatus,
   SystemInformationServiceStates,
   SystemInformationSnapshot,
   SystemInformationAdapter,
 } from './contracts/adapters.ts'
-export { DATA_EXPORT_SCOPES, ACCOUNT_CLOSURE_SCOPES } from './contracts/adapters.ts'
+export { DATA_EXPORT_SCOPES, ACCOUNT_CLOSURE_SCOPES, ACCOUNT_ROLE_OPTIONS } from './contracts/adapters.ts'
+export { COUNTRY_OPTIONS, getStatesForCountry, getCitiesForState } from './data/geography.ts'
 
 // GettingStartedAdapter deliberately NOT exported from the stable root --
 // no real implementation exists anywhere in this codebase yet.

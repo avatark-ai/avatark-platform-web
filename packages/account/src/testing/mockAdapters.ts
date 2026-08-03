@@ -1,6 +1,16 @@
 // Real, honest test doubles -- every method returns genuinely well-formed
 // data by default; error and empty states are opt-in via options.
-import type { AccountAdapters, StatEntry, ProductWithAccess, ProductAccessSummary, AccountOrganizationInvitation } from '../contracts/adapters.ts'
+import type { AccountAdapters, StatEntry, ProductWithAccess, ProductAccessSummary, AccountOrganizationInvitation, AccountLocation, LivingWorld } from '../contracts/adapters.ts'
+
+const MOCK_LOCATION: AccountLocation = {
+  countryCode: 'US', countryName: 'United States', stateCode: 'CA', stateName: 'California',
+  city: 'San Francisco', timezone: 'America/Los_Angeles',
+}
+
+const MOCK_LIVING_WORLDS: LivingWorld[] = [
+  { id: 'mock-world-1', name: 'Mock World One', status: 'Coming Soon', description: 'A placeholder Living World for visual verification only.', progress: 'Not Started' },
+  { id: 'mock-world-2', name: 'Mock World Two', status: 'Coming Soon', description: 'A second placeholder Living World.', progress: 'Not Started' },
+]
 
 // Fixture products spanning every combination of the three-axis model
 // (RC1.1, Part 4) -- deliberately synthetic ids/names, never a real
@@ -61,10 +71,14 @@ export function createMockAdapters(opts: MockAdapterOptions = {}): AccountAdapte
     profile: {
       get: () => wait(forceError
         ? { error: 'Mock profile fetch failure' }
-        : { data: { id: 'mock-user', email: 'mock@example.com', displayName: 'Mock User', bio: null, role: null, avatarUrl: null, organization: null, location: null, createdAt: new Date().toISOString() } }),
+        : { data: { id: 'mock-user', email: 'mock@example.com', displayName: 'Mock User', bio: null, role: null, avatarUrl: null, organization: null, location: MOCK_LOCATION, createdAt: new Date().toISOString() } }),
       update: (fields) => wait(forceError
         ? { error: 'Mock profile update failure' }
-        : { data: { id: 'mock-user', email: 'mock@example.com', displayName: fields.displayName ?? 'Mock User', bio: fields.bio ?? null, role: fields.role ?? null, avatarUrl: fields.avatarUrl ?? null, organization: fields.organization ?? null, location: fields.location ?? null, createdAt: new Date().toISOString() } }),
+        : { data: { id: 'mock-user', email: 'mock@example.com', displayName: fields.displayName ?? 'Mock User', bio: fields.bio ?? null, role: fields.role ?? null, avatarUrl: fields.avatarUrl ?? null, organization: fields.organization ?? null, location: fields.location ?? MOCK_LOCATION, createdAt: new Date().toISOString() } }),
+      uploadAvatar: opts.omitOptional ? undefined : () => wait(forceError
+        ? { error: 'Mock avatar upload failure' }
+        : { data: { avatarUrl: 'https://mock.example.invalid/avatars/mock-user/avatar.png' } }),
+      removeAvatar: opts.omitOptional ? undefined : () => wait(forceError ? { error: 'Mock avatar remove failure' } : {}),
     },
     productAccess: {
       list: () => wait(MOCK_PRODUCTS),
@@ -106,6 +120,14 @@ export function createMockAdapters(opts: MockAdapterOptions = {}): AccountAdapte
             memberships: [{ organizationId: 'org-mock-1', organizationName: 'Mock University', role: 'Organizer', source: 'invitation', validFrom: new Date('2026-01-01').toISOString() }].filter((m) => m.organizationId !== organizationId),
             currentOrganizationId: null,
           } }),
+    },
+    currentContext: opts.omitOptional ? undefined : {
+      get: () => wait(forceError
+        ? { error: 'Mock current-context fetch failure' }
+        : { data: { livingWorld: null, journey: null, episode: null, practice: null } }),
+    },
+    livingWorlds: opts.omitOptional ? undefined : {
+      list: () => wait(forceError ? { error: 'Mock living worlds fetch failure' } : { data: MOCK_LIVING_WORLDS }),
     },
     preferences: {
       get: () => wait(forceError
@@ -190,6 +212,7 @@ export function createMockAdapters(opts: MockAdapterOptions = {}): AccountAdapte
             environment: 'local',
             productId: 'mock-host',
             productName: 'Mock Host',
+            userTier: 'Free',
             appVersion: '0.0.0-mock',
             buildDate: new Date('2026-01-01').toISOString(),
             deploymentIdShort: 'mock-dep123',

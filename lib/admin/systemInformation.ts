@@ -36,6 +36,7 @@ export interface BuildSystemInformationInput {
   env: Record<string, string | undefined>
   productId: string
   productName: string
+  userTier: string
   authProviders: string[]
   currentOrganizationId: string | null
   currentOrganizationName: string | null
@@ -68,6 +69,7 @@ export function buildSystemInformationSnapshot(input: BuildSystemInformationInpu
     environment: environmentName,
     productId: input.productId,
     productName: input.productName,
+    userTier: input.userTier,
 
     appVersion: input.env.NEXT_PUBLIC_RELEASE_VERSION ?? null,
     buildDate: input.env.NEXT_PUBLIC_BUILD_TIME ?? null,

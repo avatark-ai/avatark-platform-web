@@ -208,6 +208,13 @@ export function OrganizationsTab() {
 
       <section className="space-y-3">
         <h3 className="text-sm font-medium text-[var(--text-primary,#f5f2ea)]">Organizations</h3>
+        <p className="text-xs text-[var(--text-dim,#8b8b98)]">
+          Current Organization: <span className="text-[var(--text-primary,#f5f2ea)]">
+            {context && context.currentOrganizationId
+              ? (context.memberships.find((m) => m.organizationId === context.currentOrganizationId)?.organizationName ?? 'Personal')
+              : 'Personal'}
+          </span>
+        </p>
         {!context || context.memberships.length === 0 ? (
           <div className="aka-card p-4">
             <p className="text-sm text-[var(--text-primary,#f5f2ea)]">

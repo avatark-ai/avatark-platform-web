@@ -65,6 +65,8 @@ const MIGRATION_ORDER = [
   '018_account_preferences_rc11.sql',
   '019_avatar_storage.sql',
   '020_capability_grants.sql',
+  '021_organization_invitation_acceptance.sql',
+  '022_profile_location_normalized.sql',
 ]
 
 async function main() {

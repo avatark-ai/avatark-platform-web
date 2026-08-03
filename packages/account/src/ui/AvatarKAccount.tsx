@@ -12,6 +12,8 @@ import { ProductsTab } from './ProductsTab.tsx'
 import { AccessTab } from './AccessTab.tsx'
 import { MembershipTab } from './MembershipTab.tsx'
 import { OrganizationsTab } from './OrganizationsTab.tsx'
+import { LivingWorldsTab } from './LivingWorldsTab.tsx'
+import { CurrentContextCard } from './CurrentContextCard.tsx'
 import { PreferencesTab } from './PreferencesTab.tsx'
 import { NotificationsTab } from './NotificationsTab.tsx'
 import { PrivacyTab } from './PrivacyTab.tsx'
@@ -33,20 +35,18 @@ import { EchoesTab } from '../extensions/EchoesTab.tsx'
 // app/account/page.tsx pattern (docs/CANONICAL_ACCOUNT_SHELL.md).
 export function AvatarKAccount({ principal, currentProduct, productName, onSignedOut, activeTab, defaultTab, onActiveTabChange }: AvatarKAccountProps) {
   const adapters = useAccountAdapters()
-  // Accepted for API compatibility with the forked shell props but not
-  // yet rendered -- AccountHeader renders `currentProduct` (the id), not
-  // this display name. Kept rather than removed, per "preserve the
-  // existing public API initially."
-  void productName
+  // `productName` is now rendered by CurrentContextCard below (Platform RC,
+  // Phase 1) -- previously accepted for API compatibility but discarded.
 
-  // Canonical rail order (RC1.1, Part 2). access/organizations/notifications
-  // are optional, same graceful-omission pattern as the pre-existing
-  // privacy — a host that hasn't supplied the adapter simply doesn't get
-  // the tab, never a broken/empty one.
-  const CORE_TAB_ORDER: CoreTabKey[] = ['profile', 'products', 'access', 'membership', 'organizations', 'preferences', 'notifications', 'privacy', 'signin', 'systemInformation', 'data']
+  // Canonical rail order (RC1.1, Part 2). access/organizations/notifications/
+  // livingWorlds are optional, same graceful-omission pattern as the
+  // pre-existing privacy — a host that hasn't supplied the adapter simply
+  // doesn't get the tab, never a broken/empty one.
+  const CORE_TAB_ORDER: CoreTabKey[] = ['profile', 'products', 'access', 'membership', 'organizations', 'livingWorlds', 'preferences', 'notifications', 'privacy', 'signin', 'systemInformation', 'data']
   const CORE_TAB_AVAILABLE: Record<CoreTabKey, boolean> = {
     profile: true, products: true, membership: true, preferences: true, signin: true, data: true,
     access: !!adapters.access, organizations: !!adapters.organizations, notifications: !!adapters.notifications, privacy: !!adapters.privacy,
+    livingWorlds: !!adapters.livingWorlds,
     systemInformation: !!adapters.systemInformation,
   }
   const visibleCoreTabs: CoreTabKey[] = CORE_TAB_ORDER.filter((k) => CORE_TAB_AVAILABLE[k])
@@ -144,6 +144,7 @@ export function AvatarKAccount({ principal, currentProduct, productName, onSigne
   return (
     <div className="aka-max-w-account aka-mx-auto aka-px-4 aka-py-8">
       <AccountHeader displayName={principal.displayName} email={principal.email} memberSince={null} currentProduct={currentProduct} />
+      <CurrentContextCard currentProduct={currentProduct} productName={productName} />
       <AccountTabs active={tab} onChange={setTab} visibleTabs={visibleCoreTabs} extensionLabels={extensionTabs} />
 
       {tab === 'profile' && <ProfileTab stats={stats} />}
@@ -152,6 +153,7 @@ export function AvatarKAccount({ principal, currentProduct, productName, onSigne
       {tab === 'access' && <AccessTab currentProduct={currentProduct} />}
       {tab === 'membership' && <MembershipTab stats={stats} currentProduct={currentProduct} memberSince={memberSince} />}
       {tab === 'organizations' && <OrganizationsTab />}
+      {tab === 'livingWorlds' && <LivingWorldsTab />}
       {tab === 'preferences' && <PreferencesTab />}
       {tab === 'notifications' && <NotificationsTab />}
       {tab === 'privacy' && <PrivacyTab />}

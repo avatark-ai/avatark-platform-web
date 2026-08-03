@@ -14,4 +14,4 @@
 // deliberately no filesystem read at runtime (arbitrary directory reads
 // are not guaranteed to work in a deployed serverless function, and
 // supabase/migrations/ is not otherwise part of the app bundle).
-export const HIGHEST_BUNDLED_MIGRATION = 21
+export const HIGHEST_BUNDLED_MIGRATION = 22

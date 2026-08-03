@@ -14,6 +14,7 @@ function baseInput(overrides: Partial<Parameters<typeof buildSystemInformationSn
     env: { VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_SHA: 'abcdef1234567890', NEXT_PUBLIC_RELEASE_VERSION: '1.2.3', NEXT_PUBLIC_BUILD_TIME: '2026-01-01T00:00:00.000Z' },
     productId: 'avatark-platform',
     productName: 'AvatarK Platform',
+    userTier: 'Free',
     authProviders: ['google'],
     currentOrganizationId: 'org-1',
     currentOrganizationName: 'Test Org',
@@ -50,6 +51,7 @@ test('safe tier never populates admin-only fields', () => {
 
 test('safe tier still populates every safe field', () => {
   const snapshot = buildSystemInformationSnapshot(baseInput({ tier: 'safe' }))
+  assert.equal(snapshot.userTier, 'Free')
   assert.equal(snapshot.appVersion, '1.2.3')
   assert.equal(snapshot.environment, 'production')
   assert.deepEqual(snapshot.authProviders, ['google'])
@@ -65,7 +67,7 @@ test('admin tier populates every admin-only field', () => {
   assert.equal(snapshot.visibilityTier, 'admin')
   assert.equal(snapshot.vercelEnvironment, 'production')
   assert.equal(snapshot.commitShaShort, 'abcdef1')
-  assert.equal(snapshot.migrationLevel, 21)
+  assert.equal(snapshot.migrationLevel, 22)
   assert.ok(snapshot.services)
   assert.equal(snapshot.services?.identity, 'operational')
   assert.deepEqual(snapshot.packageVersions, { '@avatark/account': '0.2.0' })

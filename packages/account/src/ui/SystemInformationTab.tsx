@@ -131,6 +131,7 @@ export function SystemInformationTab() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <Card title="Application">
           <Field label="Product" value={snapshot.productName} />
+          <Field label="User tier" value={snapshot.userTier} />
           <Field label="Environment" value={snapshot.environment} />
           <Field label="Version" value={snapshot.appVersion} />
           <Field label="Build date" value={snapshot.buildDate ? new Date(snapshot.buildDate).toLocaleDateString() : null} />

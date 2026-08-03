@@ -17,11 +17,16 @@ import { DATA_EXPORT_SCOPES, ACCOUNT_CLOSURE_SCOPES } from './contracts/adapters
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 
-test('ACCOUNT_TAB_KEYS lists exactly the 11 core sections (no product-specific tabs baked in)', () => {
+test('ACCOUNT_TAB_KEYS lists exactly the 12 core sections (no product-specific tabs baked in)', () => {
   assert.deepEqual(tabs.ACCOUNT_TAB_KEYS, [
-    'profile', 'products', 'access', 'membership', 'organizations',
+    'profile', 'products', 'access', 'membership', 'organizations', 'livingWorlds',
     'preferences', 'notifications', 'privacy', 'signin', 'systemInformation', 'data',
   ])
+})
+
+test('ACCOUNT_TAB_LABELS maps "systemInformation" to the canonical "Platform Health" label', () => {
+  const systemInformation = tabs.ACCOUNT_TAB_LABELS.find((t) => t.key === 'systemInformation')
+  assert.equal(systemInformation?.label, 'Platform Health')
 })
 
 test('ACCOUNT_TAB_LABELS maps "signin" to the canonical "Security" label', () => {
@@ -58,6 +63,10 @@ test('createMockAdapters(omitOptional) omits every optional adapter, package mus
   assert.equal(adapters.extensions, undefined)
   assert.equal(adapters.links, undefined)
   assert.equal(adapters.gettingStarted, undefined)
+  assert.equal(adapters.currentContext, undefined)
+  assert.equal(adapters.livingWorlds, undefined)
+  assert.equal(adapters.profile.uploadAvatar, undefined)
+  assert.equal(adapters.profile.removeAvatar, undefined)
 })
 
 test('extension slot mock adapter returns a well-formed ExtensionSlotContent', async () => {
@@ -92,6 +101,9 @@ test('index.ts statically re-exports the full documented public API surface', ()
     'AccountTabKey', 'CoreTabKey', 'ExtensionTabKey', 'AvatarKAccountProps', 'AccountPrincipal',
     'AccountAdapters', 'ExtensionAdapter', 'ExtensionSlotContent', 'StatEntry',
     'DataExportScope', 'AccountClosureScope', 'DATA_EXPORT_SCOPES', 'ACCOUNT_CLOSURE_SCOPES',
+    'LivingWorldsTab', 'CurrentContextCard', 'ACCOUNT_ROLE_OPTIONS', 'AccountLocation',
+    'CurrentContextState', 'CurrentContextAdapter', 'LivingWorld', 'LivingWorldsAdapter',
+    'COUNTRY_OPTIONS', 'getStatesForCountry', 'getCitiesForState',
   ]
   for (const name of expectedExports) {
     assert.ok(indexSrc.includes(name), `expected "${name}" to be re-exported from index.ts`)

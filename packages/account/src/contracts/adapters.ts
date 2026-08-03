@@ -31,6 +31,23 @@ export interface AuthAdapter {
   signOutAllDevices?(): Promise<{ error?: { message: string } }>
 }
 
+// Normalized location (Platform RC, Phase 4) -- replaces a single free-text
+// `location` string. Every field is independently nullable: a host with
+// partial geography data (e.g. country known, state/city not picked yet)
+// must never fabricate the missing fields. `timezone` here is the location's
+// own timezone (best-effort, derived from country/state), independent of
+// `AccountPreferences.timezone` (the user's preferred display timezone,
+// Part 6 below) -- the two are different concepts and intentionally not
+// merged.
+export interface AccountLocation {
+  countryCode: string | null
+  countryName: string | null
+  stateCode: string | null
+  stateName: string | null
+  city: string | null
+  timezone: string | null
+}
+
 // ── Profile (REQUIRED) ───────────────────────────────────────
 export interface AccountProfile {
   id: string
@@ -40,13 +57,34 @@ export interface AccountProfile {
   role: string | null
   avatarUrl: string | null
   organization: string | null
-  location: string | null
+  location: AccountLocation | null
   createdAt: string
 }
+
+// Canonical, suggested Role vocabulary (Platform RC, Phase 4) -- a real
+// dropdown, not a hidden free-text escape hatch, so "Other" is a literal
+// selectable value like every other option, not a disguised text input.
+export const ACCOUNT_ROLE_OPTIONS: SelectOption[] = [
+  { value: 'Founder', label: 'Founder' },
+  { value: 'Administrator', label: 'Administrator' },
+  { value: 'Executive', label: 'Executive' },
+  { value: 'Creator', label: 'Creator' },
+  { value: 'Producer', label: 'Producer' },
+  { value: 'Artist', label: 'Artist' },
+  { value: 'Developer', label: 'Developer' },
+  { value: 'Researcher', label: 'Researcher' },
+  { value: 'Community Manager', label: 'Community Manager' },
+  { value: 'Student', label: 'Student' },
+  { value: 'Other', label: 'Other' },
+]
 
 export interface ProfileAdapter {
   get(): Promise<AdapterResult<AccountProfile>>
   update(fields: Partial<Pick<AccountProfile, 'displayName' | 'bio' | 'role' | 'avatarUrl' | 'organization' | 'location'>>): Promise<AdapterResult<AccountProfile>>
+  /** Optional: a host with no storage backend wired up omits this -- ProfileTab falls back to URL-paste only. Uploads, returns the new public URL; does NOT itself persist avatarUrl onto the profile (the caller still calls update()). */
+  uploadAvatar?(file: File): Promise<AdapterResult<{ avatarUrl: string }>>
+  /** Optional, paired with uploadAvatar. Best-effort storage cleanup only -- the caller still calls update({ avatarUrl: null }) regardless of this call's outcome. */
+  removeAvatar?(): Promise<AdapterResult<void>>
 }
 
 // ── Product Access (REQUIRED) ─────────────────────────────────
@@ -177,6 +215,43 @@ export interface OrganizationsAdapter {
   declineInvitation?(token: string): Promise<AdapterResult<void>>
   /** Optional: omitted entirely (not merely a no-op) when a host has no leave policy implemented -- the tab must never show a Leave control with no real backend behind it. */
   leaveOrganization?(organizationId: string): Promise<AdapterResult<AccountOrganizationContext>>
+}
+
+// ── Current Context (OPTIONAL, Platform RC Phase 1) ───────────
+// A shared "where am I" signal every AvatarK product can render the same
+// way. Product/Organization are NOT part of this adapter -- they're already
+// available to AvatarKAccount (currentProduct/productName props,
+// OrganizationsAdapter) and CurrentContextCard reads them directly, so a
+// host never has to duplicate that data here. This adapter covers only the
+// four forward-looking axes no product has real data for yet -- a host
+// with none of them simply omits the adapter; every field then renders
+// "Not active", never a fabricated value.
+export interface CurrentContextState {
+  livingWorld: string | null
+  journey: string | null
+  episode: string | null
+  practice: string | null
+}
+
+export interface CurrentContextAdapter {
+  get(): Promise<AdapterResult<CurrentContextState>>
+}
+
+// ── Living Worlds (OPTIONAL, Platform RC Phase 2) ─────────────
+// A platform-level concept, not a GameK concept -- this contract and its
+// rendering component know nothing about any specific world's name or
+// franchise. A host supplies whatever worlds it wants to surface (including
+// placeholder "coming soon" entries), generically shaped.
+export interface LivingWorld {
+  id: string
+  name: string
+  status: string
+  description: string
+  progress: string
+}
+
+export interface LivingWorldsAdapter {
+  list(): Promise<AdapterResult<LivingWorld[]>>
 }
 
 // ── Notifications (OPTIONAL, Part 8) ──────────────────────────
@@ -472,6 +547,8 @@ export interface SystemInformationSnapshot {
   productName: string
 
   // Safe tier
+  /** Real, current plan/tier label (e.g. "Free") -- the only plan that genuinely exists today, never a fabricated tier. */
+  userTier: string
   appVersion: string | null
   buildDate: string | null
   deploymentIdShort: string | null
@@ -521,6 +598,8 @@ export interface AccountAdapters {
   access?: AccessAdapter
   organizations?: OrganizationsAdapter
   notifications?: NotificationsAdapter
+  currentContext?: CurrentContextAdapter
+  livingWorlds?: LivingWorldsAdapter
   /** @deprecated use `extensions` with slotId 'activity' */
   activity?: ActivityAdapter
   /** @deprecated use `extensions` with slotId 'echoes' */

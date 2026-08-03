@@ -21,7 +21,7 @@ const ACCOUNT_MOUNT_ENABLED = process.env.NEXT_PUBLIC_ACCOUNT_MOUNT_ENABLED === 
 // at the same level, not nested under a second "Account" tab. Sign Out
 // is an action, not a section.
 type Section =
-  | 'profile' | 'products' | 'access' | 'membership' | 'organizations'
+  | 'profile' | 'products' | 'access' | 'membership' | 'organizations' | 'livingWorlds'
   | 'preferences' | 'notifications' | 'privacy' | 'security' | 'data'
   | 'feedback' | 'support'
 
@@ -31,6 +31,7 @@ const RAIL_SECTIONS: { id: Section; label: string; tab?: AccountTabKey }[] = [
   { id: 'access', label: 'Access', tab: 'access' },
   { id: 'membership', label: 'Membership', tab: 'membership' },
   { id: 'organizations', label: 'Organizations', tab: 'organizations' },
+  { id: 'livingWorlds', label: 'Living Worlds', tab: 'livingWorlds' },
   { id: 'preferences', label: 'Preferences', tab: 'preferences' },
   { id: 'notifications', label: 'Notifications', tab: 'notifications' },
   { id: 'privacy', label: 'Privacy', tab: 'privacy' },

@@ -81,6 +81,39 @@ export const avatarKPlatformAdapters: AccountAdapters = {
   profile: {
     get: () => authFetch('/api/account/profile'),
     update: (fields) => authFetch('/api/account/profile', { method: 'PATCH', body: JSON.stringify(fields) }),
+    // Real, direct-to-storage upload (Platform RC, Phase 5) -- migration
+    // 019's owner-scoped RLS policies (avatar_write_own et al.) already let
+    // a signed-in user write under their own `{user_id}/...` prefix via this
+    // same anon/authenticated client, no service-role client needed, same
+    // trust model as every other own-row operation in this file.
+    async uploadAvatar(file: File) {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return { error: 'Not signed in' }
+      const ext = file.name.includes('.') ? file.name.split('.').pop() : 'jpg'
+      const path = `${user.id}/${Date.now()}.${ext}`
+      const { error } = await supabase.storage.from('avatars').upload(path, file, { upsert: true, contentType: file.type })
+      if (error) return { error: error.message }
+      const { data } = supabase.storage.from('avatars').getPublicUrl(path)
+      return { data: { avatarUrl: data.publicUrl } }
+    },
+    // Best-effort only -- the caller (ProfileTab) still clears avatarUrl via
+    // profile.update({ avatarUrl: null }) regardless of this call's outcome,
+    // so a pasted external URL (never in our bucket) still clears cleanly.
+    async removeAvatar() {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return { error: 'Not signed in' }
+      const { data: row } = await supabase.from('profiles').select('avatar_url').eq('id', user.id).single()
+      const currentUrl = row?.avatar_url as string | undefined
+      const marker = '/storage/v1/object/public/avatars/'
+      const idx = currentUrl?.indexOf(marker) ?? -1
+      if (currentUrl && idx !== -1) {
+        const objectPath = currentUrl.slice(idx + marker.length)
+        await supabase.storage.from('avatars').remove([objectPath])
+      }
+      return {}
+    },
   },
 
   preferences: {
@@ -213,6 +246,26 @@ export const avatarKPlatformAdapters: AccountAdapters = {
     // from usage stats.
     getRoles: () => cachedPlatformRoles ?? [],
     getBenefits: () => [],
+  },
+
+  // Host-owned placeholder content (Platform RC, Phase 2) -- these five
+  // names/states are what the mission explicitly asked to render today,
+  // not fabricated data about any real world's actual status. The
+  // LivingWorldsTab component itself has zero knowledge of any of these
+  // names; a future product with real Living Worlds data swaps this
+  // adapter for a real one without any package-level change.
+  livingWorlds: {
+    async list() {
+      return {
+        data: [
+          { id: 'living-forest', name: 'Living Forest', status: 'Coming Soon', description: 'A Living World for AvatarK Platform.', progress: 'Not Started' },
+          { id: 'living-vrindavan', name: 'Living Vrindavan', status: 'Coming Soon', description: 'A Living World for AvatarK Platform.', progress: 'Not Started' },
+          { id: 'living-stillness', name: 'Living Stillness', status: 'Coming Soon', description: 'A Living World for AvatarK Platform.', progress: 'Not Started' },
+          { id: 'living-symphony', name: 'Living Symphony', status: 'Coming Soon', description: 'A Living World for AvatarK Platform.', progress: 'Not Started' },
+          { id: 'living-forge', name: 'Living Forge', status: 'Coming Soon', description: 'A Living World for AvatarK Platform.', progress: 'Not Started' },
+        ],
+      }
+    },
   },
 
   organizations: {

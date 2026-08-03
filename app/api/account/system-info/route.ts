@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { PRODUCT_REGISTRY } from '@avatark/product-registry'
+import { MEMBERSHIP_PLAN_LABEL } from '@avatark/membership'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient, isAdminClientConfigured } from '@/lib/supabase/admin'
 import { getAdminContext } from '@/lib/admin/authz'
@@ -44,6 +45,10 @@ export async function GET() {
     env: process.env,
     productId: 'avatark',
     productName: 'AvatarK',
+    // Real, current value -- no billing system exists anywhere in this
+    // ecosystem yet, so Free is genuinely the only plan, same source
+    // lib/account/adapters.ts's membership.getSummary() already uses.
+    userTier: MEMBERSHIP_PLAN_LABEL.free,
     authProviders,
     currentOrganizationId,
     currentOrganizationName,

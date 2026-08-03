@@ -17,7 +17,7 @@ const mockAdapters = createMockAdapters()
 const mockPrincipal = { status: 'signed_in' as const, id: 'dev-preview-user', displayName: 'Dev Preview', email: 'dev-preview@example.invalid' }
 
 type Section =
-  | 'profile' | 'products' | 'access' | 'membership' | 'organizations'
+  | 'profile' | 'products' | 'access' | 'membership' | 'organizations' | 'livingWorlds'
   | 'preferences' | 'notifications' | 'privacy' | 'security' | 'systemInformation' | 'data'
   | 'extension-demo'
 
@@ -32,11 +32,12 @@ const RAIL_SECTIONS: { id: Section; label: string; tab: AccountTabKey }[] = [
   { id: 'access', label: 'Access', tab: 'access' },
   { id: 'membership', label: 'Membership', tab: 'membership' },
   { id: 'organizations', label: 'Organizations', tab: 'organizations' },
+  { id: 'livingWorlds', label: 'Living Worlds', tab: 'livingWorlds' },
   { id: 'preferences', label: 'Preferences', tab: 'preferences' },
   { id: 'notifications', label: 'Notifications', tab: 'notifications' },
   { id: 'privacy', label: 'Privacy', tab: 'privacy' },
   { id: 'security', label: 'Security', tab: 'signin' },
-  { id: 'systemInformation', label: 'System Information', tab: 'systemInformation' },
+  { id: 'systemInformation', label: 'Platform Health', tab: 'systemInformation' },
   { id: 'data', label: 'Data & Export', tab: 'data' },
   { id: 'extension-demo', label: 'Mock Extension', tab: extensionTabKey('mock-extension') },
 ]
