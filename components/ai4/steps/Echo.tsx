@@ -20,9 +20,10 @@ export function Echo({ reflection }: StepProps) {
             : "Choose a reflection earlier in the journey and it will live here."}
         </p>
       </div>
-      <p className="max-w-[520px] text-sm leading-6" style={{ color: "var(--text-dim)" }}>
-        One reflection is a moment. Many, over time, become a living archive — personal, and part of something larger.
-      </p>
+      <div className="flex max-w-[520px] flex-col gap-2 text-sm leading-6" style={{ color: "var(--text-dim)" }}>
+        <p>Every reflection becomes part of your own archive.</p>
+        <p>Over time those moments become an Echo — something you can revisit, share, and continue building.</p>
+      </div>
     </StepFrame>
   );
 }

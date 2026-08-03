@@ -15,6 +15,14 @@ export function Return({ reflection }: StepProps) {
         </p>
       ) : null}
       <div className="mt-4 flex flex-col items-center gap-1">
+        <p className="text-lg font-semibold" style={{ color: "var(--paper)" }}>
+          Movies end.
+        </p>
+        <p className="text-lg font-semibold" style={{ color: "var(--gold)" }}>
+          Living worlds remember.
+        </p>
+      </div>
+      <div className="mt-6 flex flex-col items-center gap-1">
         <p className="text-sm font-semibold" style={{ color: "var(--gold)" }}>
           One platform.
         </p>

@@ -60,11 +60,16 @@ export function EnterForest({ reflection }: StepProps) {
         <TreeGlyph scale={0.7} opacity={0.4} />
       </div>
 
-      <p className="max-w-[560px] text-base leading-7 sm:text-lg" style={{ color: "var(--text-dim)" }}>
-        A single persistent, procedural forest — responsive to narrative state and audience participation, reusable
-        across every story rather than built once per production.
-        {reflection ? ` You carry “${reflection}” with you as you enter.` : null}
-      </p>
+      <div className="flex max-w-[560px] flex-col gap-2 text-base leading-7 sm:text-lg" style={{ color: "var(--text-dim)" }}>
+        <p>You do not enter another story.</p>
+        <p>You return to a living place that remembers.</p>
+        <p>Every future story can grow from the same world, changing with memory, participation, and time.</p>
+      </div>
+      {reflection ? (
+        <p className="motion-emerge-instant text-xs font-medium uppercase tracking-wide" style={{ color: "var(--gold)" }}>
+          You carry “{reflection}” with you as you enter.
+        </p>
+      ) : null}
 
       <div className="grid w-full max-w-xl gap-5 sm:grid-cols-2">
         <StatusRow label="Available now" tone="now" items={["This concept preview", "Reflection continuity"]} />

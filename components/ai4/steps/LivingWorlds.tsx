@@ -18,7 +18,7 @@ export function LivingWorlds() {
       title="One platform. Many living worlds."
       subtitle="Every AvatarK story becomes its own persistent world."
     >
-      <div className="flex w-full max-w-4xl flex-wrap justify-center gap-4">
+      <div className="motion-emerge-stagger is-revealed flex w-full max-w-4xl flex-wrap justify-center gap-4">
         {LIVING_WORLDS.map(({ story, world, theme }) => (
           <div
             key={story}

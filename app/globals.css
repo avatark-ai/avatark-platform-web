@@ -218,6 +218,26 @@ body {
   animation: motion-emerge-instant 160ms var(--motion-ease-settle) forwards;
 }
 
+/* Same EMERGE shape (fade + settle-up), but for the Ai4 conference demo's
+   step-to-step transitions specifically: PresentationShell has no scroll/
+   IntersectionObserver machinery -- each step is a genuine fresh mount, so
+   this plays immediately rather than waiting for .is-revealed. Slightly
+   slower and gentler than the site's default EMERGE duration -- a calm
+   "next chapter" beat between kiosk steps, not a tab crossfade. */
+@keyframes ai4-step-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.ai4-step-enter {
+  animation: ai4-step-enter 700ms var(--motion-ease-settle) forwards;
+}
+
 /* Same primitive, applied to a grid/list of children with a small
    cascading stagger instead of one flat fade -- "emergence" reading as
    a sequence rather than everything appearing at once. Covers up to 12

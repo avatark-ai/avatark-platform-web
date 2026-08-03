@@ -33,7 +33,7 @@ that steps through nine in-place beats.
 | 05 | Living Worlds | `components/ai4/steps/LivingWorlds.tsx` | Five premium cards: Between Heartbeats, Adhi Yogi, Krishna, Rama, Prometheus — each its own persistent living world |
 | 06 | Practice | `components/ai4/steps/Practice.tsx` | Short breathing/ritual interaction |
 | 07 | Echo | `components/ai4/steps/Echo.tsx` | The chosen reflection becomes a persistent "Echo" |
-| 08 | Platform Architecture | `components/ai4/steps/PlatformArchitecture.tsx` | Architecture reveal: AvatarK → Living Worlds → GameK (FlowK/PathK/GeometryK/ChronicleK) → PrometheusK (Reflection → Practice → Creation → Echo → Legacy) |
+| 08 | Platform Architecture | `components/ai4/steps/PlatformArchitecture.tsx` | Architecture reveal: AvatarK → Living Worlds → GameK (FlowK/PathK/GeometryK/ChronicleK) → PrometheusK — concept nodes only, no per-world names or product sub-layers repeated here |
 | 09 | Return | `components/ai4/steps/Return.tsx` | Closing beat — every story continues, reason to come back |
 
 Controls (all in `PresentationShell.tsx`): Previous / Next buttons,
@@ -93,10 +93,12 @@ point at a real project for `/ai4` to work.
   Living Stillness, Living Vrindavan, Living Forest, Living Forge) as cards
   — story, world, and theme only, no product branding.
 - A Platform Architecture step revealing the shared engine underneath every
-  world: AvatarK → Living Worlds → GameK's four dimensions (FlowK/PathK/
-  GeometryK/ChronicleK) → PrometheusK as the knowledge layer (Reflection →
-  Practice → Creation → Echo → Legacy). Concept only — no product marketing
-  pages, no individual product routes.
+  world: AvatarK → Living Worlds → GameK's four dimensions (FlowK "How you
+  move" / PathK "Where you are going" / GeometryK "Why the world feels
+  coherent" / ChronicleK "What is remembered") → PrometheusK ("What
+  humanity creates next"). Concept only — no product marketing pages, no
+  individual product routes, no StudioK/ArenaK/StreamK or other internal
+  services named.
 - Full independence from authentication and from Supabase middleware.
 - Verified: clean typecheck/lint/build, no console errors, no horizontal
   overflow at desktop (1280px) or mobile (390px) widths, refresh-safe.

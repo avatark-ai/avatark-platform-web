@@ -8,9 +8,9 @@ export function Practice({ reflection }: StepProps) {
   const [begun, setBegun] = useState(false);
 
   return (
-    <StepFrame kicker="06 · Practice" title="The world offers something to do, not just something to watch.">
+    <StepFrame kicker="06 · Practice" title="A living world is not watched. It is practiced.">
       <div
-        className="flex h-32 w-32 items-center justify-center rounded-full border-2 transition-transform duration-[3000ms] ease-in-out"
+        className="motion-breathe flex h-32 w-32 items-center justify-center rounded-full border-2 transition-transform duration-[3000ms] ease-in-out"
         style={{
           borderColor: "var(--gold)",
           background: "color-mix(in srgb, var(--gold) 12%, transparent)",
