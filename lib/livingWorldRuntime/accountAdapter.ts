@@ -25,6 +25,7 @@ import type { UserId, WorldDefinition, WorldId, WorldRuntime } from "@avatark/li
 export interface WorldAccountSummary {
   worldId: WorldId;
   name: string;
+  description: string;
   active: boolean;
   currentLocationId: string | null;
   currentLocationName: string | null;
@@ -35,6 +36,17 @@ export interface WorldAccountSummary {
   recentActivityLabel: string | null;
   /** True once the user has entered at least once; false for untouched world state. */
   canContinue: boolean;
+  /** Count of this world's own activities carrying a practiceRef -- honestly
+   * 0 for definitions (like the shared SAMPLE_WORLD_DEFINITIONS fixtures)
+   * that don't set one. Never inferred/fabricated beyond what the
+   * definition's own data states. */
+  upcomingPracticeCount: number;
+  /** Same honesty rule, for activities carrying a reflectionRef. */
+  reflectionCount: number;
+}
+
+function countActivitiesWithRef(definition: WorldDefinition, refKey: "practiceRef" | "reflectionRef"): number {
+  return definition.activities.filter((activity) => activity[refKey] != null).length;
 }
 
 /** A user with no state for this world gets an honest empty summary -- never fabricated location/activity/progress. */
@@ -42,6 +54,7 @@ function emptySummary(definition: WorldDefinition, totalLocationCount: number): 
   return {
     worldId: definition.id,
     name: definition.name,
+    description: definition.description ?? "",
     active: false,
     currentLocationId: null,
     currentLocationName: null,
@@ -51,6 +64,8 @@ function emptySummary(definition: WorldDefinition, totalLocationCount: number): 
     lastVisitAt: null,
     recentActivityLabel: null,
     canContinue: false,
+    upcomingPracticeCount: countActivitiesWithRef(definition, "practiceRef"),
+    reflectionCount: countActivitiesWithRef(definition, "reflectionRef"),
   };
 }
 
@@ -77,6 +92,7 @@ export async function getWorldAccountSummary(
   return {
     worldId: definition.id,
     name: definition.name,
+    description: definition.description ?? "",
     active: state.active,
     currentLocationId: state.currentLocationId,
     currentLocationName,
@@ -86,6 +102,8 @@ export async function getWorldAccountSummary(
     lastVisitAt: state.lastVisitAt,
     recentActivityLabel,
     canContinue: true,
+    upcomingPracticeCount: countActivitiesWithRef(definition, "practiceRef"),
+    reflectionCount: countActivitiesWithRef(definition, "reflectionRef"),
   };
 }
 
@@ -105,6 +123,12 @@ export interface AccountLivingWorldSummary {
   status: string;
   description: string;
   progress: string;
+  currentLocation: string | null;
+  lastVisitAt: string | null;
+  recentActivity: string | null;
+  upcomingPracticeCount: number;
+  reflectionCount: number;
+  canContinue: boolean;
 }
 
 export interface AccountAdapterResult<T> {
@@ -114,21 +138,30 @@ export interface AccountAdapterResult<T> {
 
 export interface LivingWorldsAccountAdapter {
   list(): Promise<AccountAdapterResult<AccountLivingWorldSummary[]>>;
+  /** Enters (or resumes) this world for the current user -- the account
+   * surface's "Continue" action. Returns the updated summary. */
+  enter(worldId: WorldId): Promise<AccountAdapterResult<AccountLivingWorldSummary>>;
 }
 
+// "Coming Soon" was a placeholder implying a feature doesn't exist yet.
+// "Ready to Begin" says plainly what's actually true: the world exists and
+// is playable, this user simply hasn't entered it -- never confused with a
+// genuinely unfinished feature.
 function toAccountSummary(summary: WorldAccountSummary): AccountLivingWorldSummary {
-  const status = summary.active ? "Active" : "Not Active";
-  const descriptionParts = [summary.canContinue ? "Continue available" : "Not yet started"];
-  if (summary.currentLocationName) descriptionParts.push(`Current location: ${summary.currentLocationName}`);
-  if (summary.lastVisitAt) descriptionParts.push(`Last visit: ${summary.lastVisitAt}`);
-  if (summary.recentActivityLabel) descriptionParts.push(summary.recentActivityLabel);
+  const status = !summary.canContinue ? "Ready to Begin" : summary.active ? "Active" : "Not Active";
 
   return {
     id: summary.worldId,
     name: summary.name,
     status,
-    description: descriptionParts.join(" · "),
+    description: summary.description,
     progress: `${summary.percentComplete}% (${summary.visitedLocationCount}/${summary.totalLocationCount} locations)`,
+    currentLocation: summary.currentLocationName,
+    lastVisitAt: summary.lastVisitAt,
+    recentActivity: summary.recentActivityLabel,
+    upcomingPracticeCount: summary.upcomingPracticeCount,
+    reflectionCount: summary.reflectionCount,
+    canContinue: summary.canContinue,
   };
 }
 
@@ -142,6 +175,17 @@ export function createLivingWorldsAccountAdapter(
       try {
         const summaries = await getWorldAccountSummaries(runtime, definitions, userId);
         return { data: summaries.map(toAccountSummary) };
+      } catch (err) {
+        return { error: err instanceof Error ? err.message : String(err) };
+      }
+    },
+    async enter(worldId: WorldId) {
+      try {
+        const definition = definitions.find((d) => d.id === worldId);
+        if (!definition) return { error: `Unknown Living World "${worldId}"` };
+        await runtime.enterWorld(userId, worldId);
+        const summary = await getWorldAccountSummary(runtime, definition, userId);
+        return { data: toAccountSummary(summary) };
       } catch (err) {
         return { error: err instanceof Error ? err.message : String(err) };
       }

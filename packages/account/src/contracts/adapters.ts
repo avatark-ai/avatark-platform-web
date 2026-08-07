@@ -222,36 +222,72 @@ export interface OrganizationsAdapter {
 // way. Product/Organization are NOT part of this adapter -- they're already
 // available to AvatarKAccount (currentProduct/productName props,
 // OrganizationsAdapter) and CurrentContextCard reads them directly, so a
-// host never has to duplicate that data here. This adapter covers only the
-// four forward-looking axes no product has real data for yet -- a host
-// with none of them simply omits the adapter; every field then renders
-// "Not active", never a fabricated value.
+// host never has to duplicate that data here. The original four fields
+// (livingWorld/journey/episode/practice) are the axes AvatarK Platform's
+// own @avatark/context-runtime mapped first; the fields added in Runtime
+// Kernel Host Integration (Sprint 4) below are additive and optional --
+// no existing host or consumer of the original four breaks. A host with
+// none of these simply omits the adapter, or omits individual optional
+// fields; every field then renders "Not active"/"Not Started", never a
+// fabricated value.
 export interface CurrentContextState {
   livingWorld: string | null
   journey: string | null
   episode: string | null
   practice: string | null
+  /** @avatark/context-runtime's currentExperienceId. */
+  experience?: string | null
+  /** @avatark/context-runtime's currentSceneId (a @avatark/narrative-runtime Scene). */
+  scene?: string | null
+  /** @avatark/context-runtime's currentReflectionId. */
+  reflection?: string | null
+  /** @avatark/context-runtime's currentLocationId (within the current Living World). */
+  location?: string | null
+  /** Not a context-runtime axis -- derived from @avatark/experience-runtime's
+   * next-eligible Practice whose kind is "challenge". */
+  challenge?: string | null
+  /** Not a context-runtime axis -- derived from @avatark/experience-runtime's
+   * most recently completed Milestone. */
+  milestone?: string | null
+  /** @avatark/experience-runtime's JourneyProgress.status (e.g. "active", "paused"). */
+  journeyStatus?: string | null
+  /** @avatark/experience-runtime's JourneyProgress.percentComplete, pre-formatted (e.g. "42%"). */
+  progress?: string | null
 }
 
 export interface CurrentContextAdapter {
   get(): Promise<AdapterResult<CurrentContextState>>
 }
 
-// ── Living Worlds (OPTIONAL, Platform RC Phase 2) ─────────────
+// ── Living Worlds (OPTIONAL, Platform RC Phase 2; enriched in Runtime
+// Kernel Host Integration, Sprint 4) ──────────────────────────
 // A platform-level concept, not a GameK concept -- this contract and its
 // rendering component know nothing about any specific world's name or
 // franchise. A host supplies whatever worlds it wants to surface (including
-// placeholder "coming soon" entries), generically shaped.
+// placeholder "coming soon" entries), generically shaped. The five fields
+// below the original id/name/status/description/progress are additive and
+// optional -- a host that doesn't populate them simply doesn't render
+// those parts of the card.
 export interface LivingWorld {
   id: string
   name: string
   status: string
   description: string
   progress: string
+  currentLocation?: string | null
+  lastVisitAt?: string | null
+  recentActivity?: string | null
+  upcomingPracticeCount?: number
+  reflectionCount?: number
+  canContinue?: boolean
 }
 
 export interface LivingWorldsAdapter {
   list(): Promise<AdapterResult<LivingWorld[]>>
+  /** Enters (or resumes) a Living World for the current user -- optional
+   * so hosts with a read-only LivingWorldsAdapter (or none at all) don't
+   * need a Continue action wired up. */
+  enter?(worldId: string): Promise<AdapterResult<LivingWorld>>
 }
 
 // ── Notifications (OPTIONAL, Part 8) ──────────────────────────

@@ -53,12 +53,12 @@ export interface EnterLivingWorldResult {
 
 /**
  * The Runtime Kernel's reference composition: "a user enters a Living
- * World." Matches this sprint's mission example exactly --
+ * World." Matches this sprint's mission example --
  *
  *   Host
  *     -> Living World Runtime.enterWorld()
  *     -> Context Runtime.patchContext()
- *     -> Experience Runtime.advance()
+ *     -> Experience Runtime.resume() (only if paused) -> .advance()
  *     -> Experience Registry.recordEvent()
  *
  * The Host is the only caller of any runtime here -- no runtime in this
@@ -90,6 +90,12 @@ export async function enterLivingWorld(
   let experienceAdvanced = false
   if (kernel.experience) {
     try {
+      const progress = await kernel.experience.getProgress(userId)
+      // A paused Experience is resumed before advancing -- entering a
+      // Living World is exactly the kind of re-engagement that should
+      // pick a paused Experience back up, not leave it paused underneath
+      // a now-active Living World.
+      if (progress?.status === "paused") await kernel.experience.resume(userId)
       await kernel.experience.advance(userId)
       experienceAdvanced = true
     } catch (err) {
@@ -112,4 +118,38 @@ export async function enterLivingWorld(
   }
 
   return { worldState, contextApplied, experienceAdvanced, eventRecorded }
+}
+
+export interface LeaveLivingWorldParams {
+  userId: string
+  productId: string
+  worldId: string
+}
+
+export interface LeaveLivingWorldResult {
+  worldState: Awaited<ReturnType<WorldRuntime["leaveWorld"]>> | null
+  eventRecorded: boolean
+}
+
+/** The inverse of enterLivingWorld -- Host -> LivingWorldRuntime.leaveWorld() -> Registry.recordEvent(). */
+export async function leaveLivingWorld(
+  kernel: RuntimeKernel,
+  params: LeaveLivingWorldParams,
+): Promise<LeaveLivingWorldResult> {
+  const { userId, productId, worldId } = params
+
+  const worldState = kernel.livingWorld ? await kernel.livingWorld.leaveWorld(userId, worldId) : null
+
+  let eventRecorded = false
+  if (kernel.registry) {
+    await kernel.registry.recordEvent({
+      type: "world.left",
+      source: { productId },
+      actor: { userId },
+      target: { type: "world", id: worldId },
+    })
+    eventRecorded = true
+  }
+
+  return { worldState, eventRecorded }
 }

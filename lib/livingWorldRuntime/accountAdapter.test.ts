@@ -69,7 +69,7 @@ test("leaving a world reports Not Active while still allowing Continue", async (
   assert.equal(summary.canContinue, true);
 });
 
-test("the account-shaped adapter maps every world into id/name/status/description/progress strings", async () => {
+test("the account-shaped adapter maps every world into id/name/status/description/progress, and never-entered worlds read 'Ready to Begin' not 'Coming Soon'", async () => {
   const runtime = makeRuntime();
   await runtime.enterWorld("u1", "living-forest");
 
@@ -82,12 +82,16 @@ test("the account-shaped adapter maps every world into id/name/status/descriptio
   const forest = result.data!.find((w) => w.id === "living-forest")!;
   assert.equal(forest.name, "Living Forest");
   assert.equal(forest.status, "Active");
-  assert.match(forest.description, /Current location: The Threshold/);
+  assert.equal(forest.currentLocation, "The Threshold");
+  assert.equal(forest.canContinue, true);
   assert.match(forest.progress, /%/);
+  assert.equal(forest.upcomingPracticeCount, 0);
+  assert.equal(forest.reflectionCount, 0);
 
   const stillness = result.data!.find((w) => w.id === "living-stillness")!;
-  assert.equal(stillness.status, "Not Active");
-  assert.match(stillness.description, /Not yet started/);
+  assert.equal(stillness.status, "Ready to Begin");
+  assert.equal(stillness.canContinue, false);
+  assert.equal(stillness.currentLocation, null);
 });
 
 test("the adapter is user-scoped: two different userIds never see each other's data", async () => {
@@ -96,9 +100,33 @@ test("the adapter is user-scoped: two different userIds never see each other's d
 
   const bobAdapter = createLivingWorldsAccountAdapter(runtime, [FOREST], "bob");
   const bobResult = await bobAdapter.list();
-  assert.equal(bobResult.data?.[0]?.status, "Not Active");
+  assert.equal(bobResult.data?.[0]?.status, "Ready to Begin");
 
   const aliceAdapter = createLivingWorldsAccountAdapter(runtime, [FOREST], "alice");
   const aliceResult = await aliceAdapter.list();
   assert.equal(aliceResult.data?.[0]?.status, "Active");
+});
+
+test("enter() performs the world entry and returns the updated summary", async () => {
+  const runtime = makeRuntime();
+  const adapter = createLivingWorldsAccountAdapter(runtime, [FOREST, STILLNESS], "u2");
+
+  const before = await adapter.list();
+  assert.equal(before.data!.find((w) => w.id === "living-forest")!.status, "Ready to Begin");
+
+  const entered = await adapter.enter("living-forest");
+  assert.equal(entered.error, undefined);
+  assert.equal(entered.data?.status, "Active");
+  assert.equal(entered.data?.currentLocation, "The Threshold");
+
+  const after = await adapter.list();
+  assert.equal(after.data!.find((w) => w.id === "living-forest")!.status, "Active");
+});
+
+test("enter() reports an error for an unknown world id instead of throwing", async () => {
+  const runtime = makeRuntime();
+  const adapter = createLivingWorldsAccountAdapter(runtime, [FOREST], "u3");
+  const result = await adapter.enter("no-such-world");
+  assert.equal(result.data, undefined);
+  assert.match(result.error ?? "", /Unknown Living World/);
 });

@@ -11,6 +11,7 @@ import type { AccountAdapters } from '@avatark/account'
 import { createClient } from '@/lib/supabase/client'
 import { MEMBERSHIP_PLAN_LABEL } from '@avatark/membership'
 import { currentContextAdapter } from '@/lib/account/contextAdapter'
+import { livingWorldsAdapter } from '@/lib/account/livingWorldsAdapter'
 import { computeProductAccessEntries, toProductsWithAccess } from '@/lib/products/accessModel'
 import { listActiveCapabilityGrants } from '@/lib/capabilities/queries'
 
@@ -252,25 +253,14 @@ export const avatarKPlatformAdapters: AccountAdapters = {
     getBenefits: () => [],
   },
 
-  // Host-owned placeholder content (Platform RC, Phase 2) -- these five
-  // names/states are what the mission explicitly asked to render today,
-  // not fabricated data about any real world's actual status. The
-  // LivingWorldsTab component itself has zero knowledge of any of these
-  // names; a future product with real Living Worlds data swaps this
-  // adapter for a real one without any package-level change.
-  livingWorlds: {
-    async list() {
-      return {
-        data: [
-          { id: 'living-forest', name: 'Living Forest', status: 'Coming Soon', description: 'A Living World for AvatarK Platform.', progress: 'Not Started' },
-          { id: 'living-vrindavan', name: 'Living Vrindavan', status: 'Coming Soon', description: 'A Living World for AvatarK Platform.', progress: 'Not Started' },
-          { id: 'living-stillness', name: 'Living Stillness', status: 'Coming Soon', description: 'A Living World for AvatarK Platform.', progress: 'Not Started' },
-          { id: 'living-symphony', name: 'Living Symphony', status: 'Coming Soon', description: 'A Living World for AvatarK Platform.', progress: 'Not Started' },
-          { id: 'living-forge', name: 'Living Forge', status: 'Coming Soon', description: 'A Living World for AvatarK Platform.', progress: 'Not Started' },
-        ],
-      }
-    },
-  },
+  // Runtime-driven as of Runtime Kernel Host Integration (Sprint 4) --
+  // backed by @avatark/living-world-runtime via /api/account/living-worlds
+  // (lib/account/livingWorldsAdapter.ts). The five worlds' names come from
+  // that runtime's own SAMPLE_WORLD_DEFINITIONS fixture (not re-declared
+  // here); status/progress/currentLocation/etc. are all real per-user
+  // runtime state, never fabricated. The LivingWorldsTab component itself
+  // still has zero knowledge of any of these names.
+  livingWorlds: livingWorldsAdapter,
 
   organizations: {
     async get() {

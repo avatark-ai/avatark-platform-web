@@ -4,7 +4,7 @@ import { ContextRuntime, InMemoryContextRepository } from "@avatark/context-runt
 import { InMemoryJourneyRepository, JourneyRuntime, type JourneyDefinition } from "@avatark/experience-runtime"
 import { ExperienceRegistry, InMemoryExperienceEventRepository } from "@avatark/experience-registry"
 import { createWorldRuntime, InMemoryWorldStateRepository, type WorldDefinition } from "@avatark/living-world-runtime"
-import { enterLivingWorld, type RuntimeKernel } from "./orchestrator.ts"
+import { enterLivingWorld, leaveLivingWorld, type RuntimeKernel } from "./orchestrator.ts"
 
 const WORLD: WorldDefinition = {
   id: "living-forest",
@@ -67,6 +67,33 @@ test("enterLivingWorld degrades gracefully when the user has no active Experienc
   assert.equal(result.experienceAdvanced, false)
   assert.equal(result.worldState?.currentLocationId, "entry")
   assert.equal(result.eventRecorded, true)
+})
+
+test("enterLivingWorld resumes a paused Experience before advancing it", async () => {
+  const kernel = makeKernel()
+  await kernel.experience!.start("user-4")
+  await kernel.experience!.pause("user-4")
+  const paused = await kernel.experience!.getProgress("user-4")
+  assert.equal(paused?.status, "paused")
+
+  const result = await enterLivingWorld(kernel, { userId: "user-4", productId: "avatark", worldId: "living-forest" })
+
+  assert.equal(result.experienceAdvanced, true)
+  const resumed = await kernel.experience!.getProgress("user-4")
+  assert.equal(resumed?.status, "active")
+})
+
+test("leaveLivingWorld coordinates Living World and Registry via the Host only", async () => {
+  const kernel = makeKernel()
+  await kernel.livingWorld!.enterWorld("user-5", "living-forest")
+
+  const result = await leaveLivingWorld(kernel, { userId: "user-5", productId: "avatark", worldId: "living-forest" })
+
+  assert.equal(result.worldState?.active, false)
+  assert.equal(result.eventRecorded, true)
+
+  const events = await kernel.registry!.listRecentEvents("user-5")
+  assert.equal(events[0].type, "world.left")
 })
 
 test("enterLivingWorld degrades gracefully when a runtime is entirely absent from the kernel", async () => {
