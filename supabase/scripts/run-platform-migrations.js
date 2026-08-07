@@ -67,6 +67,7 @@ const MIGRATION_ORDER = [
   '020_capability_grants.sql',
   '021_organization_invitation_acceptance.sql',
   '022_profile_location_normalized.sql',
+  '023_context_snapshots.sql',
 ]
 
 async function main() {

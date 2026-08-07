@@ -9,7 +9,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, join } from "node:path";
 
 const PACKAGES = [
-  "account", "account-ui", "appearance", "auth", "auth-ui", "bootstrap", "identity",
+  "account", "account-ui", "appearance", "auth", "auth-ui", "bootstrap", "context-runtime", "identity",
   "invitations", "journey", "living-echo", "locale",
   "membership", "motion", "navigation", "notifications", "organizations",
   "product-registry", "recommendations", "runtime-contracts", "timeline",

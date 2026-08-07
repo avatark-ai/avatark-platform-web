@@ -26,6 +26,9 @@ importers:
       '@avatark/bootstrap':
         specifier: workspace:*
         version: link:packages/bootstrap
+      '@avatark/context-runtime':
+        specifier: workspace:*
+        version: link:packages/context-runtime
       '@avatark/experience-registry':
         specifier: workspace:*
         version: link:packages/experience-registry
@@ -207,6 +210,12 @@ importers:
       '@avatark/product-registry':
         specifier: workspace:*
         version: link:../product-registry
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/context-runtime:
     devDependencies:
       typescript:
         specifier: ^5

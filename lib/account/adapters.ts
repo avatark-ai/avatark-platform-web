@@ -1,12 +1,16 @@
 // AvatarK Platform's concrete @avatark/account adapter implementation.
 // Every field here is genuinely backed by real data -- no fabricated
-// entitlements, no invented Echo/Journey concepts (those are
-// PrometheusK-specific, deliberately absent), no activity/echoes
-// adapters (omitted, per explicit instruction, since AvatarK Platform
-// has no Living Echo/reflection data of its own to honestly back them).
+// entitlements, no invented Echo concepts (PrometheusK-specific,
+// deliberately absent), no activity/echoes adapters (omitted, per
+// explicit instruction, since AvatarK Platform has no Living Echo/
+// reflection data of its own to honestly back them). `currentContext`
+// below is the one exception to "AvatarK Platform has no real data for
+// this yet" -- it's now backed by @avatark/context-runtime, see
+// lib/account/contextAdapter.ts.
 import type { AccountAdapters } from '@avatark/account'
 import { createClient } from '@/lib/supabase/client'
 import { MEMBERSHIP_PLAN_LABEL } from '@avatark/membership'
+import { currentContextAdapter } from '@/lib/account/contextAdapter'
 import { computeProductAccessEntries, toProductsWithAccess } from '@/lib/products/accessModel'
 import { listActiveCapabilityGrants } from '@/lib/capabilities/queries'
 
@@ -301,6 +305,8 @@ export const avatarKPlatformAdapters: AccountAdapters = {
     get: () => authFetch('/api/account/notifications'),
     updateCategory: (category, enabled) => authFetch('/api/account/notifications', { method: 'PATCH', body: JSON.stringify({ category, enabled }) }),
   },
+
+  currentContext: currentContextAdapter,
 
   systemInformation: {
     get: () => authFetch('/api/account/system-info'),
