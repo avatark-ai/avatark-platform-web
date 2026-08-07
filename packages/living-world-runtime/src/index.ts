@@ -34,17 +34,11 @@ export { InMemoryWorldStateRepository } from "./repository.ts";
 export type { CreateWorldRuntimeOptions, WorldRuntime } from "./runtime.ts";
 export { createWorldRuntime, RECENT_VISITS_LIMIT } from "./runtime.ts";
 
-export type {
-  AccountAdapterResult,
-  AccountLivingWorldSummary,
-  LivingWorldsAccountAdapter,
-  WorldAccountSummary,
-} from "./adapters/livingWorldsAccount.ts";
-export {
-  createLivingWorldsAccountAdapter,
-  getWorldAccountSummaries,
-  getWorldAccountSummary,
-} from "./adapters/livingWorldsAccount.ts";
+// Account-surface adapter glue (createLivingWorldsAccountAdapter and
+// friends) moved to lib/livingWorldRuntime/accountAdapter.ts during the
+// Runtime Kernel integration (Sprint 3) -- a Presentation-role adapter
+// belongs in the Host, not in this leaf package. See
+// docs/RUNTIME_KERNEL_ARCHITECTURE.md Part 1.
 
 export type { KnownWorldName } from "./fixtures/sampleWorlds.ts";
 export {

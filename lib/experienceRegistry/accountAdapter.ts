@@ -1,20 +1,20 @@
-import type { ExperienceEvent } from "./types.ts"
-import type { ExperienceRegistry } from "./registry.ts"
+import type { ExperienceEvent, ExperienceRegistry } from "@avatark/experience-registry"
 
-// Mirrors (does NOT import) @avatark/account's ExtensionAdapter contract
-// (packages/account/src/contracts/adapters.ts) structurally, so this
-// package can produce a value shaped to slot directly into a host's
-// `AccountAdapters.extensions` array without experience-registry taking a
-// compile-time dependency on @avatark/account or any other sibling
-// package -- per the mission's "avoid direct compile-time dependencies on
-// unfinished sibling packages" principle. TypeScript's structural typing
-// means a host can assign createExperienceActivityAdapter(...)'s return
-// value straight into an `ExtensionAdapter[]` with no cast.
+// Moved here from packages/experience-registry/src/activityAdapter.ts
+// during the Runtime Kernel integration (Sprint 3), per the
+// adapter-ownership fix docs/RUNTIME_KERNEL_ARCHITECTURE.md Part 1
+// identified: a Presentation-role adapter (reshapes a runtime's output to
+// match @avatark/account's UI contract) belongs in the Host's lib/, never
+// inside the runtime package itself -- @avatark/experience-registry stays
+// a true leaf with zero knowledge of @avatark/account.
 //
-// This is the "minimal Timeline/Recent Activity adapter surface" called
-// for by the mission -- NOT the Timeline package itself (@avatark/timeline
-// remains untouched) and not wired into any app page here. A host wires it
-// into app/account/page.tsx's AccountAdapters.extensions when it's ready.
+// Mirrors (does NOT import) @avatark/account's ExtensionAdapter contract
+// (packages/account/src/contracts/adapters.ts) structurally. TypeScript's
+// structural typing means a host can assign
+// createExperienceActivityAdapter(...)'s return value straight into an
+// `ExtensionAdapter[]` with no cast. Not wired into any app page here --
+// a host wires it into app/account/page.tsx's AccountAdapters.extensions
+// when it's ready.
 interface AccountExtensionItem {
   id: string
   title: string
@@ -51,7 +51,7 @@ export interface ExperienceActivityAdapterOptions {
 }
 
 // "narrative.started" -> "Narrative started". Deliberately not
-// localization-aware -- that's @avatark/locale's job, not this package's.
+// localization-aware -- that's @avatark/locale's job, not this adapter's.
 function humanizeExperienceType(type: string): string {
   const words = type.split(/[._]/).filter(Boolean)
   if (words.length === 0) return type

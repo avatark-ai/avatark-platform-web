@@ -18,7 +18,7 @@
     "dist"
   ],
   "scripts": {
-    "test": "node --experimental-strip-types --test src/runtime.test.ts src/repository.test.ts src/progress.test.ts src/adapters/livingWorldsAccount.test.ts",
+    "test": "node --experimental-strip-types --test src/runtime.test.ts src/repository.test.ts src/progress.test.ts",
     "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
   },
   "publishConfig": {

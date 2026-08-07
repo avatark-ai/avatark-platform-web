@@ -1,21 +1,26 @@
 // ============================================================
 // Living Worlds account-surface integration.
 //
+// Moved here from packages/living-world-runtime/src/adapters/
+// livingWorldsAccount.ts during the Runtime Kernel integration
+// (Sprint 3), per the adapter-ownership fix docs/RUNTIME_KERNEL_ARCHITECTURE.md
+// Part 1 identified: a Presentation-role adapter (reshapes a runtime's
+// output to match @avatark/account's UI contract) belongs in the Host's
+// lib/, never inside the runtime package itself -- @avatark/living-world-runtime
+// stays a true leaf with zero knowledge of @avatark/account.
+//
 // The account UI's existing LivingWorldsTab (packages/account) already
 // defines a generic LivingWorldsAdapter contract: `list(): Promise<{
 // data?: { id, name, status, description, progress }[], error?: string
-// }>`. This module extends that surface by implementing an adapter
-// shaped to match it -- it does not import @avatark/account (no stable
-// public npm-style contract to depend on yet, per the mission's
-// "use interfaces/adapters instead of importing unfinished siblings"
-// rule) and it does not duplicate any of that package's rendering code.
-// A host wires `createLivingWorldsAccountAdapter(...)` directly onto its
-// own `AccountAdapters.livingWorlds`.
+// }>`. This module implements an adapter shaped to match it -- it does
+// not import @avatark/account (no stable public npm-style contract to
+// depend on yet) and it does not duplicate any of that package's
+// rendering code. A host wires `createLivingWorldsAccountAdapter(...)`
+// directly onto its own `AccountAdapters.livingWorlds`.
 // ============================================================
 
-import { findLocation } from "../definitions.ts";
-import type { WorldRuntime } from "../runtime.ts";
-import type { UserId, WorldDefinition, WorldId } from "../types.ts";
+import { findLocation } from "@avatark/living-world-runtime";
+import type { UserId, WorldDefinition, WorldId, WorldRuntime } from "@avatark/living-world-runtime";
 
 export interface WorldAccountSummary {
   worldId: WorldId;

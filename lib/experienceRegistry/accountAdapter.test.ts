@@ -1,8 +1,7 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { ExperienceRegistry } from "./registry.ts"
-import { InMemoryExperienceEventRepository } from "./inMemoryRepository.ts"
-import { createExperienceActivityAdapter } from "./activityAdapter.ts"
+import { ExperienceRegistry, InMemoryExperienceEventRepository } from "@avatark/experience-registry"
+import { createExperienceActivityAdapter } from "./accountAdapter.ts"
 
 function makeRegistry() {
   return new ExperienceRegistry(new InMemoryExperienceEventRepository())

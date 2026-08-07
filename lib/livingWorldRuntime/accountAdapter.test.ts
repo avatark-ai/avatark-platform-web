@@ -1,9 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { createWorldRuntime } from "../runtime.ts";
-import { InMemoryWorldStateRepository } from "../repository.ts";
-import { createLivingWorldsAccountAdapter, getWorldAccountSummary } from "./livingWorldsAccount.ts";
-import type { WorldDefinition } from "../types.ts";
+import { createWorldRuntime, InMemoryWorldStateRepository } from "@avatark/living-world-runtime";
+import type { WorldDefinition } from "@avatark/living-world-runtime";
+import { createLivingWorldsAccountAdapter, getWorldAccountSummary } from "./accountAdapter.ts";
 
 const FOREST: WorldDefinition = {
   id: "living-forest",
