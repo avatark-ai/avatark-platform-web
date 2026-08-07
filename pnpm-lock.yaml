@@ -38,6 +38,9 @@ importers:
       '@avatark/living-echo':
         specifier: workspace:*
         version: link:packages/living-echo
+      '@avatark/living-world-runtime':
+        specifier: workspace:*
+        version: link:packages/living-world-runtime
       '@avatark/locale':
         specifier: workspace:*
         version: link:packages/locale
@@ -239,6 +242,12 @@ importers:
       '@avatark/timeline':
         specifier: workspace:*
         version: link:../timeline
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/living-world-runtime:
     devDependencies:
       typescript:
         specifier: ^5

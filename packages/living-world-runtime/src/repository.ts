@@ -1,0 +1,81 @@
+import type { UserId, WorldId, WorldState, WorldTransition } from "./types.ts";
+
+// ============================================================
+// Persistence contract. The runtime never assumes a schema or a specific
+// database -- it only calls this interface. A host wires in whatever
+// storage it has (Supabase, Redis, a file, etc.) by implementing this
+// shape; tests and hosts without persistence infrastructure yet can use
+// InMemoryWorldStateRepository below.
+//
+// Every method is keyed by (userId, worldId): a repository implementation
+// MUST NOT let one user's read or write touch another user's state. That
+// scoping is the entire security boundary this package relies on -- it
+// does no authorization itself (see AGENTS/mission: "no authorization
+// redesign").
+// ============================================================
+
+export interface WorldStateRepository {
+  get(userId: UserId, worldId: WorldId): Promise<WorldState | null>;
+  save(state: WorldState): Promise<void>;
+  /** All world states this user has ever entered, for account-surface listings. */
+  listForUser(userId: UserId): Promise<WorldState[]>;
+  appendTransition(userId: UserId, worldId: WorldId, transition: WorldTransition): Promise<void>;
+  getTransitions(userId: UserId, worldId: WorldId): Promise<WorldTransition[]>;
+}
+
+const KEY_SEPARATOR = ":";
+
+function stateKey(userId: UserId, worldId: WorldId): string {
+  return `${userId}${KEY_SEPARATOR}${worldId}`;
+}
+
+function userPrefix(userId: UserId): string {
+  return `${userId}${KEY_SEPARATOR}`;
+}
+
+/** Reference adapter: process-memory only, for tests and hosts without persistence wired up yet. */
+export class InMemoryWorldStateRepository implements WorldStateRepository {
+  private readonly states = new Map<string, WorldState>();
+  private readonly transitions = new Map<string, WorldTransition[]>();
+
+  async get(userId: UserId, worldId: WorldId): Promise<WorldState | null> {
+    const state = this.states.get(stateKey(userId, worldId));
+    return state ? cloneState(state) : null;
+  }
+
+  async save(state: WorldState): Promise<void> {
+    this.states.set(stateKey(state.userId, state.worldId), cloneState(state));
+  }
+
+  async listForUser(userId: UserId): Promise<WorldState[]> {
+    const prefix = userPrefix(userId);
+    const result: WorldState[] = [];
+    for (const [key, state] of this.states) {
+      if (key.startsWith(prefix)) result.push(cloneState(state));
+    }
+    return result;
+  }
+
+  async appendTransition(userId: UserId, worldId: WorldId, transition: WorldTransition): Promise<void> {
+    const key = stateKey(userId, worldId);
+    const list = this.transitions.get(key) ?? [];
+    list.push({ ...transition });
+    this.transitions.set(key, list);
+  }
+
+  async getTransitions(userId: UserId, worldId: WorldId): Promise<WorldTransition[]> {
+    return [...(this.transitions.get(stateKey(userId, worldId)) ?? [])];
+  }
+}
+
+function cloneState(state: WorldState): WorldState {
+  return {
+    ...state,
+    visitedLocationIds: [...state.visitedLocationIds],
+    unlockedLocationIds: [...state.unlockedLocationIds],
+    recentVisits: state.recentVisits.map((v) => ({ ...v })),
+    artifacts: state.artifacts.map((a) => ({ ...a, data: a.data ? { ...a.data } : undefined })),
+    currentPracticeRef: state.currentPracticeRef ? { ...state.currentPracticeRef } : null,
+    currentReflectionRef: state.currentReflectionRef ? { ...state.currentReflectionRef } : null,
+  };
+}
