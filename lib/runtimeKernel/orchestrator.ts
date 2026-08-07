@@ -15,8 +15,10 @@
 // picks a persistence backend. That's each call site's job (see
 // lib/experienceRuntime/, lib/context/, etc. for the real Supabase-backed
 // wiring; the reference end-to-end test in
-// packages/runtime-contracts/src/e2eKernelFlow.test.ts uses each
-// package's own in-memory reference repository instead).
+// lib/runtimeKernel/e2eKernelFlow.test.ts uses each package's own
+// in-memory reference repository instead -- it lives here, in the Host's
+// lib/, never in packages/runtime-contracts, which must never import any
+// runtime package at all (see Phase 10's dependency-boundary check).
 import type { ContextRuntime } from "@avatark/context-runtime"
 import { JourneyError, type JourneyRuntime } from "@avatark/experience-runtime"
 import type { ExperienceRegistry } from "@avatark/experience-registry"
