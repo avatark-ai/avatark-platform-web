@@ -67,7 +67,14 @@ const MIGRATION_ORDER = [
   '020_capability_grants.sql',
   '021_organization_invitation_acceptance.sql',
   '022_profile_location_normalized.sql',
-  '023_context_snapshots.sql',
+  // Runtime Kernel integration (Sprint 3): these three originally all
+  // claimed migration number 023 independently on three separate
+  // branches. Reconciled per docs/MERGE_PLAYBOOK.md Part 1 -- no FKs
+  // exist between the three schemas, so this order is for traceability
+  // only, not a correctness dependency.
+  '023_experience_events.sql',
+  '024_context_snapshots.sql',
+  '025_journey_states.sql',
 ]
 
 async function main() {

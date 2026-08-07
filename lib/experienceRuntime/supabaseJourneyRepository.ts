@@ -70,9 +70,11 @@ function rowToTransition(row: JourneyTransitionRow): JourneyTransition {
 }
 
 // Real persistence for @avatark/experience-runtime's JourneyRepository
-// interface, backed by migration 023's journey_states/journey_transitions
-// tables. Degrades reads to "no state yet" rather than throwing when the
-// migration isn't applied in an environment yet (same convention
+// interface, backed by migration 025's journey_states/journey_transitions
+// tables (renumbered from 023 during the Runtime Kernel integration --
+// see docs/MERGE_PLAYBOOK.md Part 1). Degrades reads to "no state yet"
+// rather than throwing when the migration isn't applied in an environment
+// yet (same convention
 // app/api/account/notifications/route.ts uses for account_preferences).
 export class SupabaseJourneyRepository implements JourneyRepository {
   private readonly supabase: SupabaseClient

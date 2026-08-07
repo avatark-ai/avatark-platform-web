@@ -1,5 +1,7 @@
--- AvatarK Platform — Experience Registry (PROPOSAL -- NOT APPLIED, NOT
--- WIRED INTO supabase/scripts/run-platform-migrations.js's MIGRATION_ORDER)
+-- AvatarK Platform — Experience Registry (PROPOSAL -- registered in
+-- supabase/scripts/run-platform-migrations.js's MIGRATION_ORDER as part of
+-- the Runtime Kernel integration (Sprint 3), but still NOT APPLIED to any
+-- real database -- registration is preparation, not application.)
 --
 -- Backs @avatark/experience-registry's ExperienceEventRepository interface
 -- (packages/experience-registry/src/repository.ts) once a Postgres-backed
@@ -14,13 +16,17 @@
 -- Mirrors two existing patterns rather than inventing a third:
 --   - migration 013 (platform_audit_events): actor/action/target/metadata/
 --     timestamp shape for a fact log.
---   - migration 023 in the sibling `feature/experience-runtime` worktree
---     (journey_states/journey_transitions): owner-only RLS via
+--   - migration 025_journey_states.sql (owner-only RLS via
 --     `auth.uid() = <owner column>`, same convention as migration 005's
---     account_preferences_owner_only.
--- The two migrations share the number "023" only because they live on
--- separate, not-yet-merged branches off feature/avatar-platform-rc3 --
--- whichever merges first keeps 023; the other is renumbered at merge time.
+--     account_preferences_owner_only).
+-- This migration, 024_context_snapshots.sql, and 025_journey_states.sql
+-- originally all claimed the number "023" independently, on three
+-- separate branches off the same feature/avatar-platform-rc3 base -- see
+-- docs/MERGE_PLAYBOOK.md Part 1 for the full reconciliation. This file
+-- (experience_events) merged first among the three and kept 023; the
+-- other two were renumbered to 024 and 025 at Runtime Kernel integration
+-- time. No foreign keys exist between any of the three schemas, so the
+-- renumbering is filename/ordering hygiene only, not a correctness fix.
 CREATE TABLE IF NOT EXISTS experience_events (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   schema_version integer NOT NULL DEFAULT 1,

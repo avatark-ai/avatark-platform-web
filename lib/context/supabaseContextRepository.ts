@@ -1,12 +1,14 @@
 // Concrete @avatark/context-runtime ContextRepository backed by
-// migration 023's context_snapshots/context_history tables. Lives at the
-// app layer, not inside packages/context-runtime, since that package
-// must stay free of any database client and any app-local (`@/`)
-// imports -- the runtime knows nothing about Supabase, and this file
-// knows nothing about the runtime's precedence rules.
+// migration 024's context_snapshots/context_history tables (renumbered
+// from 023 during the Runtime Kernel integration -- see
+// docs/MERGE_PLAYBOOK.md Part 1). Lives at the app layer, not inside
+// packages/context-runtime, since that package must stay free of any
+// database client and any app-local (`@/`) imports -- the runtime knows
+// nothing about Supabase, and this file knows nothing about the
+// runtime's precedence rules.
 //
 // Every query is additionally scoped with `.eq('user_id', userId)` as
-// defense in depth, but the real security boundary is migration 023's
+// defense in depth, but the real security boundary is migration 024's
 // RLS: `auth.uid() = user_id`. Whatever userId a caller passes in, a
 // request authenticated as a different user simply gets no rows back.
 import type { SupabaseClient } from '@supabase/supabase-js'

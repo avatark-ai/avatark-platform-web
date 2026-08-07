@@ -65,13 +65,17 @@ One table, `experience_events`, one row per `ExperienceEvent`:
    a server-side call so that validation always runs is the safer default,
    but that's an application-wiring decision for whoever implements the
    Postgres repository, not something this migration enforces.
-4. **Numbering collision.** This file is `023_experience_events.sql` on
-   `feature/experience-registry`. The sibling `feature/experience-runtime`
-   branch independently added its own `023_journey_states.sql` off the same
-   `feature/avatar-platform-rc3` base. Whichever branch merges to `rc3`
-   first keeps number 023; the other's migration gets renumbered as part of
-   that merge -- there is no collision today because neither branch is
-   merged yet, but this needs to be resolved at merge time, not before.
+4. **Numbering collision -- resolved during the Runtime Kernel integration
+   (Sprint 3).** This file was originally `023_experience_events.sql` on
+   `feature/experience-registry`. Two sibling branches,
+   `feature/experience-runtime` (`023_journey_states.sql`) and
+   `feature/context-runtime` (`023_context_snapshots.sql`), independently
+   claimed the same number off the same `feature/avatar-platform-rc3`
+   base. Per docs/MERGE_PLAYBOOK.md Part 1, this file kept number 023
+   (merged first among the three); the other two were renumbered to
+   `024_context_snapshots.sql` and `025_journey_states.sql`. No foreign
+   keys exist between the three schemas, so the renumbering was filename/
+   ordering hygiene only -- still not applied to any real database.
 
 ## What would still need to be built, and isn't, in this proposal
 
