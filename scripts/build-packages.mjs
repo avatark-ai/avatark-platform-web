@@ -14,7 +14,7 @@ const BUILD_ORDER = [
   "membership", "invitations", "notifications", "organizations", "motion",
   "account", "locale", "appearance",
   // Runtime Kernel (also leaves: zero @avatark/* dependencies).
-  "runtime-contracts", "narrative-runtime", "living-world-runtime",
+  "runtime-contracts", "narrative-runtime", "living-world-runtime", "experience-registry",
   // One hop: each depends only on leaves above.
   "navigation",     // -> product-registry
   "living-echo",    // -> timeline, recommendations
