@@ -12,7 +12,7 @@ const BUILD_ORDER = [
   // Leaves: zero @avatark/* dependencies.
   "auth", "identity", "product-registry", "timeline", "recommendations",
   "membership", "invitations", "notifications", "organizations", "motion",
-  "account", "locale", "appearance",
+  "account", "locale", "appearance", "narrative-runtime",
   // One hop: each depends only on leaves above.
   "navigation",     // -> product-registry
   "living-echo",    // -> timeline, recommendations
