@@ -32,6 +32,9 @@ importers:
       '@avatark/experience-registry':
         specifier: workspace:*
         version: link:packages/experience-registry
+      '@avatark/experience-runtime':
+        specifier: workspace:*
+        version: link:packages/experience-runtime
       '@avatark/identity':
         specifier: workspace:*
         version: link:packages/identity
@@ -222,6 +225,12 @@ importers:
         version: 5.9.3
 
   packages/experience-registry:
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/experience-runtime:
     devDependencies:
       typescript:
         specifier: ^5

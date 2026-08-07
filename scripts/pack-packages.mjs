@@ -9,9 +9,10 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, join } from "node:path";
 
 const PACKAGES = [
-  "account", "account-ui", "appearance", "auth", "auth-ui", "bootstrap", "context-runtime", "identity",
-  "invitations", "journey", "living-echo", "locale",
-  "membership", "motion", "navigation", "notifications", "organizations",
+  "account", "account-ui", "appearance", "auth", "auth-ui", "bootstrap", "context-runtime",
+  "experience-registry", "experience-runtime", "identity",
+  "invitations", "journey", "living-echo", "living-world-runtime", "locale",
+  "membership", "motion", "narrative-runtime", "navigation", "notifications", "organizations",
   "product-registry", "recommendations", "runtime-contracts", "timeline",
 ];
 
