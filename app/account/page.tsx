@@ -39,11 +39,17 @@ const RAIL_SECTIONS: { id: Section; label: string; tab?: AccountTabKey }[] = [
   { id: 'privacy', label: 'Privacy', tab: 'privacy' },
   { id: 'security', label: 'Security', tab: 'signin' },
   { id: 'data', label: 'Data & Export', tab: 'data' },
-  // Journey is deliberately NOT wired through @avatark/account's tab
-  // contract -- it's a separate concept (@avatark/experience-runtime),
-  // fetched directly from /api/account/journey, same pattern as
-  // Feedback/Support below.
-  { id: 'journey', label: 'Journey' },
+  // This section (internal id 'journey', unchanged for URL-compatibility --
+  // see docs/RUNTIME_GLOSSARY.md Part 2) is deliberately NOT wired through
+  // @avatark/account's tab contract -- it's a separate concept
+  // (@avatark/experience-runtime), fetched directly from
+  // /api/account/journey, same pattern as Feedback/Support below.
+  // Label is "Experience," not "Journey" -- this repo has three unrelated
+  // things called "Journey" (@avatark/journey's invitation-handoff funnel,
+  // this package's progression engine, and Context's currentNarrativeId
+  // field); the label is the one place that ambiguity would otherwise
+  // reach an end user, so it's the one thing this fix changes.
+  { id: 'journey', label: 'Experience' },
   { id: 'feedback', label: 'Feedback' },
   { id: 'support', label: 'Support' },
 ]
@@ -111,7 +117,7 @@ function JourneyView() {
     return <div className="h-32 w-full max-w-md animate-pulse rounded-md" style={{ background: 'var(--surface-line)' }} />
   }
   if (data === null) {
-    return <p className="text-sm" style={{ color: 'var(--text-dim)' }}>Your journey isn&apos;t available right now.</p>
+    return <p className="text-sm" style={{ color: 'var(--text-dim)' }}>Your experience isn&apos;t available right now.</p>
   }
 
   const { journey, progress } = data
@@ -120,8 +126,8 @@ function JourneyView() {
     return (
       <div className="flex max-w-md flex-col gap-3 text-sm leading-6" style={{ color: 'var(--text-dim)' }}>
         <p style={{ color: 'var(--paper)' }}>{journey.title}</p>
-        <p>You haven&apos;t started this journey yet.</p>
-        <JourneyActionButton label="Start Journey" pending={pending} onClick={() => act('start')} />
+        <p>You haven&apos;t started this experience yet.</p>
+        <JourneyActionButton label="Start Experience" pending={pending} onClick={() => act('start')} />
       </div>
     )
   }
@@ -183,8 +189,8 @@ function JourneyView() {
         )}
       </div>
 
-      {progress.status === 'completed' && <p style={{ color: 'var(--gold)' }}>Journey complete.</p>}
-      {progress.status === 'abandoned' && <p>This journey was abandoned.</p>}
+      {progress.status === 'completed' && <p style={{ color: 'var(--gold)' }}>Experience complete.</p>}
+      {progress.status === 'abandoned' && <p>This experience was abandoned.</p>}
     </div>
   )
 }
