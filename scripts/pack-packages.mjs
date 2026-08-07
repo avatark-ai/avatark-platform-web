@@ -12,7 +12,7 @@ const PACKAGES = [
   "account", "account-ui", "appearance", "auth", "auth-ui", "bootstrap", "identity",
   "invitations", "journey", "living-echo", "locale",
   "membership", "motion", "navigation", "notifications", "organizations",
-  "product-registry", "recommendations", "timeline",
+  "product-registry", "recommendations", "runtime-contracts", "timeline",
 ];
 
 const OUT_DIR = "dist-packages";
