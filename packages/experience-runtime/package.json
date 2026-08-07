@@ -1,0 +1,36 @@
+{
+  "name": "@avatark/experience-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Data-driven Journey Runtime -- Episodes, Living Worlds, Practices, Reflections, Challenges, and Milestones -- shared by every AvatarK consumer product (StreamK, CinemaK, GameK, ArenaK, PrometheusK, StudioK) through one adapter-based, product-independent contract.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "test": "node --experimental-strip-types --test src/progress.test.ts src/runtime.test.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
+  }
+}
