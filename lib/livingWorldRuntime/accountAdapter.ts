@@ -21,6 +21,8 @@
 
 import { findLocation } from "@avatark/living-world-runtime";
 import type { UserId, WorldDefinition, WorldId, WorldRuntime, WorldState } from "@avatark/living-world-runtime";
+import type { LocationExperience } from "@avatark/renderer-contracts";
+import { findCurrentLocationExperience } from "./experienceCatalog.ts";
 
 export interface WorldAccountSummary {
   worldId: WorldId;
@@ -54,6 +56,14 @@ export interface WorldAccountSummary {
    * whichever activity at the current location carries a reflectionRef,
    * if any. Null whenever no such activity exists -- never fabricated. */
   currentReflectionPrompt: string | null;
+  /** Renderer-neutral experience intent (STK-SPEC-003/004, Sprint 6) for
+   * whichever location is current, if this world has an authored
+   * Experience Description at all. Null for a world with no current
+   * location, or for a world (e.g. the still-generic Living Forest/
+   * Stillness/Symphony/Forge fixtures) with no Experience Description
+   * authored yet -- never fabricated. Purely descriptive: a renderer may
+   * visualize this, but it is never a source of runtime state. */
+  currentLocationExperience: LocationExperience | null;
 }
 
 function countActivitiesWithRef(definition: WorldDefinition, refKey: "practiceRef" | "reflectionRef"): number {
@@ -96,6 +106,7 @@ function emptySummary(definition: WorldDefinition, totalLocationCount: number): 
     reflectionCount: countActivitiesWithRef(definition, "reflectionRef"),
     nextLocations: [],
     currentReflectionPrompt: null,
+    currentLocationExperience: null,
   };
 }
 
@@ -136,6 +147,7 @@ export async function getWorldAccountSummary(
     reflectionCount: countActivitiesWithRef(definition, "reflectionRef"),
     nextLocations: findNextLocations(definition, state),
     currentReflectionPrompt: findReflectionPrompt(definition, state.currentLocationId),
+    currentLocationExperience: findCurrentLocationExperience(definition.id, state.currentLocationId),
   };
 }
 
@@ -164,6 +176,7 @@ export interface AccountLivingWorldSummary {
   canContinue: boolean;
   nextLocations: { id: string; name: string }[];
   currentReflectionPrompt: string | null;
+  currentLocationExperience: LocationExperience | null;
 }
 
 export interface AccountAdapterResult<T> {
@@ -200,6 +213,7 @@ function toAccountSummary(summary: WorldAccountSummary): AccountLivingWorldSumma
     canContinue: summary.canContinue,
     nextLocations: summary.nextLocations,
     currentReflectionPrompt: summary.currentReflectionPrompt,
+    currentLocationExperience: summary.currentLocationExperience,
   };
 }
 

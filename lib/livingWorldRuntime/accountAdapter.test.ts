@@ -205,3 +205,36 @@ test("the account-shaped adapter exposes currentLocationId, nextLocations, and c
   assert.equal(grove.currentReflectionPrompt, "What do you notice here?");
   assert.deepEqual(new Set(grove.nextLocations.map((l) => l.id)), new Set(["branch-a", "branch-b"]));
 });
+
+test("currentLocationExperience is honestly null for a world with no authored Experience Description (Sprint 6)", async () => {
+  const runtime = createWorldRuntime({ definitions: [GROVE], repository: new InMemoryWorldStateRepository() });
+  await runtime.enterWorld("u7", "living-grove");
+
+  const summary = await getWorldAccountSummary(runtime, GROVE, "u7");
+  assert.equal(summary.currentLocationExperience, null, "living-grove is a test fixture, never gets a fabricated experience description");
+});
+
+test("currentLocationExperience is null when a world has no current location at all, even one with a real Experience Description", async () => {
+  const { LIVING_VRINDAVAN_DEFINITION } = await import("./vrindavanDefinition.ts");
+  const runtime = createWorldRuntime({ definitions: [LIVING_VRINDAVAN_DEFINITION], repository: new InMemoryWorldStateRepository() });
+
+  const summary = await getWorldAccountSummary(runtime, LIVING_VRINDAVAN_DEFINITION, "ghost");
+  assert.equal(summary.currentLocationExperience, null);
+});
+
+test("currentLocationExperience surfaces the real, distinct Sprint 6 Experience Description at Living Vrindavan's entry and after navigating to Yamuna", async () => {
+  const { LIVING_VRINDAVAN_DEFINITION } = await import("./vrindavanDefinition.ts");
+  const runtime = createWorldRuntime({ definitions: [LIVING_VRINDAVAN_DEFINITION], repository: new InMemoryWorldStateRepository() });
+  await runtime.enterWorld("u8", "living-vrindavan");
+
+  let summary = await getWorldAccountSummary(runtime, LIVING_VRINDAVAN_DEFINITION, "u8");
+  assert.equal(summary.currentLocationExperience?.id, "vrindavan-entry");
+  assert.equal(summary.currentLocationExperience?.atmosphere.quality, "arrival");
+
+  await runtime.unlockLocation("u8", "living-vrindavan", "yamuna");
+  await runtime.visitLocation("u8", "living-vrindavan", "yamuna");
+  summary = await getWorldAccountSummary(runtime, LIVING_VRINDAVAN_DEFINITION, "u8");
+  assert.equal(summary.currentLocationExperience?.id, "yamuna");
+  assert.equal(summary.currentLocationExperience?.atmosphere.quality, "contemplative");
+  assert.equal(summary.currentLocationExperience?.interaction.reflectionAvailable, true);
+});
