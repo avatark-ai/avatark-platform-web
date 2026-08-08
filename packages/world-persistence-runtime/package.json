@@ -1,0 +1,42 @@
+{
+  "name": "@avatark/world-persistence-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Executes Sprint 9's durable persistence mechanics: deterministic catch-up (reusing @avatark/living-systems-runtime's own advanceWorldSimulation unmodified), checkpoint creation/recovery, lifecycle transitions, HOT/WARM/COLD resource-tier mapping, and reference in-memory adapters for optimistic concurrency, idempotent event append, and world-execution leasing. Host-neutral, database-neutral, franchise-neutral.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@avatark/living-systems-contracts": "workspace:*",
+    "@avatark/living-systems-runtime": "workspace:*",
+    "@avatark/runtime-contracts": "workspace:*",
+    "@avatark/world-persistence-contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "node --experimental-strip-types --test src/tickPolicy.test.ts src/catchUp.test.ts src/checkpoint.test.ts src/recovery.test.ts src/lifecycle.test.ts src/inMemoryDurableRepositories.test.ts src/leaseRepository.test.ts src/multiVisitorMultiInstance.test.ts src/livingForestPortability.test.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
+  }
+}

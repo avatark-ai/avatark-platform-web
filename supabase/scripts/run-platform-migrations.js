@@ -75,6 +75,10 @@ const MIGRATION_ORDER = [
   '023_experience_events.sql',
   '024_context_snapshots.sql',
   '025_journey_states.sql',
+  // Sprint 9: registered for traceability only, same as 023's own
+  // precedent -- NOT applied to any real database in this environment
+  // (no credentials exist here to safely exercise one against).
+  '026_living_systems_world_state.sql',
 ]
 
 async function main() {

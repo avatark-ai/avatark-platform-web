@@ -269,8 +269,94 @@ test("neither world-embodiment package's source contains a React/Next.js/Unreal-
   assert.deepEqual(violations, [])
 })
 
+// Sprint 9, Phase 0/21: the same enforcement one layer up again, for the
+// durable-persistence boundary -- invariants #14 ("persistence remains
+// renderer-neutral") and #15 ("persistence remains Unreal-neutral").
+// @avatark/world-persistence-contracts may depend on runtime-contracts
+// and living-systems-contracts only (reusing VisitorWorldMemory/
+// ProtectedNarrativeProjection shapes, per its own Phase 1 instruction
+// not to redefine what Sprint 7 already modeled); @avatark/world-
+// persistence-runtime may additionally depend on living-systems-runtime
+// (to call advanceWorldSimulation unmodified, per Phase 4) and world-
+// persistence-contracts. Neither may ever depend on renderer-contracts,
+// any world-embodiment-* package, or @avatark/account -- persistence is
+// downstream of nothing renderer-shaped, and upstream of embodiment,
+// never the reverse.
+
+const WORLD_PERSISTENCE_CONTRACTS_PACKAGE = "world-persistence-contracts"
+const WORLD_PERSISTENCE_RUNTIME_PACKAGE = "world-persistence-runtime"
+const WORLD_PERSISTENCE_CONTRACTS_ALLOWED_DEPS = new Set(["@avatark/runtime-contracts", "@avatark/living-systems-contracts"])
+const WORLD_PERSISTENCE_RUNTIME_ALLOWED_DEPS = new Set(["@avatark/runtime-contracts", "@avatark/living-systems-contracts", "@avatark/living-systems-runtime", "@avatark/world-persistence-contracts"])
+
+test("packages/world-persistence-contracts declares, at most, dependencies on runtime-contracts/living-systems-contracts", () => {
+  const deps = packageDependencies(WORLD_PERSISTENCE_CONTRACTS_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => !WORLD_PERSISTENCE_CONTRACTS_ALLOWED_DEPS.has(name))
+  assert.deepEqual(disallowed, [], `world-persistence-contracts declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/world-persistence-contracts imports, at most, those same two packages in its source", () => {
+  const srcDir = join(REPO_ROOT, "packages", WORLD_PERSISTENCE_CONTRACTS_PACKAGE, "src")
+  const allowed = new Set(["runtime-contracts", "living-systems-contracts"])
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    for (const importedPackage of findAvatarkImports(file)) {
+      if (!allowed.has(importedPackage)) violations.push(`${file} imports @avatark/${importedPackage}`)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("packages/world-persistence-runtime declares, at most, dependencies on its four allowed packages", () => {
+  const deps = packageDependencies(WORLD_PERSISTENCE_RUNTIME_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => !WORLD_PERSISTENCE_RUNTIME_ALLOWED_DEPS.has(name))
+  assert.deepEqual(disallowed, [], `world-persistence-runtime declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/world-persistence-runtime imports, at most, those same four packages in its source -- never a renderer, embodiment package, or @avatark/account", () => {
+  const srcDir = join(REPO_ROOT, "packages", WORLD_PERSISTENCE_RUNTIME_PACKAGE, "src")
+  const allowed = new Set(["runtime-contracts", "living-systems-contracts", "living-systems-runtime", "world-persistence-contracts"])
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    for (const importedPackage of findAvatarkImports(file)) {
+      if (!allowed.has(importedPackage)) violations.push(`${file} imports @avatark/${importedPackage}`)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("neither world-persistence package's source contains a React/Next.js/Unreal-specific token", () => {
+  const forbidden = ["from \"react", "from 'react", "next/server", "next/navigation", "UObject", "AActor", "Blueprint", "UnrealEngine"]
+  const violations: string[] = []
+  for (const pkg of [WORLD_PERSISTENCE_CONTRACTS_PACKAGE, WORLD_PERSISTENCE_RUNTIME_PACKAGE]) {
+    const srcDir = join(REPO_ROOT, "packages", pkg, "src")
+    for (const file of listSourceFiles(srcDir)) {
+      if (file.endsWith(".test.ts")) continue
+      const code = readFileSync(file, "utf-8")
+        .split("\n")
+        .map((line) => line.replace(/\/\/.*$/, ""))
+        .join("\n")
+      for (const token of forbidden) {
+        if (code.includes(token)) violations.push(`${file} contains "${token}"`)
+      }
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("packages/world-persistence-runtime never calls a write method on protected narrative state -- persistence never gets a second mutation path Living Systems itself doesn't have", () => {
+  const srcDir = join(REPO_ROOT, "packages", WORLD_PERSISTENCE_RUNTIME_PACKAGE, "src")
+  const writeMethodPattern = /protectedNarrative\w*\.(save|put|set|write|mutate|update)\s*\(/i
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    if (file.endsWith(".test.ts")) continue
+    const content = readFileSync(file, "utf-8")
+    if (writeMethodPattern.test(content)) violations.push(file)
+  }
+  assert.deepEqual(violations, [])
+})
+
 test("sanity: this check actually inspects real directories, not an accidental no-op", () => {
-  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE, RENDERER_CONTRACTS_PACKAGE, LIVING_SYSTEMS_CONTRACTS_PACKAGE, LIVING_SYSTEMS_RUNTIME_PACKAGE, WORLD_EMBODIMENT_CONTRACTS_PACKAGE, WORLD_EMBODIMENT_RUNTIME_PACKAGE]) {
+  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE, RENDERER_CONTRACTS_PACKAGE, LIVING_SYSTEMS_CONTRACTS_PACKAGE, LIVING_SYSTEMS_RUNTIME_PACKAGE, WORLD_EMBODIMENT_CONTRACTS_PACKAGE, WORLD_EMBODIMENT_RUNTIME_PACKAGE, WORLD_PERSISTENCE_CONTRACTS_PACKAGE, WORLD_PERSISTENCE_RUNTIME_PACKAGE]) {
     const srcDir = join(REPO_ROOT, "packages", runtimePackage, "src")
     assert.ok(statSync(srcDir).isDirectory(), `expected packages/${runtimePackage}/src to exist`)
     assert.ok(listSourceFiles(srcDir).length > 0, `expected packages/${runtimePackage}/src to contain source files`)
