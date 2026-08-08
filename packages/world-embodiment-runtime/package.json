@@ -24,7 +24,7 @@
     "dist"
   ],
   "scripts": {
-    "test": "node --experimental-strip-types --test src/spatialLayout.test.ts src/environmentPresentationResolver.test.ts src/entityPresentationResolver.test.ts src/encounterPresentationResolver.test.ts src/worldEmbodimentResolver.test.ts src/embodimentDelta.test.ts src/interactionIntentValidation.test.ts src/unrealCommandTranslator.test.ts src/capabilityNegotiation.test.ts",
+    "test": "node --experimental-strip-types --test src/spatialLayout.test.ts src/environmentPresentationResolver.test.ts src/entityPresentationResolver.test.ts src/encounterPresentationResolver.test.ts src/worldEmbodimentResolver.test.ts src/embodimentDelta.test.ts src/interactionIntentValidation.test.ts src/unrealCommandTranslator.test.ts src/capabilityNegotiation.test.ts src/alternateWorldEmbodiment.test.ts",
     "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
   },
   "publishConfig": {
