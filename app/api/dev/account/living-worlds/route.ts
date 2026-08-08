@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { devRouteGuard } from '@/lib/devOnlyGuard'
+import { devRouteGuard, resolveDevUserId } from '@/lib/devOnlyGuard'
 import { createLivingWorldsAccountAdapter } from '@/lib/livingWorldRuntime/accountAdapter'
 import { livingWorldRuntime, SAMPLE_WORLD_DEFINITIONS } from '@/lib/livingWorldRuntime/singleton'
 import { experienceRegistry } from '@/lib/experienceRegistry/singleton'
@@ -14,8 +14,9 @@ const ACTIONS = new Set(['enter', 'leave'])
 // app/api/dev/account/journey/route.ts for the full rationale. Uses the
 // SAME Living World Runtime and Experience Registry singletons the real
 // route uses (both are already in-memory with no Supabase-backed variant
-// to protect -- see lib/livingWorldRuntime/singleton.ts), keyed by the
-// distinct DEV_USER_ID so dev traffic never touches a real user's state.
+// to protect -- see lib/livingWorldRuntime/singleton.ts), keyed by
+// whichever dev user id the caller resolves (defaulting to DEV_USER_ID)
+// so dev traffic never touches a real user's state.
 const devKernel: RuntimeKernel = {
   livingWorld: livingWorldRuntime,
   context: devContextRuntime,
@@ -23,24 +24,25 @@ const devKernel: RuntimeKernel = {
   registry: experienceRegistry,
 }
 
-async function listResponse() {
-  const adapter = createLivingWorldsAccountAdapter(livingWorldRuntime, SAMPLE_WORLD_DEFINITIONS, DEV_USER_ID)
+async function listResponse(userId: string) {
+  const adapter = createLivingWorldsAccountAdapter(livingWorldRuntime, SAMPLE_WORLD_DEFINITIONS, userId)
   const result = await adapter.list()
   if (result.error) return NextResponse.json({ error: result.error }, { status: 500 })
   return NextResponse.json({ worlds: result.data })
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const blocked = devRouteGuard()
   if (blocked) return blocked
 
-  return listResponse()
+  return listResponse(resolveDevUserId(req, DEV_USER_ID))
 }
 
 export async function POST(req: NextRequest) {
   const blocked = devRouteGuard()
   if (blocked) return blocked
 
+  const userId = resolveDevUserId(req, DEV_USER_ID)
   const body = await req.json().catch(() => ({}))
   const action = typeof body.action === 'string' ? body.action : null
   const worldId = typeof body.worldId === 'string' ? body.worldId : null
@@ -53,13 +55,13 @@ export async function POST(req: NextRequest) {
 
   try {
     if (action === 'enter') {
-      await enterLivingWorld(devKernel, { userId: DEV_USER_ID, productId: PRODUCT_ID, worldId })
+      await enterLivingWorld(devKernel, { userId, productId: PRODUCT_ID, worldId })
     } else {
-      await leaveLivingWorld(devKernel, { userId: DEV_USER_ID, productId: PRODUCT_ID, worldId })
+      await leaveLivingWorld(devKernel, { userId, productId: PRODUCT_ID, worldId })
     }
   } catch (err) {
     return NextResponse.json({ error: err instanceof Error ? err.message : 'Unknown error' }, { status: 500 })
   }
 
-  return listResponse()
+  return listResponse(userId)
 }

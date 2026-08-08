@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 // Safety-in-depth for every /api/dev/* route: even though these routes are
 // never linked from real navigation and exist solely for app/dev/account's
@@ -12,4 +12,15 @@ export function devRouteGuard(): NextResponse | null {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
   return null
+}
+
+/**
+ * Optional `?dev_user=` override, defaulting to `fallback`. Lets Playwright
+ * (or a developer) address a second, guaranteed-never-touched id on the
+ * same in-memory singletons to reliably screenshot the brand-new-user
+ * empty state (Phase 9) alongside the default id's populated state,
+ * without needing a reset endpoint against module-scoped state.
+ */
+export function resolveDevUserId(req: NextRequest, fallback: string): string {
+  return req.nextUrl.searchParams.get('dev_user') ?? fallback
 }

@@ -4,6 +4,10 @@ import { useSearchParams } from 'next/navigation'
 import { AccountAdaptersProvider, AvatarKAccount, createMockAdapters, extensionTabKey, type AccountTabKey } from '@avatark/account'
 import { AvatarMenu, IdentityBadge, MembershipBadge, ProductSwitcher } from '@avatark/account-ui'
 import { PRODUCT_REGISTRY } from '@avatark/product-registry'
+import { createContextAdapter } from '@/lib/account/contextAdapter'
+import { createLivingWorldsAdapter } from '@/lib/account/livingWorldsAdapter'
+import { ExperienceView } from '@/components/account/ExperienceView'
+import { TimelineView } from '@/components/account/TimelineView'
 
 // Dev-only, unauthenticated preview of the real @avatark/account component
 // tree against createMockAdapters() -- same precedent as
@@ -13,20 +17,41 @@ import { PRODUCT_REGISTRY } from '@avatark/product-registry'
 // rendering/layout/responsive/duplicate-nav/empty-state behavior against
 // well-formed mock data, never real adapter data plumbing. See
 // docs/IDENTITY_RC11_ACCOUNT_AUDIT.md.
-const mockAdapters = createMockAdapters()
+//
+// Runtime Kernel Host Integration (Sprint 4) exception: `currentContext`
+// and `livingWorlds` below are overridden onto REAL, runtime-backed
+// adapters (not mocks) pointed at /api/dev/account/* instead of
+// /api/account/* -- this environment has no Supabase project configured
+// at all, so this is the only way to exercise real Living World/Context/
+// Experience runtime behavior end-to-end (including via Playwright) here.
+// Every other field stays mock, unchanged from the original precedent.
+const DEV_API_BASE = '/api/dev/account'
+const devFetch: typeof fetch = (input, init) => {
+  const url = typeof input === 'string' && input.startsWith('/api/account/')
+    ? input.replace('/api/account/', `${DEV_API_BASE}/`)
+    : input
+  return fetch(url, init)
+}
+const mockAdapters = {
+  ...createMockAdapters(),
+  currentContext: createContextAdapter(devFetch),
+  livingWorlds: createLivingWorldsAdapter(devFetch),
+}
 const mockPrincipal = { status: 'signed_in' as const, id: 'dev-preview-user', displayName: 'Dev Preview', email: 'dev-preview@example.invalid' }
 
 type Section =
   | 'profile' | 'products' | 'access' | 'membership' | 'organizations' | 'livingWorlds'
   | 'preferences' | 'notifications' | 'privacy' | 'security' | 'systemInformation' | 'data'
-  | 'extension-demo'
+  | 'extension-demo' | 'journey' | 'timeline'
 
 // 'extension-demo' exercises the generic ExtensionAdapter mechanism
 // (mockAdapters' 'mock-extension' slot) -- demonstrates that a
 // product-specific extension slot renders and gates correctly through
 // the canonical shell, per the mission's extension-demonstration
-// requirement.
-const RAIL_SECTIONS: { id: Section; label: string; tab: AccountTabKey }[] = [
+// requirement. 'journey' ("Experience") and 'timeline' are host-owned,
+// same pattern as app/account/page.tsx -- no `tab` field, bypass
+// AvatarKAccount entirely.
+const RAIL_SECTIONS: { id: Section; label: string; tab?: AccountTabKey }[] = [
   { id: 'profile', label: 'Profile', tab: 'profile' },
   { id: 'products', label: 'Products', tab: 'products' },
   { id: 'access', label: 'Access', tab: 'access' },
@@ -40,6 +65,8 @@ const RAIL_SECTIONS: { id: Section; label: string; tab: AccountTabKey }[] = [
   { id: 'systemInformation', label: 'Platform Health', tab: 'systemInformation' },
   { id: 'data', label: 'Data & Export', tab: 'data' },
   { id: 'extension-demo', label: 'Mock Extension', tab: extensionTabKey('mock-extension') },
+  { id: 'journey', label: 'Experience' },
+  { id: 'timeline', label: 'Timeline' },
 ]
 
 function tabToSection(tab: AccountTabKey): Section | null {
@@ -60,6 +87,12 @@ function DevAccountPreview() {
   const requestedSection = searchParams.get('section')
   const [section, setSection] = useState<Section>(isSection(requestedSection) ? requestedSection : 'profile')
   const activeRailSection = RAIL_SECTIONS.find((s) => s.id === section)
+  // Optional ?dev_user= override for the 'journey'/'timeline' sections
+  // only -- lets Playwright address a guaranteed-fresh id on the same
+  // in-memory dev singletons for a deterministic empty-state screenshot,
+  // without affecting the default dev-preview-user id every other
+  // section (including the mock-adapter-backed ones) still uses.
+  const devUser = searchParams.get('dev_user') ?? undefined
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-6 py-12" style={{ background: 'var(--midnight)', color: 'var(--paper)', minHeight: '100vh' }}>
@@ -119,21 +152,27 @@ function DevAccountPreview() {
         </nav>
 
         <div className="min-w-0 flex-1">
-          <div className="echo-account-embed">
-            <AccountAdaptersProvider adapters={mockAdapters}>
-              <AvatarKAccount
-                principal={mockPrincipal}
-                currentProduct="avatark"
-                productName="AvatarK"
-                activeTab={activeRailSection?.tab}
-                onActiveTabChange={(next) => {
-                  const nextSection = tabToSection(next)
-                  if (nextSection) setSection(nextSection)
-                }}
-                onSignedOut={() => {}}
-              />
-            </AccountAdaptersProvider>
-          </div>
+          {section === 'journey' ? (
+            <ExperienceView apiBase={DEV_API_BASE} devUser={devUser} />
+          ) : section === 'timeline' ? (
+            <TimelineView apiBase={DEV_API_BASE} devUser={devUser} />
+          ) : (
+            <div className="echo-account-embed">
+              <AccountAdaptersProvider adapters={mockAdapters}>
+                <AvatarKAccount
+                  principal={mockPrincipal}
+                  currentProduct="avatark"
+                  productName="AvatarK"
+                  activeTab={activeRailSection?.tab}
+                  onActiveTabChange={(next) => {
+                    const nextSection = tabToSection(next)
+                    if (nextSection) setSection(nextSection)
+                  }}
+                  onSignedOut={() => {}}
+                />
+              </AccountAdaptersProvider>
+            </div>
+          )}
         </div>
       </div>
     </main>

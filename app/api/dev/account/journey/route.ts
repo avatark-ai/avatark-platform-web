@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { devRouteGuard } from '@/lib/devOnlyGuard'
+import { devRouteGuard, resolveDevUserId } from '@/lib/devOnlyGuard'
 import { DEV_USER_ID, devJourneyRuntime } from '@/lib/experienceRuntime/devSingleton'
+import { devContextRuntime } from '@/lib/context/devSingleton'
 import { narrativeRuntime } from '@/lib/narrativeRuntime/singleton'
 import { applyJourneyViewAction, JOURNEY_VIEW_ACTIONS, toJourneyViewResponse } from '@/lib/experienceRuntime/journeyView'
 import { JourneyError } from '@avatark/experience-runtime'
@@ -14,17 +15,19 @@ import { NarrativeRuntimeError } from '@avatark/narrative-runtime'
 // Supabase project configured at all. Never reachable in production (see
 // lib/devOnlyGuard.ts). Never imported by, or called from,
 // app/api/account/journey/route.ts.
-export async function GET() {
+export async function GET(req: NextRequest) {
   const blocked = devRouteGuard()
   if (blocked) return blocked
 
-  return NextResponse.json(await toJourneyViewResponse(devJourneyRuntime, narrativeRuntime, DEV_USER_ID))
+  const userId = resolveDevUserId(req, DEV_USER_ID)
+  return NextResponse.json(await toJourneyViewResponse(devJourneyRuntime, narrativeRuntime, userId))
 }
 
 export async function POST(req: NextRequest) {
   const blocked = devRouteGuard()
   if (blocked) return blocked
 
+  const userId = resolveDevUserId(req, DEV_USER_ID)
   const body = await req.json().catch(() => ({}))
   const action = typeof body.action === 'string' ? body.action : null
   const nodeId = typeof body.nodeId === 'string' ? body.nodeId : null
@@ -36,7 +39,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await applyJourneyViewAction(devJourneyRuntime, narrativeRuntime, DEV_USER_ID, action, nodeId)
+    await applyJourneyViewAction(devJourneyRuntime, narrativeRuntime, userId, action, nodeId, devContextRuntime, 'avatark')
   } catch (err) {
     if (err instanceof JourneyError || err instanceof NarrativeRuntimeError) {
       return NextResponse.json({ error: err.message }, { status: 400 })
@@ -44,5 +47,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: err instanceof Error ? err.message : 'Unknown error' }, { status: 500 })
   }
 
-  return NextResponse.json(await toJourneyViewResponse(devJourneyRuntime, narrativeRuntime, DEV_USER_ID))
+  return NextResponse.json(await toJourneyViewResponse(devJourneyRuntime, narrativeRuntime, userId))
 }

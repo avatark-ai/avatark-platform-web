@@ -66,7 +66,7 @@ export function LivingWorldsTab() {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+    <div data-testid="living-worlds-grid" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
       {worlds.map((w) => (
         <div key={w.id} className="aka-card p-4 space-y-1.5">
           <p className="text-sm font-medium text-[var(--text-primary,#f5f2ea)]">{w.name}</p>

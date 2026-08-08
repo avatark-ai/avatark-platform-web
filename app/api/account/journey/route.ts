@@ -2,10 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { JourneyError, JourneyRuntime } from '@avatark/experience-runtime'
 import { NarrativeRuntimeError } from '@avatark/narrative-runtime'
+import { ContextRuntime } from '@avatark/context-runtime'
 import { AVATARK_WELCOME_JOURNEY } from '@/lib/experienceRuntime/journeyDefinition'
 import { SupabaseJourneyRepository } from '@/lib/experienceRuntime/supabaseJourneyRepository'
+import { SupabaseContextRepository } from '@/lib/context/supabaseContextRepository'
 import { narrativeRuntime } from '@/lib/narrativeRuntime/singleton'
 import { applyJourneyViewAction, JOURNEY_VIEW_ACTIONS, toJourneyViewResponse } from '@/lib/experienceRuntime/journeyView'
+
+const PRODUCT_ID = 'avatark'
 
 function runtimeFor(supabase: Awaited<ReturnType<typeof createClient>>) {
   return new JourneyRuntime(AVATARK_WELCOME_JOURNEY, new SupabaseJourneyRepository(supabase))
@@ -36,8 +40,9 @@ export async function POST(req: NextRequest) {
   }
 
   const runtime = runtimeFor(supabase)
+  const contextRuntime = new ContextRuntime(new SupabaseContextRepository(supabase))
   try {
-    await applyJourneyViewAction(runtime, narrativeRuntime, user.id, action, nodeId)
+    await applyJourneyViewAction(runtime, narrativeRuntime, user.id, action, nodeId, contextRuntime, PRODUCT_ID)
   } catch (err) {
     if (err instanceof JourneyError || err instanceof NarrativeRuntimeError) {
       return NextResponse.json({ error: err.message }, { status: 400 })

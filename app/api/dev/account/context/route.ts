@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ContextValidationError, type ContextScope } from '@avatark/context-runtime'
-import { devRouteGuard } from '@/lib/devOnlyGuard'
+import { devRouteGuard, resolveDevUserId } from '@/lib/devOnlyGuard'
 import { devContextRuntime } from '@/lib/context/devSingleton'
 import { DEV_USER_ID } from '@/lib/experienceRuntime/devSingleton'
 
 // Dev-only, unauthenticated mirror of /api/account/context -- see
 // app/api/dev/account/journey/route.ts for the full rationale. Never
 // reachable in production; never imported by the real route.
-export async function GET() {
+export async function GET(req: NextRequest) {
   const blocked = devRouteGuard()
   if (blocked) return blocked
 
-  const snapshot = await devContextRuntime.getContext(DEV_USER_ID)
+  const userId = resolveDevUserId(req, DEV_USER_ID)
+  const snapshot = await devContextRuntime.getContext(userId)
   return NextResponse.json(snapshot)
 }
 
@@ -19,6 +20,7 @@ export async function PATCH(req: NextRequest) {
   const blocked = devRouteGuard()
   if (blocked) return blocked
 
+  const userId = resolveDevUserId(req, DEV_USER_ID)
   const body = await req.json().catch(() => null)
   if (!body || typeof body !== 'object') {
     return NextResponse.json({ error: 'Request body must be a JSON object' }, { status: 400 })
@@ -27,7 +29,7 @@ export async function PATCH(req: NextRequest) {
   const scope: ContextScope = body.scope === 'persisted' || body.scope === 'product_default' ? body.scope : 'session'
 
   try {
-    const outcome = await devContextRuntime.patchContext(DEV_USER_ID, {
+    const outcome = await devContextRuntime.patchContext(userId, {
       productId: body.productId,
       scope,
       fields: body.fields ?? {},
@@ -47,11 +49,12 @@ export async function DELETE(req: NextRequest) {
   const blocked = devRouteGuard()
   if (blocked) return blocked
 
+  const userId = resolveDevUserId(req, DEV_USER_ID)
   const body = await req.json().catch(() => ({}))
   if (typeof body.productId !== 'string' || body.productId.trim() === '') {
     return NextResponse.json({ error: 'Clearing context requires a productId' }, { status: 400 })
   }
 
-  const outcome = await devContextRuntime.clearContext(DEV_USER_ID, { productId: body.productId, reason: body.reason })
+  const outcome = await devContextRuntime.clearContext(userId, { productId: body.productId, reason: body.reason })
   return NextResponse.json(outcome)
 }

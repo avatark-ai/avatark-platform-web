@@ -5,12 +5,12 @@ import { createClient } from '@/lib/supabase/client'
 import { AccountAdaptersProvider, AvatarKAccount, type AccountTabKey } from '@avatark/account'
 import { AvatarMenu, IdentityBadge, MembershipBadge, ProductSwitcher } from '@avatark/account-ui'
 import { PRODUCT_REGISTRY } from '@avatark/product-registry'
-import type { JourneyProgress, JourneyTransition } from '@avatark/experience-runtime'
 import { avatarKPlatformAdapters } from '@/lib/account/adapters'
 import { resolveProductUrl } from '@/lib/products/registry'
 import type { AccountPrincipal } from '@/lib/auth/principal'
 import { EchoPageShell } from '@/components/echo/shell/EchoPageShell'
-import { AVATARK_WELCOME_JOURNEY } from '@/lib/experienceRuntime/journeyDefinition'
+import { ExperienceView } from '@/components/account/ExperienceView'
+import { TimelineView } from '@/components/account/TimelineView'
 
 // Real feature flag, per explicit instruction: /account behind a flag,
 // not unconditionally live. Reads a real env var -- no hardcoded true.
@@ -25,7 +25,7 @@ const ACCOUNT_MOUNT_ENABLED = process.env.NEXT_PUBLIC_ACCOUNT_MOUNT_ENABLED === 
 type Section =
   | 'profile' | 'products' | 'access' | 'membership' | 'organizations' | 'livingWorlds'
   | 'preferences' | 'notifications' | 'privacy' | 'security' | 'data'
-  | 'journey' | 'feedback' | 'support'
+  | 'journey' | 'timeline' | 'feedback' | 'support'
 
 const RAIL_SECTIONS: { id: Section; label: string; tab?: AccountTabKey }[] = [
   { id: 'profile', label: 'Profile', tab: 'profile' },
@@ -50,6 +50,11 @@ const RAIL_SECTIONS: { id: Section; label: string; tab?: AccountTabKey }[] = [
   // field); the label is the one place that ambiguity would otherwise
   // reach an end user, so it's the one thing this fix changes.
   { id: 'journey', label: 'Experience' },
+  // Same host-owned pattern as 'journey' -- @avatark/experience-registry
+  // via /api/account/timeline, bypassing @avatark/account's tab contract
+  // entirely (no "Timeline" CoreTabKey exists, and none was added -- see
+  // docs/RUNTIME_KERNEL_IMPLEMENTATION.md Phase 4).
+  { id: 'timeline', label: 'Timeline' },
   { id: 'feedback', label: 'Feedback' },
   { id: 'support', label: 'Support' },
 ]
@@ -67,133 +72,6 @@ function tabToSection(tab: AccountTabKey): Section | null {
 const RAIL_LINK_CLASS =
   'rounded-md px-3 py-2 text-left text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
 const FOCUS_STYLE = { outlineColor: 'var(--gold)' } as const
-
-type JourneyApiResponse = {
-  journey: { id: string; title: string }
-  progress: JourneyProgress | null
-  history: JourneyTransition[]
-}
-
-const JOURNEY_ACTION_BUTTON_CLASS =
-  'self-start rounded-md px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50'
-const JOURNEY_EPISODE_TITLES = new Map(AVATARK_WELCOME_JOURNEY.episodes.map((e) => [e.id, e.title]))
-
-function JourneyActionButton({ label, onClick, pending }: { label: string; onClick: () => void; pending: boolean }) {
-  return (
-    <button type="button" onClick={onClick} disabled={pending} className={JOURNEY_ACTION_BUTTON_CLASS} style={{ background: 'var(--gold)', color: 'var(--midnight)', ...FOCUS_STYLE }}>
-      {label}
-    </button>
-  )
-}
-
-function JourneyView() {
-  const [data, setData] = useState<JourneyApiResponse | null | undefined>(undefined)
-  const [pending, setPending] = useState(false)
-
-  useEffect(() => {
-    let cancelled = false
-    fetch('/api/account/journey')
-      .then((res) => (res.ok ? res.json() : null))
-      .then((json) => { if (!cancelled) setData(json) })
-      .catch(() => { if (!cancelled) setData(null) })
-    return () => { cancelled = true }
-  }, [])
-
-  async function act(action: string, nodeId?: string) {
-    setPending(true)
-    try {
-      const res = await fetch('/api/account/journey', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, nodeId }),
-      })
-      if (res.ok) setData(await res.json())
-    } finally {
-      setPending(false)
-    }
-  }
-
-  if (data === undefined) {
-    return <div className="h-32 w-full max-w-md animate-pulse rounded-md" style={{ background: 'var(--surface-line)' }} />
-  }
-  if (data === null) {
-    return <p className="text-sm" style={{ color: 'var(--text-dim)' }}>Your experience isn&apos;t available right now.</p>
-  }
-
-  const { journey, progress } = data
-
-  if (!progress) {
-    return (
-      <div className="flex max-w-md flex-col gap-3 text-sm leading-6" style={{ color: 'var(--text-dim)' }}>
-        <p style={{ color: 'var(--paper)' }}>{journey.title}</p>
-        <p>You haven&apos;t started this experience yet.</p>
-        <JourneyActionButton label="Start Experience" pending={pending} onClick={() => act('start')} />
-      </div>
-    )
-  }
-
-  return (
-    <div className="flex max-w-md flex-col gap-4 text-sm leading-6" style={{ color: 'var(--text-dim)' }}>
-      <div>
-        <p style={{ color: 'var(--paper)' }}>{journey.title}</p>
-        <p>Status: {progress.status} &middot; {progress.percentComplete}% complete</p>
-        <div className="mt-2 h-2 w-full rounded-full" style={{ background: 'var(--surface-line)' }}>
-          <div className="h-2 rounded-full" style={{ width: `${progress.percentComplete}%`, background: 'var(--gold)' }} />
-        </div>
-      </div>
-
-      {progress.completedEpisodeIds.length > 0 && (
-        <div>
-          <p style={{ color: 'var(--paper)' }}>Completed Episodes</p>
-          <ul className="list-inside list-disc">
-            {progress.completedEpisodeIds.map((id) => (
-              <li key={id}>{JOURNEY_EPISODE_TITLES.get(id) ?? id}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {progress.status === 'active' && progress.nextEpisode && (
-        <div>
-          <p style={{ color: 'var(--paper)' }}>Next Episode</p>
-          <p>{progress.nextEpisode.title}</p>
-          <JourneyActionButton label="Complete Episode" pending={pending} onClick={() => act('completeEpisode', progress.nextEpisode!.id)} />
-        </div>
-      )}
-
-      {progress.status === 'active' && progress.nextLivingWorld && (
-        <div>
-          <p style={{ color: 'var(--paper)' }}>Next Living World</p>
-          <p>{progress.nextLivingWorld.title}</p>
-          <JourneyActionButton label="Enter World" pending={pending} onClick={() => act('enterWorld', progress.nextLivingWorld!.id)} />
-        </div>
-      )}
-
-      {progress.status === 'active' && progress.nextPractice && (
-        <div>
-          <p style={{ color: 'var(--paper)' }}>Next Practice</p>
-          <p>{progress.nextPractice.title}</p>
-          <JourneyActionButton label="Begin Practice" pending={pending} onClick={() => act('beginPractice', progress.nextPractice!.id)} />
-        </div>
-      )}
-
-      <div className="flex gap-2">
-        {progress.status === 'active' && (
-          <JourneyActionButton label="Pause" pending={pending} onClick={() => act('pause')} />
-        )}
-        {progress.status === 'paused' && (
-          <JourneyActionButton label="Resume" pending={pending} onClick={() => act('resume')} />
-        )}
-        {(progress.status === 'active' || progress.status === 'paused') && (
-          <JourneyActionButton label="Abandon" pending={pending} onClick={() => act('abandon')} />
-        )}
-      </div>
-
-      {progress.status === 'completed' && <p style={{ color: 'var(--gold)' }}>Experience complete.</p>}
-      {progress.status === 'abandoned' && <p>This experience was abandoned.</p>}
-    </div>
-  )
-}
 
 function FeedbackView() {
   return (
@@ -321,7 +199,9 @@ function AccountRoot({ principal, roles }: { principal: Extract<AccountPrincipal
 
         <div className="min-w-0 flex-1">
           {section === 'journey' ? (
-            <JourneyView />
+            <ExperienceView />
+          ) : section === 'timeline' ? (
+            <TimelineView />
           ) : section === 'feedback' ? (
             <FeedbackView />
           ) : section === 'support' ? (
