@@ -16,7 +16,7 @@
 
 import { createHash } from "node:crypto"
 import { readFileSync } from "node:fs"
-import { fileURLToPath } from "node:url"
+import path from "node:path"
 
 export interface ArtifactManifestEntry {
   artifactId: string
@@ -47,12 +47,19 @@ export interface IngestionResult {
   entry: ArtifactManifestEntry | undefined
 }
 
-const VENDOR_DIR = fileURLToPath(new URL("./vendor/", import.meta.url))
+// process.cwd()-relative, not import.meta.url-relative -- matches
+// lib/content/echo.ts's own runtime-file-read convention. A bundler-
+// relative `new URL("./vendor/", import.meta.url)` looks correct under
+// plain Node but Next.js/Turbopack's static import analysis tries to
+// resolve "./vendor/" as a module reference and fails at build time
+// (directories aren't modules); process.cwd() sidesteps that entirely by
+// never appearing as a static import specifier.
+const VENDOR_DIR = path.join(process.cwd(), "lib", "livingWorldRuntime", "vendor")
 
 let manifestCache: ArtifactManifest | undefined
 function loadManifest(): ArtifactManifest {
   if (!manifestCache) {
-    manifestCache = JSON.parse(readFileSync(`${VENDOR_DIR}manifest.json`, "utf8")) as ArtifactManifest
+    manifestCache = JSON.parse(readFileSync(path.join(VENDOR_DIR, "manifest.json"), "utf8")) as ArtifactManifest
   }
   return manifestCache
 }
@@ -88,7 +95,7 @@ export function verifyArtifactIngestion(artifactId: string, expectedWorldSchemaV
 
   let raw: string
   try {
-    raw = readFileSync(`${VENDOR_DIR}${entry.file}`, "utf8")
+    raw = readFileSync(path.join(VENDOR_DIR, entry.file), "utf8")
   } catch (err) {
     return { valid: false, errors: [`vendored file "${entry.file}" for artifact "${artifactId}" could not be read: ${String(err)}`], entry }
   }
