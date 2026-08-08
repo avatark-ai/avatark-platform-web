@@ -59,11 +59,18 @@ this directory must always describe the same world.
 - **Source repo:** `studiok-specifications`
 - **Source path:** `living-vrindavan/living-vrindavan.systems.json`
 - **Source spec:** `STK-SPEC-006` (Living Vrindavan — Systems Artifact,
-  **`Proposed`, not yet `Approved`**), derived from `STK-SPEC-005`
-  (Living World Systems Definition schema, also `Proposed`) and
-  `STK-CAN-006` (Seasonal Identity, also `Proposed`)
-- **Pinned tag:** none yet — this batch has not reached `Approved`
-- **Pinned commit:** `5028ce9f2fb92c91d6403cb2f6af89e2348dfd05`
+  `Approved` 2026-08-08 by explicit Founder/Architecture sign-off
+  following Sprint 7 review, `spec-manifest.json` `v0.3.0`), derived from
+  `STK-SPEC-005` (Living World Systems Definition schema, also
+  `Approved`, `v0.3.0`) and `STK-CAN-006` (Seasonal Identity, also
+  `Approved`, `canon-manifest.json` `v0.2.0`)
+- **Pinned tag:** `v0.3.0`
+- **Pinned commit:** `0712b5d05ad46044f66ff6dd9300c135f5a773c7` --
+  re-pinned from the pre-approval commit (`5028ce9f...`) to the approval
+  commit once STK-SPEC-005/006 reached `Approved`, matching the other two
+  artifacts' own precedent above. Checksum below is unchanged -- confirmed
+  byte-identical to the Proposed revision; only the governance status
+  changed, never the content.
 - **Canon lineage:** `STK-CAN-006` only — this artifact adds no location
   identity of its own, only seasons/entity-archetypes/encounter-rules
 
