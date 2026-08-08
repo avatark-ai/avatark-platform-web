@@ -36,6 +36,8 @@ const CONTRACTS_PACKAGE = "runtime-contracts"
 const RENDERER_CONTRACTS_PACKAGE = "renderer-contracts"
 const LIVING_SYSTEMS_CONTRACTS_PACKAGE = "living-systems-contracts"
 const LIVING_SYSTEMS_RUNTIME_PACKAGE = "living-systems-runtime"
+const WORLD_EMBODIMENT_CONTRACTS_PACKAGE = "world-embodiment-contracts"
+const WORLD_EMBODIMENT_RUNTIME_PACKAGE = "world-embodiment-runtime"
 
 function listSourceFiles(dir: string): string[] {
   const entries = readdirSync(dir, { withFileTypes: true })
@@ -186,8 +188,89 @@ test("packages/living-systems-runtime never calls a write method on protected na
   assert.deepEqual(violations, [])
 })
 
+// Sprint 8, Phase 20/23: the same enforcement one layer up, for the
+// embodiment boundary -- invariants #5/#6 (no Unreal/Web-specific types
+// in core) and #17 (existing Runtime Kernel boundaries remain intact).
+// @avatark/world-embodiment-contracts may depend on runtime-contracts,
+// renderer-contracts, and living-systems-contracts (reusing their shapes,
+// per Sprint 8's own Phase 0 instruction); @avatark/world-embodiment-runtime
+// may additionally depend on living-world-runtime (read-only input shapes,
+// e.g. WorldLocation for spatial layout) and world-embodiment-contracts.
+// Neither may be imported back by any RUNTIME_PACKAGE, runtime-contracts,
+// renderer-contracts, or living-systems-contracts -- already guaranteed by
+// each of those packages' own "imports at most X" tests above, since
+// world-embodiment-* is never in any of their `allowed` sets.
+
+const WORLD_EMBODIMENT_CONTRACTS_ALLOWED_DEPS = new Set(["@avatark/runtime-contracts", "@avatark/renderer-contracts", "@avatark/living-systems-contracts"])
+const WORLD_EMBODIMENT_RUNTIME_ALLOWED_DEPS = new Set([
+  "@avatark/runtime-contracts",
+  "@avatark/renderer-contracts",
+  "@avatark/living-systems-contracts",
+  "@avatark/living-world-runtime",
+  "@avatark/world-embodiment-contracts",
+])
+
+test("packages/world-embodiment-contracts declares, at most, dependencies on runtime-contracts/renderer-contracts/living-systems-contracts", () => {
+  const deps = packageDependencies(WORLD_EMBODIMENT_CONTRACTS_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => !WORLD_EMBODIMENT_CONTRACTS_ALLOWED_DEPS.has(name))
+  assert.deepEqual(disallowed, [], `world-embodiment-contracts declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/world-embodiment-contracts imports, at most, those same three packages in its source", () => {
+  const srcDir = join(REPO_ROOT, "packages", WORLD_EMBODIMENT_CONTRACTS_PACKAGE, "src")
+  const allowed = new Set(["runtime-contracts", "renderer-contracts", "living-systems-contracts"])
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    for (const importedPackage of findAvatarkImports(file)) {
+      if (!allowed.has(importedPackage)) violations.push(`${file} imports @avatark/${importedPackage}`)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("packages/world-embodiment-runtime declares, at most, dependencies on its five allowed packages", () => {
+  const deps = packageDependencies(WORLD_EMBODIMENT_RUNTIME_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => !WORLD_EMBODIMENT_RUNTIME_ALLOWED_DEPS.has(name))
+  assert.deepEqual(disallowed, [], `world-embodiment-runtime declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/world-embodiment-runtime imports, at most, those same five packages in its source -- never a sibling runtime, renderer, or @avatark/account", () => {
+  const srcDir = join(REPO_ROOT, "packages", WORLD_EMBODIMENT_RUNTIME_PACKAGE, "src")
+  const allowed = new Set(["runtime-contracts", "renderer-contracts", "living-systems-contracts", "living-world-runtime", "world-embodiment-contracts"])
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    for (const importedPackage of findAvatarkImports(file)) {
+      if (!allowed.has(importedPackage)) violations.push(`${file} imports @avatark/${importedPackage}`)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("neither world-embodiment package's source contains a React/Next.js/Unreal-specific token", () => {
+  const forbidden = ["from \"react", "from 'react", "next/server", "next/navigation", "UObject", "AActor", "Blueprint", "UnrealEngine"]
+  const violations: string[] = []
+  for (const pkg of [WORLD_EMBODIMENT_CONTRACTS_PACKAGE, WORLD_EMBODIMENT_RUNTIME_PACKAGE]) {
+    const srcDir = join(REPO_ROOT, "packages", pkg, "src")
+    for (const file of listSourceFiles(srcDir)) {
+      if (file.endsWith(".test.ts")) continue
+      // Strip // line comments first -- this file's own documentation
+      // legitimately NAMES these tokens when explaining that no such
+      // reference exists in actual code; only real code usage should
+      // fail this check.
+      const code = readFileSync(file, "utf-8")
+        .split("\n")
+        .map((line) => line.replace(/\/\/.*$/, ""))
+        .join("\n")
+      for (const token of forbidden) {
+        if (code.includes(token)) violations.push(`${file} contains "${token}"`)
+      }
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
 test("sanity: this check actually inspects real directories, not an accidental no-op", () => {
-  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE, RENDERER_CONTRACTS_PACKAGE, LIVING_SYSTEMS_CONTRACTS_PACKAGE, LIVING_SYSTEMS_RUNTIME_PACKAGE]) {
+  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE, RENDERER_CONTRACTS_PACKAGE, LIVING_SYSTEMS_CONTRACTS_PACKAGE, LIVING_SYSTEMS_RUNTIME_PACKAGE, WORLD_EMBODIMENT_CONTRACTS_PACKAGE, WORLD_EMBODIMENT_RUNTIME_PACKAGE]) {
     const srcDir = join(REPO_ROOT, "packages", runtimePackage, "src")
     assert.ok(statSync(srcDir).isDirectory(), `expected packages/${runtimePackage}/src to exist`)
     assert.ok(listSourceFiles(srcDir).length > 0, `expected packages/${runtimePackage}/src to contain source files`)
