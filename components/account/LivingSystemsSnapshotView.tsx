@@ -58,8 +58,22 @@ export function LivingSystemsSnapshotView({ worldId, apiBase = '/api/account', d
     Promise.resolve().then(() => {
       if (!cancelled) load()
     })
+    // A light poll, not fake real-time: the shared world this panel
+    // reads can change for reasons entirely outside this component's
+    // own control (the visitor's own navigation in the sibling
+    // LivingWorldDetailView, or the world's own simulation advancing
+    // independent of any visitor) -- neither of which this component
+    // observes directly, being deliberately decoupled from it (Sprint 7,
+    // Phase 13: a renderer only ever reads resolved state, it doesn't
+    // orchestrate it). The manual Refresh button remains for an
+    // on-demand check; this interval is the restrained default so the
+    // panel doesn't go silently stale between clicks.
+    const interval = setInterval(() => {
+      if (!cancelled) load()
+    }, 1500)
     return () => {
       cancelled = true
+      clearInterval(interval)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiBase, worldId, devUser])
