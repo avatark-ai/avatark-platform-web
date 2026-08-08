@@ -15,6 +15,14 @@ import { join } from "node:path"
 //
 // (Host code "may import runtimes + account" needs no enforcement here --
 // nothing forbids it, so there's no regression to catch.)
+//
+// Sprint 6, Phase 9: the same enforcement for the renderer boundary --
+// architectural invariants #4 ("Runtime Kernel contains no renderer
+// dependency") and #11 ("Unreal renderer can be added without changing
+// Runtime"). @avatark/renderer-contracts is allowed to depend on
+// @avatark/runtime-contracts (for shared id types, one direction only);
+// no runtime package, and not runtime-contracts itself, may ever import
+// @avatark/renderer-contracts back.
 
 const REPO_ROOT = join(import.meta.dirname, "..", "..")
 const RUNTIME_PACKAGES = [
@@ -25,6 +33,7 @@ const RUNTIME_PACKAGES = [
   "experience-registry",
 ]
 const CONTRACTS_PACKAGE = "runtime-contracts"
+const RENDERER_CONTRACTS_PACKAGE = "renderer-contracts"
 
 function listSourceFiles(dir: string): string[] {
   const entries = readdirSync(dir, { withFileTypes: true })
@@ -93,8 +102,28 @@ for (const runtimePackage of RUNTIME_PACKAGES) {
   })
 }
 
+test("packages/renderer-contracts declares, at most, a dependency on @avatark/runtime-contracts", () => {
+  const deps = packageDependencies(RENDERER_CONTRACTS_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => name !== "@avatark/runtime-contracts")
+  assert.deepEqual(disallowed, [], `renderer-contracts declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/renderer-contracts imports, at most, @avatark/runtime-contracts in its source -- never a runtime, never @avatark/account", () => {
+  const srcDir = join(REPO_ROOT, "packages", RENDERER_CONTRACTS_PACKAGE, "src")
+  const allowed = new Set([CONTRACTS_PACKAGE])
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    for (const importedPackage of findAvatarkImports(file)) {
+      if (!allowed.has(importedPackage)) {
+        violations.push(`${file} imports @avatark/${importedPackage}`)
+      }
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
 test("sanity: this check actually inspects real directories, not an accidental no-op", () => {
-  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE]) {
+  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE, RENDERER_CONTRACTS_PACKAGE]) {
     const srcDir = join(REPO_ROOT, "packages", runtimePackage, "src")
     assert.ok(statSync(srcDir).isDirectory(), `expected packages/${runtimePackage}/src to exist`)
     assert.ok(listSourceFiles(srcDir).length > 0, `expected packages/${runtimePackage}/src to contain source files`)
