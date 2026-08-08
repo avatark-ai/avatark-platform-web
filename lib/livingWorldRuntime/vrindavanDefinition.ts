@@ -15,6 +15,17 @@
 // change.
 import type { WorldActivity, WorldDefinition, WorldLocation } from "@avatark/living-world-runtime";
 import artifact from "./vendor/livingVrindavan.world.json" with { type: "json" };
+import { verifyArtifactIngestion } from "./artifactIngestion.ts";
+
+// Sprint 6, Phase 7: re-verify the vendored file's checksum against
+// vendor/manifest.json before trusting it, on top of the structural
+// re-validation below. A byte-identical import doesn't prove the file on
+// disk is still the one that was actually ingested and reviewed -- the
+// manifest does.
+const ingestion = verifyArtifactIngestion("living-vrindavan.world", "1.0.0");
+if (!ingestion.valid) {
+  throw new Error(`vendored artifact "living-vrindavan.world" failed ingestion verification: ${ingestion.errors.join("; ")}`);
+}
 
 interface ArtifactLocation {
   id: string;

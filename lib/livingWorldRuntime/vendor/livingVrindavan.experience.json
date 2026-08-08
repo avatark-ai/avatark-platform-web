@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.0.0",
+  "world": "living-vrindavan",
+  "locations": [
+    {
+      "id": "vrindavan-entry",
+      "environment": { "biome": "threshold" },
+      "atmosphere": { "quality": "arrival" },
+      "time": { "preferredState": "unspecified" },
+      "soundscape": { "motifs": [] },
+      "interaction": { "reflectionAvailable": false },
+      "presentation": { "intensity": "restrained", "pacing": "slow" }
+    },
+    {
+      "id": "yamuna",
+      "environment": { "biome": "riverbank" },
+      "atmosphere": { "quality": "contemplative" },
+      "time": { "preferredState": "unspecified" },
+      "soundscape": { "motifs": ["flowing-water"] },
+      "interaction": { "reflectionAvailable": true },
+      "presentation": { "intensity": "restrained", "pacing": "slow" }
+    },
+    {
+      "id": "kadamba-grove",
+      "environment": { "biome": "grove" },
+      "atmosphere": { "quality": "intimate" },
+      "time": { "preferredState": "unspecified" },
+      "soundscape": { "motifs": ["grove-ambience"] },
+      "interaction": { "reflectionAvailable": false },
+      "presentation": { "intensity": "restrained", "pacing": "slow" }
+    },
+    {
+      "id": "govardhan-path",
+      "environment": { "biome": "path" },
+      "atmosphere": { "quality": "purposeful" },
+      "time": { "preferredState": "unspecified" },
+      "soundscape": { "motifs": [] },
+      "interaction": { "reflectionAvailable": false },
+      "presentation": { "intensity": "standard", "pacing": "moderate" }
+    }
+  ],
+  "transitions": [
+    { "from": "vrindavan-entry", "to": "yamuna", "affordance": "threshold-crossing" },
+    { "from": "yamuna", "to": "kadamba-grove", "affordance": "branching-choice" },
+    { "from": "yamuna", "to": "govardhan-path", "affordance": "branching-choice" }
+  ],
+  "provenance": {
+    "canonDocIds": ["STK-CAN-001", "STK-CAN-002", "STK-CAN-004", "STK-CAN-005"],
+    "canonVersion": "0.1.0",
+    "specId": "STK-SPEC-004",
+    "specVersion": 1,
+    "worldArtifactSpecId": "STK-SPEC-002",
+    "generatedAt": "2026-08-08"
+  }
+}

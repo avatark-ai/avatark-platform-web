@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0.0",
+  "artifacts": [
+    {
+      "artifactId": "living-vrindavan.world",
+      "file": "livingVrindavan.world.json",
+      "sourceRepo": "studiok-specifications",
+      "sourcePath": "living-vrindavan/living-vrindavan.world.json",
+      "specId": "STK-SPEC-002",
+      "specStatus": "Approved",
+      "specVersion": 1,
+      "worldSchemaVersion": "1.0.0",
+      "pinnedTag": "v0.1.0",
+      "pinnedCommit": "d869895f733741fcb7373b386305750b0b2391b8",
+      "canonDocIds": ["STK-CAN-001", "STK-CAN-002", "STK-CAN-003", "STK-CAN-004", "STK-CAN-005"],
+      "canonVersion": "0.1.0",
+      "checksumAlgorithm": "sha256",
+      "checksum": "8874803dd10a9a7161a53afbf37d4a7955e2a423ccb23bc1dda987c48383cb71",
+      "ingestedAt": "2026-08-08"
+    },
+    {
+      "artifactId": "living-vrindavan.experience",
+      "file": "livingVrindavan.experience.json",
+      "sourceRepo": "studiok-specifications",
+      "sourcePath": "living-vrindavan/living-vrindavan.experience.json",
+      "specId": "STK-SPEC-004",
+      "specStatus": "Proposed",
+      "specVersion": 1,
+      "worldSchemaVersion": "1.0.0",
+      "pinnedTag": null,
+      "pinnedCommit": "5ac7b395c182258b7928623c36c723716b103a92",
+      "canonDocIds": ["STK-CAN-001", "STK-CAN-002", "STK-CAN-004", "STK-CAN-005"],
+      "canonVersion": "0.1.0",
+      "checksumAlgorithm": "sha256",
+      "checksum": "d2a255f96717cb0c70f3356724f93aac37063cc38e4f612254b2478d4b880e3b",
+      "ingestedAt": "2026-08-08"
+    }
+  ]
+}
