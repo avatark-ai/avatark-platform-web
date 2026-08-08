@@ -1,53 +1,56 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { labelizeLifecyclePhase, presentSeason, summarizeEnvironment } from '@/lib/renderer/webWorldSystemsRenderer'
+import { presentSeason } from '@/lib/renderer/webWorldSystemsRenderer'
+import { transitionLabel } from '@/lib/renderer/webExperienceRenderer'
+import { labelizeActivityHint, labelizeInteractionAffordance, summarizeEnvironmentPresentation } from '@/lib/renderer/webEmbodimentRenderer'
+import type { TransitionAffordance } from '@avatark/renderer-contracts'
 
-// Sprint 7, Phase 14: the web reference/diagnostic renderer for the
-// causal World Snapshot -- deliberately a separate, small component from
-// LivingWorldDetailView (Sprint 5/6's visitor-journey view), not a
-// rewrite of it. Living Systems' shared world state (season/environment/
-// entities/encounters) is a peer concern to the experience layer, not a
-// replacement for it -- both read the SAME current location
-// independently, each through its own API route, exactly the "renderer
-// requests, Living Systems resolves" boundary Sprint 7 establishes. This
-// component never writes world truth: no action here mutates
-// season/weather/entities, only GETs a resolved, already-immutable
-// WorldSnapshot.
-type WorldSnapshotView = {
-  worldId: string
-  simulationTick: number
+// Sprint 7 introduced this panel reading Living Systems' raw WorldSnapshot
+// directly. Sprint 8, Phase 11 requires the Web reference renderer to
+// "consume the embodiment contract rather than bypassing it and reading
+// simulation internals directly" -- so this component now sources from
+// /living-vrindavan/embodiment-snapshot (the WorldEmbodimentSnapshot,
+// Sprint 8) instead. A single fetch now suffices (the embodiment route
+// already resolves the visitor's current location server-side), where
+// the Sprint 7 version needed two. Still a deliberately separate, small
+// component from LivingWorldDetailView -- this panel never writes world
+// truth, it only GETs an already-immutable, already-resolved snapshot.
+type EmbodiedRegionView = {
   locationId: string
-  season: { id: string; name: string }
-  weather: { temperatureBand: string; precipitationBand: string; humidityBand: string }
-  hydrology: { hydrologyBand: string; soilMoistureBand: string }
-  ecology: { vegetationActivityBand: string; animalActivityBand: string }
-  presentEntities: { id: string; lifecyclePhase: string }[]
-  availableEncounters: { ruleId: string; category: string }[]
-  visitorContext: { lastLocationId: string | null }
+  name: string
+  environment: {
+    atmosphere: { semantic: string }
+    water: { semantic: string }
+    vegetation: { semantic: string }
+    sensoryCues: { channel: string; semantic: string }[]
+  }
+  entities: { entityId: string; presentationArchetype: string; activityHint: string }[]
+  encounters: { ruleId: string; category: string; interactionAffordance: string }[]
 }
 
-type ListResponse = { worlds?: { id: string; currentLocationId: string | null }[] }
-type SnapshotResponse = { snapshot?: WorldSnapshotView; error?: string }
+type WorldEmbodimentSnapshotView = {
+  season: { id: string; name: string }
+  current: EmbodiedRegionView
+  reachable: EmbodiedRegionView[]
+  transitions: { toLocationId: string; affordance: TransitionAffordance | null }[]
+  visitorContext: { lastLocationId: string | null; reflectionCount: number }
+}
+
+type SnapshotResponse = { snapshot?: WorldEmbodimentSnapshotView; error?: string }
 
 export function LivingSystemsSnapshotView({ worldId, apiBase = '/api/account', devUser }: { worldId: string; apiBase?: string; devUser?: string }) {
-  const [snapshot, setSnapshot] = useState<WorldSnapshotView | null | undefined>(undefined)
+  const [snapshot, setSnapshot] = useState<WorldEmbodimentSnapshotView | null | undefined>(undefined)
+  const [soundEnabled, setSoundEnabled] = useState(false)
   const devUserParam = devUser ? encodeURIComponent(devUser) : null
 
   async function load() {
     try {
-      const listRes = await fetch(`${apiBase}/living-worlds${devUserParam ? `?dev_user=${devUserParam}` : ''}`)
-      const listJson: ListResponse = await listRes.json().catch(() => ({}))
-      const world = listJson.worlds?.find((w) => w.id === worldId)
-      if (!listRes.ok || !world?.currentLocationId) {
-        setSnapshot(null)
-        return
-      }
-
-      const params = new URLSearchParams({ locationId: world.currentLocationId })
+      const params = new URLSearchParams()
       if (devUserParam) params.set('dev_user', devUser!)
-      const snapshotRes = await fetch(`${apiBase}/living-vrindavan/world-snapshot?${params.toString()}`)
-      const snapshotJson: SnapshotResponse = await snapshotRes.json().catch(() => ({}))
-      setSnapshot(snapshotRes.ok ? snapshotJson.snapshot ?? null : null)
+      if (soundEnabled) params.set('soundEnabled', 'true')
+      const res = await fetch(`${apiBase}/living-vrindavan/embodiment-snapshot?${params.toString()}`)
+      const json: SnapshotResponse = await res.json().catch(() => ({}))
+      setSnapshot(res.ok ? json.snapshot ?? null : null)
     } catch {
       setSnapshot(null)
     }
@@ -58,16 +61,9 @@ export function LivingSystemsSnapshotView({ worldId, apiBase = '/api/account', d
     Promise.resolve().then(() => {
       if (!cancelled) load()
     })
-    // A light poll, not fake real-time: the shared world this panel
-    // reads can change for reasons entirely outside this component's
-    // own control (the visitor's own navigation in the sibling
-    // LivingWorldDetailView, or the world's own simulation advancing
-    // independent of any visitor) -- neither of which this component
-    // observes directly, being deliberately decoupled from it (Sprint 7,
-    // Phase 13: a renderer only ever reads resolved state, it doesn't
-    // orchestrate it). The manual Refresh button remains for an
-    // on-demand check; this interval is the restrained default so the
-    // panel doesn't go silently stale between clicks.
+    // A light poll, not fake real-time -- see this file's own header
+    // comment for why this panel is deliberately decoupled from the
+    // sibling LivingWorldDetailView's own navigation.
     const interval = setInterval(() => {
       if (!cancelled) load()
     }, 1500)
@@ -76,7 +72,7 @@ export function LivingSystemsSnapshotView({ worldId, apiBase = '/api/account', d
       clearInterval(interval)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [apiBase, worldId, devUser])
+  }, [apiBase, worldId, devUser, soundEnabled])
 
   if (snapshot === undefined) {
     return <div className="h-24 w-full max-w-md animate-pulse rounded-md" style={{ background: 'var(--surface-line)' }} />
@@ -96,33 +92,68 @@ export function LivingSystemsSnapshotView({ worldId, apiBase = '/api/account', d
       }}
     >
       <div className="flex items-center justify-between">
-        <h3 style={{ color: 'var(--paper)' }}>World Systems</h3>
-        <button
-          type="button"
-          onClick={() => load()}
-          className="rounded-md px-2 py-1 text-xs transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-          style={{ border: '1px solid var(--surface-line)', color: 'var(--text-dim)', outlineColor: 'var(--gold)' }}
-        >
-          Refresh
-        </button>
+        <h3 style={{ color: 'var(--paper)' }}>World Embodiment</h3>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            aria-pressed={soundEnabled}
+            onClick={() => setSoundEnabled((v) => !v)}
+            className="rounded-md px-2 py-1 text-xs transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{ border: '1px solid var(--surface-line)', color: 'var(--text-dim)', outlineColor: 'var(--gold)' }}
+          >
+            {soundEnabled ? 'Ambient sound: On' : 'Ambient sound: Off'}
+          </button>
+          <button
+            type="button"
+            onClick={() => load()}
+            className="rounded-md px-2 py-1 text-xs transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{ border: '1px solid var(--surface-line)', color: 'var(--text-dim)', outlineColor: 'var(--gold)' }}
+          >
+            Refresh
+          </button>
+        </div>
       </div>
 
       <p className="text-xs" style={{ color: presentation.accentColor }} aria-live="polite">
-        Season: {presentation.seasonLabel}
+        {snapshot.current.name} &middot; Season: {presentation.seasonLabel}
       </p>
 
-      <p className="text-xs">{summarizeEnvironment(snapshot.weather, snapshot.hydrology, snapshot.ecology)}</p>
+      <p className="text-xs">{summarizeEnvironmentPresentation(snapshot.current.environment)}</p>
 
-      {snapshot.presentEntities.length > 0 && (
+      {soundEnabled && snapshot.current.environment.sensoryCues.length > 0 && (
         <p className="text-xs" style={{ color: 'var(--text-dim)' }}>
-          Present: {snapshot.presentEntities.map((e) => labelizeLifecyclePhase(e.lifecyclePhase)).join(', ')}
+          Ambient: {snapshot.current.environment.sensoryCues.map((c) => c.semantic).join(', ')}
+        </p>
+      )}
+
+      {snapshot.current.entities.length > 0 && (
+        <p className="text-xs" style={{ color: 'var(--text-dim)' }}>
+          Present: {snapshot.current.entities.map((e) => `${e.presentationArchetype} (${labelizeActivityHint(e.activityHint)})`).join(', ')}
         </p>
       )}
 
       <p className="text-xs" style={{ color: 'var(--text-dim)' }}>
-        {snapshot.availableEncounters.length > 0
-          ? `Available: ${snapshot.availableEncounters.map((e) => e.category).join(', ')}`
+        {snapshot.current.encounters.length > 0
+          ? `Available: ${snapshot.current.encounters.map((e) => labelizeInteractionAffordance(e.interactionAffordance)).join(', ')}`
           : 'Nothing environmentally available here right now.'}
+      </p>
+
+      {snapshot.reachable.length > 0 && (
+        <div className="text-xs" style={{ color: 'var(--text-dim)' }}>
+          {snapshot.transitions.map((t) => {
+            const region = snapshot.reachable.find((r) => r.locationId === t.toLocationId)
+            if (!region) return null
+            return (
+              <p key={t.toLocationId}>
+                {transitionLabel(t.affordance)} to {region.name}: {region.environment.atmosphere.semantic}
+              </p>
+            )
+          })}
+        </div>
+      )}
+
+      <p className="text-xs" style={{ color: 'var(--text-dim)' }}>
+        Reflections so far: {snapshot.visitorContext.reflectionCount}
       </p>
     </div>
   )

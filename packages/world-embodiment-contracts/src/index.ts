@@ -27,3 +27,5 @@ export type {
 export { isWellFormedInteractionIntent } from "./interactionIntent.ts"
 
 export type { EmbodimentDeltaEntry, EmbodimentDeltaOp, WorldEmbodimentDelta } from "./delta.ts"
+
+export type { UnrealCommand } from "./unrealCommand.ts"
