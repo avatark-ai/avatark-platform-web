@@ -34,6 +34,8 @@ const RUNTIME_PACKAGES = [
 ]
 const CONTRACTS_PACKAGE = "runtime-contracts"
 const RENDERER_CONTRACTS_PACKAGE = "renderer-contracts"
+const LIVING_SYSTEMS_CONTRACTS_PACKAGE = "living-systems-contracts"
+const LIVING_SYSTEMS_RUNTIME_PACKAGE = "living-systems-runtime"
 
 function listSourceFiles(dir: string): string[] {
   const entries = readdirSync(dir, { withFileTypes: true })
@@ -122,8 +124,70 @@ test("packages/renderer-contracts imports, at most, @avatark/runtime-contracts i
   assert.deepEqual(violations, [])
 })
 
+// Sprint 7, Phase 9: the same enforcement for the Living Systems
+// boundary -- architectural invariants #4 ("Runtime Kernel contains no
+// renderer dependency," extended here to "no Living Systems dependency
+// either -- the two are peers, not a hierarchy") and #10/#13 (no
+// Unreal-specific types in core; the same runtime can support other
+// Living Worlds). @avatark/living-systems-contracts may depend on
+// @avatark/runtime-contracts only (mirrors renderer-contracts exactly);
+// @avatark/living-systems-runtime may additionally depend on
+// @avatark/living-systems-contracts. Neither may import a sibling
+// RUNTIME_PACKAGE, @avatark/renderer-contracts, or @avatark/account --
+// and no RUNTIME_PACKAGE may import either of these back (already
+// covered by the generic loop above, since neither name is in that
+// loop's own `allowed` set).
+
+test("packages/living-systems-contracts declares, at most, a dependency on @avatark/runtime-contracts", () => {
+  const deps = packageDependencies(LIVING_SYSTEMS_CONTRACTS_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => name !== "@avatark/runtime-contracts")
+  assert.deepEqual(disallowed, [], `living-systems-contracts declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/living-systems-contracts imports, at most, @avatark/runtime-contracts in its source", () => {
+  const srcDir = join(REPO_ROOT, "packages", LIVING_SYSTEMS_CONTRACTS_PACKAGE, "src")
+  const allowed = new Set([CONTRACTS_PACKAGE])
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    for (const importedPackage of findAvatarkImports(file)) {
+      if (!allowed.has(importedPackage)) violations.push(`${file} imports @avatark/${importedPackage}`)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("packages/living-systems-runtime declares, at most, dependencies on @avatark/runtime-contracts and @avatark/living-systems-contracts", () => {
+  const deps = packageDependencies(LIVING_SYSTEMS_RUNTIME_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => name !== "@avatark/runtime-contracts" && name !== "@avatark/living-systems-contracts")
+  assert.deepEqual(disallowed, [], `living-systems-runtime declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/living-systems-runtime never imports a runtime, @avatark/renderer-contracts, or @avatark/account in its source", () => {
+  const srcDir = join(REPO_ROOT, "packages", LIVING_SYSTEMS_RUNTIME_PACKAGE, "src")
+  const allowed = new Set([CONTRACTS_PACKAGE, LIVING_SYSTEMS_CONTRACTS_PACKAGE])
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    for (const importedPackage of findAvatarkImports(file)) {
+      if (!allowed.has(importedPackage)) violations.push(`${file} imports @avatark/${importedPackage}`)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("packages/living-systems-runtime never calls a write method on protected narrative state -- static defense in depth alongside the type-level protection", () => {
+  const srcDir = join(REPO_ROOT, "packages", LIVING_SYSTEMS_RUNTIME_PACKAGE, "src")
+  const writeMethodPattern = /protectedNarrative\w*\.(save|put|set|write|mutate|update)\s*\(/i
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    if (file.endsWith(".test.ts")) continue
+    const content = readFileSync(file, "utf-8")
+    if (writeMethodPattern.test(content)) violations.push(file)
+  }
+  assert.deepEqual(violations, [])
+})
+
 test("sanity: this check actually inspects real directories, not an accidental no-op", () => {
-  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE, RENDERER_CONTRACTS_PACKAGE]) {
+  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE, RENDERER_CONTRACTS_PACKAGE, LIVING_SYSTEMS_CONTRACTS_PACKAGE, LIVING_SYSTEMS_RUNTIME_PACKAGE]) {
     const srcDir = join(REPO_ROOT, "packages", runtimePackage, "src")
     assert.ok(statSync(srcDir).isDirectory(), `expected packages/${runtimePackage}/src to exist`)
     assert.ok(listSourceFiles(srcDir).length > 0, `expected packages/${runtimePackage}/src to contain source files`)
