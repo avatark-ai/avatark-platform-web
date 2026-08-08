@@ -21,8 +21,8 @@
 
 import { findLocation } from "@avatark/living-world-runtime";
 import type { UserId, WorldDefinition, WorldId, WorldRuntime, WorldState } from "@avatark/living-world-runtime";
-import type { LocationExperience } from "@avatark/renderer-contracts";
-import { findCurrentLocationExperience } from "./experienceCatalog.ts";
+import type { LocationExperience, TransitionAffordance } from "@avatark/renderer-contracts";
+import { findCurrentLocationExperience, findLocationExperience, findTransitionAffordance } from "./experienceCatalog.ts";
 
 export interface WorldAccountSummary {
   worldId: WorldId;
@@ -51,7 +51,18 @@ export interface WorldAccountSummary {
    * graph (Sprint 5, Living Vrindavan). Empty for a world whose
    * definition has no such reachable location (or no state yet) -- never
    * hardcoded per-world/franchise. */
-  nextLocations: { id: string; name: string }[];
+  nextLocations: {
+    id: string;
+    name: string;
+    /** Renderer-neutral experience intent for this candidate destination,
+     * if this world has one authored -- lets a renderer hint at where a
+     * transition leads before the user commits to it. Null when absent. */
+    experience: LocationExperience | null;
+    /** How moving from the current location to this one is authored to
+     * feel (Sprint 6). Null whenever no Experience Description names
+     * this exact edge -- never guessed from the graph shape alone. */
+    transitionAffordance: TransitionAffordance | null;
+  }[];
   /** The authored reflection prompt (WorldActivity.description) for
    * whichever activity at the current location carries a reflectionRef,
    * if any. Null whenever no such activity exists -- never fabricated. */
@@ -76,7 +87,7 @@ function findReflectionPrompt(definition: WorldDefinition, currentLocationId: st
   return activity?.description ?? null;
 }
 
-function findNextLocations(definition: WorldDefinition, state: WorldState | null): { id: string; name: string }[] {
+function findNextLocations(definition: WorldDefinition, state: WorldState | null): WorldAccountSummary["nextLocations"] {
   if (!state) return [];
   return definition.locations
     .filter((loc) => {
@@ -84,7 +95,12 @@ function findNextLocations(definition: WorldDefinition, state: WorldState | null
       const requires = loc.requiresLocationIds ?? [];
       return requires.length > 0 && requires.every((id) => state.visitedLocationIds.includes(id));
     })
-    .map((loc) => ({ id: loc.id, name: loc.name }));
+    .map((loc) => ({
+      id: loc.id,
+      name: loc.name,
+      experience: findLocationExperience(definition.id, loc.id),
+      transitionAffordance: findTransitionAffordance(definition.id, state.currentLocationId, loc.id),
+    }));
 }
 
 /** A user with no state for this world gets an honest empty summary -- never fabricated location/activity/progress. */
@@ -174,7 +190,7 @@ export interface AccountLivingWorldSummary {
   upcomingPracticeCount: number;
   reflectionCount: number;
   canContinue: boolean;
-  nextLocations: { id: string; name: string }[];
+  nextLocations: WorldAccountSummary["nextLocations"];
   currentReflectionPrompt: string | null;
   currentLocationExperience: LocationExperience | null;
 }

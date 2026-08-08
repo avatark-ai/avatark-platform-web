@@ -1,4 +1,4 @@
-import type { ExperienceDescription, LocationExperience } from "@avatark/renderer-contracts"
+import type { ExperienceDescription, LocationExperience, TransitionAffordance } from "@avatark/renderer-contracts"
 import { LIVING_VRINDAVAN_EXPERIENCE } from "./experienceDefinition.ts"
 
 // Sprint 6, Phase 6: keyed lookup from world id to its renderer-neutral
@@ -19,8 +19,25 @@ const EXPERIENCE_DESCRIPTIONS: Record<string, ExperienceDescription> = {
 // persistence"). `currentLocationId` comes from the caller's own
 // WorldState; this function only decorates it.
 export function findCurrentLocationExperience(worldId: string, currentLocationId: string | null): LocationExperience | null {
-  if (!currentLocationId) return null
+  return findLocationExperience(worldId, currentLocationId)
+}
+
+/** Same lookup, for any location id (e.g. a candidate "next" location the
+ * user hasn't visited yet) -- not just the current one. */
+export function findLocationExperience(worldId: string, locationId: string | null): LocationExperience | null {
+  if (!locationId) return null
   const description = EXPERIENCE_DESCRIPTIONS[worldId]
   if (!description) return null
-  return description.locations.find((loc) => loc.id === currentLocationId) ?? null
+  return description.locations.find((loc) => loc.id === locationId) ?? null
+}
+
+/** The authored feel of moving from one location to another, if this
+ * world has an Experience Description at all and its transitions[]
+ * names this exact edge. Null otherwise -- never guessed. */
+export function findTransitionAffordance(worldId: string, fromLocationId: string | null, toLocationId: string): TransitionAffordance | null {
+  if (!fromLocationId) return null
+  const description = EXPERIENCE_DESCRIPTIONS[worldId]
+  if (!description) return null
+  const transition = description.transitions.find((t) => t.from === fromLocationId && t.to === toLocationId)
+  return transition?.affordance ?? null
 }

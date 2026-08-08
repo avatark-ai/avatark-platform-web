@@ -165,7 +165,7 @@ test("nextLocations lists only locations whose requiresLocationIds are fully sat
   await runtime.enterWorld("u4", "living-grove"); // at "entry"
 
   let summary = await getWorldAccountSummary(runtime, GROVE, "u4");
-  assert.deepEqual(summary.nextLocations, [{ id: "middle", name: "Middle" }]);
+  assert.deepEqual(summary.nextLocations, [{ id: "middle", name: "Middle", experience: null, transitionAffordance: null }]);
 
   await runtime.unlockLocation("u4", "living-grove", "middle");
   await runtime.visitLocation("u4", "living-grove", "middle");
@@ -237,4 +237,25 @@ test("currentLocationExperience surfaces the real, distinct Sprint 6 Experience 
   assert.equal(summary.currentLocationExperience?.id, "yamuna");
   assert.equal(summary.currentLocationExperience?.atmosphere.quality, "contemplative");
   assert.equal(summary.currentLocationExperience?.interaction.reflectionAvailable, true);
+});
+
+test("nextLocations carries each candidate's own experience description and the authored transition affordance for that exact edge (Sprint 6)", async () => {
+  const { LIVING_VRINDAVAN_DEFINITION } = await import("./vrindavanDefinition.ts");
+  const runtime = createWorldRuntime({ definitions: [LIVING_VRINDAVAN_DEFINITION], repository: new InMemoryWorldStateRepository() });
+  await runtime.enterWorld("u9", "living-vrindavan");
+
+  let summary = await getWorldAccountSummary(runtime, LIVING_VRINDAVAN_DEFINITION, "u9");
+  assert.equal(summary.nextLocations.length, 1);
+  assert.equal(summary.nextLocations[0].id, "yamuna");
+  assert.equal(summary.nextLocations[0].transitionAffordance, "threshold-crossing");
+  assert.equal(summary.nextLocations[0].experience?.atmosphere.quality, "contemplative");
+
+  await runtime.unlockLocation("u9", "living-vrindavan", "yamuna");
+  await runtime.visitLocation("u9", "living-vrindavan", "yamuna");
+  summary = await getWorldAccountSummary(runtime, LIVING_VRINDAVAN_DEFINITION, "u9");
+  const byId = Object.fromEntries(summary.nextLocations.map((l) => [l.id, l]));
+  assert.equal(byId["kadamba-grove"].transitionAffordance, "branching-choice");
+  assert.equal(byId["govardhan-path"].transitionAffordance, "branching-choice");
+  assert.equal(byId["kadamba-grove"].experience?.environment.biome, "grove");
+  assert.equal(byId["govardhan-path"].experience?.environment.biome, "path");
 });
