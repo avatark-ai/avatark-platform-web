@@ -52,6 +52,7 @@ test("enterLivingWorld coordinates Living World, Context, Experience, and Regist
 
   const snapshot = await kernel.context!.getContext("user-1")
   assert.equal(snapshot.fields.currentLivingWorldId.value, "living-forest")
+  assert.equal(snapshot.fields.currentLocationId.value, "entry")
 
   const events = await kernel.registry!.listRecentEvents("user-1")
   assert.equal(events[0].type, "world.entered")

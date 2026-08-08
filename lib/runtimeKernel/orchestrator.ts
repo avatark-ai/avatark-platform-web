@@ -79,9 +79,15 @@ export async function enterLivingWorld(
 
   let contextApplied = false
   if (kernel.context) {
+    // currentLocationId alongside currentLivingWorldId -- worldState is
+    // already resolved above (enterWorld resumes at the user's existing
+    // location, or the world's entry location for a first visit), so
+    // Context can report exactly where the user is, not just which world.
+    // Omitted when livingWorld itself isn't wired (worldState null): never
+    // write a location Context can't actually back.
     const outcome = await kernel.context.setContext(
       userId,
-      { currentLivingWorldId: worldId },
+      { currentLivingWorldId: worldId, ...(worldState ? { currentLocationId: worldState.currentLocationId } : {}) },
       { productId },
     )
     contextApplied = outcome.applied.length > 0
