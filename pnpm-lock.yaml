@@ -77,6 +77,9 @@ importers:
       '@avatark/recommendations':
         specifier: workspace:*
         version: link:packages/recommendations
+      '@avatark/renderer-contracts':
+        specifier: workspace:*
+        version: link:packages/renderer-contracts
       '@avatark/runtime-contracts':
         specifier: workspace:*
         version: link:packages/runtime-contracts
@@ -363,6 +366,16 @@ importers:
         version: 5.9.3
 
   packages/recommendations:
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/renderer-contracts:
+    dependencies:
+      '@avatark/runtime-contracts':
+        specifier: workspace:*
+        version: link:../runtime-contracts
     devDependencies:
       typescript:
         specifier: ^5
