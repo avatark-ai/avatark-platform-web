@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "1.0.0",
+  "world": "living-vrindavan",
+  "identity": {
+    "name": "Living Vrindavan",
+    "franchise": "Krishna",
+    "worldClass": "Living World",
+    "primaryTheme": "Joy & Love",
+    "purpose": "Living Vrindavan is a persistent experiential world inspired by Vrindavan in the Krishna tradition. It is not intended merely as a digital reconstruction of a historical or mythological place. It is a living environment through which the participant encounters themes of joy, love, relationship, play, nature, attention, surrender, and belonging."
+  },
+  "locations": [
+    {
+      "id": "vrindavan-entry",
+      "name": "Vrindavan Entry",
+      "role": "Threshold / arrival",
+      "purpose": "The participant crosses from ordinary experience into Living Vrindavan. This location establishes presence and orientation rather than challenge.",
+      "experientialQuality": "Arrival",
+      "humanQuestion": "What changes when you arrive without needing to achieve anything?",
+      "reflectionCapable": false
+    },
+    {
+      "id": "yamuna",
+      "name": "Yamuna",
+      "role": "River / reflection threshold",
+      "purpose": "Yamuna represents movement, relationship, continuity, and the possibility of allowing experience to move rather than controlling it.",
+      "experientialQuality": "Flow",
+      "humanQuestion": "What becomes visible when you stop trying to control the current?",
+      "reflectionCapable": true
+    },
+    {
+      "id": "kadamba-grove",
+      "name": "Kadamba Grove",
+      "role": "Grove / intimacy with the living environment",
+      "purpose": "Kadamba Grove represents attention to life at close range: sound, movement, shade, texture, presence, play, and relationship.",
+      "experientialQuality": "Presence",
+      "humanQuestion": "What do you notice when nothing is asking for your attention?",
+      "reflectionCapable": false
+    },
+    {
+      "id": "govardhan-path",
+      "name": "Govardhan Path",
+      "role": "Path / movement / responsibility",
+      "purpose": "Govardhan Path introduces movement through the world and the relationship between joy, responsibility, protection, community, and action.",
+      "experientialQuality": "Stewardship",
+      "humanQuestion": "What becomes worth carrying when it is carried for more than yourself?",
+      "reflectionCapable": false
+    }
+  ],
+  "entryLocationId": "vrindavan-entry",
+  "connections": [
+    { "from": "vrindavan-entry", "to": "yamuna" },
+    { "from": "yamuna", "to": "kadamba-grove" },
+    { "from": "yamuna", "to": "govardhan-path" }
+  ],
+  "principles": [
+    { "canonId": "STK-CAN-004", "title": "Living World — Privacy Principle" },
+    { "canonId": "STK-CAN-005", "title": "Living World — Renderer Principle" }
+  ],
+  "provenance": {
+    "canonDocIds": ["STK-CAN-001", "STK-CAN-002", "STK-CAN-003", "STK-CAN-004", "STK-CAN-005"],
+    "canonVersion": "0.1.0",
+    "specId": "STK-SPEC-002",
+    "specVersion": 1,
+    "generatedAt": "2026-08-08"
+  }
+}

@@ -159,3 +159,107 @@ export async function leaveLivingWorld(
 
   return { worldState, eventRecorded }
 }
+
+export interface VisitLivingWorldLocationParams {
+  userId: string
+  productId: string
+  worldId: string
+  locationId: string
+}
+
+export interface VisitLivingWorldLocationResult {
+  worldState: Awaited<ReturnType<WorldRuntime["visitLocation"]>> | null
+  contextApplied: boolean
+  eventRecorded: boolean
+}
+
+/**
+ * Location Navigation (Sprint 5, Living Vrindavan) -- Host ->
+ * LivingWorldRuntime.unlockLocation() (prerequisite check; idempotent if
+ * already unlocked) -> .visitLocation() -> Context.setContext() ->
+ * Registry.recordEvent(). Legal transitions come entirely from whatever
+ * WorldDefinition graph the caller's WorldRuntime was constructed with --
+ * this function has no per-world/franchise knowledge of which locations
+ * connect to which; @avatark/living-world-runtime's own
+ * InvalidWorldTransitionError is what actually enforces that, by
+ * checking the target location's authored requiresLocationIds against
+ * this user's visited locations.
+ */
+export async function visitLivingWorldLocation(
+  kernel: RuntimeKernel,
+  params: VisitLivingWorldLocationParams,
+): Promise<VisitLivingWorldLocationResult> {
+  const { userId, productId, worldId, locationId } = params
+
+  let worldState = null
+  if (kernel.livingWorld) {
+    await kernel.livingWorld.unlockLocation(userId, worldId, locationId)
+    worldState = await kernel.livingWorld.visitLocation(userId, worldId, locationId)
+  }
+
+  let contextApplied = false
+  if (kernel.context && worldState) {
+    const outcome = await kernel.context.setContext(
+      userId,
+      { currentLocationId: worldState.currentLocationId },
+      { productId },
+    )
+    contextApplied = outcome.applied.length > 0
+  }
+
+  let eventRecorded = false
+  if (kernel.registry) {
+    await kernel.registry.recordEvent({
+      type: "world.location_visited",
+      source: { productId },
+      actor: { userId },
+      target: { type: "location", id: locationId },
+    })
+    eventRecorded = true
+  }
+
+  return { worldState, contextApplied, eventRecorded }
+}
+
+export interface RecordLivingWorldReflectionParams {
+  userId: string
+  productId: string
+  locationId: string
+  reflectionId: string
+}
+
+export interface RecordLivingWorldReflectionResult {
+  eventRecorded: boolean
+}
+
+/**
+ * Reflection Point (Sprint 5, Living Vrindavan) -- records that the user
+ * engaged with an authored reflection prompt at a location. Reuses the
+ * Registry's existing "reflection.created" event type (already declared
+ * in the Timeline's own event-label conventions) rather than inventing a
+ * new namespace. Deliberately does not accept or persist any
+ * user-composed reflection text -- this sprint does not build a private-
+ * journal system; `reflectionId` traces back to the authoring Canon
+ * document (see @avatark/living-world-runtime's WorldReflectionRef),
+ * never to what a participant may have privately thought or written.
+ */
+export async function recordLivingWorldReflection(
+  kernel: RuntimeKernel,
+  params: RecordLivingWorldReflectionParams,
+): Promise<RecordLivingWorldReflectionResult> {
+  const { userId, productId, locationId, reflectionId } = params
+
+  let eventRecorded = false
+  if (kernel.registry) {
+    await kernel.registry.recordEvent({
+      type: "reflection.created",
+      source: { productId },
+      actor: { userId },
+      target: { type: "location", id: locationId },
+      metadata: { reflectionId },
+    })
+    eventRecorded = true
+  }
+
+  return { eventRecorded }
+}

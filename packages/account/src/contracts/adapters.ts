@@ -264,10 +264,13 @@ export interface CurrentContextAdapter {
 // A platform-level concept, not a GameK concept -- this contract and its
 // rendering component know nothing about any specific world's name or
 // franchise. A host supplies whatever worlds it wants to surface (including
-// placeholder "coming soon" entries), generically shaped. The five fields
+// placeholder "coming soon" entries), generically shaped. The fields
 // below the original id/name/status/description/progress are additive and
 // optional -- a host that doesn't populate them simply doesn't render
-// those parts of the card.
+// those parts of the card. currentLocationId/nextLocations/
+// currentReflectionPrompt (Living Vrindavan vertical slice, Sprint 5) are
+// derived generically from whatever WorldDefinition graph a host supplies
+// -- no world/franchise name is known to this type or LivingWorldsTab.
 export interface LivingWorld {
   id: string
   name: string
@@ -275,11 +278,14 @@ export interface LivingWorld {
   description: string
   progress: string
   currentLocation?: string | null
+  currentLocationId?: string | null
   lastVisitAt?: string | null
   recentActivity?: string | null
   upcomingPracticeCount?: number
   reflectionCount?: number
   canContinue?: boolean
+  nextLocations?: { id: string; name: string }[]
+  currentReflectionPrompt?: string | null
 }
 
 export interface LivingWorldsAdapter {

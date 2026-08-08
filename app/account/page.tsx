@@ -11,6 +11,7 @@ import type { AccountPrincipal } from '@/lib/auth/principal'
 import { EchoPageShell } from '@/components/echo/shell/EchoPageShell'
 import { ExperienceView } from '@/components/account/ExperienceView'
 import { TimelineView } from '@/components/account/TimelineView'
+import { LivingWorldDetailView } from '@/components/account/LivingWorldDetailView'
 
 // Real feature flag, per explicit instruction: /account behind a flag,
 // not unconditionally live. Reads a real env var -- no hardcoded true.
@@ -25,7 +26,7 @@ const ACCOUNT_MOUNT_ENABLED = process.env.NEXT_PUBLIC_ACCOUNT_MOUNT_ENABLED === 
 type Section =
   | 'profile' | 'products' | 'access' | 'membership' | 'organizations' | 'livingWorlds'
   | 'preferences' | 'notifications' | 'privacy' | 'security' | 'data'
-  | 'journey' | 'timeline' | 'feedback' | 'support'
+  | 'journey' | 'timeline' | 'livingVrindavan' | 'feedback' | 'support'
 
 const RAIL_SECTIONS: { id: Section; label: string; tab?: AccountTabKey }[] = [
   { id: 'profile', label: 'Profile', tab: 'profile' },
@@ -55,6 +56,13 @@ const RAIL_SECTIONS: { id: Section; label: string; tab?: AccountTabKey }[] = [
   // entirely (no "Timeline" CoreTabKey exists, and none was added -- see
   // docs/RUNTIME_KERNEL_IMPLEMENTATION.md Phase 4).
   { id: 'timeline', label: 'Timeline' },
+  // Host-owned (Sprint 5, Living Vrindavan vertical slice) -- same
+  // bypass-the-tab-contract pattern as journey/timeline. Generic over
+  // any world id; hardcodes "living-vrindavan" only as *which* world
+  // this rail item opens, not any location/graph/franchise logic (that
+  // all lives in the world's own authored definition -- see
+  // lib/livingWorldRuntime/vrindavanDefinition.ts).
+  { id: 'livingVrindavan', label: 'Living Vrindavan' },
   { id: 'feedback', label: 'Feedback' },
   { id: 'support', label: 'Support' },
 ]
@@ -202,6 +210,8 @@ function AccountRoot({ principal, roles }: { principal: Extract<AccountPrincipal
             <ExperienceView />
           ) : section === 'timeline' ? (
             <TimelineView />
+          ) : section === 'livingVrindavan' ? (
+            <LivingWorldDetailView worldId="living-vrindavan" />
           ) : section === 'feedback' ? (
             <FeedbackView />
           ) : section === 'support' ? (

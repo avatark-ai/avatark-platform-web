@@ -3,15 +3,20 @@ import assert from "node:assert/strict"
 import { ContextRuntime, InMemoryContextRepository } from "@avatark/context-runtime"
 import { InMemoryJourneyRepository, JourneyRuntime, type JourneyDefinition } from "@avatark/experience-runtime"
 import { ExperienceRegistry, InMemoryExperienceEventRepository } from "@avatark/experience-registry"
-import { createWorldRuntime, InMemoryWorldStateRepository, type WorldDefinition } from "@avatark/living-world-runtime"
-import { enterLivingWorld, leaveLivingWorld, type RuntimeKernel } from "./orchestrator.ts"
+import { createWorldRuntime, InMemoryWorldStateRepository, InvalidWorldTransitionError, type WorldDefinition } from "@avatark/living-world-runtime"
+import { enterLivingWorld, leaveLivingWorld, visitLivingWorldLocation, recordLivingWorldReflection, type RuntimeKernel } from "./orchestrator.ts"
 
 const WORLD: WorldDefinition = {
   id: "living-forest",
   name: "Living Forest",
   entryLocationId: "entry",
-  locations: [{ id: "entry", name: "The Threshold", order: 0 }],
-  activities: [],
+  locations: [
+    { id: "entry", name: "The Threshold", order: 0 },
+    { id: "second", name: "The Grove", order: 1, requiresLocationIds: ["entry"] },
+  ],
+  activities: [
+    { id: "second-reflection", locationId: "second", name: "Reflection", description: "What do you notice?", reflectionRef: { reflectionId: "living-forest#second", source: "test-fixture" } },
+  ],
 }
 
 const EXPERIENCE_DEFINITION: JourneyDefinition = {
@@ -109,4 +114,51 @@ test("enterLivingWorld degrades gracefully when a runtime is entirely absent fro
   assert.equal(result.contextApplied, false)
   assert.equal(result.experienceAdvanced, false)
   assert.equal(result.eventRecorded, false)
+})
+
+// Sprint 5 (Living Vrindavan): Location Navigation, via a generic
+// two-location fixture -- no Vrindavan-specific data belongs in this
+// file, only proof the mechanism itself works for any authored graph.
+test("visitLivingWorldLocation moves to an unlocked location, syncs Context, and records world.location_visited", async () => {
+  const kernel = makeKernel()
+  await kernel.livingWorld!.enterWorld("user-6", "living-forest")
+
+  const result = await visitLivingWorldLocation(kernel, { userId: "user-6", productId: "avatark", worldId: "living-forest", locationId: "second" })
+
+  assert.equal(result.worldState?.currentLocationId, "second")
+  assert.equal(result.contextApplied, true)
+  assert.equal(result.eventRecorded, true)
+
+  const snapshot = await kernel.context!.getContext("user-6")
+  assert.equal(snapshot.fields.currentLocationId.value, "second")
+
+  const events = await kernel.registry!.listRecentEvents("user-6")
+  assert.equal(events[0].type, "world.location_visited")
+  assert.equal(events[0].target?.id, "second")
+})
+
+test("visitLivingWorldLocation rejects a transition whose prerequisites aren't met, deriving legality entirely from the definition -- no hardcoded per-world logic", async () => {
+  const kernel = makeKernel()
+  // Deliberately never entered "living-forest" -- "entry" (the sole
+  // prerequisite for "second") was never visited.
+
+  await assert.rejects(
+    () => visitLivingWorldLocation(kernel, { userId: "user-7", productId: "avatark", worldId: "living-forest", locationId: "second" }),
+    InvalidWorldTransitionError,
+  )
+
+  const events = await kernel.registry!.listRecentEvents("user-7")
+  assert.deepEqual(events, [], "a rejected transition must not record a false location_visited event")
+})
+
+test("recordLivingWorldReflection records reflection.created without persisting any reflection content", async () => {
+  const kernel = makeKernel()
+
+  const result = await recordLivingWorldReflection(kernel, { userId: "user-8", productId: "avatark", locationId: "second", reflectionId: "living-forest#second" })
+
+  assert.equal(result.eventRecorded, true)
+  const events = await kernel.registry!.listRecentEvents("user-8")
+  assert.equal(events[0].type, "reflection.created")
+  assert.equal(events[0].target?.id, "second")
+  assert.deepEqual(events[0].metadata, { reflectionId: "living-forest#second" })
 })

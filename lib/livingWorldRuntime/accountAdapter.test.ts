@@ -23,6 +23,25 @@ const STILLNESS: WorldDefinition = {
   activities: [],
 };
 
+// A three-location branching graph (mirrors Living Vrindavan's own
+// entry -> middle -> {branch-a, branch-b} shape, Sprint 5) with one
+// reflection-capable activity -- kept separate from FOREST/STILLNESS
+// above so their existing reflectionCount: 0 assertions stay accurate.
+const GROVE: WorldDefinition = {
+  id: "living-grove",
+  name: "Living Grove",
+  entryLocationId: "entry",
+  locations: [
+    { id: "entry", name: "Entry", order: 0 },
+    { id: "middle", name: "Middle", order: 1, requiresLocationIds: ["entry"] },
+    { id: "branch-a", name: "Branch A", order: 2, requiresLocationIds: ["middle"] },
+    { id: "branch-b", name: "Branch B", order: 2, requiresLocationIds: ["middle"] },
+  ],
+  activities: [
+    { id: "middle-reflection", locationId: "middle", name: "Reflection", description: "What do you notice here?", reflectionRef: { reflectionId: "living-grove#middle", source: "test-fixture" } },
+  ],
+};
+
 function makeRuntime() {
   let ms = 0;
   return createWorldRuntime({
@@ -129,4 +148,60 @@ test("enter() reports an error for an unknown world id instead of throwing", asy
   const result = await adapter.enter("no-such-world");
   assert.equal(result.data, undefined);
   assert.match(result.error ?? "", /Unknown Living World/);
+});
+
+// Sprint 5 (Living Vrindavan): nextLocations / currentReflectionPrompt --
+// generic derivation, tested against GROVE's own branching graph, not
+// Vrindavan-specific data.
+test("a fresh (never-entered) world has no next locations and no reflection prompt", async () => {
+  const runtime = createWorldRuntime({ definitions: [GROVE], repository: new InMemoryWorldStateRepository() });
+  const summary = await getWorldAccountSummary(runtime, GROVE, "ghost");
+  assert.deepEqual(summary.nextLocations, []);
+  assert.equal(summary.currentReflectionPrompt, null);
+});
+
+test("nextLocations lists only locations whose requiresLocationIds are fully satisfied, excluding the current location", async () => {
+  const runtime = createWorldRuntime({ definitions: [GROVE], repository: new InMemoryWorldStateRepository() });
+  await runtime.enterWorld("u4", "living-grove"); // at "entry"
+
+  let summary = await getWorldAccountSummary(runtime, GROVE, "u4");
+  assert.deepEqual(summary.nextLocations, [{ id: "middle", name: "Middle" }]);
+
+  await runtime.unlockLocation("u4", "living-grove", "middle");
+  await runtime.visitLocation("u4", "living-grove", "middle");
+  summary = await getWorldAccountSummary(runtime, GROVE, "u4");
+  // Both branches are legal next moves from "middle" -- neither is
+  // hardcoded, both come from requiresLocationIds: ["middle"].
+  assert.deepEqual(
+    new Set(summary.nextLocations.map((l) => l.id)),
+    new Set(["branch-a", "branch-b"]),
+  );
+});
+
+test("currentReflectionPrompt surfaces the authored activity description only at a location that carries a reflectionRef", async () => {
+  const runtime = createWorldRuntime({ definitions: [GROVE], repository: new InMemoryWorldStateRepository() });
+  await runtime.enterWorld("u5", "living-grove");
+
+  let summary = await getWorldAccountSummary(runtime, GROVE, "u5");
+  assert.equal(summary.currentReflectionPrompt, null, "no reflection activity at entry");
+
+  await runtime.unlockLocation("u5", "living-grove", "middle");
+  await runtime.visitLocation("u5", "living-grove", "middle");
+  summary = await getWorldAccountSummary(runtime, GROVE, "u5");
+  assert.equal(summary.currentReflectionPrompt, "What do you notice here?");
+});
+
+test("the account-shaped adapter exposes currentLocationId, nextLocations, and currentReflectionPrompt", async () => {
+  const runtime = createWorldRuntime({ definitions: [GROVE], repository: new InMemoryWorldStateRepository() });
+  await runtime.enterWorld("u6", "living-grove");
+  await runtime.unlockLocation("u6", "living-grove", "middle");
+  await runtime.visitLocation("u6", "living-grove", "middle");
+
+  const adapter = createLivingWorldsAccountAdapter(runtime, [GROVE], "u6");
+  const result = await adapter.list();
+  const grove = result.data!.find((w) => w.id === "living-grove")!;
+
+  assert.equal(grove.currentLocationId, "middle");
+  assert.equal(grove.currentReflectionPrompt, "What do you notice here?");
+  assert.deepEqual(new Set(grove.nextLocations.map((l) => l.id)), new Set(["branch-a", "branch-b"]));
 });

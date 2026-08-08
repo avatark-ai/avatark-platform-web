@@ -1,5 +1,5 @@
 'use client'
-import { Suspense, useState } from 'react'
+import { Suspense, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { AccountAdaptersProvider, AvatarKAccount, createMockAdapters, extensionTabKey, type AccountTabKey } from '@avatark/account'
 import { AvatarMenu, IdentityBadge, MembershipBadge, ProductSwitcher } from '@avatark/account-ui'
@@ -8,6 +8,7 @@ import { createContextAdapter } from '@/lib/account/contextAdapter'
 import { createLivingWorldsAdapter } from '@/lib/account/livingWorldsAdapter'
 import { ExperienceView } from '@/components/account/ExperienceView'
 import { TimelineView } from '@/components/account/TimelineView'
+import { LivingWorldDetailView } from '@/components/account/LivingWorldDetailView'
 
 // Dev-only, unauthenticated preview of the real @avatark/account component
 // tree against createMockAdapters() -- same precedent as
@@ -26,23 +27,40 @@ import { TimelineView } from '@/components/account/TimelineView'
 // Experience runtime behavior end-to-end (including via Playwright) here.
 // Every other field stays mock, unchanged from the original precedent.
 const DEV_API_BASE = '/api/dev/account'
-const devFetch: typeof fetch = (input, init) => {
-  const url = typeof input === 'string' && input.startsWith('/api/account/')
-    ? input.replace('/api/account/', `${DEV_API_BASE}/`)
-    : input
-  return fetch(url, init)
-}
-const mockAdapters = {
-  ...createMockAdapters(),
-  currentContext: createContextAdapter(devFetch),
-  livingWorlds: createLivingWorldsAdapter(devFetch),
-}
 const mockPrincipal = { status: 'signed_in' as const, id: 'dev-preview-user', displayName: 'Dev Preview', email: 'dev-preview@example.invalid' }
+
+// Sprint 5 (Living Vrindavan) fix: devFetch/mockAdapters must be rebuilt
+// per current devUser, not module-level constants -- the ?dev_user=
+// override (see lib/devOnlyGuard.ts's resolveDevUserId) previously only
+// reached ExperienceView/TimelineView/LivingWorldDetailView (which each
+// build their own request URL directly), never the mock-adapter-backed
+// LivingWorldsTab card, which always hit the default dev-preview-user id
+// regardless of the URL. Appending dev_user here too makes every
+// section, including the generic Living Worlds card, addressable by
+// Playwright's per-test id for deterministic isolation.
+function useDevAdapters(devUser: string | undefined) {
+  return useMemo(() => {
+    const devFetch: typeof fetch = (input, init) => {
+      let url = typeof input === 'string' && input.startsWith('/api/account/')
+        ? input.replace('/api/account/', `${DEV_API_BASE}/`)
+        : input
+      if (typeof url === 'string' && devUser) {
+        url += (url.includes('?') ? '&' : '?') + `dev_user=${encodeURIComponent(devUser)}`
+      }
+      return fetch(url, init)
+    }
+    return {
+      ...createMockAdapters(),
+      currentContext: createContextAdapter(devFetch),
+      livingWorlds: createLivingWorldsAdapter(devFetch),
+    }
+  }, [devUser])
+}
 
 type Section =
   | 'profile' | 'products' | 'access' | 'membership' | 'organizations' | 'livingWorlds'
   | 'preferences' | 'notifications' | 'privacy' | 'security' | 'systemInformation' | 'data'
-  | 'extension-demo' | 'journey' | 'timeline'
+  | 'extension-demo' | 'journey' | 'timeline' | 'livingVrindavan'
 
 // 'extension-demo' exercises the generic ExtensionAdapter mechanism
 // (mockAdapters' 'mock-extension' slot) -- demonstrates that a
@@ -67,6 +85,7 @@ const RAIL_SECTIONS: { id: Section; label: string; tab?: AccountTabKey }[] = [
   { id: 'extension-demo', label: 'Mock Extension', tab: extensionTabKey('mock-extension') },
   { id: 'journey', label: 'Experience' },
   { id: 'timeline', label: 'Timeline' },
+  { id: 'livingVrindavan', label: 'Living Vrindavan' },
 ]
 
 function tabToSection(tab: AccountTabKey): Section | null {
@@ -87,12 +106,14 @@ function DevAccountPreview() {
   const requestedSection = searchParams.get('section')
   const [section, setSection] = useState<Section>(isSection(requestedSection) ? requestedSection : 'profile')
   const activeRailSection = RAIL_SECTIONS.find((s) => s.id === section)
-  // Optional ?dev_user= override for the 'journey'/'timeline' sections
-  // only -- lets Playwright address a guaranteed-fresh id on the same
-  // in-memory dev singletons for a deterministic empty-state screenshot,
-  // without affecting the default dev-preview-user id every other
-  // section (including the mock-adapter-backed ones) still uses.
+  // Optional ?dev_user= override -- lets Playwright address a
+  // guaranteed-fresh id on the same in-memory dev singletons for
+  // deterministic empty-state/isolation screenshots and assertions,
+  // without affecting the default dev-preview-user id when absent. As of
+  // Sprint 5 this reaches every mock-adapter-backed section too (see
+  // useDevAdapters above), not just journey/timeline/livingVrindavan.
   const devUser = searchParams.get('dev_user') ?? undefined
+  const mockAdapters = useDevAdapters(devUser)
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-6 py-12" style={{ background: 'var(--midnight)', color: 'var(--paper)', minHeight: '100vh' }}>
@@ -156,6 +177,8 @@ function DevAccountPreview() {
             <ExperienceView apiBase={DEV_API_BASE} devUser={devUser} />
           ) : section === 'timeline' ? (
             <TimelineView apiBase={DEV_API_BASE} devUser={devUser} />
+          ) : section === 'livingVrindavan' ? (
+            <LivingWorldDetailView worldId="living-vrindavan" apiBase={DEV_API_BASE} devUser={devUser} />
           ) : (
             <div className="echo-account-embed">
               <AccountAdaptersProvider adapters={mockAdapters}>

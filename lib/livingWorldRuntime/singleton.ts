@@ -1,4 +1,5 @@
 import { createWorldRuntime, InMemoryWorldStateRepository, SAMPLE_WORLD_DEFINITIONS } from '@avatark/living-world-runtime'
+import { LIVING_VRINDAVAN_DEFINITION } from './vrindavanDefinition.ts'
 
 // Sprint 4 (Runtime Host Integration): a module-scoped, process-lifetime
 // WorldRuntime instance. This is a known, documented simplification, not
@@ -13,15 +14,26 @@ import { createWorldRuntime, InMemoryWorldStateRepository, SAMPLE_WORLD_DEFINITI
 // see docs/RUNTIME_HOST_INTEGRATION.md's "remaining gaps before GameK
 // integration" for the real-persistence follow-up this implies.
 //
-// World content: the five worlds this app already displays (Living
-// Forest/Vrindavan/Stillness/Symphony/Forge) are @avatark/living-world-runtime's
-// own SAMPLE_WORLD_DEFINITIONS -- reused directly, not forked or
-// duplicated, per this sprint's explicit "do not fork/duplicate" rule.
+// World content (Sprint 5, Living Vrindavan vertical slice): four of the
+// five worlds this app displays (Living Forest/Stillness/Symphony/Forge)
+// remain @avatark/living-world-runtime's own generic
+// SAMPLE_WORLD_DEFINITIONS fixture -- truthful placeholders, not
+// upgraded this sprint. Living Vrindavan alone is swapped for
+// LIVING_VRINDAVAN_DEFINITION, converted in ./vrindavanDefinition.ts from
+// the StudioK-authored, Approved portable artifact vendored in
+// ./vendor/ -- see that file and vendor/README.md for the full
+// StudioK -> Host provenance chain. The Runtime Kernel package itself
+// (@avatark/living-world-runtime) is untouched and still knows nothing
+// about Krishna, Vrindavan, or any other franchise.
+const WORLD_DEFINITIONS = SAMPLE_WORLD_DEFINITIONS.map((def) =>
+  def.id === LIVING_VRINDAVAN_DEFINITION.id ? LIVING_VRINDAVAN_DEFINITION : def,
+)
+
 const repository = new InMemoryWorldStateRepository()
 
 export const livingWorldRuntime = createWorldRuntime({
-  definitions: SAMPLE_WORLD_DEFINITIONS,
+  definitions: WORLD_DEFINITIONS,
   repository,
 })
 
-export { SAMPLE_WORLD_DEFINITIONS }
+export { WORLD_DEFINITIONS }

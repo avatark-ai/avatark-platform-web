@@ -20,7 +20,7 @@
 // ============================================================
 
 import { findLocation } from "@avatark/living-world-runtime";
-import type { UserId, WorldDefinition, WorldId, WorldRuntime } from "@avatark/living-world-runtime";
+import type { UserId, WorldDefinition, WorldId, WorldRuntime, WorldState } from "@avatark/living-world-runtime";
 
 export interface WorldAccountSummary {
   worldId: WorldId;
@@ -43,10 +43,38 @@ export interface WorldAccountSummary {
   upcomingPracticeCount: number;
   /** Same honesty rule, for activities carrying a reflectionRef. */
   reflectionCount: number;
+  /** Locations whose authored requiresLocationIds are all satisfied by
+   * this user's visitedLocationIds, excluding the current location --
+   * i.e. legal next moves, derived entirely from the definition's own
+   * graph (Sprint 5, Living Vrindavan). Empty for a world whose
+   * definition has no such reachable location (or no state yet) -- never
+   * hardcoded per-world/franchise. */
+  nextLocations: { id: string; name: string }[];
+  /** The authored reflection prompt (WorldActivity.description) for
+   * whichever activity at the current location carries a reflectionRef,
+   * if any. Null whenever no such activity exists -- never fabricated. */
+  currentReflectionPrompt: string | null;
 }
 
 function countActivitiesWithRef(definition: WorldDefinition, refKey: "practiceRef" | "reflectionRef"): number {
   return definition.activities.filter((activity) => activity[refKey] != null).length;
+}
+
+function findReflectionPrompt(definition: WorldDefinition, currentLocationId: string | null): string | null {
+  if (!currentLocationId) return null;
+  const activity = definition.activities.find((a) => a.locationId === currentLocationId && a.reflectionRef != null);
+  return activity?.description ?? null;
+}
+
+function findNextLocations(definition: WorldDefinition, state: WorldState | null): { id: string; name: string }[] {
+  if (!state) return [];
+  return definition.locations
+    .filter((loc) => {
+      if (loc.id === state.currentLocationId) return false;
+      const requires = loc.requiresLocationIds ?? [];
+      return requires.length > 0 && requires.every((id) => state.visitedLocationIds.includes(id));
+    })
+    .map((loc) => ({ id: loc.id, name: loc.name }));
 }
 
 /** A user with no state for this world gets an honest empty summary -- never fabricated location/activity/progress. */
@@ -66,6 +94,8 @@ function emptySummary(definition: WorldDefinition, totalLocationCount: number): 
     canContinue: false,
     upcomingPracticeCount: countActivitiesWithRef(definition, "practiceRef"),
     reflectionCount: countActivitiesWithRef(definition, "reflectionRef"),
+    nextLocations: [],
+    currentReflectionPrompt: null,
   };
 }
 
@@ -104,6 +134,8 @@ export async function getWorldAccountSummary(
     canContinue: true,
     upcomingPracticeCount: countActivitiesWithRef(definition, "practiceRef"),
     reflectionCount: countActivitiesWithRef(definition, "reflectionRef"),
+    nextLocations: findNextLocations(definition, state),
+    currentReflectionPrompt: findReflectionPrompt(definition, state.currentLocationId),
   };
 }
 
@@ -124,11 +156,14 @@ export interface AccountLivingWorldSummary {
   description: string;
   progress: string;
   currentLocation: string | null;
+  currentLocationId: string | null;
   lastVisitAt: string | null;
   recentActivity: string | null;
   upcomingPracticeCount: number;
   reflectionCount: number;
   canContinue: boolean;
+  nextLocations: { id: string; name: string }[];
+  currentReflectionPrompt: string | null;
 }
 
 export interface AccountAdapterResult<T> {
@@ -157,11 +192,14 @@ function toAccountSummary(summary: WorldAccountSummary): AccountLivingWorldSumma
     description: summary.description,
     progress: `${summary.percentComplete}% (${summary.visitedLocationCount}/${summary.totalLocationCount} locations)`,
     currentLocation: summary.currentLocationName,
+    currentLocationId: summary.currentLocationId,
     lastVisitAt: summary.lastVisitAt,
     recentActivity: summary.recentActivityLabel,
     upcomingPracticeCount: summary.upcomingPracticeCount,
     reflectionCount: summary.reflectionCount,
     canContinue: summary.canContinue,
+    nextLocations: summary.nextLocations,
+    currentReflectionPrompt: summary.currentReflectionPrompt,
   };
 }
 
