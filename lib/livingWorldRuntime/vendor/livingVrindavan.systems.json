@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0.0",
+  "world": "living-vrindavan",
+  "seasons": [
+    {
+      "id": "vasanta",
+      "name": "Vasanta",
+      "order": 1,
+      "canonId": "STK-CAN-006",
+      "environmentalEnvelope": {
+        "temperatureBand": "moderate",
+        "precipitationBand": "moderate",
+        "humidityBand": "moderate",
+        "hydrologyBaselineBand": "moderate",
+        "vegetationActivityBand": "high",
+        "animalActivityBand": "moderate"
+      },
+      "minDurationTicks": 4,
+      "allowedNextSeasonIds": ["grishma"]
+    },
+    {
+      "id": "grishma",
+      "name": "Grīṣma",
+      "order": 2,
+      "canonId": "STK-CAN-006",
+      "environmentalEnvelope": {
+        "temperatureBand": "high",
+        "precipitationBand": "low",
+        "humidityBand": "low",
+        "hydrologyBaselineBand": "low",
+        "vegetationActivityBand": "moderate",
+        "animalActivityBand": "low"
+      },
+      "minDurationTicks": 4,
+      "allowedNextSeasonIds": []
+    }
+  ],
+  "entityArchetypes": [
+    {
+      "id": "riverbank-vegetation",
+      "name": "Riverbank Vegetation",
+      "locationId": "yamuna",
+      "lifecyclePhases": ["dormant", "budding", "flowering", "seeding"],
+      "initialLifecyclePhase": "dormant"
+    },
+    {
+      "id": "ambient-bird-flock",
+      "name": "Ambient Bird Flock",
+      "locationId": "kadamba-grove",
+      "lifecyclePhases": ["dispersed", "present", "departed"],
+      "initialLifecyclePhase": "dispersed"
+    }
+  ],
+  "encounterRules": [
+    {
+      "id": "yamuna-flowering-reflection",
+      "locationId": "yamuna",
+      "category": "environmental",
+      "condition": { "band": "vegetationActivityBand", "atLeast": "high" }
+    },
+    {
+      "id": "kadamba-grove-ambient-presence",
+      "locationId": "kadamba-grove",
+      "category": "ambient",
+      "condition": { "band": "animalActivityBand", "atLeast": "moderate" }
+    },
+    {
+      "id": "govardhan-path-practice-linked",
+      "locationId": "govardhan-path",
+      "category": "practice-linked",
+      "condition": { "band": "temperatureBand", "atLeast": "low" }
+    },
+    {
+      "id": "yamuna-narrative-gate",
+      "locationId": "yamuna",
+      "category": "narrative-protected",
+      "condition": { "band": "vegetationActivityBand", "atLeast": "low" }
+    }
+  ],
+  "provenance": {
+    "canonDocIds": ["STK-CAN-006"],
+    "canonVersion": "0.1.0",
+    "specId": "STK-SPEC-006",
+    "specVersion": 1,
+    "worldArtifactSpecId": "STK-SPEC-002",
+    "generatedAt": "2026-08-08"
+  }
+}

@@ -1,6 +1,6 @@
 # Vendored StudioK artifacts
 
-Both files in this directory are unmodified, byte-for-byte copies of
+All files in this directory are unmodified, byte-for-byte copies of
 `studiok-specifications`' portable artifacts. `manifest.json` (Sprint 6,
 Phase 7) is the ingestion record: it names each artifact's identity,
 spec/schema version, Canon provenance, pinned source commit, and a sha256
@@ -54,7 +54,27 @@ cross-validates it against `livingVrindavan.world.json` (same location
 ids, same reflection affordances, same connection graph) -- both files in
 this directory must always describe the same world.
 
-Do not hand-edit either JSON file. To pick up a new StudioK release, copy
+## `livingVrindavan.systems.json`
+
+- **Source repo:** `studiok-specifications`
+- **Source path:** `living-vrindavan/living-vrindavan.systems.json`
+- **Source spec:** `STK-SPEC-006` (Living Vrindavan — Systems Artifact,
+  **`Proposed`, not yet `Approved`**), derived from `STK-SPEC-005`
+  (Living World Systems Definition schema, also `Proposed`) and
+  `STK-CAN-006` (Seasonal Identity, also `Proposed`)
+- **Pinned tag:** none yet — this batch has not reached `Approved`
+- **Pinned commit:** `5028ce9f2fb92c91d6403cb2f6af89e2348dfd05`
+- **Canon lineage:** `STK-CAN-006` only — this artifact adds no location
+  identity of its own, only seasons/entity-archetypes/encounter-rules
+
+`../../livingSystems/systemsDefinition.ts` converts this artifact into
+`@avatark/living-systems-contracts`' own `SeasonDefinition[]`/
+`EntityArchetype[]`/`EncounterRule[]` shapes, and cross-validates
+`entityArchetypes[].locationId`/`encounterRules[].locationId` against
+`livingVrindavan.world.json` — all three vendored files in this directory
+must always describe the same world.
+
+Do not hand-edit any JSON file. To pick up a new StudioK release, copy
 the updated artifact from a newer tag/commit, update `manifest.json`'s
 `pinnedTag`/`pinnedCommit`/`checksum` for that artifact in the same
 commit, and update the corresponding section above — this is a manual,
