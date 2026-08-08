@@ -1,0 +1,40 @@
+{
+  "name": "@avatark/living-systems-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Executes the Living Systems causal simulation (world clock, season transition, environmental causality, entity lifecycle, encounter resolution, world-snapshot resolution) and provides reference in-memory repositories. Host-neutral: authors no world content, hardcodes no franchise behavior.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@avatark/living-systems-contracts": "workspace:*",
+    "@avatark/runtime-contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "node --experimental-strip-types --test src/worldClock.test.ts src/causalEnvironment.test.ts src/seasonTransition.test.ts src/entityLifecycle.test.ts src/encounterResolution.test.ts src/snapshotResolver.test.ts src/simulation.test.ts src/inMemoryRepositories.test.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
+  }
+}

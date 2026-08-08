@@ -26,6 +26,8 @@
     "@avatark/invitations": "workspace:*",
     "@avatark/journey": "workspace:*",
     "@avatark/living-echo": "workspace:*",
+    "@avatark/living-systems-contracts": "workspace:*",
+    "@avatark/living-systems-runtime": "workspace:*",
     "@avatark/living-world-runtime": "workspace:*",
     "@avatark/locale": "workspace:*",
     "@avatark/membership": "workspace:*",
