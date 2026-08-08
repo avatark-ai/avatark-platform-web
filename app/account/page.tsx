@@ -12,6 +12,7 @@ import { EchoPageShell } from '@/components/echo/shell/EchoPageShell'
 import { ExperienceView } from '@/components/account/ExperienceView'
 import { TimelineView } from '@/components/account/TimelineView'
 import { LivingWorldDetailView } from '@/components/account/LivingWorldDetailView'
+import { LivingSystemsSnapshotView } from '@/components/account/LivingSystemsSnapshotView'
 
 // Real feature flag, per explicit instruction: /account behind a flag,
 // not unconditionally live. Reads a real env var -- no hardcoded true.
@@ -211,7 +212,10 @@ function AccountRoot({ principal, roles }: { principal: Extract<AccountPrincipal
           ) : section === 'timeline' ? (
             <TimelineView />
           ) : section === 'livingVrindavan' ? (
-            <LivingWorldDetailView worldId="living-vrindavan" />
+            <div className="flex flex-col gap-6">
+              <LivingWorldDetailView worldId="living-vrindavan" />
+              <LivingSystemsSnapshotView worldId="living-vrindavan" />
+            </div>
           ) : section === 'feedback' ? (
             <FeedbackView />
           ) : section === 'support' ? (

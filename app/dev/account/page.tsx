@@ -9,6 +9,7 @@ import { createLivingWorldsAdapter } from '@/lib/account/livingWorldsAdapter'
 import { ExperienceView } from '@/components/account/ExperienceView'
 import { TimelineView } from '@/components/account/TimelineView'
 import { LivingWorldDetailView } from '@/components/account/LivingWorldDetailView'
+import { LivingSystemsSnapshotView } from '@/components/account/LivingSystemsSnapshotView'
 
 // Dev-only, unauthenticated preview of the real @avatark/account component
 // tree against createMockAdapters() -- same precedent as
@@ -178,7 +179,10 @@ function DevAccountPreview() {
           ) : section === 'timeline' ? (
             <TimelineView apiBase={DEV_API_BASE} devUser={devUser} />
           ) : section === 'livingVrindavan' ? (
-            <LivingWorldDetailView worldId="living-vrindavan" apiBase={DEV_API_BASE} devUser={devUser} />
+            <div className="flex flex-col gap-6">
+              <LivingWorldDetailView worldId="living-vrindavan" apiBase={DEV_API_BASE} devUser={devUser} />
+              <LivingSystemsSnapshotView worldId="living-vrindavan" apiBase={DEV_API_BASE} devUser={devUser} />
+            </div>
           ) : (
             <div className="echo-account-embed">
               <AccountAdaptersProvider adapters={mockAdapters}>
