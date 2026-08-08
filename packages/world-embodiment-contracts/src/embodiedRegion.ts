@@ -13,10 +13,10 @@ import type { SpatialNode } from "./spatial.ts"
 // would be exactly the over-building Phase 2's own instruction warns
 // against ("do NOT create a generic game engine").
 export interface EmbodiedRegion {
-  locationId: LocationId
-  name: string
-  spatialNode: SpatialNode
-  environment: EnvironmentPresentation
-  entities: EntityPresentation[]
-  encounters: EncounterPresentation[]
+  readonly locationId: LocationId
+  readonly name: string
+  readonly spatialNode: Readonly<SpatialNode>
+  readonly environment: Readonly<EnvironmentPresentation>
+  readonly entities: readonly Readonly<EntityPresentation>[]
+  readonly encounters: readonly Readonly<EncounterPresentation>[]
 }

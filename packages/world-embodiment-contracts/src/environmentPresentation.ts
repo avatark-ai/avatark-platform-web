@@ -25,8 +25,8 @@ export interface VegetationPresentation {
 }
 
 export interface EnvironmentPresentation {
-  atmosphere: AtmospherePresentation
-  water: WaterPresentation
-  vegetation: VegetationPresentation
-  sensoryCues: SensoryCue[]
+  readonly atmosphere: Readonly<AtmospherePresentation>
+  readonly water: Readonly<WaterPresentation>
+  readonly vegetation: Readonly<VegetationPresentation>
+  readonly sensoryCues: readonly Readonly<SensoryCue>[]
 }
