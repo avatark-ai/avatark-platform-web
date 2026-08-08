@@ -92,6 +92,12 @@ importers:
       '@avatark/timeline':
         specifier: workspace:*
         version: link:packages/timeline
+      '@avatark/world-embodiment-contracts':
+        specifier: workspace:*
+        version: link:packages/world-embodiment-contracts
+      '@avatark/world-embodiment-runtime':
+        specifier: workspace:*
+        version: link:packages/world-embodiment-runtime
       '@supabase/ssr':
         specifier: ^0.12.1
         version: 0.12.1(@supabase/supabase-js@2.110.5)
@@ -417,6 +423,44 @@ importers:
         version: 5.9.3
 
   packages/timeline:
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/world-embodiment-contracts:
+    dependencies:
+      '@avatark/living-systems-contracts':
+        specifier: workspace:*
+        version: link:../living-systems-contracts
+      '@avatark/renderer-contracts':
+        specifier: workspace:*
+        version: link:../renderer-contracts
+      '@avatark/runtime-contracts':
+        specifier: workspace:*
+        version: link:../runtime-contracts
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/world-embodiment-runtime:
+    dependencies:
+      '@avatark/living-systems-contracts':
+        specifier: workspace:*
+        version: link:../living-systems-contracts
+      '@avatark/living-world-runtime':
+        specifier: workspace:*
+        version: link:../living-world-runtime
+      '@avatark/renderer-contracts':
+        specifier: workspace:*
+        version: link:../renderer-contracts
+      '@avatark/runtime-contracts':
+        specifier: workspace:*
+        version: link:../runtime-contracts
+      '@avatark/world-embodiment-contracts':
+        specifier: workspace:*
+        version: link:../world-embodiment-contracts
     devDependencies:
       typescript:
         specifier: ^5

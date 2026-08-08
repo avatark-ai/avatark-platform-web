@@ -41,6 +41,8 @@
     "@avatark/renderer-contracts": "workspace:*",
     "@avatark/runtime-contracts": "workspace:*",
     "@avatark/timeline": "workspace:*",
+    "@avatark/world-embodiment-contracts": "workspace:*",
+    "@avatark/world-embodiment-runtime": "workspace:*",
     "@supabase/ssr": "^0.12.1",
     "@supabase/supabase-js": "^2.110.5",
     "next": "16.2.10",
