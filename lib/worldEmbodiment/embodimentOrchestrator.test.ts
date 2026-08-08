@@ -69,3 +69,16 @@ test("Phase 17: two visitors at the same logical world time receive embodiments 
   assert.deepEqual(snapshotA.visitorContext, { userId: "visitor-a", lastLocationId: "vrindavan-entry", meaningfulEncounterCount: 0, reflectionCount: 0 })
   assert.deepEqual(snapshotB.visitorContext, { userId: "visitor-b", lastLocationId: "vrindavan-entry", meaningfulEncounterCount: 0, reflectionCount: 0 })
 })
+
+test("Phase 14: provenance traces concretely back to the real StudioK Canon/Specification ids -- not a placeholder string", async () => {
+  await resetLivingSystemsSingletonForTests()
+  const runtime = freshWorldRuntime()
+  await runtime.enterWorld("u4", "living-vrindavan")
+
+  const snapshot = await resolveWorldEmbodimentSnapshot({ userId: "u4", locationId: "vrindavan-entry", livingWorldRuntime: runtime })
+  assert.equal(snapshot.provenance.worldArtifactSpecId, "STK-SPEC-002")
+  assert.equal(snapshot.provenance.experienceArtifactSpecId, "STK-SPEC-004")
+  assert.equal(snapshot.provenance.systemsArtifactSpecId, "STK-SPEC-006")
+  assert.ok(snapshot.provenance.canonDocIds.includes("STK-CAN-001"), "experience-layer Canon lineage present")
+  assert.ok(snapshot.provenance.canonDocIds.includes("STK-CAN-006"), "systems-layer (seasonal identity) Canon lineage present")
+})
