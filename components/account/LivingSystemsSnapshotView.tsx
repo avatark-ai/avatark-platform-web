@@ -101,7 +101,7 @@ export function LivingSystemsSnapshotView({ worldId, apiBase = '/api/account', d
             className="rounded-md px-2 py-1 text-xs transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{ border: '1px solid var(--surface-line)', color: 'var(--text-dim)', outlineColor: 'var(--gold)' }}
           >
-            {soundEnabled ? 'Ambient sound: On' : 'Ambient sound: Off'}
+            {soundEnabled ? 'Ambient audio: On' : 'Ambient audio: Off'}
           </button>
           <button
             type="button"
@@ -114,7 +114,11 @@ export function LivingSystemsSnapshotView({ worldId, apiBase = '/api/account', d
         </div>
       </div>
 
-      <p className="text-xs" style={{ color: presentation.accentColor }} aria-live="polite">
+      {/* No aria-live here -- the sibling LivingWorldDetailView already owns
+          the page's one authoritative location-change announcement; a second
+          aria-live region would make it ambiguous which one a screen reader
+          (or a test) should treat as canonical. */}
+      <p className="text-xs" style={{ color: presentation.accentColor }}>
         {snapshot.current.name} &middot; Season: {presentation.seasonLabel}
       </p>
 

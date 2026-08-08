@@ -12,6 +12,15 @@ import { test, expect } from '@playwright/test'
 // endpoint before asserting anything about season/environment, and this
 // file runs serial (never parallel with itself) so concurrent tests
 // never race the one shared world.
+//
+// Sprint 8 update: the panel this spec exercises now sources from the
+// embodiment contract (WorldEmbodimentSnapshot) instead of Living
+// Systems' raw WorldSnapshot -- see components/account/
+// LivingSystemsSnapshotView.tsx's own header comment. Its heading text
+// and environment-summary format changed accordingly (richer: atmosphere/
+// water/vegetation semantics instead of raw band names); the assertions
+// below were updated to match this intentional, verified change, not
+// left to silently break.
 test.describe.configure({ mode: 'serial' })
 
 function uniqueDevUser(label: string): string {
@@ -27,9 +36,9 @@ test('a fresh visitor entering Living Vrindavan observes the World Systems panel
   await page.goto(`/dev/account?section=livingVrindavan&dev_user=${devUser}`)
   await page.getByRole('button', { name: 'Enter' }).click()
 
-  await expect(page.getByRole('heading', { name: 'World Systems' })).toBeVisible()
-  await expect(page.getByText(/^Season: /)).toBeVisible()
-  await expect(page.getByText(/Temperature .* · Rainfall .* · River .* · Vegetation .* · Animal presence /)).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'World Embodiment' })).toBeVisible()
+  await expect(page.getByText(/Season: /)).toBeVisible()
+  await expect(page.getByText(/Atmosphere: .* · Water: .* · Vegetation: /)).toBeVisible()
   await page.screenshot({ path: `screenshots/${test.info().project.name}-living-systems-fresh.png`, fullPage: true })
 })
 
@@ -44,7 +53,7 @@ test('Phase 15: visitor enters (Vasanta), leaves, the test world clock advances 
   // Refresh the World Systems panel now that we've moved to Yamuna, and
   // record what season it reports before leaving.
   await page.getByRole('button', { name: 'Refresh' }).click()
-  await expect(page.getByText(/^Season: Vasanta$/)).toBeVisible()
+  await expect(page.getByText(/Season: Vasanta$/)).toBeVisible()
 
   await page.getByRole('button', { name: 'Leave' }).click()
 
@@ -61,7 +70,7 @@ test('Phase 15: visitor enters (Vasanta), leaves, the test world clock advances 
   await expect(page.getByText('Yamuna', { exact: true })).toBeVisible()
 
   await page.getByRole('button', { name: 'Refresh' }).click()
-  await expect(page.getByText(/^Season: Grīṣma$/)).toBeVisible()
+  await expect(page.getByText(/Season: Grīṣma$/)).toBeVisible()
   await page.screenshot({ path: `screenshots/${test.info().project.name}-living-systems-grishma-return.png`, fullPage: true })
 })
 
@@ -91,8 +100,8 @@ test('reduced motion: the World Systems panel loads and functions identically wi
 
   await page.goto(`/dev/account?section=livingVrindavan&dev_user=${devUser}`)
   await page.getByRole('button', { name: 'Enter' }).click()
-  await expect(page.getByRole('heading', { name: 'World Systems' })).toBeVisible()
-  await expect(page.getByText(/^Season: Vasanta$/)).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'World Embodiment' })).toBeVisible()
+  await expect(page.getByText(/Season: Vasanta$/)).toBeVisible()
 })
 
 test('no horizontal overflow and no null/undefined text on the World Systems panel', async ({ page }) => {
@@ -101,7 +110,7 @@ test('no horizontal overflow and no null/undefined text on the World Systems pan
   await page.getByRole('button', { name: 'Enter' }).click()
   await page.getByRole('button', { name: 'Visit Yamuna' }).click()
   await page.getByRole('button', { name: 'Refresh' }).click()
-  await expect(page.getByRole('heading', { name: 'World Systems' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'World Embodiment' })).toBeVisible()
 
   const hasOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)
   expect(hasOverflow).toBe(false)
