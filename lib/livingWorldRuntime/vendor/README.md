@@ -33,12 +33,19 @@ shape -- that conversion is Host logic, not part of the vendored artifact.
 - **Source repo:** `studiok-specifications`
 - **Source path:** `living-vrindavan/living-vrindavan.experience.json`
 - **Source spec:** `STK-SPEC-004` (Living Vrindavan — Experience
-  Artifact, **`Proposed`, not yet `Approved`**), derived from
-  `STK-SPEC-003` (Living World Experience Description schema, also
-  `Proposed`)
-- **Pinned tag:** none yet — `spec-manifest.json` only cuts a tag once a
-  batch reaches `Approved`; this batch has not
-- **Pinned commit:** `5ac7b395c182258b7928623c36c723716b103a92`
+  Artifact, `Approved` 2026-08-08 by explicit Founder/Architecture
+  sign-off, `spec-manifest.json` `v0.2.0`), derived from `STK-SPEC-003`
+  (Living World Experience Description schema, also `Approved`,
+  `v0.2.0`)
+- **Pinned tag:** `v0.2.0`
+- **Pinned commit:** `ef9c65bd34d135fe66c625b0c2e18946f5464067` --
+  re-pinned from the pre-approval commit (`5ac7b395...`) to the approval
+  commit once STK-SPEC-003/004 reached `Approved`, matching
+  `livingVrindavan.world.json`'s own precedent above (STK-SPEC-002 was
+  likewise re-pinned to its approval-batch commit even though the
+  artifact's own bytes didn't change at approval time). Checksum below is
+  unchanged either way -- confirmed byte-identical to the Proposed
+  revision; only the governance status changed, never the content.
 - **Canon lineage:** `STK-CAN-001`, `STK-CAN-002`, `STK-CAN-004`, `STK-CAN-005`, `canon-manifest.json` `v0.1.0`
 
 `../experienceDefinition.ts` converts this artifact into
