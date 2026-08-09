@@ -24,3 +24,5 @@ export type { EncounterOpportunity } from "./encounterOpportunity.ts"
 export type { PopulationEntitySnapshot, PopulationSnapshot } from "./snapshot.ts"
 
 export type { WorldLocationGraph } from "./locationGraph.ts"
+
+export type { PopulationEventType, PopulationEvent } from "./populationEvent.ts"

@@ -104,6 +104,12 @@ importers:
       '@avatark/world-embodiment-runtime':
         specifier: workspace:*
         version: link:packages/world-embodiment-runtime
+      '@avatark/world-memory-contracts':
+        specifier: workspace:*
+        version: link:packages/world-memory-contracts
+      '@avatark/world-memory-runtime':
+        specifier: workspace:*
+        version: link:packages/world-memory-runtime
       '@avatark/world-persistence-contracts':
         specifier: workspace:*
         version: link:packages/world-persistence-contracts
@@ -505,6 +511,38 @@ importers:
       '@avatark/world-embodiment-contracts':
         specifier: workspace:*
         version: link:../world-embodiment-contracts
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/world-memory-contracts:
+    dependencies:
+      '@avatark/living-systems-contracts':
+        specifier: workspace:*
+        version: link:../living-systems-contracts
+      '@avatark/runtime-contracts':
+        specifier: workspace:*
+        version: link:../runtime-contracts
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/world-memory-runtime:
+    dependencies:
+      '@avatark/living-population-contracts':
+        specifier: workspace:*
+        version: link:../living-population-contracts
+      '@avatark/living-systems-contracts':
+        specifier: workspace:*
+        version: link:../living-systems-contracts
+      '@avatark/runtime-contracts':
+        specifier: workspace:*
+        version: link:../runtime-contracts
+      '@avatark/world-memory-contracts':
+        specifier: workspace:*
+        version: link:../world-memory-contracts
     devDependencies:
       typescript:
         specifier: ^5

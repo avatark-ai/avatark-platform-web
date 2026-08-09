@@ -442,8 +442,99 @@ test("packages/living-population-runtime never calls a write method on protected
   assert.deepEqual(violations, [])
 })
 
+// Sprint 11, Phase 22/24: the same enforcement one layer up again, for
+// the World Memory boundary -- invariant #17 ("core is Unreal-free")
+// and #18 ("core is Web/React-free"). @avatark/world-memory-contracts
+// may depend on runtime-contracts and living-systems-contracts only
+// (reusing EntityId/EncounterCategory/etc, never redefining them);
+// @avatark/world-memory-runtime may additionally depend on
+// living-population-contracts (for the PopulationEvent/EncounterOpportunity
+// input shapes World Memory reacts to -- see
+// docs/SPRINT11_GROUND_TRUTH.md's dependency-direction decision) and
+// world-memory-contracts. Neither may ever depend on renderer-contracts,
+// any world-embodiment-*/world-persistence-*/living-population-RUNTIME
+// package, or @avatark/account -- World Memory observes structured
+// deltas the Host layer builds; it never queries simulation/persistence/
+// population internals itself.
+
+const WORLD_MEMORY_CONTRACTS_PACKAGE = "world-memory-contracts"
+const WORLD_MEMORY_RUNTIME_PACKAGE = "world-memory-runtime"
+const WORLD_MEMORY_CONTRACTS_ALLOWED_DEPS = new Set(["@avatark/runtime-contracts", "@avatark/living-systems-contracts"])
+const WORLD_MEMORY_RUNTIME_ALLOWED_DEPS = new Set(["@avatark/runtime-contracts", "@avatark/living-systems-contracts", "@avatark/living-population-contracts", "@avatark/world-memory-contracts"])
+
+test("packages/world-memory-contracts declares, at most, dependencies on runtime-contracts/living-systems-contracts", () => {
+  const deps = packageDependencies(WORLD_MEMORY_CONTRACTS_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => !WORLD_MEMORY_CONTRACTS_ALLOWED_DEPS.has(name))
+  assert.deepEqual(disallowed, [], `world-memory-contracts declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/world-memory-contracts imports, at most, those same two packages in its source", () => {
+  const srcDir = join(REPO_ROOT, "packages", WORLD_MEMORY_CONTRACTS_PACKAGE, "src")
+  const allowed = new Set(["runtime-contracts", "living-systems-contracts"])
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    for (const importedPackage of findAvatarkImports(file)) {
+      if (!allowed.has(importedPackage)) violations.push(`${file} imports @avatark/${importedPackage}`)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("packages/world-memory-runtime declares, at most, dependencies on its four allowed packages", () => {
+  const deps = packageDependencies(WORLD_MEMORY_RUNTIME_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => !WORLD_MEMORY_RUNTIME_ALLOWED_DEPS.has(name))
+  assert.deepEqual(disallowed, [], `world-memory-runtime declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/world-memory-runtime imports, at most, those same four packages in its source -- never a renderer, embodiment/persistence/population-runtime package, or @avatark/account", () => {
+  const srcDir = join(REPO_ROOT, "packages", WORLD_MEMORY_RUNTIME_PACKAGE, "src")
+  const allowed = new Set(["runtime-contracts", "living-systems-contracts", "living-population-contracts", "world-memory-contracts"])
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    for (const importedPackage of findAvatarkImports(file)) {
+      if (!allowed.has(importedPackage)) violations.push(`${file} imports @avatark/${importedPackage}`)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("neither world-memory package's source contains a React/Next.js/Unreal-specific token", () => {
+  const forbidden = ["from \"react", "from 'react", "next/server", "next/navigation", "UObject", "AActor", "Blueprint", "UnrealEngine"]
+  const violations: string[] = []
+  for (const pkg of [WORLD_MEMORY_CONTRACTS_PACKAGE, WORLD_MEMORY_RUNTIME_PACKAGE]) {
+    const srcDir = join(REPO_ROOT, "packages", pkg, "src")
+    for (const file of listSourceFiles(srcDir)) {
+      if (file.endsWith(".test.ts")) continue
+      const code = readFileSync(file, "utf-8")
+        .split("\n")
+        .map((line) => line.replace(/\/\/.*$/, ""))
+        .join("\n")
+      for (const token of forbidden) {
+        if (code.includes(token)) violations.push(`${file} contains "${token}"`)
+      }
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+// Sprint 11, Phase 14: the critical protected-narrative-immutability
+// invariant, restated for World Memory -- it must never gain a write
+// path to protected narrative state, mirroring Sprint 7/9/10's own
+// defense in depth for the same interface.
+test("packages/world-memory-runtime never calls a write method on protected narrative state", () => {
+  const srcDir = join(REPO_ROOT, "packages", WORLD_MEMORY_RUNTIME_PACKAGE, "src")
+  const writeMethodPattern = /protectedNarrative\w*\.(save|put|set|write|mutate|update)\s*\(/i
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    if (file.endsWith(".test.ts")) continue
+    const content = readFileSync(file, "utf-8")
+    if (writeMethodPattern.test(content)) violations.push(file)
+  }
+  assert.deepEqual(violations, [])
+})
+
 test("sanity: this check actually inspects real directories, not an accidental no-op", () => {
-  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE, RENDERER_CONTRACTS_PACKAGE, LIVING_SYSTEMS_CONTRACTS_PACKAGE, LIVING_SYSTEMS_RUNTIME_PACKAGE, WORLD_EMBODIMENT_CONTRACTS_PACKAGE, WORLD_EMBODIMENT_RUNTIME_PACKAGE, WORLD_PERSISTENCE_CONTRACTS_PACKAGE, WORLD_PERSISTENCE_RUNTIME_PACKAGE, LIVING_POPULATION_CONTRACTS_PACKAGE, LIVING_POPULATION_RUNTIME_PACKAGE]) {
+  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE, RENDERER_CONTRACTS_PACKAGE, LIVING_SYSTEMS_CONTRACTS_PACKAGE, LIVING_SYSTEMS_RUNTIME_PACKAGE, WORLD_EMBODIMENT_CONTRACTS_PACKAGE, WORLD_EMBODIMENT_RUNTIME_PACKAGE, WORLD_PERSISTENCE_CONTRACTS_PACKAGE, WORLD_PERSISTENCE_RUNTIME_PACKAGE, LIVING_POPULATION_CONTRACTS_PACKAGE, LIVING_POPULATION_RUNTIME_PACKAGE, WORLD_MEMORY_CONTRACTS_PACKAGE, WORLD_MEMORY_RUNTIME_PACKAGE]) {
     const srcDir = join(REPO_ROOT, "packages", runtimePackage, "src")
     assert.ok(statSync(srcDir).isDirectory(), `expected packages/${runtimePackage}/src to exist`)
     assert.ok(listSourceFiles(srcDir).length > 0, `expected packages/${runtimePackage}/src to contain source files`)

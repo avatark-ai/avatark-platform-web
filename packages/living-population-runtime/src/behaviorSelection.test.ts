@@ -79,3 +79,42 @@ test("selection is deterministic -- identical inputs always produce the identica
   const b = selectBehavior(params)
   assert.deepEqual(a, b)
 })
+
+// Sprint 11, Phase 7: bounded, deterministic memory influence -- a
+// remembered resource location wins over the perception-default "first
+// reachable" pick, but ONLY when memory already appears among the
+// locations perception itself deemed viable this tick.
+test("a memory hint changes WHICH viable water location is chosen, among two perception already offers", () => {
+  const intent = selectBehavior({
+    entityId: "cow-1",
+    profile: PROFILE,
+    needs: needs({ thirst: 0.9 }),
+    rhythmPhase: "FORAGE",
+    perception: perception({ reachableWaterLocationIds: ["river", "lake"] }),
+    group: null,
+    tick: 10,
+    memoryHint: { preferredResourceLocationId: "lake" },
+  })
+  assert.equal(intent.type, "MOVE_TO_RESOURCE")
+  assert.equal(intent.targetLocationId, "lake", "memory's own preferred location wins over the default first-in-list pick")
+})
+
+test("a memory hint pointing at a location perception did NOT deem viable this tick is ignored, never granted anyway", () => {
+  const intent = selectBehavior({
+    entityId: "cow-1",
+    profile: PROFILE,
+    needs: needs({ thirst: 0.9 }),
+    rhythmPhase: "FORAGE",
+    perception: perception({ reachableWaterLocationIds: ["river"] }),
+    group: null,
+    tick: 10,
+    memoryHint: { preferredResourceLocationId: "some-unreachable-place" },
+  })
+  assert.equal(intent.targetLocationId, "river", "memory cannot conjure availability perception itself never granted")
+})
+
+test("omitting memoryHint entirely is identical to Sprint 10's own unmodified behavior", () => {
+  const withoutHint = selectBehavior({ entityId: "cow-1", profile: PROFILE, needs: needs({ thirst: 0.9 }), rhythmPhase: "FORAGE", perception: perception(), group: null, tick: 10 })
+  const withNullHint = selectBehavior({ entityId: "cow-1", profile: PROFILE, needs: needs({ thirst: 0.9 }), rhythmPhase: "FORAGE", perception: perception(), group: null, tick: 10, memoryHint: null })
+  assert.deepEqual(withoutHint, withNullHint)
+})

@@ -34,6 +34,15 @@ function pressureOf(needs: NeedState[], dimension: NeedDimension | null): number
   return needs.find((n) => n.dimension === dimension)?.pressure ?? 0
 }
 
+// Sprint 11, Phase 7: bounded, deterministic entity-memory influence.
+// `preferredResourceLocationId` may only ever WIN AMONG candidates
+// perception has already deemed reachable and viable this tick -- it
+// can never make an unavailable or illegal location eligible. Memory
+// influences WHICH viable option is chosen, never whether one exists.
+export interface MemoryHint {
+  preferredResourceLocationId: LocationId | null
+}
+
 export interface SelectBehaviorParams {
   entityId: EntityId
   profile: EntityBehaviorProfile
@@ -42,6 +51,7 @@ export interface SelectBehaviorParams {
   perception: EntityPerception
   group: { locationId: LocationId; targetLocationId: LocationId | null } | null
   tick: number
+  memoryHint?: MemoryHint | null
 }
 
 // Sprint 10, Phase 6: needs + rhythm + perception + environmental
@@ -56,7 +66,13 @@ export function selectBehavior(params: SelectBehaviorParams): BehaviorIntent {
 
   const wantsWaterMove = !perception.waterAvailable && perception.reachableWaterLocationIds.length > 0
   const wantsVegetationMove = !perception.vegetationAvailable && perception.reachableVegetationLocationIds.length > 0
-  const movementTarget = wantsWaterMove ? perception.reachableWaterLocationIds[0] : wantsVegetationMove ? perception.reachableVegetationLocationIds[0] : null
+
+  const preferredLocationId = params.memoryHint?.preferredResourceLocationId ?? null
+  function preferMemoryOrFirst(reachable: LocationId[]): LocationId | null {
+    if (preferredLocationId && reachable.includes(preferredLocationId)) return preferredLocationId
+    return reachable[0] ?? null
+  }
+  const movementTarget = wantsWaterMove ? preferMemoryOrFirst(perception.reachableWaterLocationIds) : wantsVegetationMove ? preferMemoryOrFirst(perception.reachableVegetationLocationIds) : null
 
   const groupIsMoving = group !== null && group.targetLocationId !== null && group.targetLocationId !== perception.currentLocationId
   const awayFromGroup = group !== null && group.locationId !== perception.currentLocationId

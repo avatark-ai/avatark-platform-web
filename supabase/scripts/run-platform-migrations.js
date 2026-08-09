@@ -81,6 +81,8 @@ const MIGRATION_ORDER = [
   '026_living_systems_world_state.sql',
   // Sprint 10: same precedent, NOT applied.
   '027_living_population_state.sql',
+  // Sprint 11: same precedent, NOT applied.
+  '028_world_memory.sql',
 ]
 
 async function main() {

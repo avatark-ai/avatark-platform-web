@@ -1,0 +1,40 @@
+{
+  "name": "@avatark/world-memory-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Renderer-neutral contracts for Sprint 11's World Memory / Entity Memory domains: WorldEvent, WorldConsequence, EntityMemoryEntry, HistoricalMarker, EncounterHistoryEntry, ReturnRecognition, retention/significance vocabulary, and repository interfaces. No implementations, no renderer objects, zero franchise content.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@avatark/living-systems-contracts": "workspace:*",
+    "@avatark/runtime-contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "node --experimental-strip-types --test src/returnRecognition.test.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
+  }
+}

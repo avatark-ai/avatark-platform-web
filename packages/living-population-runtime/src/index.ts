@@ -8,7 +8,7 @@ export { evolveNeeds, isUrgent } from "./needsEvolution.ts"
 export type { ResolvePerceptionParams } from "./perception.ts"
 export { resolvePerception } from "./perception.ts"
 
-export type { SelectBehaviorParams } from "./behaviorSelection.ts"
+export type { SelectBehaviorParams, MemoryHint } from "./behaviorSelection.ts"
 export { selectBehavior } from "./behaviorSelection.ts"
 
 export { IllegalMovementError, resolveMovementIntent } from "./movementResolution.ts"

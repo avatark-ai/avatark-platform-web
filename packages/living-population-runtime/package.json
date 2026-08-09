@@ -23,7 +23,7 @@
     "dist"
   ],
   "scripts": {
-    "test": "node --experimental-strip-types --test src/locationGraph.test.ts src/rhythm.test.ts src/needsEvolution.test.ts src/perception.test.ts src/behaviorSelection.test.ts src/movementResolution.test.ts src/groupDynamics.test.ts src/inMemoryRepositories.test.ts src/populationSimulation.test.ts src/livingForestPopulationPortability.test.ts",
+    "test": "node --experimental-strip-types --test src/locationGraph.test.ts src/rhythm.test.ts src/needsEvolution.test.ts src/perception.test.ts src/behaviorSelection.test.ts src/movementResolution.test.ts src/groupDynamics.test.ts src/inMemoryRepositories.test.ts src/populationSimulation.test.ts src/livingForestPopulationPortability.test.ts src/populationEvents.test.ts",
     "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
   },
   "publishConfig": {

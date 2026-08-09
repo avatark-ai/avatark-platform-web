@@ -8,11 +8,13 @@ import type {
   GroupState,
   LocationResourceAffordance,
   MovementIntent,
+  PopulationEvent,
   RhythmSchedule,
   WorldLocationGraph,
 } from "@avatark/living-population-contracts"
 import { freshNeedStates } from "@avatark/living-population-contracts"
 import type { NeedDimension } from "@avatark/living-population-contracts"
+import type { MemoryHint } from "./behaviorSelection.ts"
 import { resolveRhythmPhase } from "./rhythm.ts"
 import { resolvePerception } from "./perception.ts"
 import { selectBehavior } from "./behaviorSelection.ts"
@@ -57,6 +59,12 @@ export interface AdvancePopulationSimulationParams {
   ticks: number
   seed: string
   now: () => string
+  // Sprint 11, Phase 7: bounded, deterministic entity-memory influence on
+  // behavior selection -- absent (or missing an entry) for any entity
+  // with no relevant memory, producing identical behavior to Sprint 10's
+  // own unmodified selectBehavior. Population never reads memory
+  // storage itself; the Host layer resolves this map before calling in.
+  memoryHintByEntityId?: ReadonlyMap<string, MemoryHint>
 }
 
 export interface AdvancePopulationSimulationResult {
@@ -67,6 +75,10 @@ export interface AdvancePopulationSimulationResult {
   groups: GroupState[]
   worldSystemEvents: WorldSystemEvent[]
   encounterOpportunities: EncounterOpportunity[]
+  // Sprint 11: structured per-tick deltas -- additive, see
+  // populationEvent.ts's own header comment for why this is an extension
+  // of Sprint 10's engine, never a second one.
+  populationEvents: PopulationEvent[]
 }
 
 export function computeEncounterOpportunities(populationEntities: LivingEntityState[], encounterRules: EncounterRule[], environment: EnvironmentalState, protectedNarrative: ProtectedNarrativeProjection, tick: number): EncounterOpportunity[] {
@@ -97,6 +109,8 @@ export function advancePopulationSimulation(params: AdvancePopulationSimulationP
   let behaviorStates = params.behaviorStates
   let groups = params.groups
   const worldSystemEvents: WorldSystemEvent[] = []
+  const populationEvents: PopulationEvent[] = []
+  const memoryHintByEntityId = params.memoryHintByEntityId ?? new Map<string, MemoryHint>()
 
   const profileByArchetype = new Map(params.behaviorProfiles.map((p) => [p.archetypeId, p]))
   const scheduleById = new Map(params.rhythmSchedules.map((s) => [s.id, s]))
@@ -148,9 +162,13 @@ export function advancePopulationSimulation(params: AdvancePopulationSimulationP
       const group = perception.groupId ? groups.find((g) => g.id === perception.groupId) ?? null : null
       const groupInfo = group ? { locationId: group.locationId, targetLocationId: group.targetLocationId } : null
 
-      const behaviorIntent = selectBehavior({ entityId: entity.id, profile, needs: current.needs, rhythmPhase, perception, group: groupInfo, tick })
+      const behaviorIntent = selectBehavior({ entityId: entity.id, profile, needs: current.needs, rhythmPhase, perception, group: groupInfo, tick, memoryHint: memoryHintByEntityId.get(entity.id) ?? null })
       const movementIntent = resolveMovementIntent(behaviorIntent, perception)
       movementIntentsByEntityId.set(entity.id, movementIntent)
+
+      if (behaviorIntent.type !== current.activity) {
+        populationEvents.push({ type: "entity.activity_transitioned", tick, entityId: entity.id, groupId: perception.groupId, fromLocationId: null, toLocationId: null, fromActivity: current.activity, toActivity: behaviorIntent.type })
+      }
 
       const satisfiedDimension = NEED_SATISFIED_BY[behaviorIntent.type]
       const evolvedNeeds = evolveNeeds({
@@ -161,6 +179,10 @@ export function advancePopulationSimulation(params: AdvancePopulationSimulationP
       })
 
       const newLocationId = movementIntent.type === "Remain" ? entity.locationId : movementIntent.targetLocationId ?? entity.locationId
+
+      if (newLocationId !== entity.locationId) {
+        populationEvents.push({ type: "entity.moved", tick, entityId: entity.id, groupId: perception.groupId, fromLocationId: entity.locationId, toLocationId: newLocationId, fromActivity: null, toActivity: null })
+      }
 
       nextPopulationEntities.push({ ...entity, locationId: newLocationId, lifecyclePhase: COARSE_LIFECYCLE[behaviorIntent.type], lastUpdatedTick: tick })
       nextBehaviorStates.push({
@@ -178,17 +200,21 @@ export function advancePopulationSimulation(params: AdvancePopulationSimulationP
 
     populationEntities = nextPopulationEntities
     behaviorStates = nextBehaviorStates
-    groups = groups.map((group) =>
-      advanceGroupState({
+    groups = groups.map((group) => {
+      const advanced = advanceGroupState({
         group,
         memberEntities: populationEntities.filter((e) => group.memberEntityIds.includes(e.id)),
         memberMovementIntents: group.memberEntityIds.map((id) => movementIntentsByEntityId.get(id)).filter((intent): intent is MovementIntent => Boolean(intent)),
         tick,
-      }),
-    )
+      })
+      if (advanced.locationId !== group.locationId) {
+        populationEvents.push({ type: "group.relocated", tick, entityId: null, groupId: group.id, fromLocationId: group.locationId, toLocationId: advanced.locationId, fromActivity: null, toActivity: null })
+      }
+      return advanced
+    })
   }
 
   const encounterOpportunities = computeEncounterOpportunities(populationEntities, params.encounterRules, sharedState.environment, params.protectedNarrative, sharedState.clock.tick)
 
-  return { sharedState, vegetationEntities, populationEntities, behaviorStates, groups, worldSystemEvents, encounterOpportunities }
+  return { sharedState, vegetationEntities, populationEntities, behaviorStates, groups, worldSystemEvents, encounterOpportunities, populationEvents }
 }
