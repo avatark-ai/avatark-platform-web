@@ -2,6 +2,7 @@ import type { RelationshipState, RelationshipType, FamiliarityState, SeparationS
 import { evaluateSeparationTransition, evolveFamiliarity, evolveRelationshipEvidence, deriveRelationshipBand, resolvePlaceAttachment, resolveSocialPerception } from "@avatark/social-ecology-runtime"
 import type { EntityMemoryEntry, WorldEvent } from "@avatark/world-memory-contracts"
 import { deriveEntityMemoryEntries, deriveWorldEvents } from "@avatark/world-memory-runtime"
+import type { DayPhaseInput, RoutineWindowInput } from "@avatark/living-population-runtime"
 import { getEmbodimentWithHistory, wakeWorldWithMemory } from "../worldMemory/hostService.ts"
 import type { WakeWorldWithMemoryResult, WorldEmbodimentSnapshotWithHistory } from "../worldMemory/hostService.ts"
 import { entityMemoryRepository, worldEventRepository } from "../worldMemory/singleton.ts"
@@ -77,7 +78,13 @@ export interface WakeWorldWithSocialEcologyResult {
 // the same before/after-only comparison discipline Sprint 11 already
 // used for its own significance derivation, not a bug. A deliberate,
 // documented Host-layer scope choice.
-export async function wakeWorldWithSocialEcology(worldInstanceId: string, ownerId: string, now: () => string = defaultNow): Promise<WakeWorldWithSocialEcologyResult> {
+export async function wakeWorldWithSocialEcology(
+  worldInstanceId: string,
+  ownerId: string,
+  now: () => string = defaultNow,
+  resolveDayPhaseForTick?: (tick: number) => DayPhaseInput | null,
+  routineEntriesByArchetypeId?: ReadonlyMap<string, RoutineWindowInput[]>,
+): Promise<WakeWorldWithSocialEcologyResult> {
   await ensureSeeded(worldInstanceId)
 
   const beforePopulation = await getPopulationSnapshot(worldInstanceId, now)
@@ -86,7 +93,12 @@ export async function wakeWorldWithSocialEcology(worldInstanceId: string, ownerI
   const groupIds = beforePopulation.groups.map((group) => group.id)
   const homeRangeLocationIdsByOwnerId = await buildHomeRangeLocationIdsByOwnerId(worldInstanceId, groupIds)
 
-  const memory = await wakeWorldWithMemory(worldInstanceId, ownerId, now, relatedEntityIdsByEntityId, homeRangeLocationIdsByOwnerId)
+  // Sprint 13, Phase 6: an optional pass-through only -- living rhythms'
+  // own day-phase/routine facts feed into the SAME population advance
+  // call World Memory/Social Ecology already drive, never a second/
+  // competing advance. Every existing caller that omits these two params
+  // (this whole file's own pre-Sprint-13 behavior) is unaffected.
+  const memory = await wakeWorldWithMemory(worldInstanceId, ownerId, now, relatedEntityIdsByEntityId, homeRangeLocationIdsByOwnerId, resolveDayPhaseForTick, routineEntriesByArchetypeId)
 
   const afterTick = memory.world.state.sharedState.clock.tick
   const afterPopulation = memory.population

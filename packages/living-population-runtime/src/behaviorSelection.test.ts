@@ -200,3 +200,74 @@ test("omitting socialContext entirely is identical to Sprint 10/11's own unmodif
   const withNull = selectBehavior({ entityId: "cow-1", profile: PROFILE, needs: needs({ thirst: 0.9 }), rhythmPhase: "FORAGE", perception: perception(), group: null, tick: 10, socialContext: null })
   assert.deepEqual(without, withNull)
 })
+
+test("omitting dayPhase/routineWindow entirely is identical to Sprint 10-12's own unmodified behavior", () => {
+  const without = selectBehavior({ entityId: "cow-1", profile: PROFILE, needs: needs({ hunger: 0.5 }), rhythmPhase: "FORAGE", perception: perception(), group: null, tick: 10 })
+  const withNull = selectBehavior({ entityId: "cow-1", profile: PROFILE, needs: needs({ hunger: 0.5 }), rhythmPhase: "FORAGE", perception: perception(), group: null, tick: 10, dayPhase: null, routineWindow: null })
+  assert.deepEqual(without, withNull)
+})
+
+test("a routine window for a DIFFERENT day phase than the one given is never applied -- an honest default against a stale window", () => {
+  const withStaleWindow = selectBehavior({
+    entityId: "cow-1",
+    profile: PROFILE,
+    needs: needs({ social: 0.1 }),
+    rhythmPhase: "WAKE",
+    perception: perception({ vegetationAvailable: false, reachableVegetationLocationIds: [] }),
+    group: null,
+    tick: 10,
+    dayPhase: "MORNING",
+    routineWindow: { dayPhase: "EVENING", eligibleActivities: ["SOCIALIZE"], socialAffinity: 0.9, restBias: 0, movementBias: 0 },
+  })
+  assert.equal(withStaleWindow.type, "REMAIN", "the window's own dayPhase (EVENING) does not match the given dayPhase (MORNING), so it contributes zero bonus")
+})
+
+test("a routine bonus can tip a close race in favor of the routine-favored candidate", () => {
+  // GRAZE (hunger 0.4) vs REST (rest 0.4) -- an exact tie with no
+  // routine influence, broken only by PRIORITY_ORDER (GRAZE before REST).
+  const tied = selectBehavior({ entityId: "cow-1", profile: PROFILE, needs: needs({ hunger: 0.4, rest: 0.4 }), rhythmPhase: "WAKE", perception: perception(), group: null, tick: 10 })
+  assert.equal(tied.type, "GRAZE", "sanity check: without a routine bonus, priority order alone picks GRAZE")
+
+  const withRoutine = selectBehavior({
+    entityId: "cow-1",
+    profile: PROFILE,
+    needs: needs({ hunger: 0.4, rest: 0.4 }),
+    rhythmPhase: "WAKE",
+    perception: perception(),
+    group: null,
+    tick: 10,
+    dayPhase: "DUSK",
+    routineWindow: { dayPhase: "DUSK", eligibleActivities: ["REST"], socialAffinity: 0, restBias: 0.3, movementBias: 0 },
+  })
+  assert.equal(withRoutine.type, "REST", "a matching routine window's restBias tips the tie toward REST")
+})
+
+test("a routine bonus never overrides a genuinely urgent, higher-pressure need", () => {
+  const intent = selectBehavior({
+    entityId: "cow-1",
+    profile: PROFILE,
+    needs: needs({ thirst: 0.9, social: 0.1 }),
+    rhythmPhase: "WAKE",
+    perception: perception(),
+    group: null,
+    tick: 10,
+    dayPhase: "DUSK",
+    routineWindow: { dayPhase: "DUSK", eligibleActivities: ["SOCIALIZE"], socialAffinity: 0.9, restBias: 0, movementBias: 0 },
+  })
+  assert.equal(intent.type, "MOVE_TO_RESOURCE", "an urgent thirst need still wins over a merely routine-favored, low-pressure SOCIALIZE")
+})
+
+test("a candidate not named in eligibleActivities gets zero routine bonus -- tendency, never override", () => {
+  const intent = selectBehavior({
+    entityId: "cow-1",
+    profile: PROFILE,
+    needs: needs(),
+    rhythmPhase: "WAKE",
+    perception: perception({ vegetationAvailable: false, reachableVegetationLocationIds: [] }),
+    group: null,
+    tick: 10,
+    dayPhase: "DUSK",
+    routineWindow: { dayPhase: "DUSK", eligibleActivities: ["GRAZE"], socialAffinity: 0, restBias: 0, movementBias: 0 },
+  })
+  assert.equal(intent.type, "REMAIN", "GRAZE is ineligible this tick (no vegetation), and REST/SOCIALIZE are not named in eligibleActivities, so no routine bonus applies to anything")
+})

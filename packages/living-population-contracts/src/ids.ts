@@ -13,4 +13,9 @@ export type BehaviorProfileId = string
 // docs/SPRINT10_GROUND_TRUTH.md's "roster-split decision"). Kept as a
 // closed union so a Host-layer mapping can't silently invent new,
 // unreviewed resource kinds.
-export type ResourceTag = "water" | "vegetation" | "shelter" | "gathering"
+//
+// Sprint 13, Phase 4: "rest" (resting space) and "corridor" (safe
+// movement corridor) added additively -- the same closed-union
+// discipline, two more semantic tags a Host-layer mapping can assign to
+// an already-Approved location, never a new resource TYPE mechanism.
+export type ResourceTag = "water" | "vegetation" | "shelter" | "gathering" | "rest" | "corridor"

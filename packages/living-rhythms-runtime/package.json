@@ -1,0 +1,44 @@
+{
+  "name": "@avatark/living-rhythms-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Executes Sprint 13's living-rhythms derivation: deterministic day-phase resolution, resource-opportunity derivation, routine/group-routine resolution, place occupancy/rhythm derivation, and social-interaction-opportunity resolution. Host-neutral, database-neutral, franchise-neutral, zero scripted timetables.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@avatark/living-population-contracts": "workspace:*",
+    "@avatark/living-rhythms-contracts": "workspace:*",
+    "@avatark/living-systems-contracts": "workspace:*",
+    "@avatark/runtime-contracts": "workspace:*",
+    "@avatark/social-ecology-contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "node --experimental-strip-types --test src/dayPhaseResolution.test.ts src/resourceOpportunityResolution.test.ts src/routineResolution.test.ts src/groupRoutineResolution.test.ts src/placeOccupancyResolution.test.ts src/placeRhythmEvolution.test.ts src/socialInteractionResolution.test.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
+  }
+}

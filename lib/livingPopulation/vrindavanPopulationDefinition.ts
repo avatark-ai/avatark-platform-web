@@ -24,13 +24,19 @@ import worldArtifact from "../livingWorldRuntime/vendor/livingVrindavan.world.js
 // responsibility") -> gathering. No new location, no new narrative
 // content -- only a systems-config tag on locations StudioK already
 // described.
+//
+// Sprint 13, Phase 4: two additive tags, same posture, same place (no
+// second resource-tag-assignment mechanism) -- Kadamba Grove's own
+// "intimacy with living environment" purpose also affords "rest";
+// Govardhan Path's own "movement/responsibility" purpose also affords
+// "corridor" (see docs/SPRINT13_GROUND_TRUTH.md's "No conflict found").
 export const COW_ARCHETYPE_ID = "avatark-population-cow"
 export const BIRD_FLOCK_ARCHETYPE_ID = "avatark-population-bird-flock"
 
 export const VRINDAVAN_RESOURCE_AFFORDANCES: LocationResourceAffordance[] = [
   { locationId: "yamuna", resourceTags: ["water"] },
-  { locationId: "kadamba-grove", resourceTags: ["vegetation", "shelter"] },
-  { locationId: "govardhan-path", resourceTags: ["gathering"] },
+  { locationId: "kadamba-grove", resourceTags: ["vegetation", "shelter", "rest"] },
+  { locationId: "govardhan-path", resourceTags: ["gathering", "corridor"] },
   { locationId: "vrindavan-entry", resourceTags: [] },
 ]
 

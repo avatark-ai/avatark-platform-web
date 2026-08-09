@@ -168,3 +168,44 @@ test("omitting relatedEntityIdsByEntityId/homeRangeLocationIdsByOwnerId entirely
   assert.deepEqual(withoutSocial.populationEntities, withEmptySocial.populationEntities)
   assert.deepEqual(withoutSocial.behaviorStates, withEmptySocial.behaviorStates)
 })
+
+// Sprint 13, Phase 6: resolveDayPhaseForTick/routineEntriesByArchetypeId
+// wiring -- proves the structural input actually reaches selectBehavior
+// and can tip behavior (a routine-favored REST wins a close race against
+// GRAZE), without re-asserting selectBehavior's own bonus arithmetic,
+// which behaviorSelection.test.ts already covers in isolation. Also
+// proves resolveDayPhaseForTick is called fresh with each tick's own
+// number, not the batch's final tick alone.
+test("resolveDayPhaseForTick + routineEntriesByArchetypeId can tip behavior toward a routine-favored candidate", () => {
+  const params = baseParams(1)
+  const seenTicks: number[] = []
+  params.resolveDayPhaseForTick = (tick) => {
+    seenTicks.push(tick)
+    return "DUSK"
+  }
+  params.routineEntriesByArchetypeId = new Map([["cow", [{ dayPhase: "DUSK" as const, eligibleActivities: ["REST" as const], socialAffinity: 0, restBias: 0.3, movementBias: 0 }]]])
+  // Equal hunger/rest baseline pressure so PRIORITY_ORDER alone would
+  // otherwise pick GRAZE (behaviorSelection.test.ts's own documented
+  // tie-break) -- the routine bonus must be what tips it to REST.
+  params.behaviorProfiles = [{ ...COW_PROFILE, needDefinitions: COW_PROFILE.needDefinitions.map((d) => ({ ...d, baselinePressurePerTick: d.dimension === "hunger" || d.dimension === "rest" ? 0.4 : d.baselinePressurePerTick })) }]
+
+  const result = advancePopulationSimulation(params)
+  assert.equal(result.behaviorStates[0].activity, "REST", "the matching routine window's restBias tipped the tie toward REST")
+  assert.deepEqual(seenTicks, [1], "resolveDayPhaseForTick is called with the tick actually being simulated")
+})
+
+test("a routineEntriesByArchetypeId entry for a day phase resolveDayPhaseForTick did NOT return is never applied", () => {
+  const params = baseParams(1)
+  params.resolveDayPhaseForTick = () => "DAWN"
+  params.routineEntriesByArchetypeId = new Map([["cow", [{ dayPhase: "DUSK" as const, eligibleActivities: ["REST" as const], socialAffinity: 0, restBias: 0.9, movementBias: 0 }]]])
+
+  const result = advancePopulationSimulation(params)
+  assert.equal(result.behaviorStates[0].activity, "REMAIN", "the routine window is for DUSK, but the resolved day phase is DAWN, so it contributes zero bonus -- with no other pressure yet accumulated, REMAIN's own baseline still wins")
+})
+
+test("omitting resolveDayPhaseForTick/routineEntriesByArchetypeId entirely is identical to Sprint 10-12's own unmodified behavior", () => {
+  const without = advancePopulationSimulation(baseParams(4))
+  const withEmpty = advancePopulationSimulation({ ...baseParams(4), routineEntriesByArchetypeId: new Map() })
+  assert.deepEqual(without.populationEntities, withEmpty.populationEntities)
+  assert.deepEqual(without.behaviorStates, withEmpty.behaviorStates)
+})

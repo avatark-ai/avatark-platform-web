@@ -14,7 +14,7 @@ import type {
 } from "@avatark/living-population-contracts"
 import { freshNeedStates } from "@avatark/living-population-contracts"
 import type { NeedDimension } from "@avatark/living-population-contracts"
-import type { MemoryHint, SocialContext } from "./behaviorSelection.ts"
+import type { DayPhaseInput, MemoryHint, RoutineWindowInput, SocialContext } from "./behaviorSelection.ts"
 import { resolveRhythmPhase } from "./rhythm.ts"
 import { resolvePerception } from "./perception.ts"
 import { selectBehavior } from "./behaviorSelection.ts"
@@ -75,6 +75,21 @@ export interface AdvancePopulationSimulationParams {
   // which change every tick, so it cannot be precomputed the same way).
   relatedEntityIdsByEntityId?: ReadonlyMap<string, string[]>
   homeRangeLocationIdsByOwnerId?: ReadonlyMap<string, string[]>
+  // Sprint 13, Phase 6: the world-shared day-phase projection of THIS
+  // tick -- a plain function, the same "inject a pure derivation, never
+  // the schedule/type itself" discipline `now: () => string` already
+  // established one field up, so population-runtime never gains a
+  // dependency on living-rhythms-*. Recomputed once per tick INSIDE the
+  // loop below (never precomputed for the whole batch), since day phase
+  // is a function of the exact tick being simulated, the same
+  // "determinism under both catch-up and live-stepping" discipline
+  // rhythmPhase's own per-entity resolveRhythmPhase(schedule, tick) call
+  // already uses.
+  resolveDayPhaseForTick?: (tick: number) => DayPhaseInput | null
+  // Sprint 13, Phase 6: STATIC per-archetype routine data (mirrors
+  // rhythmSchedules' own per-archetype keying) -- the entry matching the
+  // tick's own resolved day phase is picked fresh inside the loop below.
+  routineEntriesByArchetypeId?: ReadonlyMap<string, RoutineWindowInput[]>
 }
 
 export interface AdvancePopulationSimulationResult {
@@ -150,6 +165,8 @@ export function advancePopulationSimulation(params: AdvancePopulationSimulationP
     const nextPopulationEntities: LivingEntityState[] = []
     const nextBehaviorStates: EntityBehaviorState[] = []
 
+    const dayPhase = params.resolveDayPhaseForTick?.(tick) ?? null
+
     for (const entity of populationEntities) {
       const profile = profileByArchetype.get(entity.archetypeId)
       if (!profile) {
@@ -183,7 +200,9 @@ export function advancePopulationSimulation(params: AdvancePopulationSimulationP
         withinHomeRange: homeRangeLocationIds.length === 0 || homeRangeLocationIds.includes(entity.locationId),
       }
 
-      const behaviorIntent = selectBehavior({ entityId: entity.id, profile, needs: current.needs, rhythmPhase, perception, group: groupInfo, tick, memoryHint: memoryHintByEntityId.get(entity.id) ?? null, socialContext })
+      const routineWindow = dayPhase ? (params.routineEntriesByArchetypeId?.get(entity.archetypeId) ?? []).find((entry) => entry.dayPhase === dayPhase) ?? null : null
+
+      const behaviorIntent = selectBehavior({ entityId: entity.id, profile, needs: current.needs, rhythmPhase, perception, group: groupInfo, tick, memoryHint: memoryHintByEntityId.get(entity.id) ?? null, socialContext, dayPhase, routineWindow })
       const movementIntent = resolveMovementIntent(behaviorIntent, perception)
       movementIntentsByEntityId.set(entity.id, movementIntent)
 

@@ -9,7 +9,7 @@ import {
 import type { EncounterHistoryEntry, EncounterHistoryStatus, EntityMemoryEntry, HistoricalMarker, ReturnRecognition, WorldEvent } from "@avatark/world-memory-contracts"
 import type { EnvironmentalState } from "@avatark/living-systems-contracts"
 import type { LocationResourceAffordance } from "@avatark/living-population-contracts"
-import type { MemoryHint } from "@avatark/living-population-runtime"
+import type { DayPhaseInput, MemoryHint, RoutineWindowInput } from "@avatark/living-population-runtime"
 import type { WorldEmbodimentSnapshot } from "@avatark/world-embodiment-contracts"
 import { getWorldState } from "../worldPersistence/hostService.ts"
 import { getPopulationEmbodimentSnapshot, getPopulationSnapshot, wakeWorldWithPopulation } from "../livingPopulation/hostService.ts"
@@ -61,7 +61,7 @@ export interface WakeWorldWithMemoryResult {
 // meaningful systemic event occurs -> World Memory records it -> Entity
 // Memory records only relevant entity history -> encounter availability
 // changes" (the mission's own Phase 27 chain), in one function call.
-export async function wakeWorldWithMemory(worldInstanceId: string, ownerId: string, now: () => string = defaultNow, relatedEntityIdsByEntityId?: ReadonlyMap<string, string[]>, homeRangeLocationIdsByOwnerId?: ReadonlyMap<string, string[]>): Promise<WakeWorldWithMemoryResult> {
+export async function wakeWorldWithMemory(worldInstanceId: string, ownerId: string, now: () => string = defaultNow, relatedEntityIdsByEntityId?: ReadonlyMap<string, string[]>, homeRangeLocationIdsByOwnerId?: ReadonlyMap<string, string[]>, resolveDayPhaseForTick?: (tick: number) => DayPhaseInput | null, routineEntriesByArchetypeId?: ReadonlyMap<string, RoutineWindowInput[]>): Promise<WakeWorldWithMemoryResult> {
   const beforeShared = await getWorldState(worldInstanceId, now)
   const beforePopulation = await getPopulationSnapshot(worldInstanceId, now)
 
@@ -82,7 +82,7 @@ export async function wakeWorldWithMemory(worldInstanceId: string, ownerId: stri
   // second/competing advance. Every existing caller that omits these
   // two params (this whole file's own pre-Sprint-12 behavior) is
   // unaffected.
-  const combined = await wakeWorldWithPopulation(worldInstanceId, ownerId, now, memoryHintByEntityId, relatedEntityIdsByEntityId, homeRangeLocationIdsByOwnerId)
+  const combined = await wakeWorldWithPopulation(worldInstanceId, ownerId, now, memoryHintByEntityId, relatedEntityIdsByEntityId, homeRangeLocationIdsByOwnerId, resolveDayPhaseForTick, routineEntriesByArchetypeId)
   const afterShared = combined.world.state.sharedState
   const afterTick = afterShared.clock.tick
   const afterPopulation = await getPopulationSnapshot(worldInstanceId, now)

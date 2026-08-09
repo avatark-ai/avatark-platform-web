@@ -1,5 +1,5 @@
 import { advancePopulationSimulation, computeEncounterOpportunities, resolvePopulationSnapshot } from "@avatark/living-population-runtime"
-import type { AdvancePopulationSimulationResult, MemoryHint } from "@avatark/living-population-runtime"
+import type { AdvancePopulationSimulationResult, DayPhaseInput, MemoryHint, RoutineWindowInput } from "@avatark/living-population-runtime"
 import { freshNeedStates } from "@avatark/living-population-contracts"
 import type { PopulationSnapshot } from "@avatark/living-population-contracts"
 import type { SharedWorldState } from "@avatark/living-systems-contracts"
@@ -80,7 +80,7 @@ export async function getPopulationSnapshot(worldInstanceId: WorldInstanceId, no
 // worldInstanceId (its own convention: the worldInstanceId itself) --
 // see wakeWorldWithPopulation below for the one call site that gets
 // this right end to end.
-export async function advancePopulationForWorld(worldInstanceId: WorldInstanceId, sharedStateAtStart: SharedWorldState, ticks: number, seed: string, now: () => string, memoryHintByEntityId?: ReadonlyMap<string, MemoryHint>, relatedEntityIdsByEntityId?: ReadonlyMap<string, string[]>, homeRangeLocationIdsByOwnerId?: ReadonlyMap<string, string[]>): Promise<AdvancePopulationSimulationResult> {
+export async function advancePopulationForWorld(worldInstanceId: WorldInstanceId, sharedStateAtStart: SharedWorldState, ticks: number, seed: string, now: () => string, memoryHintByEntityId?: ReadonlyMap<string, MemoryHint>, relatedEntityIdsByEntityId?: ReadonlyMap<string, string[]>, homeRangeLocationIdsByOwnerId?: ReadonlyMap<string, string[]>, resolveDayPhaseForTick?: (tick: number) => DayPhaseInput | null, routineEntriesByArchetypeId?: ReadonlyMap<string, RoutineWindowInput[]>): Promise<AdvancePopulationSimulationResult> {
   await ensureSeeded(worldInstanceId)
 
   const populationEntities = await populationEntityStateRepository.list(worldInstanceId)
@@ -108,6 +108,8 @@ export async function advancePopulationForWorld(worldInstanceId: WorldInstanceId
     memoryHintByEntityId,
     relatedEntityIdsByEntityId,
     homeRangeLocationIdsByOwnerId,
+    resolveDayPhaseForTick,
+    routineEntriesByArchetypeId,
   })
 
   for (const entity of result.populationEntities) await populationEntityStateRepository.save(worldInstanceId, entity)
@@ -131,10 +133,10 @@ export interface WakeWorldWithPopulationResult {
 // first specifically so population's own internal tick-by-tick replay
 // starts from the exact same point Sprint 9's own wakeWorld did --
 // determinism guarantees both reach the identical environment sequence.
-export async function wakeWorldWithPopulation(worldInstanceId: WorldInstanceId, ownerId: WorldOwnerId, now: () => string = () => new Date().toISOString(), memoryHintByEntityId?: ReadonlyMap<string, MemoryHint>, relatedEntityIdsByEntityId?: ReadonlyMap<string, string[]>, homeRangeLocationIdsByOwnerId?: ReadonlyMap<string, string[]>): Promise<WakeWorldWithPopulationResult> {
+export async function wakeWorldWithPopulation(worldInstanceId: WorldInstanceId, ownerId: WorldOwnerId, now: () => string = () => new Date().toISOString(), memoryHintByEntityId?: ReadonlyMap<string, MemoryHint>, relatedEntityIdsByEntityId?: ReadonlyMap<string, string[]>, homeRangeLocationIdsByOwnerId?: ReadonlyMap<string, string[]>, resolveDayPhaseForTick?: (tick: number) => DayPhaseInput | null, routineEntriesByArchetypeId?: ReadonlyMap<string, RoutineWindowInput[]>): Promise<WakeWorldWithPopulationResult> {
   const stateBeforeWake = await getWorldState(worldInstanceId, now)
   const world = await wakeWorld(worldInstanceId, ownerId, now)
-  const population = await advancePopulationForWorld(worldInstanceId, stateBeforeWake.sharedState, world.ticksApplied, worldInstanceId, now, memoryHintByEntityId, relatedEntityIdsByEntityId, homeRangeLocationIdsByOwnerId)
+  const population = await advancePopulationForWorld(worldInstanceId, stateBeforeWake.sharedState, world.ticksApplied, worldInstanceId, now, memoryHintByEntityId, relatedEntityIdsByEntityId, homeRangeLocationIdsByOwnerId, resolveDayPhaseForTick, routineEntriesByArchetypeId)
   return { world, population }
 }
 
