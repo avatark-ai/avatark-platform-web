@@ -1,0 +1,40 @@
+{
+  "name": "@avatark/private-reflection-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A reference in-memory adapter for Sprint 19's PrivateReflectionRecordRepository -- owner-scoped only, no world-wide read, no export or import of any simulation-resolver package (living-systems-runtime, world-memory-runtime, world-adaptation-runtime, encounter-realization-runtime, canonical-event-runtime, spatial-ecology-runtime, social-ecology-runtime, participation-runtime). The dependency-boundary regex scan in lib/runtimeKernel/dependencyBoundaries.test.ts enforces that no such import ever appears, in either direction.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@avatark/private-reflection-contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "node --experimental-strip-types --test src/inMemoryRepository.test.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
+  }
+}

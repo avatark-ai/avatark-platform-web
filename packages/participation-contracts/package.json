@@ -1,0 +1,42 @@
+{
+  "name": "@avatark/participation-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Renderer-neutral contracts for Sprint 19's visitor-participation domain: ParticipationRecord (a visitor's durable, additive claim to an already-legitimate, world-resolved encounter -- never a second consequence-derivation authority), ParticipationAuthorization (a pure re-resolved-live-availability decision, never trusting a stale snapshot), and ParticipationDenialReason. No implementations, no write method on anything simulation-authoritative -- ParticipationRecord is the ONLY new durable write this domain introduces.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@avatark/encounter-realization-contracts": "workspace:*",
+    "@avatark/living-systems-contracts": "workspace:*",
+    "@avatark/runtime-contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "node --experimental-strip-types --test src/participationRecord.test.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
+  }
+}

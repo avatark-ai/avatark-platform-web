@@ -26,6 +26,15 @@ test("rejects a begin-reflection intent missing reflectionId", () => {
   assert.equal(isWellFormedInteractionIntent({ type: "begin-reflection", userId: "u1", worldId: "w", locationId: "yamuna" }), false)
 })
 
+test("begin-reflection is well-formed with content omitted (every pre-Sprint-19 caller) and with content present", () => {
+  assert.equal(isWellFormedInteractionIntent({ type: "begin-reflection", userId: "u1", worldId: "w", locationId: "yamuna", reflectionId: "r1" }), true)
+  assert.equal(isWellFormedInteractionIntent({ type: "begin-reflection", userId: "u1", worldId: "w", locationId: "yamuna", reflectionId: "r1", content: "a private thought" }), true)
+})
+
+test("rejects a begin-reflection intent whose content is present but not a string", () => {
+  assert.equal(isWellFormedInteractionIntent({ type: "begin-reflection", userId: "u1", worldId: "w", locationId: "yamuna", reflectionId: "r1", content: 42 }), false)
+})
+
 test("rejects non-objects and null without throwing", () => {
   assert.equal(isWellFormedInteractionIntent(null), false)
   assert.equal(isWellFormedInteractionIntent("visit-location"), false)

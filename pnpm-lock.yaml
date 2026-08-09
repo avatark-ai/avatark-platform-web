@@ -101,6 +101,18 @@ importers:
       '@avatark/organizations':
         specifier: workspace:*
         version: link:packages/organizations
+      '@avatark/participation-contracts':
+        specifier: workspace:*
+        version: link:packages/participation-contracts
+      '@avatark/participation-runtime':
+        specifier: workspace:*
+        version: link:packages/participation-runtime
+      '@avatark/private-reflection-contracts':
+        specifier: workspace:*
+        version: link:packages/private-reflection-contracts
+      '@avatark/private-reflection-runtime':
+        specifier: workspace:*
+        version: link:packages/private-reflection-runtime
       '@avatark/product-registry':
         specifier: workspace:*
         version: link:packages/product-registry
@@ -588,6 +600,55 @@ importers:
       '@avatark/membership':
         specifier: workspace:*
         version: link:../membership
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/participation-contracts:
+    dependencies:
+      '@avatark/encounter-realization-contracts':
+        specifier: workspace:*
+        version: link:../encounter-realization-contracts
+      '@avatark/living-systems-contracts':
+        specifier: workspace:*
+        version: link:../living-systems-contracts
+      '@avatark/runtime-contracts':
+        specifier: workspace:*
+        version: link:../runtime-contracts
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/participation-runtime:
+    dependencies:
+      '@avatark/participation-contracts':
+        specifier: workspace:*
+        version: link:../participation-contracts
+      '@avatark/runtime-contracts':
+        specifier: workspace:*
+        version: link:../runtime-contracts
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/private-reflection-contracts:
+    dependencies:
+      '@avatark/runtime-contracts':
+        specifier: workspace:*
+        version: link:../runtime-contracts
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/private-reflection-runtime:
+    dependencies:
+      '@avatark/private-reflection-contracts':
+        specifier: workspace:*
+        version: link:../private-reflection-contracts
     devDependencies:
       typescript:
         specifier: ^5

@@ -39,6 +39,14 @@ export interface BeginReflectionIntent {
   worldId: WorldId
   locationId: LocationId
   reflectionId: string
+  // Sprint 19, Phase 0 §6/§12: additive and optional -- every existing
+  // caller that omits it behaves exactly as before (metadata-only
+  // "reflection.created" event, no content persisted at all). When
+  // present, this is the visitor's OWN privately authored content --
+  // never simulation truth, never a WorldEvent, never an input to any
+  // resolver. See @avatark/private-reflection-contracts for the
+  // firewalled, owner-scoped-only store it flows into.
+  content?: string
 }
 
 export interface SelectEncounterIntent {
@@ -70,6 +78,7 @@ export function isWellFormedInteractionIntent(value: unknown): value is Interact
     if (typeof candidate.locationId !== "string" || candidate.locationId.length === 0) return false
   }
   if (candidate.type === "begin-reflection" && (typeof candidate.reflectionId !== "string" || candidate.reflectionId.length === 0)) return false
+  if (candidate.type === "begin-reflection" && candidate.content !== undefined && typeof candidate.content !== "string") return false
   if (candidate.type === "select-encounter" && (typeof candidate.ruleId !== "string" || candidate.ruleId.length === 0)) return false
   return true
 }

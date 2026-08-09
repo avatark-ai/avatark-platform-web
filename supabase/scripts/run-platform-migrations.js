@@ -95,6 +95,8 @@ const MIGRATION_ORDER = [
   '033_spatial_ecology.sql',
   // Sprint 18: same precedent, NOT applied.
   '034_canonical_events.sql',
+  // Sprint 19: same precedent, NOT applied.
+  '035_participation.sql',
 ]
 
 async function main() {

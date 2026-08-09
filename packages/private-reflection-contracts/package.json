@@ -1,0 +1,40 @@
+{
+  "name": "@avatark/private-reflection-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Renderer-neutral contracts for Sprint 19's private-reflection firewall: a PrivateReflectionRecord is a visitor's own content, additive, owner-scoped only -- never a WorldEvent, never an input to deriveWorldEvents/Adaptation/World Memory, never readable by anything other than its own author. No repository method here ever supports a world-wide or cross-user read; that asymmetry (get-by-owner, never listByWorld) is the structural half of the firewall, the dependency-boundary regex scan in lib/runtimeKernel/dependencyBoundaries.test.ts is the other half.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@avatark/runtime-contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "node --experimental-strip-types --test src/privateReflection.test.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
+  }
+}

@@ -1051,8 +1051,185 @@ test("canonical-event package sources never reference VisitorWorldMemory at all"
   assert.deepEqual(violations, [])
 })
 
+// Sprint 19: the visitor-participation domain (ParticipationRecord/
+// ParticipationAuthorization/deriveParticipationRecordId). Its contracts
+// package depends on the same real Sprint 14 EncounterRecordId type
+// its Host layer (lib/participation/hostService.ts) links a
+// ParticipationRecord to -- never a sibling runtime, never
+// @avatark/account. Its runtime package derives no consequence itself
+// (see @avatark/participation-runtime's own package.json description).
+const PARTICIPATION_CONTRACTS_PACKAGE = "participation-contracts"
+const PARTICIPATION_RUNTIME_PACKAGE = "participation-runtime"
+const PARTICIPATION_CONTRACTS_ALLOWED_DEPS = new Set(["@avatark/runtime-contracts", "@avatark/living-systems-contracts", "@avatark/encounter-realization-contracts"])
+const PARTICIPATION_RUNTIME_ALLOWED_DEPS = new Set(["@avatark/runtime-contracts", "@avatark/participation-contracts"])
+
+test("packages/participation-contracts declares, at most, dependencies on its three allowed contracts packages", () => {
+  const deps = packageDependencies(PARTICIPATION_CONTRACTS_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => !PARTICIPATION_CONTRACTS_ALLOWED_DEPS.has(name))
+  assert.deepEqual(disallowed, [], `participation-contracts declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/participation-contracts imports, at most, those same three packages in its source", () => {
+  const srcDir = join(REPO_ROOT, "packages", PARTICIPATION_CONTRACTS_PACKAGE, "src")
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    for (const importedPackage of findAvatarkImports(file)) {
+      if (!PARTICIPATION_CONTRACTS_ALLOWED_DEPS.has(`@avatark/${importedPackage}`)) violations.push(`${file} imports @avatark/${importedPackage}`)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("packages/participation-runtime declares, at most, dependencies on its two allowed packages", () => {
+  const deps = packageDependencies(PARTICIPATION_RUNTIME_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => !PARTICIPATION_RUNTIME_ALLOWED_DEPS.has(name))
+  assert.deepEqual(disallowed, [], `participation-runtime declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/participation-runtime imports, at most, those same two packages in its source -- never a sibling runtime, renderer, embodiment/persistence package, or @avatark/account", () => {
+  const srcDir = join(REPO_ROOT, "packages", PARTICIPATION_RUNTIME_PACKAGE, "src")
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    for (const importedPackage of findAvatarkImports(file)) {
+      if (!PARTICIPATION_RUNTIME_ALLOWED_DEPS.has(`@avatark/${importedPackage}`)) violations.push(`${file} imports @avatark/${importedPackage}`)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("neither participation package's source contains a React/Next.js/Unreal-specific token", () => {
+  const forbidden = ["from \"react", "from 'react", "next/server", "next/navigation", "UObject", "AActor", "Blueprint", "UnrealEngine"]
+  const violations: string[] = []
+  for (const pkg of [PARTICIPATION_CONTRACTS_PACKAGE, PARTICIPATION_RUNTIME_PACKAGE]) {
+    const srcDir = join(REPO_ROOT, "packages", pkg, "src")
+    for (const file of listSourceFiles(srcDir)) {
+      if (file.endsWith(".test.ts")) continue
+      const code = readFileSync(file, "utf-8")
+        .split("\n")
+        .map((line) => line.replace(/\/\/.*$/, ""))
+        .join("\n")
+      for (const token of forbidden) {
+        if (code.includes(token)) violations.push(`${file} contains "${token}"`)
+      }
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+// Sprint 19, invariant #4 (bounded consequences): ParticipationRecord is
+// additive-only. No file in either participation package, or in
+// lib/participation, ever calls a save/put/set/write/mutate/update-shaped
+// method on anything spelled `encounterRecordRepository`/
+// `worldEventRepository`/`adaptationEffectRepository`/
+// `canonicalProjectionStateRepository` -- the same regex-scan mechanism
+// already applied to canonicalEventDefinition, extended to prove
+// participation never becomes a SECOND consequence-derivation authority
+// alongside Sprint 14/15/18's own sole write boundaries.
+test("no file in participation packages or lib/participation writes to any Sprint 14/15/18 consequence repository -- ParticipationRecord is the only write this domain performs", () => {
+  const violations: string[] = []
+  const dirsToScan = [join(REPO_ROOT, "packages", PARTICIPATION_CONTRACTS_PACKAGE, "src"), join(REPO_ROOT, "packages", PARTICIPATION_RUNTIME_PACKAGE, "src"), join(REPO_ROOT, "lib", "participation")]
+  const forbiddenWriteTargets = ["encounterRecordRepository", "worldEventRepository", "adaptationEffectRepository", "canonicalProjectionStateRepository", "entityMemoryRepository", "relationshipRepository"]
+  for (const dir of dirsToScan) {
+    for (const file of listSourceFiles(dir)) {
+      const content = readFileSync(file, "utf-8")
+      for (const target of forbiddenWriteTargets) {
+        if (new RegExp(`${target}\\.(save|put|set|write|mutate|update|append)\\(`).test(content)) violations.push(`${file} writes to ${target}`)
+      }
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+// Sprint 19: the private-reflection firewall (invariant #2). The
+// STRUCTURAL half (no world-wide read method exists at all) is proven in
+// @avatark/private-reflection-contracts' own privateReflection.test.ts.
+// This is the OTHER half: no simulation-resolver runtime package, in
+// either direction, ever imports @avatark/private-reflection-contracts
+// or @avatark/private-reflection-runtime -- a visitor's private content
+// is structurally unreachable from every resolver that could turn it
+// into shared world truth, not merely unreachable by convention.
+const PRIVATE_REFLECTION_CONTRACTS_PACKAGE = "private-reflection-contracts"
+const PRIVATE_REFLECTION_RUNTIME_PACKAGE = "private-reflection-runtime"
+const PRIVATE_REFLECTION_CONTRACTS_ALLOWED_DEPS = new Set(["@avatark/runtime-contracts"])
+const PRIVATE_REFLECTION_RUNTIME_ALLOWED_DEPS = new Set(["@avatark/private-reflection-contracts"])
+const SIMULATION_RESOLVER_RUNTIME_PACKAGES = [
+  "living-systems-runtime",
+  "world-memory-runtime",
+  "world-adaptation-runtime",
+  "encounter-realization-runtime",
+  "canonical-event-runtime",
+  "spatial-ecology-runtime",
+  "social-ecology-runtime",
+  "participation-runtime",
+  "living-population-runtime",
+  "living-rhythms-runtime",
+  "world-persistence-runtime",
+  "world-embodiment-runtime",
+]
+
+test("packages/private-reflection-contracts declares, at most, one allowed dependency", () => {
+  const deps = packageDependencies(PRIVATE_REFLECTION_CONTRACTS_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => !PRIVATE_REFLECTION_CONTRACTS_ALLOWED_DEPS.has(name))
+  assert.deepEqual(disallowed, [], `private-reflection-contracts declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/private-reflection-runtime declares, at most, one allowed dependency", () => {
+  const deps = packageDependencies(PRIVATE_REFLECTION_RUNTIME_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => !PRIVATE_REFLECTION_RUNTIME_ALLOWED_DEPS.has(name))
+  assert.deepEqual(disallowed, [], `private-reflection-runtime declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("neither private-reflection package's source contains a React/Next.js/Unreal-specific token", () => {
+  const forbidden = ["from \"react", "from 'react", "next/server", "next/navigation", "UObject", "AActor", "Blueprint", "UnrealEngine"]
+  const violations: string[] = []
+  for (const pkg of [PRIVATE_REFLECTION_CONTRACTS_PACKAGE, PRIVATE_REFLECTION_RUNTIME_PACKAGE]) {
+    const srcDir = join(REPO_ROOT, "packages", pkg, "src")
+    for (const file of listSourceFiles(srcDir)) {
+      if (file.endsWith(".test.ts")) continue
+      const code = readFileSync(file, "utf-8")
+      for (const token of forbidden) {
+        if (code.includes(token)) violations.push(`${file} contains "${token}"`)
+      }
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("no simulation-resolver runtime package ever imports @avatark/private-reflection-contracts or @avatark/private-reflection-runtime -- private content is structurally unreachable, not merely unreachable by convention", () => {
+  const violations: string[] = []
+  for (const pkg of SIMULATION_RESOLVER_RUNTIME_PACKAGES) {
+    const srcDir = join(REPO_ROOT, "packages", pkg, "src")
+    for (const file of listSourceFiles(srcDir)) {
+      for (const importedPackage of findAvatarkImports(file)) {
+        if (importedPackage === PRIVATE_REFLECTION_CONTRACTS_PACKAGE || importedPackage === PRIVATE_REFLECTION_RUNTIME_PACKAGE) violations.push(`${file} imports @avatark/${importedPackage}`)
+      }
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("no Host simulation-composition file (lib/*/hostService.ts, excluding lib/privateReflection and lib/worldEmbodiment's own front-door) ever imports lib/privateReflection", () => {
+  const libDir = join(REPO_ROOT, "lib")
+  const hostServiceFiles = readdirSync(libDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && entry.name !== "privateReflection" && entry.name !== "worldEmbodiment" && entry.name !== "participation")
+    .map((entry) => join(libDir, entry.name, "hostService.ts"))
+    .filter((path) => {
+      try {
+        statSync(path)
+        return true
+      } catch {
+        return false
+      }
+    })
+  const violations: string[] = []
+  for (const file of hostServiceFiles) {
+    if (/privateReflection/.test(readFileSync(file, "utf-8"))) violations.push(file)
+  }
+  assert.deepEqual(violations, [])
+})
+
 test("sanity: this check actually inspects real directories, not an accidental no-op", () => {
-  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE, RENDERER_CONTRACTS_PACKAGE, LIVING_SYSTEMS_CONTRACTS_PACKAGE, LIVING_SYSTEMS_RUNTIME_PACKAGE, WORLD_EMBODIMENT_CONTRACTS_PACKAGE, WORLD_EMBODIMENT_RUNTIME_PACKAGE, WORLD_PERSISTENCE_CONTRACTS_PACKAGE, WORLD_PERSISTENCE_RUNTIME_PACKAGE, LIVING_POPULATION_CONTRACTS_PACKAGE, LIVING_POPULATION_RUNTIME_PACKAGE, WORLD_MEMORY_CONTRACTS_PACKAGE, WORLD_MEMORY_RUNTIME_PACKAGE, SOCIAL_ECOLOGY_CONTRACTS_PACKAGE, SOCIAL_ECOLOGY_RUNTIME_PACKAGE, LIVING_RHYTHMS_CONTRACTS_PACKAGE, LIVING_RHYTHMS_RUNTIME_PACKAGE, ENCOUNTER_REALIZATION_CONTRACTS_PACKAGE, ENCOUNTER_REALIZATION_RUNTIME_PACKAGE, WORLD_ADAPTATION_CONTRACTS_PACKAGE, WORLD_ADAPTATION_RUNTIME_PACKAGE, CANONICAL_EVENT_CONTRACTS_PACKAGE, CANONICAL_EVENT_RUNTIME_PACKAGE]) {
+  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE, RENDERER_CONTRACTS_PACKAGE, LIVING_SYSTEMS_CONTRACTS_PACKAGE, LIVING_SYSTEMS_RUNTIME_PACKAGE, WORLD_EMBODIMENT_CONTRACTS_PACKAGE, WORLD_EMBODIMENT_RUNTIME_PACKAGE, WORLD_PERSISTENCE_CONTRACTS_PACKAGE, WORLD_PERSISTENCE_RUNTIME_PACKAGE, LIVING_POPULATION_CONTRACTS_PACKAGE, LIVING_POPULATION_RUNTIME_PACKAGE, WORLD_MEMORY_CONTRACTS_PACKAGE, WORLD_MEMORY_RUNTIME_PACKAGE, SOCIAL_ECOLOGY_CONTRACTS_PACKAGE, SOCIAL_ECOLOGY_RUNTIME_PACKAGE, LIVING_RHYTHMS_CONTRACTS_PACKAGE, LIVING_RHYTHMS_RUNTIME_PACKAGE, ENCOUNTER_REALIZATION_CONTRACTS_PACKAGE, ENCOUNTER_REALIZATION_RUNTIME_PACKAGE, WORLD_ADAPTATION_CONTRACTS_PACKAGE, WORLD_ADAPTATION_RUNTIME_PACKAGE, CANONICAL_EVENT_CONTRACTS_PACKAGE, CANONICAL_EVENT_RUNTIME_PACKAGE, PARTICIPATION_CONTRACTS_PACKAGE, PARTICIPATION_RUNTIME_PACKAGE, PRIVATE_REFLECTION_CONTRACTS_PACKAGE, PRIVATE_REFLECTION_RUNTIME_PACKAGE]) {
     const srcDir = join(REPO_ROOT, "packages", runtimePackage, "src")
     assert.ok(statSync(srcDir).isDirectory(), `expected packages/${runtimePackage}/src to exist`)
     assert.ok(listSourceFiles(srcDir).length > 0, `expected packages/${runtimePackage}/src to contain source files`)
