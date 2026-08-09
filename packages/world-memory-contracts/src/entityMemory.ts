@@ -7,7 +7,10 @@ import type { MemoryProvenance } from "./provenance.ts"
 // autobiographical cognition -- a closed, small vocabulary of what one
 // entity can meaningfully carry forward. No emotion, no personality, no
 // belief, no LLM-generated content.
-export type EntityMemoryEntryType = "PREVIOUS_RESOURCE_LOCATION" | "RECENT_GROUP_MEMBERSHIP" | "RECENT_STRESS_CONDITION" | "RECENT_RELOCATION" | "RECENT_ENCOUNTER_INVOLVEMENT"
+// Sprint 12, Phase 12: two additive entry types -- `RECENT_SEPARATION`/
+// `RECENT_REUNION` -- ecological/behavioral continuity, same discipline
+// as every existing type; never emotion.
+export type EntityMemoryEntryType = "PREVIOUS_RESOURCE_LOCATION" | "RECENT_GROUP_MEMBERSHIP" | "RECENT_STRESS_CONDITION" | "RECENT_RELOCATION" | "RECENT_ENCOUNTER_INVOLVEMENT" | "RECENT_SEPARATION" | "RECENT_REUNION"
 
 export interface EntityMemoryEntry {
   id: EntityMemoryEntryId

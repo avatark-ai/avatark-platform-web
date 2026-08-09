@@ -80,7 +80,7 @@ export async function getPopulationSnapshot(worldInstanceId: WorldInstanceId, no
 // worldInstanceId (its own convention: the worldInstanceId itself) --
 // see wakeWorldWithPopulation below for the one call site that gets
 // this right end to end.
-export async function advancePopulationForWorld(worldInstanceId: WorldInstanceId, sharedStateAtStart: SharedWorldState, ticks: number, seed: string, now: () => string, memoryHintByEntityId?: ReadonlyMap<string, MemoryHint>): Promise<AdvancePopulationSimulationResult> {
+export async function advancePopulationForWorld(worldInstanceId: WorldInstanceId, sharedStateAtStart: SharedWorldState, ticks: number, seed: string, now: () => string, memoryHintByEntityId?: ReadonlyMap<string, MemoryHint>, relatedEntityIdsByEntityId?: ReadonlyMap<string, string[]>, homeRangeLocationIdsByOwnerId?: ReadonlyMap<string, string[]>): Promise<AdvancePopulationSimulationResult> {
   await ensureSeeded(worldInstanceId)
 
   const populationEntities = await populationEntityStateRepository.list(worldInstanceId)
@@ -106,6 +106,8 @@ export async function advancePopulationForWorld(worldInstanceId: WorldInstanceId
     seed,
     now,
     memoryHintByEntityId,
+    relatedEntityIdsByEntityId,
+    homeRangeLocationIdsByOwnerId,
   })
 
   for (const entity of result.populationEntities) await populationEntityStateRepository.save(worldInstanceId, entity)
@@ -129,10 +131,10 @@ export interface WakeWorldWithPopulationResult {
 // first specifically so population's own internal tick-by-tick replay
 // starts from the exact same point Sprint 9's own wakeWorld did --
 // determinism guarantees both reach the identical environment sequence.
-export async function wakeWorldWithPopulation(worldInstanceId: WorldInstanceId, ownerId: WorldOwnerId, now: () => string = () => new Date().toISOString(), memoryHintByEntityId?: ReadonlyMap<string, MemoryHint>): Promise<WakeWorldWithPopulationResult> {
+export async function wakeWorldWithPopulation(worldInstanceId: WorldInstanceId, ownerId: WorldOwnerId, now: () => string = () => new Date().toISOString(), memoryHintByEntityId?: ReadonlyMap<string, MemoryHint>, relatedEntityIdsByEntityId?: ReadonlyMap<string, string[]>, homeRangeLocationIdsByOwnerId?: ReadonlyMap<string, string[]>): Promise<WakeWorldWithPopulationResult> {
   const stateBeforeWake = await getWorldState(worldInstanceId, now)
   const world = await wakeWorld(worldInstanceId, ownerId, now)
-  const population = await advancePopulationForWorld(worldInstanceId, stateBeforeWake.sharedState, world.ticksApplied, worldInstanceId, now, memoryHintByEntityId)
+  const population = await advancePopulationForWorld(worldInstanceId, stateBeforeWake.sharedState, world.ticksApplied, worldInstanceId, now, memoryHintByEntityId, relatedEntityIdsByEntityId, homeRangeLocationIdsByOwnerId)
   return { world, population }
 }
 

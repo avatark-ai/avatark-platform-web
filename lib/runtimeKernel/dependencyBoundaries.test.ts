@@ -533,8 +533,101 @@ test("packages/world-memory-runtime never calls a write method on protected narr
   assert.deepEqual(violations, [])
 })
 
+// Sprint 12, Phase 22/24: the same enforcement one layer up again, for
+// the Social Ecology boundary -- invariant restated once more ("core
+// is Unreal-free," "core is Web/React-free"). @avatark/social-ecology-
+// contracts may depend on runtime-contracts and living-systems-contracts
+// (shared id types) and living-population-contracts (EntityId/GroupId
+// reuse -- relationships and group memberships are about population
+// entities); @avatark/social-ecology-runtime may additionally depend on
+// social-ecology-contracts. Neither may ever depend on renderer-contracts,
+// any world-embodiment-*/world-persistence-*/world-memory-*/living-
+// population-RUNTIME package, or @avatark/account -- social ecology
+// observes population/group facts the Host layer already resolved; it
+// never queries simulation/persistence/memory internals itself, and it
+// is never queried BY living-population-runtime either (the dependency
+// runs one way only, enforced by living-population-runtime's own
+// "at most four allowed packages" test above, since social-ecology-*
+// is not in that allowed set).
+
+const SOCIAL_ECOLOGY_CONTRACTS_PACKAGE = "social-ecology-contracts"
+const SOCIAL_ECOLOGY_RUNTIME_PACKAGE = "social-ecology-runtime"
+const SOCIAL_ECOLOGY_CONTRACTS_ALLOWED_DEPS = new Set(["@avatark/runtime-contracts", "@avatark/living-systems-contracts", "@avatark/living-population-contracts"])
+const SOCIAL_ECOLOGY_RUNTIME_ALLOWED_DEPS = new Set(["@avatark/runtime-contracts", "@avatark/living-systems-contracts", "@avatark/living-population-contracts", "@avatark/social-ecology-contracts"])
+
+test("packages/social-ecology-contracts declares, at most, dependencies on runtime-contracts/living-systems-contracts/living-population-contracts", () => {
+  const deps = packageDependencies(SOCIAL_ECOLOGY_CONTRACTS_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => !SOCIAL_ECOLOGY_CONTRACTS_ALLOWED_DEPS.has(name))
+  assert.deepEqual(disallowed, [], `social-ecology-contracts declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/social-ecology-contracts imports, at most, those same three packages in its source", () => {
+  const srcDir = join(REPO_ROOT, "packages", SOCIAL_ECOLOGY_CONTRACTS_PACKAGE, "src")
+  const allowed = new Set(["runtime-contracts", "living-systems-contracts", "living-population-contracts"])
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    for (const importedPackage of findAvatarkImports(file)) {
+      if (!allowed.has(importedPackage)) violations.push(`${file} imports @avatark/${importedPackage}`)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("packages/social-ecology-runtime declares, at most, dependencies on its four allowed packages", () => {
+  const deps = packageDependencies(SOCIAL_ECOLOGY_RUNTIME_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => !SOCIAL_ECOLOGY_RUNTIME_ALLOWED_DEPS.has(name))
+  assert.deepEqual(disallowed, [], `social-ecology-runtime declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/social-ecology-runtime imports, at most, those same four packages in its source -- never a renderer, embodiment/persistence/memory/population-runtime package, or @avatark/account", () => {
+  const srcDir = join(REPO_ROOT, "packages", SOCIAL_ECOLOGY_RUNTIME_PACKAGE, "src")
+  const allowed = new Set(["runtime-contracts", "living-systems-contracts", "living-population-contracts", "social-ecology-contracts"])
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    for (const importedPackage of findAvatarkImports(file)) {
+      if (!allowed.has(importedPackage)) violations.push(`${file} imports @avatark/${importedPackage}`)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("neither social-ecology package's source contains a React/Next.js/Unreal-specific token", () => {
+  const forbidden = ["from \"react", "from 'react", "next/server", "next/navigation", "UObject", "AActor", "Blueprint", "UnrealEngine"]
+  const violations: string[] = []
+  for (const pkg of [SOCIAL_ECOLOGY_CONTRACTS_PACKAGE, SOCIAL_ECOLOGY_RUNTIME_PACKAGE]) {
+    const srcDir = join(REPO_ROOT, "packages", pkg, "src")
+    for (const file of listSourceFiles(srcDir)) {
+      if (file.endsWith(".test.ts")) continue
+      const code = readFileSync(file, "utf-8")
+        .split("\n")
+        .map((line) => line.replace(/\/\/.*$/, ""))
+        .join("\n")
+      for (const token of forbidden) {
+        if (code.includes(token)) violations.push(`${file} contains "${token}"`)
+      }
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+// Sprint 12: social ecology never reads protected narrative at all
+// (see docs/SPRINT12_GROUND_TRUTH.md's ownership map), so this test
+// asserts the strongest possible form of the invariant every prior
+// sprint's runtime carries -- zero occurrence of the identifier at
+// all, not merely zero write-method calls.
+test("packages/social-ecology-runtime never references protected narrative state at all", () => {
+  const srcDir = join(REPO_ROOT, "packages", SOCIAL_ECOLOGY_RUNTIME_PACKAGE, "src")
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    if (file.endsWith(".test.ts")) continue
+    const content = readFileSync(file, "utf-8")
+    if (/protectedNarrative/i.test(content)) violations.push(file)
+  }
+  assert.deepEqual(violations, [])
+})
+
 test("sanity: this check actually inspects real directories, not an accidental no-op", () => {
-  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE, RENDERER_CONTRACTS_PACKAGE, LIVING_SYSTEMS_CONTRACTS_PACKAGE, LIVING_SYSTEMS_RUNTIME_PACKAGE, WORLD_EMBODIMENT_CONTRACTS_PACKAGE, WORLD_EMBODIMENT_RUNTIME_PACKAGE, WORLD_PERSISTENCE_CONTRACTS_PACKAGE, WORLD_PERSISTENCE_RUNTIME_PACKAGE, LIVING_POPULATION_CONTRACTS_PACKAGE, LIVING_POPULATION_RUNTIME_PACKAGE, WORLD_MEMORY_CONTRACTS_PACKAGE, WORLD_MEMORY_RUNTIME_PACKAGE]) {
+  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE, RENDERER_CONTRACTS_PACKAGE, LIVING_SYSTEMS_CONTRACTS_PACKAGE, LIVING_SYSTEMS_RUNTIME_PACKAGE, WORLD_EMBODIMENT_CONTRACTS_PACKAGE, WORLD_EMBODIMENT_RUNTIME_PACKAGE, WORLD_PERSISTENCE_CONTRACTS_PACKAGE, WORLD_PERSISTENCE_RUNTIME_PACKAGE, LIVING_POPULATION_CONTRACTS_PACKAGE, LIVING_POPULATION_RUNTIME_PACKAGE, WORLD_MEMORY_CONTRACTS_PACKAGE, WORLD_MEMORY_RUNTIME_PACKAGE, SOCIAL_ECOLOGY_CONTRACTS_PACKAGE, SOCIAL_ECOLOGY_RUNTIME_PACKAGE]) {
     const srcDir = join(REPO_ROOT, "packages", runtimePackage, "src")
     assert.ok(statSync(srcDir).isDirectory(), `expected packages/${runtimePackage}/src to exist`)
     assert.ok(listSourceFiles(srcDir).length > 0, `expected packages/${runtimePackage}/src to contain source files`)

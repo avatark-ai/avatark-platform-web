@@ -56,3 +56,25 @@ test("encounter availability/resolution changes are always meaningful", () => {
   assert.equal(evaluateSignificance(candidate({ category: "ENCOUNTER_BECAME_AVAILABLE" })), "MEANINGFUL")
   assert.equal(evaluateSignificance(candidate({ category: "ENCOUNTER_RESOLVED" })), "MEANINGFUL")
 })
+
+// Sprint 12, Phase 12: separation is always meaningful once a candidate
+// is raised at all (the Host layer's own detection threshold already
+// filtered out momentary drift); reunion is meaningful only once the
+// separation it resolves lasted long enough to not be routine.
+test("a separation candidate is always meaningful", () => {
+  assert.equal(evaluateSignificance(candidate({ category: "SEPARATION_OCCURRED" })), "MEANINGFUL")
+})
+
+test("a reunion is meaningful only once its own separation lasted at least the configured threshold", () => {
+  const brief = candidate({ category: "REUNION_OCCURRED", detail: { separationDurationTicks: 1 } })
+  assert.equal(evaluateSignificance(brief), "NOT_SIGNIFICANT", "a member drifting one tick from its group is routine, not history")
+
+  const sustained = candidate({ category: "REUNION_OCCURRED", detail: { separationDurationTicks: 5 } })
+  assert.equal(evaluateSignificance(sustained), "MEANINGFUL")
+})
+
+test("the reunion significance threshold is world-grammar configurable", () => {
+  const twoTicks = candidate({ category: "REUNION_OCCURRED", detail: { separationDurationTicks: 2 } })
+  assert.equal(evaluateSignificance(twoTicks), "MEANINGFUL", "meets the default threshold of 2")
+  assert.equal(evaluateSignificance(twoTicks, { scarcityBands: ["low"], minSeparationTicksForMeaningfulReunion: 10 }), "NOT_SIGNIFICANT", "a stricter world-supplied threshold changes the outcome")
+})

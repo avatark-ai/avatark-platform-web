@@ -127,3 +127,44 @@ test("world-system events from Sprint 7's own causal engine still flow through u
   const result = advancePopulationSimulation(withVegetation)
   assert.ok(result.worldSystemEvents.some((e) => e.type === "season.transitioned"), "Vasanta -> Grishma still transitions at tick 4, exactly as Sprint 7 alone would produce")
 })
+
+// Sprint 12, Phase 9: relatedEntityIdsByEntityId wiring -- proves the
+// structural input actually reaches selectBehavior and influences the
+// outcome (the entity ends up co-located with its related entity),
+// without re-asserting selectBehavior's own priority ordering, which
+// behaviorSelection.test.ts already covers in isolation.
+test("relatedEntityIdsByEntityId lets an entity end up co-located with a related entity it was not co-located with before", () => {
+  const params = baseParams(1)
+  params.populationEntities = [
+    { id: "cow-1", archetypeId: "cow", locationId: "meadow", lifecyclePhase: "DORMANT", attributes: {}, lastUpdatedTick: 0 },
+    { id: "cow-2", archetypeId: "cow", locationId: "river", lifecyclePhase: "DORMANT", attributes: {}, lastUpdatedTick: 0 },
+  ]
+  params.relatedEntityIdsByEntityId = new Map([["cow-1", ["cow-2"]]])
+
+  const result = advancePopulationSimulation(params)
+  const cow1 = result.populationEntities.find((e) => e.id === "cow-1")
+  const cow2 = result.populationEntities.find((e) => e.id === "cow-2")
+  assert.equal(cow1?.locationId, cow2?.locationId, "the related entity's own presence influenced cow-1's movement toward co-location")
+})
+
+// Sprint 12, Phase 7/9: homeRangeLocationIdsByOwnerId wiring -- proves
+// the structural input reaches selectBehavior and can influence a
+// displaced entity back toward its own preferred location, without
+// re-asserting priority ordering (covered in behaviorSelection.test.ts).
+test("homeRangeLocationIdsByOwnerId can influence a displaced entity back toward its own preferred location", () => {
+  const capableOnlyOfReturning: EntityBehaviorProfile = { ...COW_PROFILE, capabilities: ["can_move"] }
+  const params = baseParams(1)
+  params.populationEntities = [{ id: "cow-1", archetypeId: "cow", locationId: "river", lifecyclePhase: "DORMANT", attributes: {}, lastUpdatedTick: 0 }]
+  params.behaviorProfiles = [capableOnlyOfReturning]
+  params.homeRangeLocationIdsByOwnerId = new Map([["cow-1", ["meadow"]]])
+
+  const result = advancePopulationSimulation(params)
+  assert.equal(result.populationEntities.find((e) => e.id === "cow-1")?.locationId, "meadow")
+})
+
+test("omitting relatedEntityIdsByEntityId/homeRangeLocationIdsByOwnerId entirely is identical to Sprint 10/11's own unmodified behavior", () => {
+  const withoutSocial = advancePopulationSimulation(baseParams(4))
+  const withEmptySocial = advancePopulationSimulation({ ...baseParams(4), relatedEntityIdsByEntityId: new Map(), homeRangeLocationIdsByOwnerId: new Map() })
+  assert.deepEqual(withoutSocial.populationEntities, withEmptySocial.populationEntities)
+  assert.deepEqual(withoutSocial.behaviorStates, withEmptySocial.behaviorStates)
+})

@@ -14,7 +14,7 @@ import type {
 } from "@avatark/living-population-contracts"
 import { freshNeedStates } from "@avatark/living-population-contracts"
 import type { NeedDimension } from "@avatark/living-population-contracts"
-import type { MemoryHint } from "./behaviorSelection.ts"
+import type { MemoryHint, SocialContext } from "./behaviorSelection.ts"
 import { resolveRhythmPhase } from "./rhythm.ts"
 import { resolvePerception } from "./perception.ts"
 import { selectBehavior } from "./behaviorSelection.ts"
@@ -37,6 +37,8 @@ const COARSE_LIFECYCLE: Record<BehaviorType, string> = {
   MOVE_TO_RESOURCE: "MOVING",
   FOLLOW_GROUP: "MOVING",
   RETURN_TO_GROUP: "MOVING",
+  APPROACH_RELATED_ENTITY: "MOVING",
+  RETURN_TO_HOME_RANGE: "MOVING",
   REMAIN: "DORMANT",
 }
 
@@ -65,6 +67,14 @@ export interface AdvancePopulationSimulationParams {
   // own unmodified selectBehavior. Population never reads memory
   // storage itself; the Host layer resolves this map before calling in.
   memoryHintByEntityId?: ReadonlyMap<string, MemoryHint>
+  // Sprint 12, Phase 9: static SOCIAL STRUCTURE inputs -- who is related
+  // to whom, and each owner's own preferred locations. Recomputed into
+  // a fresh, tick-current SocialContext INSIDE the loop below (unlike
+  // memoryHintByEntityId, which is resolved once before the whole call
+  // -- social context depends on other entities' CURRENT locations,
+  // which change every tick, so it cannot be precomputed the same way).
+  relatedEntityIdsByEntityId?: ReadonlyMap<string, string[]>
+  homeRangeLocationIdsByOwnerId?: ReadonlyMap<string, string[]>
 }
 
 export interface AdvancePopulationSimulationResult {
@@ -111,6 +121,8 @@ export function advancePopulationSimulation(params: AdvancePopulationSimulationP
   const worldSystemEvents: WorldSystemEvent[] = []
   const populationEvents: PopulationEvent[] = []
   const memoryHintByEntityId = params.memoryHintByEntityId ?? new Map<string, MemoryHint>()
+  const relatedEntityIdsByEntityId = params.relatedEntityIdsByEntityId ?? new Map<string, string[]>()
+  const homeRangeLocationIdsByOwnerId = params.homeRangeLocationIdsByOwnerId ?? new Map<string, string[]>()
 
   const profileByArchetype = new Map(params.behaviorProfiles.map((p) => [p.archetypeId, p]))
   const scheduleById = new Map(params.rhythmSchedules.map((s) => [s.id, s]))
@@ -162,7 +174,16 @@ export function advancePopulationSimulation(params: AdvancePopulationSimulationP
       const group = perception.groupId ? groups.find((g) => g.id === perception.groupId) ?? null : null
       const groupInfo = group ? { locationId: group.locationId, targetLocationId: group.targetLocationId } : null
 
-      const behaviorIntent = selectBehavior({ entityId: entity.id, profile, needs: current.needs, rhythmPhase, perception, group: groupInfo, tick, memoryHint: memoryHintByEntityId.get(entity.id) ?? null })
+      const relatedIds = relatedEntityIdsByEntityId.get(entity.id) ?? []
+      const relatedEntityLocationId = relatedIds.map((id) => populationEntities.find((e) => e.id === id)?.locationId).find((locationId): locationId is string => Boolean(locationId) && locationId !== entity.locationId) ?? null
+      const homeRangeLocationIds = homeRangeLocationIdsByOwnerId.get(entity.id) ?? (perception.groupId ? homeRangeLocationIdsByOwnerId.get(perception.groupId) ?? [] : [])
+      const socialContext: SocialContext = {
+        relatedEntityLocationId,
+        homeRangeLocationIds,
+        withinHomeRange: homeRangeLocationIds.length === 0 || homeRangeLocationIds.includes(entity.locationId),
+      }
+
+      const behaviorIntent = selectBehavior({ entityId: entity.id, profile, needs: current.needs, rhythmPhase, perception, group: groupInfo, tick, memoryHint: memoryHintByEntityId.get(entity.id) ?? null, socialContext })
       const movementIntent = resolveMovementIntent(behaviorIntent, perception)
       movementIntentsByEntityId.set(entity.id, movementIntent)
 

@@ -11,8 +11,10 @@ interface Candidate {
 
 // Fixed, deterministic tie-break order -- survival-adjacent behaviors
 // before social ones, movement before passive remaining. Only consulted
-// when two candidates score an identical utility.
-const PRIORITY_ORDER: BehaviorType[] = ["DRINK", "GRAZE", "REST", "SOCIALIZE", "FOLLOW_GROUP", "RETURN_TO_GROUP", "MOVE_TO_RESOURCE", "REMAIN"]
+// when two candidates score an identical utility. Sprint 12's two new
+// social variants sit alongside the existing group-cohesion behaviors,
+// after survival needs, before REMAIN.
+const PRIORITY_ORDER: BehaviorType[] = ["DRINK", "GRAZE", "REST", "SOCIALIZE", "FOLLOW_GROUP", "RETURN_TO_GROUP", "APPROACH_RELATED_ENTITY", "RETURN_TO_HOME_RANGE", "MOVE_TO_RESOURCE", "REMAIN"]
 
 // A candidate's utility is boosted when the current rhythm phase
 // "naturally" calls for it -- but never gated by it alone: an urgent
@@ -26,6 +28,8 @@ const NATURAL_PHASE: Record<BehaviorType, RhythmPhase | null> = {
   MOVE_TO_RESOURCE: "MOVE",
   FOLLOW_GROUP: "MOVE",
   RETURN_TO_GROUP: "RETURN",
+  APPROACH_RELATED_ENTITY: "SOCIAL",
+  RETURN_TO_HOME_RANGE: "RETURN",
   REMAIN: null,
 }
 
@@ -43,6 +47,18 @@ export interface MemoryHint {
   preferredResourceLocationId: LocationId | null
 }
 
+// Sprint 12, Phase 9: bounded, deterministic social influence -- same
+// discipline as MemoryHint above. `relatedEntityLocationId` and
+// `homeRangeLocationIds` are candidates ONLY, still gated by
+// `perception.reachableLocationIds`/`currentLocationId` before either
+// can ever become the selected target -- social context can never make
+// an illegal or unreachable location eligible.
+export interface SocialContext {
+  relatedEntityLocationId: LocationId | null
+  homeRangeLocationIds: LocationId[]
+  withinHomeRange: boolean
+}
+
 export interface SelectBehaviorParams {
   entityId: EntityId
   profile: EntityBehaviorProfile
@@ -52,6 +68,7 @@ export interface SelectBehaviorParams {
   group: { locationId: LocationId; targetLocationId: LocationId | null } | null
   tick: number
   memoryHint?: MemoryHint | null
+  socialContext?: SocialContext | null
 }
 
 // Sprint 10, Phase 6: needs + rhythm + perception + environmental
@@ -77,6 +94,11 @@ export function selectBehavior(params: SelectBehaviorParams): BehaviorIntent {
   const groupIsMoving = group !== null && group.targetLocationId !== null && group.targetLocationId !== perception.currentLocationId
   const awayFromGroup = group !== null && group.locationId !== perception.currentLocationId
 
+  const social = params.socialContext ?? null
+  const relatedEntityTarget = social?.relatedEntityLocationId && social.relatedEntityLocationId !== perception.currentLocationId && perception.reachableLocationIds.includes(social.relatedEntityLocationId) ? social.relatedEntityLocationId : null
+  const homeRangeTarget =
+    social && !social.withinHomeRange ? social.homeRangeLocationIds.find((id) => id !== perception.currentLocationId && perception.reachableLocationIds.includes(id)) ?? null : null
+
   const candidates: Candidate[] = [
     { type: "DRINK", dimension: "thirst", eligible: caps.has("can_drink") && perception.waterAvailable, targetLocationId: null },
     { type: "GRAZE", dimension: "hunger", eligible: caps.has("can_graze") && perception.vegetationAvailable, targetLocationId: null },
@@ -85,6 +107,8 @@ export function selectBehavior(params: SelectBehaviorParams): BehaviorIntent {
     { type: "MOVE_TO_RESOURCE", dimension: wantsWaterMove ? "thirst" : "hunger", eligible: caps.has("can_move") && movementTarget !== null, targetLocationId: movementTarget },
     { type: "FOLLOW_GROUP", dimension: null, eligible: caps.has("can_move") && groupIsMoving, targetLocationId: group?.targetLocationId ?? null },
     { type: "RETURN_TO_GROUP", dimension: null, eligible: caps.has("can_move") && awayFromGroup && !groupIsMoving, targetLocationId: group?.locationId ?? null },
+    { type: "APPROACH_RELATED_ENTITY", dimension: null, eligible: caps.has("can_move") && relatedEntityTarget !== null, targetLocationId: relatedEntityTarget },
+    { type: "RETURN_TO_HOME_RANGE", dimension: null, eligible: caps.has("can_move") && homeRangeTarget !== null, targetLocationId: homeRangeTarget },
   ]
 
   const eligible = candidates.filter((c) => c.eligible)
@@ -92,12 +116,12 @@ export function selectBehavior(params: SelectBehaviorParams): BehaviorIntent {
   function utility(candidate: Candidate): number {
     const base = pressureOf(needs, candidate.dimension)
     const rhythmBonus = NATURAL_PHASE[candidate.type] === rhythmPhase ? 0.3 : 0
-    // FOLLOW_GROUP/RETURN_TO_GROUP have no need dimension of their own --
-    // a fixed, modest utility keeps group cohesion alive even when no
-    // individual need is urgent, without ever outscoring a genuinely
-    // urgent survival need.
-    const groupCohesionBaseline = candidate.type === "FOLLOW_GROUP" || candidate.type === "RETURN_TO_GROUP" ? 0.2 : 0
-    return base + rhythmBonus + groupCohesionBaseline
+    // FOLLOW_GROUP/RETURN_TO_GROUP/APPROACH_RELATED_ENTITY/RETURN_TO_HOME_RANGE
+    // have no need dimension of their own -- a fixed, modest utility
+    // keeps social cohesion alive even when no individual need is
+    // urgent, without ever outscoring a genuinely urgent survival need.
+    const socialBaseline = candidate.type === "FOLLOW_GROUP" || candidate.type === "RETURN_TO_GROUP" || candidate.type === "APPROACH_RELATED_ENTITY" || candidate.type === "RETURN_TO_HOME_RANGE" ? 0.2 : 0
+    return base + rhythmBonus + socialBaseline
   }
 
   let best: Candidate = { type: "REMAIN", dimension: null, eligible: true, targetLocationId: null }

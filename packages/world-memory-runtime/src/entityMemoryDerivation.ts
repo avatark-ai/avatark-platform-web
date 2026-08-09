@@ -34,7 +34,18 @@ export function deriveEntityMemoryEntries(worldId: WorldId, events: WorldEvent[]
       })
     })
 
-    const participantEntryType: EntityMemoryEntryType | null = event.category === "POPULATION_MOVEMENT" ? "RECENT_RELOCATION" : event.category === "LOCATION_CONDITION_CHANGED" || event.category === "RESOURCE_CONDITION_CHANGED" ? "RECENT_STRESS_CONDITION" : event.category === "ENCOUNTER_BECAME_AVAILABLE" ? "RECENT_ENCOUNTER_INVOLVEMENT" : null
+    const participantEntryType: EntityMemoryEntryType | null =
+      event.category === "POPULATION_MOVEMENT"
+        ? "RECENT_RELOCATION"
+        : event.category === "LOCATION_CONDITION_CHANGED" || event.category === "RESOURCE_CONDITION_CHANGED"
+          ? "RECENT_STRESS_CONDITION"
+          : event.category === "ENCOUNTER_BECAME_AVAILABLE"
+            ? "RECENT_ENCOUNTER_INVOLVEMENT"
+            : event.category === "SEPARATION_OCCURRED"
+              ? "RECENT_SEPARATION"
+              : event.category === "REUNION_OCCURRED"
+                ? "RECENT_REUNION"
+                : null
 
     if (participantEntryType) {
       event.participantEntityIds.forEach((entityId, index) => {

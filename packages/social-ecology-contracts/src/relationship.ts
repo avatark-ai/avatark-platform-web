@@ -1,0 +1,53 @@
+import type { EntityId } from "@avatark/living-systems-contracts"
+import type { WorldId } from "@avatark/runtime-contracts"
+import type { RelationshipId } from "./ids.ts"
+
+// Sprint 12, Phase 3: a minimal, generic, OBSERVABLE-association
+// taxonomy -- never invented psychology. No LOVE/GRIEF/JEALOUSY/
+// LOYALTY/DEVOTION/TRUST/TRAUMA/FRIENDSHIP exists here, and none may be
+// added without an Approved future specification explicitly defining
+// its semantics (this sprint's own mission text, verbatim constraint).
+export type RelationshipType = "PARENT_OFFSPRING" | "GROUP_MEMBER" | "FAMILIAR" | "PREFERRED_ASSOCIATE"
+
+// Sprint 12, Phase 2: a coarse, evidence-derived strength tier --
+// distinct from FamiliarityState's own band (familiarity.ts), which
+// tracks per-pair EVIDENCE feeding into whether a FAMILIAR/
+// PREFERRED_ASSOCIATE relationship gets established or upgraded in the
+// first place. PARENT_OFFSPRING/GROUP_MEMBER relationships are
+// grammar-seeded and still carry a band (reflecting how long/
+// consistently the association has held), but never NEED familiarity
+// evidence to exist.
+export type RelationshipBand = "WEAK" | "ESTABLISHED" | "STRONG"
+
+// Deliberately a small, closed, structured record -- never free-form
+// metadata (Phase 2's own "avoid uncontrolled free-form metadata").
+export interface RelationshipEvidence {
+  coPresenceTicks: number
+  sharedGroupTicks: number
+  reunionCount: number
+}
+
+// Sprint 12, Phase 2: representable independently from either entity's
+// transient activity -- this record never references a tick's
+// BehaviorIntent, only the two entities' stable identity and the
+// evidence/band describing the association itself.
+export interface RelationshipState {
+  id: RelationshipId
+  worldId: WorldId
+  entityAId: EntityId
+  entityBId: EntityId
+  relationshipType: RelationshipType
+  band: RelationshipBand
+  evidence: RelationshipEvidence
+  establishedTick: number
+  lastRelevantTick: number
+}
+
+export type AppendRelationshipResult = { status: "appended" | "duplicate_ignored" }
+
+export interface RelationshipRepository {
+  save(relationship: RelationshipState): Promise<void>
+  get(worldId: WorldId, relationshipId: RelationshipId): Promise<RelationshipState | null>
+  listByEntity(worldId: WorldId, entityId: EntityId): Promise<RelationshipState[]>
+  listByType(worldId: WorldId, relationshipType: RelationshipType): Promise<RelationshipState[]>
+}

@@ -95,6 +95,12 @@ importers:
       '@avatark/runtime-contracts':
         specifier: workspace:*
         version: link:packages/runtime-contracts
+      '@avatark/social-ecology-contracts':
+        specifier: workspace:*
+        version: link:packages/social-ecology-contracts
+      '@avatark/social-ecology-runtime':
+        specifier: workspace:*
+        version: link:packages/social-ecology-runtime
       '@avatark/timeline':
         specifier: workspace:*
         version: link:packages/timeline
@@ -467,6 +473,41 @@ importers:
         version: 5.9.3
 
   packages/runtime-contracts:
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/social-ecology-contracts:
+    dependencies:
+      '@avatark/living-population-contracts':
+        specifier: workspace:*
+        version: link:../living-population-contracts
+      '@avatark/living-systems-contracts':
+        specifier: workspace:*
+        version: link:../living-systems-contracts
+      '@avatark/runtime-contracts':
+        specifier: workspace:*
+        version: link:../runtime-contracts
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/social-ecology-runtime:
+    dependencies:
+      '@avatark/living-population-contracts':
+        specifier: workspace:*
+        version: link:../living-population-contracts
+      '@avatark/living-systems-contracts':
+        specifier: workspace:*
+        version: link:../living-systems-contracts
+      '@avatark/runtime-contracts':
+        specifier: workspace:*
+        version: link:../runtime-contracts
+      '@avatark/social-ecology-contracts':
+        specifier: workspace:*
+        version: link:../social-ecology-contracts
     devDependencies:
       typescript:
         specifier: ^5

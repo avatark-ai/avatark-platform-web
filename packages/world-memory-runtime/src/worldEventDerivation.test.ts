@@ -84,3 +84,24 @@ test("deriving from the identical inputs twice produces identical event ids -- i
   const b = deriveWorldEvents(params)
   assert.deepEqual(a.map((e) => e.id), b.map((e) => e.id))
 })
+
+// Sprint 12, Phase 10/11: separation/reunion candidates become their
+// own WorldEvent categories, gated by the same significance filter.
+test("a separation candidate becomes a SEPARATION_OCCURRED WorldEvent", () => {
+  const events = deriveWorldEvents(baseParams({ separationEvents: [{ tick: 6, entityId: "calf-1", subjectType: "RELATIONSHIP", subjectId: "rel-1", locationId: "kadamba-grove" }] }))
+  assert.equal(events.length, 1)
+  assert.equal(events[0].category, "SEPARATION_OCCURRED")
+  assert.deepEqual(events[0].participantEntityIds, ["calf-1"])
+})
+
+test("a reunion candidate with a sufficiently long separation becomes a REUNION_OCCURRED WorldEvent with a group-history consequence for a GROUP_MEMBERSHIP subject", () => {
+  const events = deriveWorldEvents(baseParams({ reunionEvents: [{ tick: 10, entityId: "cow-1", subjectType: "GROUP_MEMBERSHIP", subjectId: "membership-1", locationId: "yamuna", separationDurationTicks: 5 }] }))
+  assert.equal(events.length, 1)
+  assert.equal(events[0].category, "REUNION_OCCURRED")
+  assert.ok(events[0].consequences.some((c) => c.type === "GROUP_HISTORY_RELATIONSHIP" && c.targetEntityId === "cow-1" && c.targetGroupId === "membership-1"))
+})
+
+test("a reunion candidate whose own separation was too brief is dropped entirely, never recorded", () => {
+  const events = deriveWorldEvents(baseParams({ reunionEvents: [{ tick: 7, entityId: "cow-1", subjectType: "RELATIONSHIP", subjectId: "rel-1", locationId: "yamuna", separationDurationTicks: 1 }] }))
+  assert.deepEqual(events, [])
+})

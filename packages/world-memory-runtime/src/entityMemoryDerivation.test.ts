@@ -57,3 +57,21 @@ test("a season transition (no participants, no entity-targeted consequences) pro
   const events = deriveWorldEvents({ worldId: "w1", now: () => "2026-08-09T00:00:00.000Z", seasonTransitions: [{ tick: 4, fromSeasonId: "vasanta", toSeasonId: "grishma" }], environmentalBandChanges: [], locationConditionChanges: [], populationEvents: [], encounterAvailabilityChanges: [] })
   assert.deepEqual(deriveEntityMemoryEntries("w1", events), [])
 })
+
+// Sprint 12, Phase 12: separation/reunion WorldEvents produce the
+// entity-relevant RECENT_SEPARATION/RECENT_REUNION entries only for
+// the entity actually involved -- never a third, competing memory
+// engine, only Sprint 11's own machinery reacting to new event
+// categories.
+test("a separation event produces a RECENT_SEPARATION entry for its own entity", () => {
+  const events = deriveWorldEvents({ worldId: "w1", now: () => "2026-08-09T00:00:00.000Z", seasonTransitions: [], environmentalBandChanges: [], locationConditionChanges: [], populationEvents: [], encounterAvailabilityChanges: [], separationEvents: [{ tick: 6, entityId: "calf-1", subjectType: "RELATIONSHIP", subjectId: "rel-1", locationId: "kadamba-grove" }] })
+  const entries = deriveEntityMemoryEntries("w1", events)
+  assert.ok(entries.some((e) => e.entityId === "calf-1" && e.type === "RECENT_SEPARATION" && e.detail.locationId === "kadamba-grove"))
+})
+
+test("a significant reunion event produces a RECENT_REUNION entry for its own entity, plus RECENT_GROUP_MEMBERSHIP when the subject is a group membership", () => {
+  const events = deriveWorldEvents({ worldId: "w1", now: () => "2026-08-09T00:00:00.000Z", seasonTransitions: [], environmentalBandChanges: [], locationConditionChanges: [], populationEvents: [], encounterAvailabilityChanges: [], reunionEvents: [{ tick: 10, entityId: "cow-1", subjectType: "GROUP_MEMBERSHIP", subjectId: "membership-1", locationId: "yamuna", separationDurationTicks: 5 }] })
+  const entries = deriveEntityMemoryEntries("w1", events)
+  assert.ok(entries.some((e) => e.entityId === "cow-1" && e.type === "RECENT_REUNION"))
+  assert.ok(entries.some((e) => e.entityId === "cow-1" && e.type === "RECENT_GROUP_MEMBERSHIP" && e.detail.groupId === "membership-1"))
+})

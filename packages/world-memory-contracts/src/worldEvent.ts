@@ -8,6 +8,12 @@ import type { RetentionTier } from "./retention.ts"
 // Sprint 11, Phase 2: not every simulation tick is history -- this is
 // the closed vocabulary of what CAN become a World Event, each one a
 // meaningful state transition or systemic occurrence, never a raw tick.
+//
+// Sprint 12, Phase 12: two additive categories for social ecology --
+// `SEPARATION_OCCURRED`/`REUNION_OCCURRED` -- state transitions, never
+// emotion (see @avatark/social-ecology-contracts' own
+// SeparationState/ReunionEvent, which these categories represent in
+// World Memory once they cross Sprint 11's own significance filter).
 export type WorldEventCategory =
   | "SEASON_TRANSITION"
   | "ENVIRONMENTAL_THRESHOLD"
@@ -19,6 +25,8 @@ export type WorldEventCategory =
   | "ENCOUNTER_BECAME_AVAILABLE"
   | "ENCOUNTER_RESOLVED"
   | "LOCATION_CONDITION_CHANGED"
+  | "SEPARATION_OCCURRED"
+  | "REUNION_OCCURRED"
 
 // Sprint 11, Phase 8: an explicit, data-driven, bounded consequence --
 // never an arbitrary callback, never a world-specific conditional

@@ -22,6 +22,14 @@ export interface DeriveWorldEventsParams {
   locationConditionChanges: { tick: number; locationId: LocationId; category: string; wasAvailable: boolean; isAvailable: boolean; entityIdsPresent: EntityId[] }[]
   populationEvents: PopulationEvent[]
   encounterAvailabilityChanges: { tick: number; ruleId: EncounterRuleId; locationId: LocationId; category: EncounterCategory; becameAvailable: boolean; contributingEntityIds: EntityId[] }[]
+  // Sprint 12, Phase 12: separation/reunion candidates -- built by
+  // @avatark/social-ecology-runtime's own co-location-based detection,
+  // handed here as plain structured facts, same discipline as every
+  // other input field. `subjectId` is a RelationshipId or
+  // GroupMembershipId; this package never interprets it, only carries
+  // it through as a causal reference.
+  separationEvents?: { tick: number; entityId: EntityId; subjectType: "RELATIONSHIP" | "GROUP_MEMBERSHIP"; subjectId: string; locationId: LocationId }[]
+  reunionEvents?: { tick: number; entityId: EntityId; subjectType: "RELATIONSHIP" | "GROUP_MEMBERSHIP"; subjectId: string; locationId: LocationId; separationDurationTicks: number }[]
   significanceConfig?: SignificanceConfig
 }
 
@@ -88,6 +96,34 @@ function buildCandidates(params: DeriveWorldEventsParams): Candidate[] {
     candidates.push({
       candidate: { category: "ENCOUNTER_BECAME_AVAILABLE", tick: ec.tick, locationId: ec.locationId, participantEntityIds: ec.contributingEntityIds, causalReferences: [{ kind: "encounterRule", ref: ec.ruleId }], detail: { ruleId: ec.ruleId } },
       consequences: [{ type: "ENCOUNTER_ELIGIBILITY_CHANGE", targetEntityId: null, targetGroupId: null, targetLocationId: ec.locationId, detail: { ruleId: ec.ruleId, eligible: true } }],
+    })
+  }
+
+  for (const sep of params.separationEvents ?? []) {
+    candidates.push({
+      candidate: {
+        category: "SEPARATION_OCCURRED",
+        tick: sep.tick,
+        locationId: sep.locationId,
+        participantEntityIds: [sep.entityId],
+        causalReferences: [{ kind: sep.subjectType.toLowerCase(), ref: sep.subjectId }],
+        detail: { subjectType: sep.subjectType, subjectId: sep.subjectId },
+      },
+      consequences: [],
+    })
+  }
+
+  for (const reunion of params.reunionEvents ?? []) {
+    candidates.push({
+      candidate: {
+        category: "REUNION_OCCURRED",
+        tick: reunion.tick,
+        locationId: reunion.locationId,
+        participantEntityIds: [reunion.entityId],
+        causalReferences: [{ kind: reunion.subjectType.toLowerCase(), ref: reunion.subjectId }],
+        detail: { subjectType: reunion.subjectType, subjectId: reunion.subjectId, separationDurationTicks: reunion.separationDurationTicks },
+      },
+      consequences: reunion.subjectType === "GROUP_MEMBERSHIP" ? [{ type: "GROUP_HISTORY_RELATIONSHIP", targetEntityId: reunion.entityId, targetGroupId: reunion.subjectId, targetLocationId: reunion.locationId, detail: { event: "reunion" } }] : [],
     })
   }
 

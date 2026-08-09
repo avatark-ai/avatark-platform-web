@@ -16,12 +16,25 @@ export const VRINDAVAN_SIGNIFICANCE_CONFIG: SignificanceConfig = { scarcityBands
 // on world history, never scripted content. No name, no dialogue, no
 // story; `ruleId` and `category` reuse the exact same
 // EncounterRule/EncounterCategory vocabulary Sprint 7 already defined.
+// Sprint 12, Phase 21: the exact same generic, conditional emergent
+// mechanism -- a rule keyed on the new REUNION_OCCURRED category
+// (social-ecology-runtime's own detection, fed into World Memory via
+// lib/socialEcology/hostService.ts) rather than a new encounter
+// engine. No narrative content: a reunion at Kadamba Grove surfaces an
+// ambient opportunity, nothing more.
 export const VRINDAVAN_EMERGENT_ENCOUNTER_RULES: EmergentEncounterRule[] = [
   {
     ruleId: "avatark-population-recent-arrival-kadamba-grove",
     category: "ambient",
     requiresLocationId: "kadamba-grove",
     requiresEventCategory: "POPULATION_MOVEMENT",
+    withinLastTicks: 10,
+  },
+  {
+    ruleId: "avatark-social-recent-reunion-kadamba-grove",
+    category: "ambient",
+    requiresLocationId: "kadamba-grove",
+    requiresEventCategory: "REUNION_OCCURRED",
     withinLastTicks: 10,
   },
 ]

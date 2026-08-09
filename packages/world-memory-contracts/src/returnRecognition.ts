@@ -6,7 +6,10 @@ import type { WorldId } from "@avatark/runtime-contracts"
 // experienced it" -- never prose, never "While you were away...". The
 // experience/renderer layer decides how (or whether) to present these
 // facts; this package only states them.
-export type ReturnRecognitionFactType = "season_changed" | "environment_changed" | "population_relocated" | "encounter_changed" | "known_entity_state_changed"
+// Sprint 12, Phase 12: one additive fact type -- `social_relationship_changed`
+// -- for separation/reunion history. Every existing fact type is
+// unchanged.
+export type ReturnRecognitionFactType = "season_changed" | "environment_changed" | "population_relocated" | "encounter_changed" | "known_entity_state_changed" | "social_relationship_changed"
 
 export interface ReturnRecognitionFact {
   type: ReturnRecognitionFactType

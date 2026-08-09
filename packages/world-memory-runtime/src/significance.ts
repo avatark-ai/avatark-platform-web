@@ -22,9 +22,21 @@ export interface WorldEventCandidate {
 // different list without this function changing.
 export interface SignificanceConfig {
   scarcityBands: string[]
+  // Sprint 12, Phase 12: reunions shorter than this are routine (a
+  // member drifting a tick or two from its group is not history) --
+  // "routine social activity should not flood WorldMemory" (mission's
+  // own Phase 12 instruction). Optional and defaulted (see
+  // DEFAULT_MIN_SEPARATION_TICKS_FOR_MEANINGFUL_REUNION below) so every
+  // existing config literal from Sprint 11 (which never set this field)
+  // keeps working unchanged. Separations themselves are always
+  // significant once a candidate is even raised, since the Host layer
+  // only raises one after crossing its own detection threshold.
+  minSeparationTicksForMeaningfulReunion?: number
 }
 
-export const DEFAULT_SIGNIFICANCE_CONFIG: SignificanceConfig = { scarcityBands: ["low"] }
+const DEFAULT_MIN_SEPARATION_TICKS_FOR_MEANINGFUL_REUNION = 2
+
+export const DEFAULT_SIGNIFICANCE_CONFIG: SignificanceConfig = { scarcityBands: ["low"], minSeparationTicksForMeaningfulReunion: DEFAULT_MIN_SEPARATION_TICKS_FOR_MEANINGFUL_REUNION }
 
 export function evaluateSignificance(candidate: WorldEventCandidate, config: SignificanceConfig = DEFAULT_SIGNIFICANCE_CONFIG): MemorySignificance {
   switch (candidate.category) {
@@ -72,6 +84,19 @@ export function evaluateSignificance(candidate: WorldEventCandidate, config: Sig
     case "ENCOUNTER_BECAME_AVAILABLE":
     case "ENCOUNTER_RESOLVED":
       return "MEANINGFUL"
+
+    case "SEPARATION_OCCURRED":
+      // The Host layer only raises a separation candidate after its own
+      // co-location-based detection fires (see @avatark/social-ecology-runtime),
+      // so by the time it reaches here it is already a real, not
+      // momentary, state transition.
+      return "MEANINGFUL"
+
+    case "REUNION_OCCURRED": {
+      const separationDurationTicks = Number(candidate.detail.separationDurationTicks ?? 0)
+      const threshold = config.minSeparationTicksForMeaningfulReunion ?? DEFAULT_MIN_SEPARATION_TICKS_FOR_MEANINGFUL_REUNION
+      return separationDurationTicks >= threshold ? "MEANINGFUL" : "NOT_SIGNIFICANT"
+    }
 
     default:
       return "NOT_SIGNIFICANT"

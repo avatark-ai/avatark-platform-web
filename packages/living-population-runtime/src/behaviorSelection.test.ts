@@ -118,3 +118,85 @@ test("omitting memoryHint entirely is identical to Sprint 10's own unmodified be
   const withNullHint = selectBehavior({ entityId: "cow-1", profile: PROFILE, needs: needs({ thirst: 0.9 }), rhythmPhase: "FORAGE", perception: perception(), group: null, tick: 10, memoryHint: null })
   assert.deepEqual(withoutHint, withNullHint)
 })
+
+// Sprint 12, Phase 9: bounded, deterministic social influence -- a
+// related entity's current location can be approached, but ONLY when
+// perception itself deems it reachable, and never overrides a more
+// urgent survival need.
+test("a reachable related entity at a different location is approached when no need is urgent", () => {
+  const intent = selectBehavior({
+    entityId: "cow-1",
+    profile: PROFILE,
+    needs: needs(),
+    rhythmPhase: "SOCIAL",
+    perception: perception({ vegetationAvailable: false, reachableVegetationLocationIds: [], waterAvailable: true, reachableWaterLocationIds: [] }),
+    group: null,
+    tick: 10,
+    socialContext: { relatedEntityLocationId: "river", homeRangeLocationIds: [], withinHomeRange: true },
+  })
+  assert.equal(intent.type, "APPROACH_RELATED_ENTITY")
+  assert.equal(intent.targetLocationId, "river")
+})
+
+test("a related entity's location that perception never deemed reachable is never approached", () => {
+  const intent = selectBehavior({
+    entityId: "cow-1",
+    profile: PROFILE,
+    needs: needs(),
+    rhythmPhase: "SOCIAL",
+    perception: perception({ vegetationAvailable: false, reachableVegetationLocationIds: [], waterAvailable: true, reachableWaterLocationIds: [], reachableLocationIds: [] }),
+    group: null,
+    tick: 10,
+    socialContext: { relatedEntityLocationId: "far-away-place", homeRangeLocationIds: [], withinHomeRange: true },
+  })
+  assert.notEqual(intent.type, "APPROACH_RELATED_ENTITY")
+})
+
+test("an urgent thirst need still wins over approaching a related entity", () => {
+  const intent = selectBehavior({
+    entityId: "cow-1",
+    profile: PROFILE,
+    needs: needs({ thirst: 0.9 }),
+    rhythmPhase: "SOCIAL",
+    perception: perception({ waterAvailable: false, reachableWaterLocationIds: ["river"], vegetationAvailable: false, reachableVegetationLocationIds: [] }),
+    group: null,
+    tick: 10,
+    socialContext: { relatedEntityLocationId: "river", homeRangeLocationIds: [], withinHomeRange: true },
+  })
+  assert.equal(intent.type, "MOVE_TO_RESOURCE", "an urgent survival need outscores the fixed social baseline")
+})
+
+test("an entity outside its own home range returns to it when a preferred location is reachable and viable", () => {
+  const intent = selectBehavior({
+    entityId: "cow-1",
+    profile: PROFILE,
+    needs: needs(),
+    rhythmPhase: "RETURN",
+    perception: perception({ vegetationAvailable: false, reachableVegetationLocationIds: [], waterAvailable: true, reachableWaterLocationIds: [] }),
+    group: null,
+    tick: 10,
+    socialContext: { relatedEntityLocationId: null, homeRangeLocationIds: ["river"], withinHomeRange: false },
+  })
+  assert.equal(intent.type, "RETURN_TO_HOME_RANGE")
+  assert.equal(intent.targetLocationId, "river")
+})
+
+test("an entity already within its home range never selects RETURN_TO_HOME_RANGE", () => {
+  const intent = selectBehavior({
+    entityId: "cow-1",
+    profile: PROFILE,
+    needs: needs(),
+    rhythmPhase: "RETURN",
+    perception: perception({ vegetationAvailable: false, reachableVegetationLocationIds: [], waterAvailable: true, reachableWaterLocationIds: [] }),
+    group: null,
+    tick: 10,
+    socialContext: { relatedEntityLocationId: null, homeRangeLocationIds: ["meadow"], withinHomeRange: true },
+  })
+  assert.notEqual(intent.type, "RETURN_TO_HOME_RANGE")
+})
+
+test("omitting socialContext entirely is identical to Sprint 10/11's own unmodified behavior", () => {
+  const without = selectBehavior({ entityId: "cow-1", profile: PROFILE, needs: needs({ thirst: 0.9 }), rhythmPhase: "FORAGE", perception: perception(), group: null, tick: 10 })
+  const withNull = selectBehavior({ entityId: "cow-1", profile: PROFILE, needs: needs({ thirst: 0.9 }), rhythmPhase: "FORAGE", perception: perception(), group: null, tick: 10, socialContext: null })
+  assert.deepEqual(without, withNull)
+})

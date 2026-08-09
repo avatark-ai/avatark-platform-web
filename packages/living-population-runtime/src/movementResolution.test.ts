@@ -47,3 +47,17 @@ test("FOLLOW_GROUP and RETURN_TO_GROUP map to their own semantic movement types"
   const returnToGroup = resolveMovementIntent({ entityId: "cow-1", type: "RETURN_TO_GROUP", targetLocationId: "river", tick: 1 }, perception())
   assert.equal(returnToGroup.type, "ReturnToGroup")
 })
+
+// Sprint 12, Phase 9: the two new social BehaviorTypes map to their own
+// semantic movement types, same legality checking as every other type.
+test("APPROACH_RELATED_ENTITY and RETURN_TO_HOME_RANGE map to their own semantic movement types", () => {
+  const approach = resolveMovementIntent({ entityId: "cow-1", type: "APPROACH_RELATED_ENTITY", targetLocationId: "river", tick: 1 }, perception())
+  assert.equal(approach.type, "ApproachRelatedEntity")
+  const returnHome = resolveMovementIntent({ entityId: "cow-1", type: "RETURN_TO_HOME_RANGE", targetLocationId: "river", tick: 1 }, perception())
+  assert.equal(returnHome.type, "ReturnToHomeRange")
+})
+
+test("an illegal target for the new social movement types still throws, same discipline as every existing type", () => {
+  const intent: BehaviorIntent = { entityId: "cow-1", type: "APPROACH_RELATED_ENTITY", targetLocationId: "far-away-unconnected-place", tick: 1 }
+  assert.throws(() => resolveMovementIntent(intent, perception()), IllegalMovementError)
+})

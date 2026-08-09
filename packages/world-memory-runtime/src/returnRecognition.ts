@@ -16,6 +16,8 @@ const CATEGORY_TO_FACT: Record<WorldEventCategory, ReturnRecognitionFactType> = 
   ENTITY_ACTIVITY_TRANSITION: "known_entity_state_changed",
   ENCOUNTER_BECAME_AVAILABLE: "encounter_changed",
   ENCOUNTER_RESOLVED: "encounter_changed",
+  SEPARATION_OCCURRED: "social_relationship_changed",
+  REUNION_OCCURRED: "social_relationship_changed",
 }
 
 // Sprint 11, Phase 11: derived entirely from World Memory events since

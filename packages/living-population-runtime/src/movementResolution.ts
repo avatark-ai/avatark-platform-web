@@ -31,6 +31,10 @@ export function resolveMovementIntent(intent: BehaviorIntent, perception: Entity
       return { entityId: intent.entityId, type: "FollowGroup", targetLocationId: assertLegal(intent.targetLocationId) }
     case "RETURN_TO_GROUP":
       return { entityId: intent.entityId, type: "ReturnToGroup", targetLocationId: assertLegal(intent.targetLocationId) }
+    case "APPROACH_RELATED_ENTITY":
+      return { entityId: intent.entityId, type: "ApproachRelatedEntity", targetLocationId: assertLegal(intent.targetLocationId) }
+    case "RETURN_TO_HOME_RANGE":
+      return { entityId: intent.entityId, type: "ReturnToHomeRange", targetLocationId: assertLegal(intent.targetLocationId) }
     default:
       return { entityId: intent.entityId, type: "Remain", targetLocationId: null }
   }

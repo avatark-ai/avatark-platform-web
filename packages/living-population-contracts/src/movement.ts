@@ -6,7 +6,10 @@ import type { LocationId } from "@avatark/runtime-contracts"
 // entirely against location identity and the world graph; translating
 // "MoveToLocation X" into a spatial path/region is the embodiment
 // layer's job, later, per-renderer, never this layer's.
-export type MovementIntentType = "MoveToLocation" | "Remain" | "FollowGroup" | "ApproachResource" | "ReturnToGroup"
+// Sprint 12, Phase 9: two additive semantic movement types --
+// `ApproachRelatedEntity`/`ReturnToHomeRange` -- still no coordinates,
+// same discipline as every existing variant.
+export type MovementIntentType = "MoveToLocation" | "Remain" | "FollowGroup" | "ApproachResource" | "ReturnToGroup" | "ApproachRelatedEntity" | "ReturnToHomeRange"
 
 export interface MovementIntent {
   entityId: EntityId

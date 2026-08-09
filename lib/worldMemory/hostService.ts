@@ -61,7 +61,7 @@ export interface WakeWorldWithMemoryResult {
 // meaningful systemic event occurs -> World Memory records it -> Entity
 // Memory records only relevant entity history -> encounter availability
 // changes" (the mission's own Phase 27 chain), in one function call.
-export async function wakeWorldWithMemory(worldInstanceId: string, ownerId: string, now: () => string = defaultNow): Promise<WakeWorldWithMemoryResult> {
+export async function wakeWorldWithMemory(worldInstanceId: string, ownerId: string, now: () => string = defaultNow, relatedEntityIdsByEntityId?: ReadonlyMap<string, string[]>, homeRangeLocationIdsByOwnerId?: ReadonlyMap<string, string[]>): Promise<WakeWorldWithMemoryResult> {
   const beforeShared = await getWorldState(worldInstanceId, now)
   const beforePopulation = await getPopulationSnapshot(worldInstanceId, now)
 
@@ -76,7 +76,13 @@ export async function wakeWorldWithMemory(worldInstanceId: string, ownerId: stri
     if (preferred) memoryHintByEntityId.set(entity.entityId, { preferredResourceLocationId: preferred })
   }
 
-  const combined = await wakeWorldWithPopulation(worldInstanceId, ownerId, now, memoryHintByEntityId)
+  // Sprint 12, Phase 12/16: an optional pass-through only -- social
+  // ecology's own relationship/home-range facts feed into the SAME
+  // population advance call World Memory already drives, never a
+  // second/competing advance. Every existing caller that omits these
+  // two params (this whole file's own pre-Sprint-12 behavior) is
+  // unaffected.
+  const combined = await wakeWorldWithPopulation(worldInstanceId, ownerId, now, memoryHintByEntityId, relatedEntityIdsByEntityId, homeRangeLocationIdsByOwnerId)
   const afterShared = combined.world.state.sharedState
   const afterTick = afterShared.clock.tick
   const afterPopulation = await getPopulationSnapshot(worldInstanceId, now)
