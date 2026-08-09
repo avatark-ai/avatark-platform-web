@@ -1,7 +1,7 @@
 import type { EncounterCategory, EncounterRuleId, EntityId } from "@avatark/living-systems-contracts"
 import type { LocationId, WorldId } from "@avatark/runtime-contracts"
 import type { PopulationEvent } from "@avatark/living-population-contracts"
-import type { WorldConsequence, WorldEvent } from "@avatark/world-memory-contracts"
+import type { CausalReference, WorldConsequence, WorldEvent } from "@avatark/world-memory-contracts"
 import { deriveMemoryRecordId } from "./eventIdentity.ts"
 import { evaluateSignificance } from "./significance.ts"
 import type { SignificanceConfig, WorldEventCandidate } from "./significance.ts"
@@ -22,6 +22,17 @@ export interface DeriveWorldEventsParams {
   locationConditionChanges: { tick: number; locationId: LocationId; category: string; wasAvailable: boolean; isAvailable: boolean; entityIdsPresent: EntityId[] }[]
   populationEvents: PopulationEvent[]
   encounterAvailabilityChanges: { tick: number; ruleId: EncounterRuleId; locationId: LocationId; category: EncounterCategory; becameAvailable: boolean; contributingEntityIds: EntityId[] }[]
+  // Sprint 14, Phase 8: an encounter Sprint 14's own encounter-realization
+  // resolver decided REALIZED -- structured facts handed in the same
+  // discipline as every other input field. `causalReferences` and
+  // `consequences` are already fully resolved by
+  // @avatark/encounter-realization-runtime's own pure `deriveConsequences`
+  // (WORLD_MEMORY-domain consequences only; the RELATIONSHIP domain is
+  // applied by lib/socialEcology/hostService.ts directly, never through
+  // this pipeline) -- this package never recomputes them, only carries
+  // them through, the same posture separationEvents/reunionEvents
+  // already established for Sprint 12.
+  resolvedEncounters?: { tick: number; ruleId: EncounterRuleId; locationId: LocationId; category: EncounterCategory; participantEntityIds: EntityId[]; causalReferences: CausalReference[]; consequences: WorldConsequence[] }[]
   // Sprint 12, Phase 12: separation/reunion candidates -- built by
   // @avatark/social-ecology-runtime's own co-location-based detection,
   // handed here as plain structured facts, same discipline as every
@@ -96,6 +107,25 @@ function buildCandidates(params: DeriveWorldEventsParams): Candidate[] {
     candidates.push({
       candidate: { category: "ENCOUNTER_BECAME_AVAILABLE", tick: ec.tick, locationId: ec.locationId, participantEntityIds: ec.contributingEntityIds, causalReferences: [{ kind: "encounterRule", ref: ec.ruleId }], detail: { ruleId: ec.ruleId } },
       consequences: [{ type: "ENCOUNTER_ELIGIBILITY_CHANGE", targetEntityId: null, targetGroupId: null, targetLocationId: ec.locationId, detail: { ruleId: ec.ruleId, eligible: true } }],
+    })
+  }
+
+  // Sprint 14, Phase 8: `recordEncounterResolved` (encounterHistory.ts)
+  // stays the coarse EncounterHistoryEntry breadcrumb, unchanged; THIS
+  // is the richer World Memory record for the same realization, through
+  // the same pipeline every other consequence-bearing event already
+  // uses.
+  for (const resolved of params.resolvedEncounters ?? []) {
+    candidates.push({
+      candidate: {
+        category: "ENCOUNTER_RESOLVED",
+        tick: resolved.tick,
+        locationId: resolved.locationId,
+        participantEntityIds: resolved.participantEntityIds,
+        causalReferences: resolved.causalReferences.length > 0 ? resolved.causalReferences : [{ kind: "encounterRule", ref: resolved.ruleId }],
+        detail: { ruleId: resolved.ruleId, category: resolved.category },
+      },
+      consequences: resolved.consequences,
     })
   }
 

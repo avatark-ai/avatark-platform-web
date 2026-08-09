@@ -649,6 +649,11 @@ const LIVING_RHYTHMS_RUNTIME_PACKAGE = "living-rhythms-runtime"
 const LIVING_RHYTHMS_CONTRACTS_ALLOWED_DEPS = new Set(["@avatark/runtime-contracts", "@avatark/living-systems-contracts", "@avatark/living-population-contracts", "@avatark/social-ecology-contracts"])
 const LIVING_RHYTHMS_RUNTIME_ALLOWED_DEPS = new Set(["@avatark/runtime-contracts", "@avatark/living-systems-contracts", "@avatark/living-population-contracts", "@avatark/social-ecology-contracts", "@avatark/living-rhythms-contracts"])
 
+const ENCOUNTER_REALIZATION_CONTRACTS_PACKAGE = "encounter-realization-contracts"
+const ENCOUNTER_REALIZATION_RUNTIME_PACKAGE = "encounter-realization-runtime"
+const ENCOUNTER_REALIZATION_CONTRACTS_ALLOWED_DEPS = new Set(["@avatark/runtime-contracts", "@avatark/living-systems-contracts", "@avatark/living-population-contracts", "@avatark/social-ecology-contracts", "@avatark/world-memory-contracts"])
+const ENCOUNTER_REALIZATION_RUNTIME_ALLOWED_DEPS = new Set(["@avatark/runtime-contracts", "@avatark/living-systems-contracts", "@avatark/living-population-contracts", "@avatark/social-ecology-contracts", "@avatark/world-memory-contracts", "@avatark/encounter-realization-contracts"])
+
 test("packages/living-rhythms-contracts declares, at most, dependencies on runtime-contracts/living-systems-contracts/living-population-contracts/social-ecology-contracts", () => {
   const deps = packageDependencies(LIVING_RHYTHMS_CONTRACTS_PACKAGE)
   const disallowed = Object.keys(deps).filter((name) => !LIVING_RHYTHMS_CONTRACTS_ALLOWED_DEPS.has(name))
@@ -720,8 +725,85 @@ test("packages/living-rhythms-runtime never references protected narrative state
   assert.deepEqual(violations, [])
 })
 
+// Sprint 14: encounter-realization-contracts declares/imports at most
+// its five allowed contracts packages; encounter-realization-runtime
+// adds only its own contracts package on top -- ZERO sibling runtime
+// package (living-rhythms-runtime/social-ecology-runtime/
+// world-memory-runtime/living-population-runtime), matching the exact
+// discipline that forced this sprint's own deriveEncounterRecordId to
+// be a documented restatement rather than an import (see
+// docs/SPRINT14_GROUND_TRUTH.md).
+test("packages/encounter-realization-contracts declares, at most, dependencies on its five allowed contracts packages", () => {
+  const deps = packageDependencies(ENCOUNTER_REALIZATION_CONTRACTS_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => !ENCOUNTER_REALIZATION_CONTRACTS_ALLOWED_DEPS.has(name))
+  assert.deepEqual(disallowed, [], `encounter-realization-contracts declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/encounter-realization-contracts imports, at most, those same five packages in its source", () => {
+  const srcDir = join(REPO_ROOT, "packages", ENCOUNTER_REALIZATION_CONTRACTS_PACKAGE, "src")
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    for (const importedPackage of findAvatarkImports(file)) {
+      if (!ENCOUNTER_REALIZATION_CONTRACTS_ALLOWED_DEPS.has(`@avatark/${importedPackage}`)) violations.push(`${file} imports @avatark/${importedPackage}`)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("packages/encounter-realization-runtime declares, at most, dependencies on its six allowed packages", () => {
+  const deps = packageDependencies(ENCOUNTER_REALIZATION_RUNTIME_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => !ENCOUNTER_REALIZATION_RUNTIME_ALLOWED_DEPS.has(name))
+  assert.deepEqual(disallowed, [], `encounter-realization-runtime declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/encounter-realization-runtime imports, at most, those same six packages in its source -- never a sibling runtime, renderer, embodiment/persistence package, or @avatark/account", () => {
+  const srcDir = join(REPO_ROOT, "packages", ENCOUNTER_REALIZATION_RUNTIME_PACKAGE, "src")
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    for (const importedPackage of findAvatarkImports(file)) {
+      if (!ENCOUNTER_REALIZATION_RUNTIME_ALLOWED_DEPS.has(`@avatark/${importedPackage}`)) violations.push(`${file} imports @avatark/${importedPackage}`)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("neither encounter-realization package's source contains a React/Next.js/Unreal-specific token", () => {
+  const forbidden = ["from \"react", "from 'react", "next/server", "next/navigation", "UObject", "AActor", "Blueprint", "UnrealEngine"]
+  const violations: string[] = []
+  for (const pkg of [ENCOUNTER_REALIZATION_CONTRACTS_PACKAGE, ENCOUNTER_REALIZATION_RUNTIME_PACKAGE]) {
+    const srcDir = join(REPO_ROOT, "packages", pkg, "src")
+    for (const file of listSourceFiles(srcDir)) {
+      if (file.endsWith(".test.ts")) continue
+      const code = readFileSync(file, "utf-8")
+        .split("\n")
+        .map((line) => line.replace(/\/\/.*$/, ""))
+        .join("\n")
+      for (const token of forbidden) {
+        if (code.includes(token)) violations.push(`${file} contains "${token}"`)
+      }
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+// Sprint 14: this domain only ever READS protectedNarrative (the
+// resolver's own hard BLOCKED gate, re-checking Sprint 7's own rule --
+// see docs/SPRINT14_GROUND_TRUTH.md) -- it must never call `.save`/
+// `.put`/`.mutate` on it, the same write-method check every prior
+// sprint's own runtime carries.
+test("packages/encounter-realization-runtime never calls a write method on protected narrative state", () => {
+  const srcDir = join(REPO_ROOT, "packages", ENCOUNTER_REALIZATION_RUNTIME_PACKAGE, "src")
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    if (file.endsWith(".test.ts")) continue
+    const content = readFileSync(file, "utf-8")
+    if (/protectedNarrative\w*\.(save|put|mutate|write)\s*\(/.test(content)) violations.push(file)
+  }
+  assert.deepEqual(violations, [])
+})
+
 test("sanity: this check actually inspects real directories, not an accidental no-op", () => {
-  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE, RENDERER_CONTRACTS_PACKAGE, LIVING_SYSTEMS_CONTRACTS_PACKAGE, LIVING_SYSTEMS_RUNTIME_PACKAGE, WORLD_EMBODIMENT_CONTRACTS_PACKAGE, WORLD_EMBODIMENT_RUNTIME_PACKAGE, WORLD_PERSISTENCE_CONTRACTS_PACKAGE, WORLD_PERSISTENCE_RUNTIME_PACKAGE, LIVING_POPULATION_CONTRACTS_PACKAGE, LIVING_POPULATION_RUNTIME_PACKAGE, WORLD_MEMORY_CONTRACTS_PACKAGE, WORLD_MEMORY_RUNTIME_PACKAGE, SOCIAL_ECOLOGY_CONTRACTS_PACKAGE, SOCIAL_ECOLOGY_RUNTIME_PACKAGE, LIVING_RHYTHMS_CONTRACTS_PACKAGE, LIVING_RHYTHMS_RUNTIME_PACKAGE]) {
+  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE, RENDERER_CONTRACTS_PACKAGE, LIVING_SYSTEMS_CONTRACTS_PACKAGE, LIVING_SYSTEMS_RUNTIME_PACKAGE, WORLD_EMBODIMENT_CONTRACTS_PACKAGE, WORLD_EMBODIMENT_RUNTIME_PACKAGE, WORLD_PERSISTENCE_CONTRACTS_PACKAGE, WORLD_PERSISTENCE_RUNTIME_PACKAGE, LIVING_POPULATION_CONTRACTS_PACKAGE, LIVING_POPULATION_RUNTIME_PACKAGE, WORLD_MEMORY_CONTRACTS_PACKAGE, WORLD_MEMORY_RUNTIME_PACKAGE, SOCIAL_ECOLOGY_CONTRACTS_PACKAGE, SOCIAL_ECOLOGY_RUNTIME_PACKAGE, LIVING_RHYTHMS_CONTRACTS_PACKAGE, LIVING_RHYTHMS_RUNTIME_PACKAGE, ENCOUNTER_REALIZATION_CONTRACTS_PACKAGE, ENCOUNTER_REALIZATION_RUNTIME_PACKAGE]) {
     const srcDir = join(REPO_ROOT, "packages", runtimePackage, "src")
     assert.ok(statSync(srcDir).isDirectory(), `expected packages/${runtimePackage}/src to exist`)
     assert.ok(listSourceFiles(srcDir).length > 0, `expected packages/${runtimePackage}/src to contain source files`)

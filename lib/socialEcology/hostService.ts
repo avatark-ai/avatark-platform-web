@@ -322,3 +322,25 @@ export async function getEmbodimentWithSocialEcology(worldInstanceId: string, us
   const social = await getLocationSocialSummary(worldInstanceId, locationId, now)
   return { embodimentWithHistory, social }
 }
+
+// Sprint 14, Phase 8: the ONE additive write boundary for a realized
+// encounter's own relationship consequence -- RelationshipState keeps
+// exactly one writer (this file), never a second authority
+// (lib/encounterRealization/hostService.ts calls this rather than
+// touching relationshipRepository directly, the same discipline Sprint
+// 13 held for GroupState -- see docs/SPRINT13_GROUND_TRUTH.md's
+// decision 6). No idempotency guard is needed HERE: the caller only
+// ever invokes this once per EncounterRecord's own REALIZED ->
+// CONSEQUENCES_APPLIED transition, which is itself guarded by that
+// record's content-derived id (see
+// @avatark/encounter-realization-contracts' own EncounterRecordRepository
+// doc comment) -- a replayed wake never calls this twice for the same
+// real encounter. A relationship that no longer exists is a silent
+// no-op, not an error (the encounter's own participants may have had a
+// relationship recorded under an id this Host layer no longer tracks).
+export async function applyEncounterEvidence(worldInstanceId: string, relationshipId: string, tick: number): Promise<void> {
+  const relationship = await relationshipRepository.get(worldInstanceId, relationshipId)
+  if (!relationship) return
+  const evidence = evolveRelationshipEvidence(relationship.evidence, false, false, false, true)
+  await relationshipRepository.save({ ...relationship, evidence, band: deriveRelationshipBand(evidence), lastRelevantTick: tick })
+}

@@ -105,3 +105,29 @@ test("a reunion candidate whose own separation was too brief is dropped entirely
   const events = deriveWorldEvents(baseParams({ reunionEvents: [{ tick: 7, entityId: "cow-1", subjectType: "RELATIONSHIP", subjectId: "rel-1", locationId: "yamuna", separationDurationTicks: 1 }] }))
   assert.deepEqual(events, [])
 })
+
+// Sprint 14, Phase 8: a realized encounter carries its own resolver's
+// already-computed causal references and consequences straight through
+// -- this pipeline never recomputes them, only filters/stamps them.
+test("a resolved encounter always becomes an ENCOUNTER_RESOLVED WorldEvent (ENCOUNTER_RESOLVED is unconditionally MEANINGFUL), carrying its own causal references and consequences through unchanged", () => {
+  const events = deriveWorldEvents(
+    baseParams({
+      resolvedEncounters: [
+        {
+          tick: 12,
+          ruleId: "kadamba-grove-ambient-presence",
+          locationId: "kadamba-grove",
+          category: "ambient",
+          participantEntityIds: ["cow-1", "cow-2"],
+          causalReferences: [{ kind: "routineCompatibility", ref: "1.00" }],
+          consequences: [{ type: "RESOURCE_PREFERENCE", targetEntityId: "cow-1", targetGroupId: null, targetLocationId: "kadamba-grove", detail: {} }],
+        },
+      ],
+    }),
+  )
+  assert.equal(events.length, 1)
+  assert.equal(events[0].category, "ENCOUNTER_RESOLVED")
+  assert.equal(events[0].significance, "MEANINGFUL")
+  assert.deepEqual(events[0].causalReferences, [{ kind: "routineCompatibility", ref: "1.00" }])
+  assert.deepEqual(events[0].consequences, [{ type: "RESOURCE_PREFERENCE", targetEntityId: "cow-1", targetGroupId: null, targetLocationId: "kadamba-grove", detail: {} }])
+})

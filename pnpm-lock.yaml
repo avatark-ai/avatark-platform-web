@@ -29,6 +29,12 @@ importers:
       '@avatark/context-runtime':
         specifier: workspace:*
         version: link:packages/context-runtime
+      '@avatark/encounter-realization-contracts':
+        specifier: workspace:*
+        version: link:packages/encounter-realization-contracts
+      '@avatark/encounter-realization-runtime':
+        specifier: workspace:*
+        version: link:packages/encounter-realization-runtime
       '@avatark/experience-registry':
         specifier: workspace:*
         version: link:packages/experience-registry
@@ -267,6 +273,53 @@ importers:
         version: 5.9.3
 
   packages/context-runtime:
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/encounter-realization-contracts:
+    dependencies:
+      '@avatark/living-population-contracts':
+        specifier: workspace:*
+        version: link:../living-population-contracts
+      '@avatark/living-systems-contracts':
+        specifier: workspace:*
+        version: link:../living-systems-contracts
+      '@avatark/runtime-contracts':
+        specifier: workspace:*
+        version: link:../runtime-contracts
+      '@avatark/social-ecology-contracts':
+        specifier: workspace:*
+        version: link:../social-ecology-contracts
+      '@avatark/world-memory-contracts':
+        specifier: workspace:*
+        version: link:../world-memory-contracts
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/encounter-realization-runtime:
+    dependencies:
+      '@avatark/encounter-realization-contracts':
+        specifier: workspace:*
+        version: link:../encounter-realization-contracts
+      '@avatark/living-population-contracts':
+        specifier: workspace:*
+        version: link:../living-population-contracts
+      '@avatark/living-systems-contracts':
+        specifier: workspace:*
+        version: link:../living-systems-contracts
+      '@avatark/runtime-contracts':
+        specifier: workspace:*
+        version: link:../runtime-contracts
+      '@avatark/social-ecology-contracts':
+        specifier: workspace:*
+        version: link:../social-ecology-contracts
+      '@avatark/world-memory-contracts':
+        specifier: workspace:*
+        version: link:../world-memory-contracts
     devDependencies:
       typescript:
         specifier: ^5

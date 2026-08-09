@@ -75,3 +75,36 @@ test("a significant reunion event produces a RECENT_REUNION entry for its own en
   assert.ok(entries.some((e) => e.entityId === "cow-1" && e.type === "RECENT_REUNION"))
   assert.ok(entries.some((e) => e.entityId === "cow-1" && e.type === "RECENT_GROUP_MEMBERSHIP" && e.detail.groupId === "membership-1"))
 })
+
+// Sprint 14, Phase 8: a REALIZED encounter's own RESOURCE_PREFERENCE
+// consequence (attached by @avatark/encounter-realization-runtime's own
+// deriveConsequences) produces a PREVIOUS_RESOURCE_LOCATION entry --
+// this is the ENTIRE "changed future behavior" mechanism for Sprint 14:
+// no new bridge, the exact same one Sprint 11 already built for
+// POPULATION_MOVEMENT. Its participants also get RECENT_ENCOUNTER_INVOLVEMENT,
+// same as an ENCOUNTER_BECAME_AVAILABLE event already produces.
+test("a resolved encounter's participants get RECENT_ENCOUNTER_INVOLVEMENT, and its own RESOURCE_PREFERENCE consequence produces PREVIOUS_RESOURCE_LOCATION -- the existing memoryHint bridge, no new mechanism", () => {
+  const events = deriveWorldEvents({
+    worldId: "w1",
+    now: () => "2026-08-09T00:00:00.000Z",
+    seasonTransitions: [],
+    environmentalBandChanges: [],
+    locationConditionChanges: [],
+    populationEvents: [],
+    encounterAvailabilityChanges: [],
+    resolvedEncounters: [
+      {
+        tick: 12,
+        ruleId: "kadamba-grove-ambient-presence",
+        locationId: "kadamba-grove",
+        category: "ambient",
+        participantEntityIds: ["cow-1"],
+        causalReferences: [],
+        consequences: [{ type: "RESOURCE_PREFERENCE", targetEntityId: "cow-1", targetGroupId: null, targetLocationId: "kadamba-grove", detail: {} }],
+      },
+    ],
+  })
+  const entries = deriveEntityMemoryEntries("w1", events)
+  assert.ok(entries.some((e) => e.entityId === "cow-1" && e.type === "RECENT_ENCOUNTER_INVOLVEMENT"))
+  assert.ok(entries.some((e) => e.entityId === "cow-1" && e.type === "PREVIOUS_RESOURCE_LOCATION" && e.detail.locationId === "kadamba-grove"))
+})

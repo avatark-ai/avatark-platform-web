@@ -21,10 +21,21 @@ export type RelationshipBand = "WEAK" | "ESTABLISHED" | "STRONG"
 
 // Deliberately a small, closed, structured record -- never free-form
 // metadata (Phase 2's own "avoid uncontrolled free-form metadata").
+//
+// Sprint 14, Phase 8: `encounterCount` is an ADDITIVE, OPTIONAL field --
+// every existing `RelationshipEvidence` literal (seed data, prior
+// sprints' own tests) keeps working unchanged and is read as 0. It
+// counts realized encounters (Sprint 14's own EncounterRecord reaching
+// REALIZED) between this relationship's two entities, distinct from
+// `coPresenceTicks` (mere co-location, evolved every wake regardless of
+// any encounter) -- a relationship consequence that is genuinely
+// ABOUT an encounter having happened, not merely about the two entities
+// having been in the same place.
 export interface RelationshipEvidence {
   coPresenceTicks: number
   sharedGroupTicks: number
   reunionCount: number
+  encounterCount?: number
 }
 
 // Sprint 12, Phase 2: representable independently from either entity's

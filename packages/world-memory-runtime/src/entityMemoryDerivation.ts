@@ -39,7 +39,7 @@ export function deriveEntityMemoryEntries(worldId: WorldId, events: WorldEvent[]
         ? "RECENT_RELOCATION"
         : event.category === "LOCATION_CONDITION_CHANGED" || event.category === "RESOURCE_CONDITION_CHANGED"
           ? "RECENT_STRESS_CONDITION"
-          : event.category === "ENCOUNTER_BECAME_AVAILABLE"
+          : event.category === "ENCOUNTER_BECAME_AVAILABLE" || event.category === "ENCOUNTER_RESOLVED"
             ? "RECENT_ENCOUNTER_INVOLVEMENT"
             : event.category === "SEPARATION_OCCURRED"
               ? "RECENT_SEPARATION"

@@ -34,3 +34,21 @@ test("evolveRelationshipEvidence: a fully-idle tick leaves evidence unchanged", 
   const start = { coPresenceTicks: 2, sharedGroupTicks: 1, reunionCount: 1 }
   assert.deepEqual(evolveRelationshipEvidence(start, false, false, false), start)
 })
+
+// Sprint 14, Phase 8: `encounterCount` is additive and OPTIONAL --
+// every call above (which never passes the new 5th argument and never
+// carries the field on `current`) must keep returning the exact same
+// shape it always did, asserted by the tests above's own deepEqual
+// against a literal with no `encounterCount` key at all.
+test("evolveRelationshipEvidence: encounterCount only appears once a realized encounter has actually touched this relationship, weighted like reunionCount in deriveRelationshipBand", () => {
+  const start = { coPresenceTicks: 0, sharedGroupTicks: 0, reunionCount: 0 }
+  const idle = evolveRelationshipEvidence(start, false, false, false)
+  assert.equal(idle.encounterCount, undefined, "no encounterCount key at all until an encounter has occurred")
+
+  const afterEncounter = evolveRelationshipEvidence(start, false, false, false, true)
+  assert.equal(afterEncounter.encounterCount, 1)
+  assert.equal(deriveRelationshipBand({ coPresenceTicks: 0, sharedGroupTicks: 0, reunionCount: 0, encounterCount: 2 }), "ESTABLISHED", "weighted x3, same as reunionCount")
+
+  const afterAnotherIdleTick = evolveRelationshipEvidence(afterEncounter, false, false, false)
+  assert.equal(afterAnotherIdleTick.encounterCount, 1, "once present, the field is carried forward even on an idle tick")
+})
