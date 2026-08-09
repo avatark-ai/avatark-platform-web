@@ -131,3 +131,24 @@ test("a resolved encounter always becomes an ENCOUNTER_RESOLVED WorldEvent (ENCO
   assert.deepEqual(events[0].causalReferences, [{ kind: "routineCompatibility", ref: "1.00" }])
   assert.deepEqual(events[0].consequences, [{ type: "RESOURCE_PREFERENCE", targetEntityId: "cow-1", targetGroupId: null, targetLocationId: "kadamba-grove", detail: {} }])
 })
+
+test("a canonical event occurrence always becomes a LANDMARK CANONICAL_EVENT_OCCURRED WorldEvent, carrying its own causal references through unchanged, with zero attached consequence", () => {
+  const events = deriveWorldEvents(
+    baseParams({
+      canonicalEventOccurrences: [
+        {
+          tick: 20,
+          canonicalEventId: "canonical-event-alpha",
+          activationId: "activation-1",
+          locationId: "kadamba-grove",
+          causalReferences: [{ kind: "canonicalEvent", ref: "canonical-event-alpha" }],
+        },
+      ],
+    }),
+  )
+  assert.equal(events.length, 1)
+  assert.equal(events[0].category, "CANONICAL_EVENT_OCCURRED")
+  assert.equal(events[0].significance, "LANDMARK")
+  assert.deepEqual(events[0].causalReferences, [{ kind: "canonicalEvent", ref: "canonical-event-alpha" }])
+  assert.deepEqual(events[0].consequences, [])
+})

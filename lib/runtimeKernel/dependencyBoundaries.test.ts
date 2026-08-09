@@ -913,8 +913,146 @@ test("world-adaptation package sources and lib/worldAdaptation/hostService.ts ne
   assert.deepEqual(violations, [])
 })
 
+// Sprint 18, mission's own "ARCHITECTURAL LAW"/"security/authority
+// invariants" sections: @avatark/canonical-event-contracts may depend
+// on runtime-contracts (shared id types), living-systems-contracts
+// (EntityId reuse for the ENTITY_SET projection-scope variant),
+// spatial-ecology-contracts (the REAL Sprint 16 hierarchy ids --
+// DomainId/SectorId/QuadrantId/PatchId/LocalPlaceId -- for
+// CanonicalEventProjectionScope, reconciled against Sprint 16's actual
+// closed landing rather than Phase 0's own placeholder strings), and
+// world-memory-contracts (CausalReference reuse for eligibility
+// reasons, WorldEventId reuse for the projection's own worldEventId
+// link) -- canonical-event-contracts never invents its own causal-
+// reference or event-id shape. @avatark/canonical-event-runtime may
+// additionally depend on canonical-event-contracts itself. Neither may
+// ever depend on a sibling runtime package (living-systems-runtime/
+// living-population-runtime/social-ecology-runtime/living-rhythms-runtime/
+// world-memory-runtime/encounter-realization-runtime/world-adaptation-runtime/
+// spatial-ecology-runtime), renderer-contracts, any world-embodiment-*/
+// world-persistence-* package, or @avatark/account -- this domain
+// observes plain, structured facts (tick/season/reached-location/
+// narrative-gate state) the Host layer already resolved; it never
+// queries simulation/persistence/memory/social/rhythms/encounter-
+// realization/adaptation/spatial internals itself.
+const CANONICAL_EVENT_CONTRACTS_PACKAGE = "canonical-event-contracts"
+const CANONICAL_EVENT_RUNTIME_PACKAGE = "canonical-event-runtime"
+const CANONICAL_EVENT_CONTRACTS_ALLOWED_DEPS = new Set(["@avatark/runtime-contracts", "@avatark/living-systems-contracts", "@avatark/spatial-ecology-contracts", "@avatark/world-memory-contracts"])
+const CANONICAL_EVENT_RUNTIME_ALLOWED_DEPS = new Set(["@avatark/runtime-contracts", "@avatark/canonical-event-contracts"])
+
+test("packages/canonical-event-contracts declares, at most, dependencies on its four allowed contracts packages", () => {
+  const deps = packageDependencies(CANONICAL_EVENT_CONTRACTS_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => !CANONICAL_EVENT_CONTRACTS_ALLOWED_DEPS.has(name))
+  assert.deepEqual(disallowed, [], `canonical-event-contracts declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/canonical-event-contracts imports, at most, those same four packages in its source", () => {
+  const srcDir = join(REPO_ROOT, "packages", CANONICAL_EVENT_CONTRACTS_PACKAGE, "src")
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    for (const importedPackage of findAvatarkImports(file)) {
+      if (!CANONICAL_EVENT_CONTRACTS_ALLOWED_DEPS.has(`@avatark/${importedPackage}`)) violations.push(`${file} imports @avatark/${importedPackage}`)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("packages/canonical-event-runtime declares, at most, dependencies on its two allowed packages", () => {
+  const deps = packageDependencies(CANONICAL_EVENT_RUNTIME_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => !CANONICAL_EVENT_RUNTIME_ALLOWED_DEPS.has(name))
+  assert.deepEqual(disallowed, [], `canonical-event-runtime declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/canonical-event-runtime imports, at most, those same two packages in its source -- never a sibling runtime, renderer, embodiment/persistence package, or @avatark/account", () => {
+  const srcDir = join(REPO_ROOT, "packages", CANONICAL_EVENT_RUNTIME_PACKAGE, "src")
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    for (const importedPackage of findAvatarkImports(file)) {
+      if (!CANONICAL_EVENT_RUNTIME_ALLOWED_DEPS.has(`@avatark/${importedPackage}`)) violations.push(`${file} imports @avatark/${importedPackage}`)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("neither canonical-event package's source contains a React/Next.js/Unreal-specific token", () => {
+  const forbidden = ["from \"react", "from 'react", "next/server", "next/navigation", "UObject", "AActor", "Blueprint", "UnrealEngine"]
+  const violations: string[] = []
+  for (const pkg of [CANONICAL_EVENT_CONTRACTS_PACKAGE, CANONICAL_EVENT_RUNTIME_PACKAGE]) {
+    const srcDir = join(REPO_ROOT, "packages", pkg, "src")
+    for (const file of listSourceFiles(srcDir)) {
+      if (file.endsWith(".test.ts")) continue
+      const code = readFileSync(file, "utf-8")
+        .split("\n")
+        .map((line) => line.replace(/\/\/.*$/, ""))
+        .join("\n")
+      for (const token of forbidden) {
+        if (code.includes(token)) violations.push(`${file} contains "${token}"`)
+      }
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+// Sprint 18: this domain never touches protected canonical narrative
+// state at all -- the strongest form of the invariant. NARRATIVE_GATE_OPEN
+// eligibility is judged against a plain `Record<string, boolean>` the
+// Host layer translates real gate state into (see
+// @avatark/canonical-event-runtime's own `eligibility.ts` doc comment);
+// canonical-event-runtime has no legitimate reason to ever import
+// `ProtectedNarrativeProjection`/`ProtectedNarrativeStateRepository`.
+test("packages/canonical-event-runtime never references protected narrative state at all", () => {
+  const srcDir = join(REPO_ROOT, "packages", CANONICAL_EVENT_RUNTIME_PACKAGE, "src")
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    if (file.endsWith(".test.ts")) continue
+    const content = readFileSync(file, "utf-8")
+    if (/protectedNarrative/i.test(content)) violations.push(file)
+  }
+  assert.deepEqual(violations, [])
+})
+
+// Sprint 18, Phase 0 §4/§24: Canon immutability is structural, not
+// conventional -- `CanonicalEventDefinition` has no repository at all
+// (not even a get-only one), so there is no write-shaped call to scan
+// for on that type specifically. This test instead proves the STRONGER
+// claim Phase 0 §24 actually asks for: no file in either canonical-event
+// package, or in this file's own Host integration
+// (lib/canonicalEvents/hostService.ts), ever calls a save/put/set/
+// write/mutate/update-shaped method on anything spelled
+// `canonicalEventDefinition*` -- the same regex-scan mechanism already
+// applied to protected narrative state, extended to this new subject.
+test("no file in canonical-event packages or lib/canonicalEvents calls a write-shaped method on canonicalEventDefinition -- Canon immutability holds because no such write path exists at all", () => {
+  const violations: string[] = []
+  const dirsToScan = [join(REPO_ROOT, "packages", CANONICAL_EVENT_CONTRACTS_PACKAGE, "src"), join(REPO_ROOT, "packages", CANONICAL_EVENT_RUNTIME_PACKAGE, "src"), join(REPO_ROOT, "lib", "canonicalEvents")]
+  for (const dir of dirsToScan) {
+    for (const file of listSourceFiles(dir)) {
+      const content = readFileSync(file, "utf-8")
+      if (/canonicalEventDefinition\w*\.(save|put|set|write|mutate|update)\(/.test(content)) violations.push(file)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+// Sprint 18, mission's own "MULTI-VISITOR LAW" precedent (Sprint 15's
+// own equivalent check): shared canonical-event projection state
+// (Fact A, WorldInstanceCanonicalProjectionState) must never be
+// mutated by a visitor's own private state. Neither canonical-event
+// package's source may reference VisitorWorldMemory at all --
+// witnessing (Fact B, VisitorCanonicalEventWitness) is its own,
+// separate, additive-only shape, never a reuse of that repository.
+test("canonical-event package sources never reference VisitorWorldMemory at all", () => {
+  const violations: string[] = []
+  for (const pkg of [CANONICAL_EVENT_CONTRACTS_PACKAGE, CANONICAL_EVENT_RUNTIME_PACKAGE]) {
+    const srcDir = join(REPO_ROOT, "packages", pkg, "src")
+    for (const file of listSourceFiles(srcDir)) {
+      if (/VisitorWorldMemory/.test(readFileSync(file, "utf-8"))) violations.push(file)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
 test("sanity: this check actually inspects real directories, not an accidental no-op", () => {
-  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE, RENDERER_CONTRACTS_PACKAGE, LIVING_SYSTEMS_CONTRACTS_PACKAGE, LIVING_SYSTEMS_RUNTIME_PACKAGE, WORLD_EMBODIMENT_CONTRACTS_PACKAGE, WORLD_EMBODIMENT_RUNTIME_PACKAGE, WORLD_PERSISTENCE_CONTRACTS_PACKAGE, WORLD_PERSISTENCE_RUNTIME_PACKAGE, LIVING_POPULATION_CONTRACTS_PACKAGE, LIVING_POPULATION_RUNTIME_PACKAGE, WORLD_MEMORY_CONTRACTS_PACKAGE, WORLD_MEMORY_RUNTIME_PACKAGE, SOCIAL_ECOLOGY_CONTRACTS_PACKAGE, SOCIAL_ECOLOGY_RUNTIME_PACKAGE, LIVING_RHYTHMS_CONTRACTS_PACKAGE, LIVING_RHYTHMS_RUNTIME_PACKAGE, ENCOUNTER_REALIZATION_CONTRACTS_PACKAGE, ENCOUNTER_REALIZATION_RUNTIME_PACKAGE, WORLD_ADAPTATION_CONTRACTS_PACKAGE, WORLD_ADAPTATION_RUNTIME_PACKAGE]) {
+  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE, RENDERER_CONTRACTS_PACKAGE, LIVING_SYSTEMS_CONTRACTS_PACKAGE, LIVING_SYSTEMS_RUNTIME_PACKAGE, WORLD_EMBODIMENT_CONTRACTS_PACKAGE, WORLD_EMBODIMENT_RUNTIME_PACKAGE, WORLD_PERSISTENCE_CONTRACTS_PACKAGE, WORLD_PERSISTENCE_RUNTIME_PACKAGE, LIVING_POPULATION_CONTRACTS_PACKAGE, LIVING_POPULATION_RUNTIME_PACKAGE, WORLD_MEMORY_CONTRACTS_PACKAGE, WORLD_MEMORY_RUNTIME_PACKAGE, SOCIAL_ECOLOGY_CONTRACTS_PACKAGE, SOCIAL_ECOLOGY_RUNTIME_PACKAGE, LIVING_RHYTHMS_CONTRACTS_PACKAGE, LIVING_RHYTHMS_RUNTIME_PACKAGE, ENCOUNTER_REALIZATION_CONTRACTS_PACKAGE, ENCOUNTER_REALIZATION_RUNTIME_PACKAGE, WORLD_ADAPTATION_CONTRACTS_PACKAGE, WORLD_ADAPTATION_RUNTIME_PACKAGE, CANONICAL_EVENT_CONTRACTS_PACKAGE, CANONICAL_EVENT_RUNTIME_PACKAGE]) {
     const srcDir = join(REPO_ROOT, "packages", runtimePackage, "src")
     assert.ok(statSync(srcDir).isDirectory(), `expected packages/${runtimePackage}/src to exist`)
     assert.ok(listSourceFiles(srcDir).length > 0, `expected packages/${runtimePackage}/src to contain source files`)

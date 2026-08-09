@@ -1,0 +1,43 @@
+{
+  "name": "@avatark/canonical-event-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Renderer-neutral contracts for Sprint 18's canonical-event-integration domain: CanonicalEventIdentity/Definition, activation conditions, mandated facts (semantic, never renderer-shaped), projection scope (real Sprint 16 spatial-hierarchy ids), WorldInstanceCanonicalProjectionState (per-instance, mutable-by-projection-only), VisitorCanonicalEventWitness. No implementations, no repository write method on CanonicalEventDefinition at all -- Canon immutability is structural, not conventional.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@avatark/living-systems-contracts": "workspace:*",
+    "@avatark/runtime-contracts": "workspace:*",
+    "@avatark/spatial-ecology-contracts": "workspace:*",
+    "@avatark/world-memory-contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "node --experimental-strip-types --test src/canonicalEvent.test.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
+  }
+}

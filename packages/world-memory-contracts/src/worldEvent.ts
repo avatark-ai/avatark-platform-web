@@ -14,6 +14,15 @@ import type { RetentionTier } from "./retention.ts"
 // emotion (see @avatark/social-ecology-contracts' own
 // SeparationState/ReunionEvent, which these categories represent in
 // World Memory once they cross Sprint 11's own significance filter).
+//
+// Sprint 18, Phase 12: one additive category for canonical-event
+// integration -- `CANONICAL_EVENT_OCCURRED`, the durable record that an
+// authorized StudioK canonical event legitimately projected into this
+// world instance (see @avatark/canonical-event-contracts' own
+// WorldInstanceCanonicalProjectionState, which this category represents
+// in World Memory once it reaches COMPLETED). Never a second event
+// stream -- the SAME `deriveWorldEvents` pipeline every other
+// consequence-bearing event already uses.
 export type WorldEventCategory =
   | "SEASON_TRANSITION"
   | "ENVIRONMENTAL_THRESHOLD"
@@ -27,6 +36,7 @@ export type WorldEventCategory =
   | "LOCATION_CONDITION_CHANGED"
   | "SEPARATION_OCCURRED"
   | "REUNION_OCCURRED"
+  | "CANONICAL_EVENT_OCCURRED"
 
 // Sprint 11, Phase 8: an explicit, data-driven, bounded consequence --
 // never an arbitrary callback, never a world-specific conditional

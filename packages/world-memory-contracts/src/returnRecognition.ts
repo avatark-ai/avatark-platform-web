@@ -9,7 +9,12 @@ import type { WorldId } from "@avatark/runtime-contracts"
 // Sprint 12, Phase 12: one additive fact type -- `social_relationship_changed`
 // -- for separation/reunion history. Every existing fact type is
 // unchanged.
-export type ReturnRecognitionFactType = "season_changed" | "environment_changed" | "population_relocated" | "encounter_changed" | "known_entity_state_changed" | "social_relationship_changed"
+// Sprint 18, Phase 12: one additive fact type -- `canonical_event_occurred`
+// -- for authorized StudioK canonical events. None of the prior fact
+// types semantically fit "an authored event happened" (it is not an
+// environment/population/encounter/entity/relationship change on its
+// own terms); every existing fact type remains unchanged.
+export type ReturnRecognitionFactType = "season_changed" | "environment_changed" | "population_relocated" | "encounter_changed" | "known_entity_state_changed" | "social_relationship_changed" | "canonical_event_occurred"
 
 export interface ReturnRecognitionFact {
   type: ReturnRecognitionFactType

@@ -1,0 +1,41 @@
+{
+  "name": "@avatark/canonical-event-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Executes Sprint 18's canonical-event integration: pure eligibility evaluation against already-authoritative world facts, a deterministic ACTIVATED-once state transition, and content-derived activation identity. Host-neutral, database-neutral, franchise-neutral -- never applies a consequence itself, that boundary is the Host layer's (lib/canonicalEvents/hostService.ts), the same posture every sibling runtime package already holds. Never references protected narrative state.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@avatark/canonical-event-contracts": "workspace:*",
+    "@avatark/runtime-contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "node --experimental-strip-types --test src/activationIdentity.test.ts src/eligibility.test.ts src/activation.test.ts src/inMemoryRepositories.test.ts src/livingForestCanonicalEventPortability.test.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
+  }
+}

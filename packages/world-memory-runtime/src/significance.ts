@@ -43,8 +43,12 @@ export function evaluateSignificance(candidate: WorldEventCandidate, config: Sig
     case "SEASON_TRANSITION":
     case "GROUP_FORMED":
     case "GROUP_DISPERSED":
+    case "CANONICAL_EVENT_OCCURRED":
       // Rare, structurally important transitions -- always worth
       // remembering at full fidelity, never compacted (retention.ts).
+      // Sprint 18: an authorized StudioK canonical event is, by
+      // definition, never routine -- it belongs in this same
+      // unconditional-LANDMARK group, not behind any additional gate.
       return "LANDMARK"
 
     case "ENVIRONMENTAL_THRESHOLD": {

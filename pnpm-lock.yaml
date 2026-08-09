@@ -26,6 +26,12 @@ importers:
       '@avatark/bootstrap':
         specifier: workspace:*
         version: link:packages/bootstrap
+      '@avatark/canonical-event-contracts':
+        specifier: workspace:*
+        version: link:packages/canonical-event-contracts
+      '@avatark/canonical-event-runtime':
+        specifier: workspace:*
+        version: link:packages/canonical-event-runtime
       '@avatark/context-runtime':
         specifier: workspace:*
         version: link:packages/context-runtime
@@ -279,6 +285,38 @@ importers:
       '@avatark/product-registry':
         specifier: workspace:*
         version: link:../product-registry
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/canonical-event-contracts:
+    dependencies:
+      '@avatark/living-systems-contracts':
+        specifier: workspace:*
+        version: link:../living-systems-contracts
+      '@avatark/runtime-contracts':
+        specifier: workspace:*
+        version: link:../runtime-contracts
+      '@avatark/spatial-ecology-contracts':
+        specifier: workspace:*
+        version: link:../spatial-ecology-contracts
+      '@avatark/world-memory-contracts':
+        specifier: workspace:*
+        version: link:../world-memory-contracts
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/canonical-event-runtime:
+    dependencies:
+      '@avatark/canonical-event-contracts':
+        specifier: workspace:*
+        version: link:../canonical-event-contracts
+      '@avatark/runtime-contracts':
+        specifier: workspace:*
+        version: link:../runtime-contracts
     devDependencies:
       typescript:
         specifier: ^5

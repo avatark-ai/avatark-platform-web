@@ -41,6 +41,16 @@ export interface DeriveWorldEventsParams {
   // it through as a causal reference.
   separationEvents?: { tick: number; entityId: EntityId; subjectType: "RELATIONSHIP" | "GROUP_MEMBERSHIP"; subjectId: string; locationId: LocationId }[]
   reunionEvents?: { tick: number; entityId: EntityId; subjectType: "RELATIONSHIP" | "GROUP_MEMBERSHIP"; subjectId: string; locationId: LocationId; separationDurationTicks: number }[]
+  // Sprint 18, Phase 8: a canonical event this world instance's own
+  // canonical-event-runtime decided ACTIVATED and completed --
+  // structured facts handed in the same discipline as every other input
+  // field. `causalReferences` are already fully resolved by the Host
+  // layer (lib/canonicalEvents/hostService.ts), never recomputed here.
+  // No consequence is attached through this pipeline -- a canonical
+  // event's own consequence (a PLACE-domain AdaptationEffect) is applied
+  // directly by that same Host layer, through Sprint 15's own existing
+  // write boundary, never through this package (see docs/SPRINT18_FINAL_REPORT.md).
+  canonicalEventOccurrences?: { tick: number; canonicalEventId: string; activationId: string; locationId: LocationId | null; causalReferences: CausalReference[] }[]
   significanceConfig?: SignificanceConfig
 }
 
@@ -138,6 +148,20 @@ function buildCandidates(params: DeriveWorldEventsParams): Candidate[] {
         participantEntityIds: [sep.entityId],
         causalReferences: [{ kind: sep.subjectType.toLowerCase(), ref: sep.subjectId }],
         detail: { subjectType: sep.subjectType, subjectId: sep.subjectId },
+      },
+      consequences: [],
+    })
+  }
+
+  for (const occurrence of params.canonicalEventOccurrences ?? []) {
+    candidates.push({
+      candidate: {
+        category: "CANONICAL_EVENT_OCCURRED",
+        tick: occurrence.tick,
+        locationId: occurrence.locationId,
+        participantEntityIds: [],
+        causalReferences: occurrence.causalReferences.length > 0 ? occurrence.causalReferences : [{ kind: "canonicalEvent", ref: occurrence.canonicalEventId }],
+        detail: { canonicalEventId: occurrence.canonicalEventId, activationId: occurrence.activationId },
       },
       consequences: [],
     })
