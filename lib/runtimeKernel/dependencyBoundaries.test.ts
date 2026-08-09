@@ -802,8 +802,119 @@ test("packages/encounter-realization-runtime never calls a write method on prote
   assert.deepEqual(violations, [])
 })
 
+// Sprint 15, mission's own "ARCHITECTURAL LAW"/"RENDERER NEUTRALITY"
+// sections: @avatark/world-adaptation-contracts may depend on
+// runtime-contracts (shared id types) and world-memory-contracts
+// (CausalReference reuse for provenance -- adaptation never invents its
+// own causal-reference shape); @avatark/world-adaptation-runtime may
+// additionally depend on world-adaptation-contracts itself. Neither may
+// ever depend on a sibling runtime package (living-systems-runtime/
+// living-population-runtime/social-ecology-runtime/living-rhythms-runtime/
+// world-memory-runtime/encounter-realization-runtime), renderer-contracts,
+// any world-embodiment-*/world-persistence-* package, or @avatark/account --
+// this domain observes plain, structured facts (realized-encounter
+// participants/location/relationships, resource-opportunity readings)
+// the Host layer already resolved; it never queries simulation/
+// persistence/memory/social/rhythms/encounter-realization internals
+// itself, matching the exact same-generation discipline
+// encounter-realization-contracts/-runtime already established one
+// sprint earlier.
+const WORLD_ADAPTATION_CONTRACTS_PACKAGE = "world-adaptation-contracts"
+const WORLD_ADAPTATION_RUNTIME_PACKAGE = "world-adaptation-runtime"
+const WORLD_ADAPTATION_CONTRACTS_ALLOWED_DEPS = new Set(["@avatark/runtime-contracts", "@avatark/world-memory-contracts"])
+const WORLD_ADAPTATION_RUNTIME_ALLOWED_DEPS = new Set(["@avatark/runtime-contracts", "@avatark/world-memory-contracts", "@avatark/world-adaptation-contracts"])
+
+test("packages/world-adaptation-contracts declares, at most, dependencies on its two allowed contracts packages", () => {
+  const deps = packageDependencies(WORLD_ADAPTATION_CONTRACTS_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => !WORLD_ADAPTATION_CONTRACTS_ALLOWED_DEPS.has(name))
+  assert.deepEqual(disallowed, [], `world-adaptation-contracts declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/world-adaptation-contracts imports, at most, those same two packages in its source", () => {
+  const srcDir = join(REPO_ROOT, "packages", WORLD_ADAPTATION_CONTRACTS_PACKAGE, "src")
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    for (const importedPackage of findAvatarkImports(file)) {
+      if (!WORLD_ADAPTATION_CONTRACTS_ALLOWED_DEPS.has(`@avatark/${importedPackage}`)) violations.push(`${file} imports @avatark/${importedPackage}`)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("packages/world-adaptation-runtime declares, at most, dependencies on its three allowed packages", () => {
+  const deps = packageDependencies(WORLD_ADAPTATION_RUNTIME_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => !WORLD_ADAPTATION_RUNTIME_ALLOWED_DEPS.has(name))
+  assert.deepEqual(disallowed, [], `world-adaptation-runtime declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/world-adaptation-runtime imports, at most, those same three packages in its source -- never a sibling runtime, renderer, embodiment/persistence package, or @avatark/account", () => {
+  const srcDir = join(REPO_ROOT, "packages", WORLD_ADAPTATION_RUNTIME_PACKAGE, "src")
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    for (const importedPackage of findAvatarkImports(file)) {
+      if (!WORLD_ADAPTATION_RUNTIME_ALLOWED_DEPS.has(`@avatark/${importedPackage}`)) violations.push(`${file} imports @avatark/${importedPackage}`)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("neither world-adaptation package's source contains a React/Next.js/Unreal-specific token", () => {
+  const forbidden = ["from \"react", "from 'react", "next/server", "next/navigation", "UObject", "AActor", "Blueprint", "UnrealEngine"]
+  const violations: string[] = []
+  for (const pkg of [WORLD_ADAPTATION_CONTRACTS_PACKAGE, WORLD_ADAPTATION_RUNTIME_PACKAGE]) {
+    const srcDir = join(REPO_ROOT, "packages", pkg, "src")
+    for (const file of listSourceFiles(srcDir)) {
+      if (file.endsWith(".test.ts")) continue
+      const code = readFileSync(file, "utf-8")
+        .split("\n")
+        .map((line) => line.replace(/\/\/.*$/, ""))
+        .join("\n")
+      for (const token of forbidden) {
+        if (code.includes(token)) violations.push(`${file} contains "${token}"`)
+      }
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+// Sprint 15: this domain never touches protected canonical narrative
+// state at all -- the strongest form of the invariant (zero occurrence
+// of the identifier, not merely zero write-method calls), the same
+// posture living-rhythms-runtime's own equivalent test already holds.
+// Adaptation composes ENTITY/RELATIONSHIP/PLACE/WORLD_POSSIBILITY state
+// only; it has no legitimate reason to ever reference Canon.
+test("packages/world-adaptation-runtime never references protected narrative state at all", () => {
+  const srcDir = join(REPO_ROOT, "packages", WORLD_ADAPTATION_RUNTIME_PACKAGE, "src")
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    if (file.endsWith(".test.ts")) continue
+    const content = readFileSync(file, "utf-8")
+    if (/protectedNarrative/i.test(content)) violations.push(file)
+  }
+  assert.deepEqual(violations, [])
+})
+
+// Sprint 15, mission's own "MULTI-VISITOR LAW": one visitor's private
+// meaningful memory must never silently mutate shared-world adaptation.
+// Neither the pure runtime nor the Host layer's own hostService.ts may
+// reference VisitorWorldMemory/VisitorWorldMemoryRepository at all --
+// adaptation signals derive exclusively from shared, authoritative
+// world/entity/relationship state, never from a visitor-scoped record.
+test("world-adaptation package sources and lib/worldAdaptation/hostService.ts never reference VisitorWorldMemory at all", () => {
+  const violations: string[] = []
+  for (const pkg of [WORLD_ADAPTATION_CONTRACTS_PACKAGE, WORLD_ADAPTATION_RUNTIME_PACKAGE]) {
+    const srcDir = join(REPO_ROOT, "packages", pkg, "src")
+    for (const file of listSourceFiles(srcDir)) {
+      if (/VisitorWorldMemory/.test(readFileSync(file, "utf-8"))) violations.push(file)
+    }
+  }
+  const hostServicePath = join(REPO_ROOT, "lib", "worldAdaptation", "hostService.ts")
+  if (/VisitorWorldMemory/.test(readFileSync(hostServicePath, "utf-8"))) violations.push(hostServicePath)
+  assert.deepEqual(violations, [])
+})
+
 test("sanity: this check actually inspects real directories, not an accidental no-op", () => {
-  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE, RENDERER_CONTRACTS_PACKAGE, LIVING_SYSTEMS_CONTRACTS_PACKAGE, LIVING_SYSTEMS_RUNTIME_PACKAGE, WORLD_EMBODIMENT_CONTRACTS_PACKAGE, WORLD_EMBODIMENT_RUNTIME_PACKAGE, WORLD_PERSISTENCE_CONTRACTS_PACKAGE, WORLD_PERSISTENCE_RUNTIME_PACKAGE, LIVING_POPULATION_CONTRACTS_PACKAGE, LIVING_POPULATION_RUNTIME_PACKAGE, WORLD_MEMORY_CONTRACTS_PACKAGE, WORLD_MEMORY_RUNTIME_PACKAGE, SOCIAL_ECOLOGY_CONTRACTS_PACKAGE, SOCIAL_ECOLOGY_RUNTIME_PACKAGE, LIVING_RHYTHMS_CONTRACTS_PACKAGE, LIVING_RHYTHMS_RUNTIME_PACKAGE, ENCOUNTER_REALIZATION_CONTRACTS_PACKAGE, ENCOUNTER_REALIZATION_RUNTIME_PACKAGE]) {
+  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE, RENDERER_CONTRACTS_PACKAGE, LIVING_SYSTEMS_CONTRACTS_PACKAGE, LIVING_SYSTEMS_RUNTIME_PACKAGE, WORLD_EMBODIMENT_CONTRACTS_PACKAGE, WORLD_EMBODIMENT_RUNTIME_PACKAGE, WORLD_PERSISTENCE_CONTRACTS_PACKAGE, WORLD_PERSISTENCE_RUNTIME_PACKAGE, LIVING_POPULATION_CONTRACTS_PACKAGE, LIVING_POPULATION_RUNTIME_PACKAGE, WORLD_MEMORY_CONTRACTS_PACKAGE, WORLD_MEMORY_RUNTIME_PACKAGE, SOCIAL_ECOLOGY_CONTRACTS_PACKAGE, SOCIAL_ECOLOGY_RUNTIME_PACKAGE, LIVING_RHYTHMS_CONTRACTS_PACKAGE, LIVING_RHYTHMS_RUNTIME_PACKAGE, ENCOUNTER_REALIZATION_CONTRACTS_PACKAGE, ENCOUNTER_REALIZATION_RUNTIME_PACKAGE, WORLD_ADAPTATION_CONTRACTS_PACKAGE, WORLD_ADAPTATION_RUNTIME_PACKAGE]) {
     const srcDir = join(REPO_ROOT, "packages", runtimePackage, "src")
     assert.ok(statSync(srcDir).isDirectory(), `expected packages/${runtimePackage}/src to exist`)
     assert.ok(listSourceFiles(srcDir).length > 0, `expected packages/${runtimePackage}/src to contain source files`)

@@ -1,0 +1,42 @@
+{
+  "name": "@avatark/world-adaptation-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Executes Sprint 15's bounded world-adaptation derivation: signal extraction from already-authoritative Sprint 7-14 facts, deterministic decaying pressure accumulation, threshold-gated decision, and typed, closed effect derivation. Pure, Host-neutral, database-neutral, franchise-neutral -- never applies an effect itself, that boundary is the Host layer's (lib/worldAdaptation/hostService.ts), the same posture every sibling runtime package already holds.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@avatark/runtime-contracts": "workspace:*",
+    "@avatark/world-adaptation-contracts": "workspace:*",
+    "@avatark/world-memory-contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "node --experimental-strip-types --test src/adaptationIdentity.test.ts src/adaptationSignals.test.ts src/worldAdaptation.test.ts src/inMemoryRepositories.test.ts src/livingForestAdaptationPortability.test.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
+  }
+}

@@ -116,6 +116,12 @@ importers:
       '@avatark/timeline':
         specifier: workspace:*
         version: link:packages/timeline
+      '@avatark/world-adaptation-contracts':
+        specifier: workspace:*
+        version: link:packages/world-adaptation-contracts
+      '@avatark/world-adaptation-runtime':
+        specifier: workspace:*
+        version: link:packages/world-adaptation-runtime
       '@avatark/world-embodiment-contracts':
         specifier: workspace:*
         version: link:packages/world-embodiment-contracts
@@ -614,6 +620,35 @@ importers:
         version: 5.9.3
 
   packages/timeline:
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/world-adaptation-contracts:
+    dependencies:
+      '@avatark/runtime-contracts':
+        specifier: workspace:*
+        version: link:../runtime-contracts
+      '@avatark/world-memory-contracts':
+        specifier: workspace:*
+        version: link:../world-memory-contracts
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/world-adaptation-runtime:
+    dependencies:
+      '@avatark/runtime-contracts':
+        specifier: workspace:*
+        version: link:../runtime-contracts
+      '@avatark/world-adaptation-contracts':
+        specifier: workspace:*
+        version: link:../world-adaptation-contracts
+      '@avatark/world-memory-contracts':
+        specifier: workspace:*
+        version: link:../world-memory-contracts
     devDependencies:
       typescript:
         specifier: ^5
