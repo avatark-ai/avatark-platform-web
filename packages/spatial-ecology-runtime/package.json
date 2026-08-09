@@ -1,0 +1,46 @@
+{
+  "name": "@avatark/spatial-ecology-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Executes Sprint 16's spatial-ecology derivation: spatial membership indexing, topology reachability/permeability, Patch state derivation from Sprint 7/13/15 state, Territory claim/pressure aggregation over Sprint 12's own HomeRange, Route state, spatial movement context, and spatial snapshot diffing. Host-neutral, database-neutral, franchise-neutral. Composes existing systems; introduces no second causal, movement, occupancy, territory, or adaptation engine.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@avatark/living-population-contracts": "workspace:*",
+    "@avatark/living-rhythms-contracts": "workspace:*",
+    "@avatark/living-systems-contracts": "workspace:*",
+    "@avatark/runtime-contracts": "workspace:*",
+    "@avatark/social-ecology-contracts": "workspace:*",
+    "@avatark/spatial-ecology-contracts": "workspace:*",
+    "@avatark/world-adaptation-contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "node --experimental-strip-types --test src/membershipIndex.test.ts src/topologyResolution.test.ts src/patchStateResolution.test.ts src/territoryResolution.test.ts src/movementContext.test.ts src/routeResolution.test.ts src/snapshotDiff.test.ts src/inMemoryRepositories.test.ts src/livingForestSpatialEcologyPortability.test.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
+  }
+}

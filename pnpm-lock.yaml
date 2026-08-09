@@ -113,6 +113,12 @@ importers:
       '@avatark/social-ecology-runtime':
         specifier: workspace:*
         version: link:packages/social-ecology-runtime
+      '@avatark/spatial-ecology-contracts':
+        specifier: workspace:*
+        version: link:packages/spatial-ecology-contracts
+      '@avatark/spatial-ecology-runtime':
+        specifier: workspace:*
+        version: link:packages/spatial-ecology-runtime
       '@avatark/timeline':
         specifier: workspace:*
         version: link:packages/timeline
@@ -614,6 +620,59 @@ importers:
       '@avatark/social-ecology-contracts':
         specifier: workspace:*
         version: link:../social-ecology-contracts
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/spatial-ecology-contracts:
+    dependencies:
+      '@avatark/living-population-contracts':
+        specifier: workspace:*
+        version: link:../living-population-contracts
+      '@avatark/living-rhythms-contracts':
+        specifier: workspace:*
+        version: link:../living-rhythms-contracts
+      '@avatark/living-systems-contracts':
+        specifier: workspace:*
+        version: link:../living-systems-contracts
+      '@avatark/runtime-contracts':
+        specifier: workspace:*
+        version: link:../runtime-contracts
+      '@avatark/social-ecology-contracts':
+        specifier: workspace:*
+        version: link:../social-ecology-contracts
+      '@avatark/world-adaptation-contracts':
+        specifier: workspace:*
+        version: link:../world-adaptation-contracts
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/spatial-ecology-runtime:
+    dependencies:
+      '@avatark/living-population-contracts':
+        specifier: workspace:*
+        version: link:../living-population-contracts
+      '@avatark/living-rhythms-contracts':
+        specifier: workspace:*
+        version: link:../living-rhythms-contracts
+      '@avatark/living-systems-contracts':
+        specifier: workspace:*
+        version: link:../living-systems-contracts
+      '@avatark/runtime-contracts':
+        specifier: workspace:*
+        version: link:../runtime-contracts
+      '@avatark/social-ecology-contracts':
+        specifier: workspace:*
+        version: link:../social-ecology-contracts
+      '@avatark/spatial-ecology-contracts':
+        specifier: workspace:*
+        version: link:../spatial-ecology-contracts
+      '@avatark/world-adaptation-contracts':
+        specifier: workspace:*
+        version: link:../world-adaptation-contracts
     devDependencies:
       typescript:
         specifier: ^5
