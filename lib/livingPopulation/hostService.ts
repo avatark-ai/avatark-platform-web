@@ -6,8 +6,8 @@ import type { SharedWorldState } from "@avatark/living-systems-contracts"
 import type { WorldInstanceId, WorldOwnerId } from "@avatark/world-persistence-contracts"
 import { LIVING_VRINDAVAN_ENCOUNTER_RULES, LIVING_VRINDAVAN_SEASONS } from "../livingSystems/systemsDefinition.ts"
 import { protectedNarrativeStateRepository } from "../livingSystems/singleton.ts"
-import { getWorldState, wakeWorld } from "../worldPersistence/hostService.ts"
-import type { WakeWorldResult } from "../worldPersistence/hostService.ts"
+import { catchUpCausalEnvironment, getWorldState } from "../worldPersistence/hostService.ts"
+import type { CausalEnvironmentCatchUpResult } from "../worldPersistence/hostService.ts"
 import type { WorldEmbodimentSnapshot } from "@avatark/world-embodiment-contracts"
 import { translateGroupIntentToUnrealCommands } from "@avatark/world-embodiment-runtime"
 import type { UnrealCommand } from "@avatark/world-embodiment-contracts"
@@ -120,7 +120,7 @@ export async function advancePopulationForWorld(worldInstanceId: WorldInstanceId
 }
 
 export interface WakeWorldWithPopulationResult {
-  world: WakeWorldResult
+  world: CausalEnvironmentCatchUpResult
   population: AdvancePopulationSimulationResult
 }
 
@@ -131,11 +131,19 @@ export interface WakeWorldWithPopulationResult {
 // activity/location -> visitor returns -> population reflects elapsed
 // world time" holds end to end. Reads the PRE-wake SharedWorldState
 // first specifically so population's own internal tick-by-tick replay
-// starts from the exact same point Sprint 9's own wakeWorld did --
-// determinism guarantees both reach the identical environment sequence.
+// starts from the exact same point Sprint 9's own environment catch-up
+// did -- determinism guarantees both reach the identical environment
+// sequence.
+//
+// Sprint 17: calls `catchUpCausalEnvironment`, NOT `wakeWorld` -- the
+// lifecycle commit (lastActiveAt/lastCheckpointTick) is deliberately
+// deferred to the composed chain's own outermost layer
+// (wakeWorldWithSpatialEcology's `commitWakeCompletion` call), so a
+// crash anywhere between here and there leaves this wake attempt's own
+// catch-up window recoverable on retry rather than silently skipped.
 export async function wakeWorldWithPopulation(worldInstanceId: WorldInstanceId, ownerId: WorldOwnerId, now: () => string = () => new Date().toISOString(), memoryHintByEntityId?: ReadonlyMap<string, MemoryHint>, relatedEntityIdsByEntityId?: ReadonlyMap<string, string[]>, homeRangeLocationIdsByOwnerId?: ReadonlyMap<string, string[]>, resolveDayPhaseForTick?: (tick: number) => DayPhaseInput | null, routineEntriesByArchetypeId?: ReadonlyMap<string, RoutineWindowInput[]>): Promise<WakeWorldWithPopulationResult> {
   const stateBeforeWake = await getWorldState(worldInstanceId, now)
-  const world = await wakeWorld(worldInstanceId, ownerId, now)
+  const world = await catchUpCausalEnvironment(worldInstanceId, ownerId, now)
   const population = await advancePopulationForWorld(worldInstanceId, stateBeforeWake.sharedState, world.ticksApplied, worldInstanceId, now, memoryHintByEntityId, relatedEntityIdsByEntityId, homeRangeLocationIdsByOwnerId, resolveDayPhaseForTick, routineEntriesByArchetypeId)
   return { world, population }
 }

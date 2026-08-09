@@ -1,6 +1,6 @@
-import type { WorldInstanceId, WorldLifecycleState, WorldOwnerId } from "@avatark/world-persistence-contracts"
+import type { WakeCatchUpPlan, WorldInstanceId, WorldLifecycleState, WorldOwnerId } from "@avatark/world-persistence-contracts"
 import { LeaseConflictError, StaleWorldStateVersionError } from "@avatark/world-persistence-contracts"
-import { computeDeterministicCatchUp, createCheckpoint, fixedRateTickPolicy, nextLifecycleState } from "@avatark/world-persistence-runtime"
+import { computeDeterministicCatchUp, createCheckpoint, describeWakeCatchUpPlan, fixedRateTickPolicy, nextLifecycleState, resolveTicksToApply } from "@avatark/world-persistence-runtime"
 import type { DurableWorldState } from "@avatark/world-persistence-contracts"
 import { dispatchInteractionIntent } from "../worldEmbodiment/intentDispatcher.ts"
 import type { RuntimeKernel } from "../runtimeKernel/orchestrator.ts"
@@ -34,13 +34,38 @@ export interface WakeWorldResult {
   state: DurableWorldState
   ticksApplied: number
   catchUpDurationMs: number
+  catchUpPlan: WakeCatchUpPlan
 }
 
-// Sprint 9, Phase 4/5/7: COLD -> load checkpoint/history is implicit here
-// (loadOrSeedDurableWorldState already IS "the current authoritative
-// state, whatever durable form it was left in") -> deterministic catch-up
-// -> WARM -> execution ownership acquired up front -> HOT once caught up.
-export async function wakeWorld(worldInstanceId: WorldInstanceId, ownerId: WorldOwnerId, now: () => string = () => new Date().toISOString()): Promise<WakeWorldResult> {
+// Sprint 17: everything `wakeWorld()` used to return, MINUS the final
+// lifecycle commit -- see `catchUpCausalEnvironment` below for why this
+// split exists. `lifecycleStateBeforeCommit` is the value the eventual
+// `commitWakeCompletion` call needs as its own `nextLifecycleState`
+// input (either the just-written "WAKING" transition, or the world's
+// prior state if no legal "visitor_arrived" transition applied).
+export interface CausalEnvironmentCatchUpResult {
+  lifecycleStateBeforeCommit: WorldLifecycleState
+  state: DurableWorldState
+  ticksApplied: number
+  catchUpDurationMs: number
+  // Sprint 17: a logging/test-assertion-only descriptor of what this
+  // attempt's catch-up did -- see @avatark/world-persistence-runtime's
+  // own `resolveTicksToApply`/`describeWakeCatchUpPlan` doc comments for
+  // why the ticks-to-apply computation lives there (pure, world-neutral,
+  // independently testable) rather than inline here.
+  catchUpPlan: WakeCatchUpPlan
+}
+
+// Sprint 17: the primitive `wakeWorld()` now wraps -- every step Sprint
+// 9-16 already established (lease, WAKING transition, deterministic
+// catch-up, checkpoint), stopping short of the one write that used to
+// happen here: committing `lastActiveAt`/`lastCheckpointTick`. A caller
+// that composes further downstream layers on top (lib/livingPopulation/
+// hostService.ts's wakeWorldWithPopulation, and everything chained
+// above it) calls THIS, not `wakeWorld`, so that commit only happens
+// once every downstream layer has also persisted -- see
+// `commitWakeCompletion` and wakeWorldWithSpatialEcology.
+export async function catchUpCausalEnvironment(worldInstanceId: WorldInstanceId, ownerId: WorldOwnerId, now: () => string = () => new Date().toISOString()): Promise<CausalEnvironmentCatchUpResult> {
   await ensureWorldInstance(worldInstanceId, now)
 
   const leaseResult = await worldLeaseRepository.acquire(worldInstanceId, ownerId, DEFAULT_LEASE_TTL_MS, now)
@@ -49,17 +74,29 @@ export async function wakeWorld(worldInstanceId: WorldInstanceId, ownerId: World
   }
 
   const lifecycleBefore = await worldLifecycleRepository.get(worldInstanceId)
+  const durableState = await loadOrSeedDurableWorldState(worldInstanceId, now)
+
+  // Sprint 17: both the provisional WAKING write below AND the ticks
+  // computation fall back to the SAME anchor (the world's own durable
+  // `updatedAt`/tick) when there is no prior lifecycle record at all --
+  // never to `now()`, which would stamp a fabricated "last active" time
+  // for a world's first-ever wake and corrupt a retry's own
+  // resolveTicksToApply computation if that first wake crashes before
+  // its final commit (lifecycleBefore would then read back the
+  // WAKING-write's own now(), not the world's true seed time).
+  const lastActiveAt = lifecycleBefore?.lastActiveAt ?? durableState.updatedAt
+  const lastCheckpointTick = lifecycleBefore?.lastCheckpointTick ?? durableState.sharedState.clock.tick
+
   const waking = nextLifecycleState(lifecycleBefore?.state ?? "DORMANT", "visitor_arrived")
   const currentState = lifecycleBefore?.state ?? "DORMANT"
-  if (waking) await worldLifecycleRepository.save({ worldInstanceId, state: waking, lastActiveAt: lifecycleBefore?.lastActiveAt ?? now(), lastCheckpointTick: lifecycleBefore?.lastCheckpointTick ?? 0 })
+  if (waking) await worldLifecycleRepository.save({ worldInstanceId, state: waking, lastActiveAt, lastCheckpointTick })
 
-  const durableState = await loadOrSeedDurableWorldState(worldInstanceId, now)
-  const lastActiveMs = new Date(lifecycleBefore?.lastActiveAt ?? durableState.updatedAt).getTime()
-  const nowMs = new Date(now()).getTime()
-  const ticksElapsed = DEFAULT_TICK_POLICY.ticksElapsed(lastActiveMs, nowMs)
+  const fromTick = durableState.sharedState.clock.tick
+  const ticksElapsed = resolveTicksToApply({ lastActiveAt, lastCheckpointTick, currentTick: fromTick, now, tickPolicy: DEFAULT_TICK_POLICY })
 
   const catchUpStartedAt = Date.now()
   let finalState = durableState
+  let thisAttemptsEventRecords: ReturnType<typeof computeDeterministicCatchUp>["eventRecords"] = []
   if (ticksElapsed > 0) {
     const caughtUp = computeDeterministicCatchUp({
       worldInstanceId,
@@ -86,6 +123,7 @@ export async function wakeWorld(worldInstanceId: WorldInstanceId, ownerId: World
     for (const record of caughtUp.eventRecords) {
       await durableWorldSystemEventRepository.append(record)
     }
+    thisAttemptsEventRecords = caughtUp.eventRecords
 
     finalState = { worldInstanceId, stateVersion: saveResult.stateVersion, sharedState: caughtUp.sharedState, entities: caughtUp.entities, updatedAt: now() }
 
@@ -104,10 +142,47 @@ export async function wakeWorld(worldInstanceId: WorldInstanceId, ownerId: World
     )
   }
 
-  const active = nextLifecycleState(waking ?? currentState, "catch_up_complete") ?? "ACTIVE"
-  await worldLifecycleRepository.save({ worldInstanceId, state: active, lastActiveAt: now(), lastCheckpointTick: finalState.sharedState.clock.tick })
+  const catchUpPlan = describeWakeCatchUpPlan(fromTick, finalState.sharedState.clock.tick, ticksElapsed, thisAttemptsEventRecords)
 
-  return { lifecycleState: active, state: finalState, ticksApplied: ticksElapsed, catchUpDurationMs: Date.now() - catchUpStartedAt }
+  return { lifecycleStateBeforeCommit: waking ?? currentState, state: finalState, ticksApplied: ticksElapsed, catchUpDurationMs: Date.now() - catchUpStartedAt, catchUpPlan }
+}
+
+// Sprint 17: the ONE place `lastActiveAt`/`lastCheckpointTick` are
+// committed -- moved here, out of `catchUpCausalEnvironment`, so a
+// caller composing downstream layers on top only calls this once every
+// one of those layers has ALSO persisted successfully (see
+// wakeWorldWithSpatialEcology, the real outermost composed function).
+// Until this call happens, `lastActiveAt`/`lastCheckpointTick` remain at
+// whatever they were before this wake attempt started -- which is
+// exactly what lets a crashed, retried attempt recompute the correct
+// remaining catch-up window (`resolveTicksToApply`, above) instead of
+// either losing it (if committed too early, the pre-Sprint-17 bug) or
+// double-applying it (if the durable environment's own already-advanced
+// tick weren't subtracted back out).
+export async function commitWakeCompletion(worldInstanceId: WorldInstanceId, lifecycleStateBeforeCommit: WorldLifecycleState, tick: number, now: () => string = () => new Date().toISOString()): Promise<WorldLifecycleState> {
+  const active = nextLifecycleState(lifecycleStateBeforeCommit, "catch_up_complete") ?? "ACTIVE"
+  await worldLifecycleRepository.save({ worldInstanceId, state: active, lastActiveAt: now(), lastCheckpointTick: tick })
+  return active
+}
+
+// Sprint 9, Phase 4/5/7: COLD -> load checkpoint/history is implicit here
+// (loadOrSeedDurableWorldState already IS "the current authoritative
+// state, whatever durable form it was left in") -> deterministic catch-up
+// -> WARM -> execution ownership acquired up front -> HOT once caught up.
+//
+// Sprint 17: kept as a thin, backward-compatible wrapper around
+// `catchUpCausalEnvironment` + `commitWakeCompletion`, still eager-
+// committing exactly as before -- for the one existing caller that only
+// ever wants environment-level wake (the dev route at
+// app/api/dev/account/living-vrindavan/persistence/wake/route.ts).
+// Every downstream-composing caller (lib/livingPopulation/hostService.ts
+// and everything chained above it) calls `catchUpCausalEnvironment`
+// directly instead, deferring the commit to the composed chain's own
+// outermost layer.
+export async function wakeWorld(worldInstanceId: WorldInstanceId, ownerId: WorldOwnerId, now: () => string = () => new Date().toISOString()): Promise<WakeWorldResult> {
+  const caughtUp = await catchUpCausalEnvironment(worldInstanceId, ownerId, now)
+  const lifecycleState = await commitWakeCompletion(worldInstanceId, caughtUp.lifecycleStateBeforeCommit, caughtUp.state.sharedState.clock.tick, now)
+  return { lifecycleState, state: caughtUp.state, ticksApplied: caughtUp.ticksApplied, catchUpDurationMs: caughtUp.catchUpDurationMs, catchUpPlan: caughtUp.catchUpPlan }
 }
 
 // Sprint 9, Phase 6/7: explicit, owner-gated advancement -- the durable

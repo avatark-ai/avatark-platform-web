@@ -2,6 +2,7 @@ import { resolvePlaceOccupancy, resolveResourceOpportunities } from "@avatark/li
 import type { PlaceOccupancyEntityInput } from "@avatark/living-rhythms-runtime"
 import type { PlaceOccupancy } from "@avatark/living-rhythms-contracts"
 import type { HomeRange } from "@avatark/social-ecology-contracts"
+import type { WorldLifecycleState } from "@avatark/world-persistence-contracts"
 import type { SpatialMembership, SpatialMovementContext, SpatialSnapshot, TerritoryClaim } from "@avatark/spatial-ecology-contracts"
 import {
   buildSpatialMembershipIndex,
@@ -11,7 +12,7 @@ import {
   resolveTerritoryClaims,
   resolveTerritoryPressure,
 } from "@avatark/spatial-ecology-runtime"
-import { getWorldState } from "../worldPersistence/hostService.ts"
+import { commitWakeCompletion, getWorldState } from "../worldPersistence/hostService.ts"
 import { getPopulationSnapshot } from "../livingPopulation/hostService.ts"
 import { VRINDAVAN_RESOURCE_AFFORDANCES } from "../livingPopulation/vrindavanPopulationDefinition.ts"
 import { getEmbodimentWithAdaptation, wakeWorldWithAdaptation, getWorldAdaptationEffects } from "../worldAdaptation/hostService.ts"
@@ -76,6 +77,7 @@ export async function getSpatialSnapshot(worldInstanceId: string, now: () => str
 export interface WakeWorldWithSpatialEcologyResult {
   adaptation: WakeWorldWithAdaptationResult
   spatial: SpatialSnapshot
+  lifecycleState: WorldLifecycleState
 }
 
 // Sprint 16, mission's own causal-order chain, closed: the one place
@@ -85,6 +87,16 @@ export interface WakeWorldWithSpatialEcologyResult {
 // append, content-derived id). Composes `wakeWorldWithAdaptation`,
 // never modifies it -- this file adds a spatial pass ON TOP, the same
 // layering discipline every prior sprint's own Host service holds.
+//
+// Sprint 17: this is the REAL outermost composed wake function -- the
+// one and only call to `commitWakeCompletion` for the entire chain
+// happens here, and only after every downstream layer (population
+// through this file's own TerritoryClaim persistence) has already
+// succeeded. See lib/worldPersistence/hostService.ts's own
+// `commitWakeCompletion`/`resolveTicksToApply` doc comments for why
+// this sequencing is what makes a crash anywhere in the chain safely
+// retryable instead of silently dropping ticks downstream layers never
+// got to process.
 export async function wakeWorldWithSpatialEcology(worldInstanceId: string, ownerId: string, now: () => string = defaultNow): Promise<WakeWorldWithSpatialEcologyResult> {
   const adaptation = await wakeWorldWithAdaptation(worldInstanceId, ownerId, now)
 
@@ -98,7 +110,9 @@ export async function wakeWorldWithSpatialEcology(worldInstanceId: string, owner
 
   const spatial = await getSpatialSnapshot(worldInstanceId, now)
 
-  return { adaptation, spatial }
+  const lifecycleState = await commitWakeCompletion(worldInstanceId, afterMemory.world.lifecycleStateBeforeCommit, afterTick, now)
+
+  return { adaptation, spatial, lifecycleState }
 }
 
 // Sprint 16 Phase 0 architecture, section 12: assembles the renderer-

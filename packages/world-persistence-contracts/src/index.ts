@@ -36,6 +36,8 @@ export type { LeaseAcquireResult, WorldLease, WorldLeaseRepository } from "./lea
 
 export type { WorldOperationalTelemetry } from "./telemetry.ts"
 
+export type { WakeCatchUpPlan } from "./evolutionWindow.ts"
+
 export {
   CorruptCheckpointError,
   DuplicateWorldSystemEventError,

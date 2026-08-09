@@ -3,9 +3,11 @@ import assert from "node:assert/strict"
 import type { EncounterRule, EntityArchetype, SeasonDefinition, SharedWorldState } from "@avatark/living-systems-contracts"
 import { computeDeterministicCatchUp } from "./catchUp.ts"
 import { createCheckpoint, recoverAuthoritativeState } from "./checkpoint.ts"
-import { InMemoryWorldCheckpointRepository, InMemoryWorldLifecycleRepository } from "./inMemoryDurableRepositories.ts"
+import { InMemoryDurableWorldStateRepository, InMemoryWorldCheckpointRepository, InMemoryWorldLifecycleRepository } from "./inMemoryDurableRepositories.ts"
 import { InMemoryWorldLeaseRepository } from "./inMemoryLeaseRepository.ts"
 import { nextLifecycleState } from "./lifecycle.ts"
+import { fixedRateTickPolicy } from "./tickPolicy.ts"
+import { resolveTicksToApply } from "./wakeCatchUpPlanner.ts"
 
 // Sprint 9, Phase 15: the same fictional, non-Vrindavan fixture pattern
 // Sprint 7's own otherWorldGrammar.test.ts already established (a
@@ -130,4 +132,55 @@ test("lease acquisition and lifecycle transitions work identically for the fores
 
   const stored = await lifecycleRepo.get(FOREST_INSTANCE_ID)
   assert.equal(stored?.state, "WAKING")
+})
+
+// Sprint 17, §10 task 9: a 5th Living Forest fixture, proving the
+// crash-recovery fix itself (not just the pre-existing catch-up/
+// checkpoint/lease/lifecycle primitives the 4 tests above already
+// cover) is world-neutral -- composed here entirely from this package's
+// own primitives (computeDeterministicCatchUp, InMemoryDurableWorldState/
+// Lifecycle repositories, resolveTicksToApply), the SAME composition
+// lib/worldPersistence/hostService.ts's own catchUpCausalEnvironment/
+// commitWakeCompletion perform for Living Vrindavan, never touching
+// that lib/ Host layer or any Vrindavan-specific constant.
+test("crash mid-wake + retry (world-neutral): a crash after the environment's own catch-up commits but before the composed chain's final lifecycle commit is retried without losing or double-applying ticks", async () => {
+  const stateRepo = new InMemoryDurableWorldStateRepository()
+  const lifecycleRepo = new InMemoryWorldLifecycleRepository()
+  const leaseRepo = new InMemoryWorldLeaseRepository()
+  const tickPolicy = fixedRateTickPolicy(1)
+  const worldInstanceId = FOREST_INSTANCE_ID + "-crash-recovery"
+  const entities = [{ id: "herd-1", archetypeId: "deer-herd", locationId: "forest-clearing", lifecyclePhase: "scattered" as const, attributes: {}, lastUpdatedTick: 0 }]
+
+  async function attempt(nowMs: number): Promise<{ tick: number; committed: boolean }> {
+    const now = () => new Date(nowMs).toISOString()
+    await leaseRepo.acquire(worldInstanceId, "forest-worker", 60_000, now)
+
+    const lifecycleBefore = await lifecycleRepo.get(worldInstanceId)
+    const current = await stateRepo.load(worldInstanceId)
+    const sharedState = current?.sharedState ?? freshForestState()
+    const currentEntities = current?.entities ?? entities
+    const expectedVersion = current?.stateVersion ?? null
+    const lastActiveAt = lifecycleBefore?.lastActiveAt ?? current?.updatedAt ?? new Date(0).toISOString()
+    const lastCheckpointTick = lifecycleBefore?.lastCheckpointTick ?? sharedState.clock.tick
+
+    const ticks = resolveTicksToApply({ lastActiveAt, lastCheckpointTick, currentTick: sharedState.clock.tick, now, tickPolicy })
+    if (ticks === 0) return { tick: sharedState.clock.tick, committed: false }
+
+    const caughtUp = computeDeterministicCatchUp({ worldInstanceId, sharedState, entities: [...currentEntities], seasonDefinitions: FOREST_SEASONS, entityArchetypes: FOREST_ARCHETYPES, ticks, seed: "forest-crash-seed", now })
+    await stateRepo.conditionalSave({ worldInstanceId, sharedState: caughtUp.sharedState, entities: caughtUp.entities, updatedAt: now() }, expectedVersion)
+
+    // The "crash" IS simply returning here -- deliberately never calling
+    // lifecycleRepo.save with the new lastActiveAt/lastCheckpointTick,
+    // exactly the composed chain's own deferred-commit design.
+    return { tick: caughtUp.sharedState.clock.tick, committed: false }
+  }
+
+  const crashed = await attempt(5_000)
+  assert.equal(crashed.tick, 5_000)
+  await leaseRepo.release(worldInstanceId, "forest-worker", (await leaseRepo.getCurrent(worldInstanceId))!.leaseVersion)
+
+  const retried = await attempt(70_000)
+  await lifecycleRepo.save({ worldInstanceId, state: "ACTIVE", lastActiveAt: new Date(70_000).toISOString(), lastCheckpointTick: retried.tick })
+
+  assert.equal(retried.tick, 70_000, "the retry reaches the same tick a single uninterrupted 0->70000ms catch-up would, never double-applying the crashed attempt's own already-committed 0->5000 window")
 })

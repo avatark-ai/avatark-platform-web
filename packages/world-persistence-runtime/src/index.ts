@@ -20,3 +20,6 @@ export {
 } from "./inMemoryDurableRepositories.ts"
 
 export { InMemoryWorldLeaseRepository } from "./inMemoryLeaseRepository.ts"
+
+export type { ResolveTicksToApplyParams } from "./wakeCatchUpPlanner.ts"
+export { describeWakeCatchUpPlan, resolveTicksToApply } from "./wakeCatchUpPlanner.ts"
