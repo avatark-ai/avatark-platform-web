@@ -15,7 +15,7 @@ function makeRegion(locationId: string): EmbodiedRegion {
       vegetation: { semantic: "sparse", densityBand: "high" },
       sensoryCues: [{ channel: "ambientAudio", semantic: "flowing-water" }],
     },
-    entities: [{ entityId: "e1", archetypeId: "riverbank-vegetation", locationId, visible: true, presentationArchetype: "vegetation", activityHint: "dormant", animationSemantic: "static", audioSemantic: null }],
+    entities: [{ entityId: "e1", archetypeId: "riverbank-vegetation", locationId, visible: true, presentationArchetype: "vegetation", activityHint: "dormant", animationSemantic: "static", audioSemantic: null, movementSemantic: null, movementTargetLocationId: null, groupId: null }],
     encounters: [{ ruleId: "yamuna-flowering-reflection", locationId, category: "environmental", interactionAffordance: "reflect" }],
   }
 }

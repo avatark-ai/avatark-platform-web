@@ -355,8 +355,95 @@ test("packages/world-persistence-runtime never calls a write method on protected
   assert.deepEqual(violations, [])
 })
 
+// Sprint 10, Phase 0/20: the same enforcement one layer up again, for the
+// living-population boundary -- invariants #4/#5 ("no Unreal/React
+// dependency exists in core contracts/runtime"). @avatark/living-
+// population-contracts may depend on runtime-contracts and living-
+// systems-contracts only (reusing LivingEntityState/EntityArchetype/
+// EnvironmentalState/EncounterRule shapes, never redefining them);
+// @avatark/living-population-runtime may additionally depend on living-
+// systems-runtime (to call resolveAvailableEncounters unmodified) and
+// living-population-contracts. Neither may ever depend on renderer-
+// contracts, any world-embodiment-*/world-persistence-* package, or
+// @avatark/account -- population is a peer of Living Systems, never a
+// competing world-state authority, and stays entirely renderer/Unreal-
+// neutral; the Host layer (lib/livingPopulation/) is the only place
+// population and embodiment/persistence types ever meet.
+
+const LIVING_POPULATION_CONTRACTS_PACKAGE = "living-population-contracts"
+const LIVING_POPULATION_RUNTIME_PACKAGE = "living-population-runtime"
+const LIVING_POPULATION_CONTRACTS_ALLOWED_DEPS = new Set(["@avatark/runtime-contracts", "@avatark/living-systems-contracts"])
+const LIVING_POPULATION_RUNTIME_ALLOWED_DEPS = new Set(["@avatark/runtime-contracts", "@avatark/living-systems-contracts", "@avatark/living-systems-runtime", "@avatark/living-population-contracts"])
+
+test("packages/living-population-contracts declares, at most, dependencies on runtime-contracts/living-systems-contracts", () => {
+  const deps = packageDependencies(LIVING_POPULATION_CONTRACTS_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => !LIVING_POPULATION_CONTRACTS_ALLOWED_DEPS.has(name))
+  assert.deepEqual(disallowed, [], `living-population-contracts declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/living-population-contracts imports, at most, those same two packages in its source", () => {
+  const srcDir = join(REPO_ROOT, "packages", LIVING_POPULATION_CONTRACTS_PACKAGE, "src")
+  const allowed = new Set(["runtime-contracts", "living-systems-contracts"])
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    for (const importedPackage of findAvatarkImports(file)) {
+      if (!allowed.has(importedPackage)) violations.push(`${file} imports @avatark/${importedPackage}`)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("packages/living-population-runtime declares, at most, dependencies on its four allowed packages", () => {
+  const deps = packageDependencies(LIVING_POPULATION_RUNTIME_PACKAGE)
+  const disallowed = Object.keys(deps).filter((name) => !LIVING_POPULATION_RUNTIME_ALLOWED_DEPS.has(name))
+  assert.deepEqual(disallowed, [], `living-population-runtime declares disallowed dependencies: ${disallowed.join(", ")}`)
+})
+
+test("packages/living-population-runtime imports, at most, those same four packages in its source -- never a renderer, embodiment/persistence package, or @avatark/account", () => {
+  const srcDir = join(REPO_ROOT, "packages", LIVING_POPULATION_RUNTIME_PACKAGE, "src")
+  const allowed = new Set(["runtime-contracts", "living-systems-contracts", "living-systems-runtime", "living-population-contracts"])
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    for (const importedPackage of findAvatarkImports(file)) {
+      if (!allowed.has(importedPackage)) violations.push(`${file} imports @avatark/${importedPackage}`)
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("neither living-population package's source contains a React/Next.js/Unreal-specific token", () => {
+  const forbidden = ["from \"react", "from 'react", "next/server", "next/navigation", "UObject", "AActor", "Blueprint", "UnrealEngine"]
+  const violations: string[] = []
+  for (const pkg of [LIVING_POPULATION_CONTRACTS_PACKAGE, LIVING_POPULATION_RUNTIME_PACKAGE]) {
+    const srcDir = join(REPO_ROOT, "packages", pkg, "src")
+    for (const file of listSourceFiles(srcDir)) {
+      if (file.endsWith(".test.ts")) continue
+      const code = readFileSync(file, "utf-8")
+        .split("\n")
+        .map((line) => line.replace(/\/\/.*$/, ""))
+        .join("\n")
+      for (const token of forbidden) {
+        if (code.includes(token)) violations.push(`${file} contains "${token}"`)
+      }
+    }
+  }
+  assert.deepEqual(violations, [])
+})
+
+test("packages/living-population-runtime never calls a write method on protected narrative state -- population never gets a second mutation path Living Systems itself doesn't have", () => {
+  const srcDir = join(REPO_ROOT, "packages", LIVING_POPULATION_RUNTIME_PACKAGE, "src")
+  const writeMethodPattern = /protectedNarrative\w*\.(save|put|set|write|mutate|update)\s*\(/i
+  const violations: string[] = []
+  for (const file of listSourceFiles(srcDir)) {
+    if (file.endsWith(".test.ts")) continue
+    const content = readFileSync(file, "utf-8")
+    if (writeMethodPattern.test(content)) violations.push(file)
+  }
+  assert.deepEqual(violations, [])
+})
+
 test("sanity: this check actually inspects real directories, not an accidental no-op", () => {
-  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE, RENDERER_CONTRACTS_PACKAGE, LIVING_SYSTEMS_CONTRACTS_PACKAGE, LIVING_SYSTEMS_RUNTIME_PACKAGE, WORLD_EMBODIMENT_CONTRACTS_PACKAGE, WORLD_EMBODIMENT_RUNTIME_PACKAGE, WORLD_PERSISTENCE_CONTRACTS_PACKAGE, WORLD_PERSISTENCE_RUNTIME_PACKAGE]) {
+  for (const runtimePackage of [...RUNTIME_PACKAGES, CONTRACTS_PACKAGE, RENDERER_CONTRACTS_PACKAGE, LIVING_SYSTEMS_CONTRACTS_PACKAGE, LIVING_SYSTEMS_RUNTIME_PACKAGE, WORLD_EMBODIMENT_CONTRACTS_PACKAGE, WORLD_EMBODIMENT_RUNTIME_PACKAGE, WORLD_PERSISTENCE_CONTRACTS_PACKAGE, WORLD_PERSISTENCE_RUNTIME_PACKAGE, LIVING_POPULATION_CONTRACTS_PACKAGE, LIVING_POPULATION_RUNTIME_PACKAGE]) {
     const srcDir = join(REPO_ROOT, "packages", runtimePackage, "src")
     assert.ok(statSync(srcDir).isDirectory(), `expected packages/${runtimePackage}/src to exist`)
     assert.ok(listSourceFiles(srcDir).length > 0, `expected packages/${runtimePackage}/src to contain source files`)

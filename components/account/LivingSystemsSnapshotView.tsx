@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { presentSeason } from '@/lib/renderer/webWorldSystemsRenderer'
 import { transitionLabel } from '@/lib/renderer/webExperienceRenderer'
-import { labelizeActivityHint, labelizeInteractionAffordance, summarizeEnvironmentPresentation } from '@/lib/renderer/webEmbodimentRenderer'
+import { labelizeActivityHint, labelizeInteractionAffordance, summarizeEntityBehavior, summarizeEnvironmentPresentation } from '@/lib/renderer/webEmbodimentRenderer'
 import type { TransitionAffordance } from '@avatark/renderer-contracts'
 
 // Sprint 7 introduced this panel reading Living Systems' raw WorldSnapshot
@@ -24,7 +24,7 @@ type EmbodiedRegionView = {
     vegetation: { semantic: string }
     sensoryCues: { channel: string; semantic: string }[]
   }
-  entities: { entityId: string; presentationArchetype: string; activityHint: string }[]
+  entities: { entityId: string; presentationArchetype: string; activityHint: string; movementSemantic?: string | null; groupId?: string | null }[]
   encounters: { ruleId: string; category: string; interactionAffordance: string }[]
 }
 
@@ -132,7 +132,13 @@ export function LivingSystemsSnapshotView({ worldId, apiBase = '/api/account', d
 
       {snapshot.current.entities.length > 0 && (
         <p className="text-xs" style={{ color: 'var(--text-dim)' }}>
-          Present: {snapshot.current.entities.map((e) => `${e.presentationArchetype} (${labelizeActivityHint(e.activityHint)})`).join(', ')}
+          Present:{' '}
+          {snapshot.current.entities
+            .map((e) => {
+              const behavior = summarizeEntityBehavior(e)
+              return `${e.presentationArchetype} (${labelizeActivityHint(e.activityHint)}${behavior ? ` · ${behavior}` : ''})`
+            })
+            .join(', ')}
         </p>
       )}
 

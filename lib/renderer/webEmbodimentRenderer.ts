@@ -25,3 +25,14 @@ export function labelizeActivityHint(activityHint: string): string {
 export function labelizeInteractionAffordance(affordance: string): string {
   return labelize(affordance)
 }
+
+// Sprint 10, Phase 16: a restrained, diagnostic-only summary of an
+// entity's movement/group state -- present only for entities that carry
+// it (the living-population domain); absent (undefined/null) for every
+// Sprint 7/8 vegetation-roster entity, which renders exactly as before.
+export function summarizeEntityBehavior(entity: { movementSemantic?: string | null; groupId?: string | null }): string | null {
+  const parts: string[] = []
+  if (entity.movementSemantic && entity.movementSemantic !== 'Remain') parts.push(labelize(entity.movementSemantic))
+  if (entity.groupId) parts.push(`Group: ${labelize(entity.groupId)}`)
+  return parts.length > 0 ? parts.join(' · ') : null
+}

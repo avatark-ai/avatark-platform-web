@@ -2,7 +2,7 @@ import { test } from "node:test"
 import assert from "node:assert/strict"
 import { resolveWorldEmbodiment } from "./worldEmbodimentResolver.ts"
 import { diffWorldEmbodiment } from "./embodimentDelta.ts"
-import { translateEmbodimentDeltaToUnrealCommands, translateToUnrealCommands } from "./unrealCommandTranslator.ts"
+import { translateEmbodimentDeltaToUnrealCommands, translateGroupIntentToUnrealCommands, translateToUnrealCommands } from "./unrealCommandTranslator.ts"
 import { computeSpatialLayout } from "./spatialLayout.ts"
 import type { EntityArchetype, WorldSnapshot } from "@avatark/living-systems-contracts"
 import type { LocationExperience } from "@avatark/renderer-contracts"
@@ -116,4 +116,32 @@ test("an UNCHANGED delta produces zero commands", () => {
   const a = embody(snapshot({}))
   const delta = diffWorldEmbodiment(a, a)
   assert.deepEqual(translateEmbodimentDeltaToUnrealCommands(delta), [])
+})
+
+// Sprint 10, Phase 17: MoveEntityToRegion is semantic (a region id, no
+// coordinates) and only emitted when an entity's movementTargetLocationId
+// genuinely differs from its current region.
+test("an entity with a movement target produces a MoveEntityToRegion command alongside PlaceEntity", () => {
+  const embodiment = resolveWorldEmbodiment({
+    currentSnapshot: snapshot({}),
+    reachableSnapshots: [],
+    locationNames: { yamuna: "Yamuna" },
+    spatialLayout: SPATIAL_LAYOUT,
+    experienceByLocation: { yamuna: YAMUNA_EXPERIENCE },
+    archetypesById: { "riverbank-vegetation": VEGETATION_ARCHETYPE },
+    transitions: [],
+    soundEnabled: false,
+    provenance: { worldArtifactSpecId: "STK-SPEC-002", experienceArtifactSpecId: "STK-SPEC-004", systemsArtifactSpecId: "STK-SPEC-006", canonDocIds: ["STK-CAN-001"] },
+    additionalEntityPresentationsByLocation: {
+      yamuna: [{ entityId: "cow-1", archetypeId: "avatark-population-cow", locationId: "yamuna", visible: true, presentationArchetype: "Cow", activityHint: "MOVING", animationSemantic: "MOVE_TO_RESOURCE", audioSemantic: null, movementSemantic: "ApproachResource", movementTargetLocationId: "kadamba-grove", groupId: "avatark-population-cow-herd" }],
+    },
+  })
+  const commands = translateToUnrealCommands(embodiment)
+  assert.ok(commands.some((c) => c.op === "PlaceEntity" && c.entityId === "cow-1" && c.groupId === "avatark-population-cow-herd"))
+  assert.ok(commands.some((c) => c.op === "MoveEntityToRegion" && c.entityId === "cow-1" && c.fromRegionId === "yamuna" && c.toRegionId === "kadamba-grove"))
+})
+
+test("translateGroupIntentToUnrealCommands produces one SetGroupIntent per group, from plain data -- no GroupState import required", () => {
+  const commands = translateGroupIntentToUnrealCommands([{ groupId: "avatark-population-cow-herd", locationId: "yamuna", targetLocationId: "kadamba-grove", cohesion: 0.5 }])
+  assert.deepEqual(commands, [{ op: "SetGroupIntent", groupId: "avatark-population-cow-herd", regionId: "yamuna", targetRegionId: "kadamba-grove", cohesion: 0.5 }])
 })

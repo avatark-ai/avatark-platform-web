@@ -79,6 +79,8 @@ const MIGRATION_ORDER = [
   // precedent -- NOT applied to any real database in this environment
   // (no credentials exist here to safely exercise one against).
   '026_living_systems_world_state.sql',
+  // Sprint 10: same precedent, NOT applied.
+  '027_living_population_state.sql',
 ]
 
 async function main() {

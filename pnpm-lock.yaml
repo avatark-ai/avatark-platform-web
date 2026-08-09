@@ -47,6 +47,12 @@ importers:
       '@avatark/living-echo':
         specifier: workspace:*
         version: link:packages/living-echo
+      '@avatark/living-population-contracts':
+        specifier: workspace:*
+        version: link:packages/living-population-contracts
+      '@avatark/living-population-runtime':
+        specifier: workspace:*
+        version: link:packages/living-population-runtime
       '@avatark/living-systems-contracts':
         specifier: workspace:*
         version: link:packages/living-systems-contracts
@@ -293,6 +299,38 @@ importers:
       '@avatark/timeline':
         specifier: workspace:*
         version: link:../timeline
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/living-population-contracts:
+    dependencies:
+      '@avatark/living-systems-contracts':
+        specifier: workspace:*
+        version: link:../living-systems-contracts
+      '@avatark/runtime-contracts':
+        specifier: workspace:*
+        version: link:../runtime-contracts
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/living-population-runtime:
+    dependencies:
+      '@avatark/living-population-contracts':
+        specifier: workspace:*
+        version: link:../living-population-contracts
+      '@avatark/living-systems-contracts':
+        specifier: workspace:*
+        version: link:../living-systems-contracts
+      '@avatark/living-systems-runtime':
+        specifier: workspace:*
+        version: link:../living-systems-runtime
+      '@avatark/runtime-contracts':
+        specifier: workspace:*
+        version: link:../runtime-contracts
     devDependencies:
       typescript:
         specifier: ^5

@@ -2,7 +2,7 @@ import { resolveWorldSnapshot } from "@avatark/living-systems-runtime"
 import { emptyVisitorWorldMemory } from "@avatark/living-systems-contracts"
 import type { WorldSnapshot } from "@avatark/living-systems-contracts"
 import { computeSpatialLayout, resolveWorldEmbodiment } from "@avatark/world-embodiment-runtime"
-import type { WorldEmbodimentSnapshot } from "@avatark/world-embodiment-contracts"
+import type { EntityPresentation, WorldEmbodimentSnapshot } from "@avatark/world-embodiment-contracts"
 import { LIVING_VRINDAVAN_ENCOUNTER_RULES, LIVING_VRINDAVAN_ENTITY_ARCHETYPES, LIVING_VRINDAVAN_SEASONS, LIVING_VRINDAVAN_SYSTEMS_PROVENANCE } from "../livingSystems/systemsDefinition.ts"
 import { LIVING_VRINDAVAN_DEFINITION } from "../livingWorldRuntime/vrindavanDefinition.ts"
 import { LIVING_VRINDAVAN_EXPERIENCE } from "../livingWorldRuntime/experienceDefinition.ts"
@@ -69,6 +69,11 @@ export interface DurableWorldEmbodimentSnapshotParams {
   reachableLocationIds: string[]
   soundEnabled?: boolean
   now?: () => string
+  // Sprint 10, Phase 15: optional, additive -- entity presentations from
+  // a domain other than Living Systems' own presentEntities (the
+  // living-population domain). Absent for every pre-Sprint-10 caller,
+  // producing byte-identical output to before this field existed.
+  additionalEntityPresentationsByLocation?: Record<string, EntityPresentation[]>
 }
 
 export async function resolveDurableWorldEmbodimentSnapshot(params: DurableWorldEmbodimentSnapshotParams): Promise<WorldEmbodimentSnapshot> {
@@ -98,5 +103,6 @@ export async function resolveDurableWorldEmbodimentSnapshot(params: DurableWorld
       systemsArtifactSpecId: LIVING_VRINDAVAN_SYSTEMS_PROVENANCE.specId,
       canonDocIds: [...new Set([...LIVING_VRINDAVAN_EXPERIENCE.provenance.canonDocIds, ...LIVING_VRINDAVAN_SYSTEMS_PROVENANCE.canonDocIds])],
     },
+    additionalEntityPresentationsByLocation: params.additionalEntityPresentationsByLocation,
   })
 }

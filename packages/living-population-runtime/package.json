@@ -1,0 +1,42 @@
+{
+  "name": "@avatark/living-population-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Executes Sprint 10's living-population/behavior simulation: rhythm resolution, deterministic need evolution, bounded semantic perception, utility-based behavior selection, world-graph-legal movement resolution, herd/flock group dynamics, and a tick loop that composes @avatark/living-systems-runtime's own advanceWorldSimulation unmodified. Host-neutral, database-neutral, franchise-neutral.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@avatark/living-population-contracts": "workspace:*",
+    "@avatark/living-systems-contracts": "workspace:*",
+    "@avatark/living-systems-runtime": "workspace:*",
+    "@avatark/runtime-contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "node --experimental-strip-types --test src/locationGraph.test.ts src/rhythm.test.ts src/needsEvolution.test.ts src/perception.test.ts src/behaviorSelection.test.ts src/movementResolution.test.ts src/groupDynamics.test.ts src/inMemoryRepositories.test.ts src/populationSimulation.test.ts src/livingForestPopulationPortability.test.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
+  }
+}

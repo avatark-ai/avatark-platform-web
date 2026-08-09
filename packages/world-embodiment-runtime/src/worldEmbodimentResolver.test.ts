@@ -97,3 +97,43 @@ test("the resolver never calls a mutator -- resolving twice does not change simu
   assert.equal(first.simulationTick, 2)
   assert.equal(second.simulationTick, 2)
 })
+
+// Sprint 10, Phase 15: additionalEntityPresentationsByLocation merges a
+// second domain's already-built EntityPresentation values into the
+// current region, without this package importing anything about that
+// domain.
+test("additionalEntityPresentationsByLocation merges a population entity into the current region alongside the vegetation-roster one", () => {
+  const populationEntity = { entityId: "cow-1", archetypeId: "avatark-population-cow", locationId: "yamuna", visible: true, presentationArchetype: "Cow", activityHint: "ACTIVE", animationSemantic: "GRAZE", audioSemantic: null, movementSemantic: "Remain", movementTargetLocationId: null, groupId: "avatark-population-cow-herd" }
+  const embodiment = resolveWorldEmbodiment({
+    currentSnapshot: snapshotAt("vasanta", 0),
+    reachableSnapshots: [],
+    locationNames: { yamuna: "Yamuna" },
+    spatialLayout: SPATIAL_LAYOUT,
+    experienceByLocation: { yamuna: YAMUNA_EXPERIENCE },
+    archetypesById: { "riverbank-vegetation": VEGETATION_ARCHETYPE },
+    transitions: [],
+    soundEnabled: false,
+    provenance: { worldArtifactSpecId: "STK-SPEC-002", experienceArtifactSpecId: "STK-SPEC-004", systemsArtifactSpecId: "STK-SPEC-006", canonDocIds: ["STK-CAN-001"] },
+    additionalEntityPresentationsByLocation: { yamuna: [populationEntity] },
+  })
+
+  assert.equal(embodiment.current.entities.length, 2, "the vegetation entity and the population entity both appear")
+  assert.ok(embodiment.current.entities.some((e) => e.entityId === "cow-1" && e.groupId === "avatark-population-cow-herd"))
+})
+
+test("omitting additionalEntityPresentationsByLocation entirely is identical to passing an empty object -- no behavior change for any existing caller", () => {
+  const without = resolve("vasanta", 0)
+  const withEmpty = resolveWorldEmbodiment({
+    currentSnapshot: snapshotAt("vasanta", 0),
+    reachableSnapshots: [],
+    locationNames: { yamuna: "Yamuna" },
+    spatialLayout: SPATIAL_LAYOUT,
+    experienceByLocation: { yamuna: YAMUNA_EXPERIENCE },
+    archetypesById: { "riverbank-vegetation": VEGETATION_ARCHETYPE },
+    transitions: [],
+    soundEnabled: false,
+    provenance: { worldArtifactSpecId: "STK-SPEC-002", experienceArtifactSpecId: "STK-SPEC-004", systemsArtifactSpecId: "STK-SPEC-006", canonDocIds: ["STK-CAN-001"] },
+    additionalEntityPresentationsByLocation: {},
+  })
+  assert.deepEqual(without.current.entities, withEmpty.current.entities)
+})

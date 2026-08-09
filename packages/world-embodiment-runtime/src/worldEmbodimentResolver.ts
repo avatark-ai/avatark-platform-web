@@ -1,7 +1,7 @@
 import type { EntityArchetype, WorldSnapshot } from "@avatark/living-systems-contracts"
 import type { LocationExperience, TransitionAffordance } from "@avatark/renderer-contracts"
 import type { LocationId } from "@avatark/runtime-contracts"
-import type { EmbodiedRegion, SpatialNode, WorldEmbodimentProvenance, WorldEmbodimentSnapshot } from "@avatark/world-embodiment-contracts"
+import type { EmbodiedRegion, EntityPresentation, SpatialNode, WorldEmbodimentProvenance, WorldEmbodimentSnapshot } from "@avatark/world-embodiment-contracts"
 import { freezeWorldEmbodimentSnapshot } from "@avatark/world-embodiment-contracts"
 import { resolveEncounterPresentation } from "./encounterPresentationResolver.ts"
 import { resolveEntityPresentation } from "./entityPresentationResolver.ts"
@@ -17,6 +17,15 @@ export interface ResolveWorldEmbodimentParams {
   transitions: { toLocationId: LocationId; affordance: TransitionAffordance | null }[]
   soundEnabled: boolean
   provenance: WorldEmbodimentProvenance
+  // Sprint 10, Phase 15: fully-resolved EntityPresentation values from a
+  // domain OTHER than Living Systems' own presentEntities -- the
+  // living-population domain's entities, already translated into this
+  // exact renderer-neutral shape by the Host layer (this package never
+  // imports @avatark/living-population-contracts; it only concatenates
+  // already-built presentations by location, keeping this package's own
+  // dependency graph unchanged). Absent or empty for every existing
+  // caller -- identical output to before this field existed.
+  additionalEntityPresentationsByLocation?: Record<LocationId, EntityPresentation[]>
 }
 
 // Sprint 8, Phase 4: a PROJECTION, not a simulation step. Calls no
@@ -34,14 +43,16 @@ function buildRegion(
   experienceByLocation: Record<LocationId, LocationExperience>,
   archetypesById: Record<string, EntityArchetype>,
   soundEnabled: boolean,
+  additionalEntityPresentationsByLocation: Record<LocationId, EntityPresentation[]>,
 ): EmbodiedRegion {
   const locationId = snapshot.locationId
   const experience = experienceByLocation[locationId]
   const environment = resolveEnvironmentPresentation(experience, { weather: snapshot.weather, hydrology: snapshot.hydrology, ecology: snapshot.ecology }, soundEnabled)
 
-  const entities = snapshot.presentEntities
-    .filter((entity) => archetypesById[entity.archetypeId])
-    .map((entity) => resolveEntityPresentation(entity, archetypesById[entity.archetypeId]))
+  const entities = [
+    ...snapshot.presentEntities.filter((entity) => archetypesById[entity.archetypeId]).map((entity) => resolveEntityPresentation(entity, archetypesById[entity.archetypeId])),
+    ...(additionalEntityPresentationsByLocation[locationId] ?? []),
+  ]
 
   const encounters = snapshot.availableEncounters.map(resolveEncounterPresentation)
 
@@ -56,9 +67,10 @@ function buildRegion(
 }
 
 export function resolveWorldEmbodiment(params: ResolveWorldEmbodimentParams): WorldEmbodimentSnapshot {
-  const current = buildRegion(params.currentSnapshot, params.spatialLayout, params.locationNames, params.experienceByLocation, params.archetypesById, params.soundEnabled)
+  const additional = params.additionalEntityPresentationsByLocation ?? {}
+  const current = buildRegion(params.currentSnapshot, params.spatialLayout, params.locationNames, params.experienceByLocation, params.archetypesById, params.soundEnabled, additional)
   const reachable = params.reachableSnapshots.map((snapshot) =>
-    buildRegion(snapshot, params.spatialLayout, params.locationNames, params.experienceByLocation, params.archetypesById, params.soundEnabled),
+    buildRegion(snapshot, params.spatialLayout, params.locationNames, params.experienceByLocation, params.archetypesById, params.soundEnabled, additional),
   )
 
   return freezeWorldEmbodimentSnapshot({

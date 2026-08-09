@@ -13,7 +13,10 @@ function regionToCommands(region: EmbodiedRegion): UnrealCommand[] {
     { op: "UpdateEnvironment", regionId: region.locationId, atmosphere: region.environment.atmosphere, water: region.environment.water, vegetation: region.environment.vegetation },
   ]
   for (const entity of region.entities) {
-    commands.push({ op: "PlaceEntity", entityId: entity.entityId, regionId: region.locationId, presentationArchetype: entity.presentationArchetype, animationSemantic: entity.animationSemantic })
+    commands.push({ op: "PlaceEntity", entityId: entity.entityId, regionId: region.locationId, presentationArchetype: entity.presentationArchetype, animationSemantic: entity.animationSemantic, groupId: entity.groupId })
+    if (entity.movementTargetLocationId && entity.movementTargetLocationId !== region.locationId) {
+      commands.push({ op: "MoveEntityToRegion", entityId: entity.entityId, fromRegionId: region.locationId, toRegionId: entity.movementTargetLocationId, movementSemantic: entity.movementSemantic ?? "Remain" })
+    }
   }
   for (const encounter of region.encounters) {
     commands.push({ op: "CreateInteractionAnchor", regionId: region.locationId, ruleId: encounter.ruleId, category: encounter.category, interactionAffordance: encounter.interactionAffordance })
@@ -38,12 +41,15 @@ export function translateEmbodimentDeltaToUnrealCommands(delta: WorldEmbodimentD
     if (kind === "entity") {
       if (entry.op === "REMOVE") commands.push({ op: "RemoveEntity", entityId: key })
       else {
-        const after = entry.after as { entityId: string; locationId: string; presentationArchetype: string; animationSemantic: string; activityHint: string }
+        const after = entry.after as { entityId: string; locationId: string; presentationArchetype: string; animationSemantic: string; activityHint: string; groupId?: string | null; movementSemantic?: string | null; movementTargetLocationId?: string | null }
         commands.push(
           entry.op === "ADD"
-            ? { op: "PlaceEntity", entityId: after.entityId, regionId: after.locationId, presentationArchetype: after.presentationArchetype, animationSemantic: after.animationSemantic }
-            : { op: "UpdateEntity", entityId: after.entityId, animationSemantic: after.animationSemantic, activityHint: after.activityHint },
+            ? { op: "PlaceEntity", entityId: after.entityId, regionId: after.locationId, presentationArchetype: after.presentationArchetype, animationSemantic: after.animationSemantic, groupId: after.groupId ?? null }
+            : { op: "UpdateEntity", entityId: after.entityId, animationSemantic: after.animationSemantic, activityHint: after.activityHint, groupId: after.groupId ?? null },
         )
+        if (after.movementTargetLocationId && after.movementTargetLocationId !== after.locationId) {
+          commands.push({ op: "MoveEntityToRegion", entityId: after.entityId, fromRegionId: after.locationId, toRegionId: after.movementTargetLocationId, movementSemantic: after.movementSemantic ?? "Remain" })
+        }
       }
     } else if (kind === "region" && entry.path.endsWith(".environment")) {
       const regionId = key.replace(/\.environment$/, "")
@@ -65,4 +71,20 @@ export function translateEmbodimentDeltaToUnrealCommands(delta: WorldEmbodimentD
     }
   }
   return commands
+}
+
+// Sprint 10, Phase 17: herd/flock-level direction, translated from
+// plain data -- deliberately NOT importing GroupState from
+// @avatark/living-population-contracts (this package's own dependency
+// boundary stays exactly what Sprint 8 established; the Host layer
+// converts a GroupState into this minimal shape before calling here).
+export interface GroupIntentInput {
+  groupId: string
+  locationId: string
+  targetLocationId: string | null
+  cohesion: number
+}
+
+export function translateGroupIntentToUnrealCommands(groups: GroupIntentInput[]): UnrealCommand[] {
+  return groups.map((group) => ({ op: "SetGroupIntent", groupId: group.groupId, regionId: group.locationId, targetRegionId: group.targetLocationId, cohesion: group.cohesion }))
 }

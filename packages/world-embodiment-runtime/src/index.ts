@@ -11,7 +11,8 @@ export { resolveWorldEmbodiment } from "./worldEmbodimentResolver.ts"
 
 export { diffWorldEmbodiment } from "./embodimentDelta.ts"
 
-export { translateEmbodimentDeltaToUnrealCommands, translateToUnrealCommands } from "./unrealCommandTranslator.ts"
+export type { GroupIntentInput } from "./unrealCommandTranslator.ts"
+export { translateEmbodimentDeltaToUnrealCommands, translateGroupIntentToUnrealCommands, translateToUnrealCommands } from "./unrealCommandTranslator.ts"
 
 export { negotiateRegionForCapabilities } from "./capabilityNegotiation.ts"
 
