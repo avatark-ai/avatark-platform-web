@@ -1,178 +1,258 @@
 # Living Vrindavan — Handoff Snapshot
 
-**As of:** 2026-08-08, end of Sprint 8. Verify against `git log` before
-trusting anything below — this is a point-in-time report, not a live
-document. Supersedes every earlier version of this file (which covered
-Sprint 5 only); this revision covers Sprints 5 through 8.
+**As of:** 2026-08-09, end of Sprint 14, logging out for the night —
+resume in the morning. Verify against `git log` before trusting anything
+below — this is a point-in-time report, not a live document. Supersedes
+every earlier version of this file (which covered Sprints 5–8 only);
+this revision covers Sprints 5 through 14.
 
 ## Where things actually are
 
 | Repo | Branch | HEAD | Remote |
 |---|---|---|---|
-| `avatark-platform-web` | `feature/avatar-platform-rc3` | `ff3d50d` | pushed |
+| `avatark-platform-web` | `feature/avatar-platform-rc3` | `ff3d50d` | pushed, **untouched all session** |
 | `avatark-platform-web` | `feature/living-vrindavan-integration` (Sprint 5) | `354e8d4` | pushed |
 | `avatark-platform-web` | `feature/sprint6-experience-layer` (Sprint 6) | `da38dbb` | not pushed |
 | `avatark-platform-web` | `feature/sprint7-living-systems` (Sprint 7) | `190dd3c` | not pushed |
 | `avatark-platform-web` | `feature/sprint8-world-embodiment` (Sprint 8) | `2400e5e` | not pushed |
+| `avatark-platform-web` | `feature/sprint9-persistent-world` (Sprint 9) | `6a01161` | pushed |
+| `avatark-platform-web` | `feature/sprint10-living-population` (Sprint 10) | `5f0922f` | pushed |
+| `avatark-platform-web` | `feature/sprint11-world-memory` (Sprint 11) | `4228615` | pushed |
+| `avatark-platform-web` | `feature/sprint12-social-ecology` (Sprint 12) | `f16a6e0` | pushed |
+| `avatark-platform-web` | `feature/sprint13-living-rhythms` (Sprint 13) | `a7cfe35` | pushed |
+| `avatark-platform-web` | `feature/sprint14-encounter-realization` (Sprint 14, **current tip**) | `085e169` | pushed |
 | `studiok-canon` | `feature/living-vrindavan-seasons-canon` | `c6bc297` | **no remote — local only** |
 | `studiok-specifications` | `feature/living-systems-specification` | `0712b5d` | **no remote — local only** |
 | `studiok-platform` | `feature/stk-wo-006-living-systems` | `8e76c1b` | **no remote — local only** |
 
-`feature/avatar-platform-rc3` on origin contains Runtime Kernel Sprints
-1–4 only. **Sprints 5, 6, 7, and 8 are not merged to RC3** — each sits on
-its own branch, stacked on the one before it
-(`sprint6 → sprint7 → sprint8`), unmerged, by design. Nothing has asked
-for that merge yet.
+Sprints 9–14 are each ONE branch, stacked linearly on the one before it
+(`sprint9 → sprint10 → sprint11 → sprint12 → sprint13 → sprint14`), each
+created from the previous sprint's own tip in the SAME worktree
+(`avatark-platform-web-sprint8-world-embodiment`, which despite its name
+is the active worktree for every sprint since 7 — check `git
+branch --show-current` there before trusting the directory name).
+`feature/avatar-platform-rc3` on origin still contains Runtime Kernel
+Sprints 1–4 only. **None of Sprints 5–14 are merged to RC3.** Nothing
+has asked for that merge yet; RC3 was independently re-verified clean
+and unchanged (`ff3d50d`) at the end of every one of tonight's sprints.
 
-StudioK tags: `studiok-canon` has `v0.1.0` (STK-CAN-001..005) and `v0.2.0`
-(adds STK-CAN-006). `studiok-specifications` has `v0.1.0`
-(STK-SPEC-001/002), `v0.2.0` (adds STK-SPEC-003/004), `v0.3.0` (adds
-STK-SPEC-005/006). All Approved. All tags local-only (no remote).
+StudioK tags/state are unchanged since the Sprint 8 snapshot: `studiok-canon`
+`v0.1.0`/`v0.2.0`, `studiok-specifications` `v0.1.0`/`v0.2.0`/`v0.3.0`,
+`studiok-platform` `v0.1.0`. All Approved, all local-only (no remote). No
+Sprint 9–14 work required new StudioK Canon/Specification content — every
+sprint since 9 built on already-Approved artifacts only.
 
 ## Worktrees in use (do not delete without checking first)
 
 ```text
-avatark-platform-web                             — feature/consumer-platform-architecture (original, pre-existing work, untouched)
-avatark-platform-web-rc3-validation              — feature/avatar-platform-rc3 (post-merge validation checkout)
+avatark-platform-web                             — feature/consumer-platform-architecture (original, pre-existing work, unrelated to Living Vrindavan, untouched)
+avatark-platform-web-rc3-validation              — feature/avatar-platform-rc3 (post-merge validation checkout — RC3 lives here)
 avatark-platform-web-living-vrindavan            — feature/living-vrindavan-integration (Sprint 5)
 avatark-platform-web-sprint6-experience          — feature/sprint6-experience-layer (Sprint 6)
 avatark-platform-web-sprint7-living-systems      — feature/sprint7-living-systems (Sprint 7)
-avatark-platform-web-sprint8-world-embodiment    — feature/sprint8-world-embodiment (Sprint 8, THIS is the active one)
+avatark-platform-web-sprint8-world-embodiment    — THIS IS THE ACTIVE WORKTREE. Currently checked out to feature/sprint14-encounter-realization @ 085e169, the tip of the whole Sprint 5–14 stack.
 avatark-platform-web-runtime-host-integration, -runtime-kernel-integration, -runtime-kernel-sprint-2,
   -context-runtime, -experience-registry, -experience-runtime, -living-world-runtime, -narrative-runtime,
   -integration-sprint-1, -ai4, -runtime-rc-integration
   — older Sprint 1–4 source worktrees, superseded by the rc3 merge but left intact
 ```
 
+**To resume in the morning:** `cd
+/home/user/workspace/avatark-platform-web-sprint8-world-embodiment`,
+confirm `git branch --show-current` says
+`feature/sprint14-encounter-realization` and `git log --oneline -1` says
+`085e169`, then start Sprint 15 from there (new branch off this tip, same
+worktree, matching every sprint since 9's own pattern).
+
 ## What's done (verified, not just claimed), by sprint
 
-**Sprint 5 — Living Vrindavan vertical slice.** StudioK Canon →
-Specification → vendored portable artifact → AvatarK Host adapter →
-Living World Runtime → Context → Registry → Timeline → consumer UI. Four
-locations (Vrindavan Entry, Yamuna, Kadamba Grove, Govardhan Path), one
-reflection affordance at Yamuna. STK-WO-003/004 Closed.
+**Sprints 5–8 — Living Vrindavan vertical slice through World
+Embodiment.** Unchanged since the last snapshot: StudioK Canon → causal
+Living Systems (seasons/weather/hydrology/ecology, deterministic
+variation, protected-narrative placeholder) → World Embodiment
+(spatial layout, delta reconciliation, headless Unreal-compatible
+command translator) → Web reference renderer. See this file's git
+history for the full Sprint 5–8 writeup if needed.
 
-**Sprint 6 — Experience Description layer.** STK-SPEC-003/004 (renderer-
-neutral per-location experience intent: biome, atmosphere, soundscape,
-presentation pacing/intensity). New `@avatark/renderer-contracts` package
-(`RendererAdapter`, capability negotiation). Web reference renderer gives
-each of the 4 locations a distinct accent color/atmosphere caption.
-Manifest-based artifact-ingestion mechanism (`vendor/manifest.json` +
-`artifactIngestion.ts`, checksum-verified at module load). STK-WO-005
-Closed.
+**Sprint 9 — Durable Living World persistence.** `world-persistence-contracts`/
+`-runtime`: deterministic catch-up (elapsed-time → tick, replay-safe),
+dormancy/wake, per-instance leasing, crash recovery, multi-visitor/
+multi-instance isolation. `lib/worldPersistence/hostService.ts`
+(`wakeWorld`/`advanceWorld`/`interact` passthrough — the `interact()`
+function's own `_worldInstanceId` param is explicitly discarded here, a
+detail that matters for Sprint 14 below). No DB touched.
 
-**Sprint 7 — Living Systems Foundation.** STK-CAN-006 (Vasanta/Grīṣma
-seasonal identity) + STK-SPEC-005/006 (causal systems: seasons,
-environmental envelopes, 2 neutral entity archetypes, 4 encounter rules
-incl. one narrative-protected). New `@avatark/living-systems-contracts` +
-`@avatark/living-systems-runtime` packages: explicit causal pipeline
-(season→weather→hydrology→ecology), deterministic variation, entity
-persistence, `WorldSnapshot` resolution. Proved the world evolves
-independent of any visitor (leave → advance clock → season transitions →
-return → same visitor memory + new shared state) and that two visitors
-share world state but not visitor memory. STK-WO-006 Closed.
+**Sprint 10 — Persistent living population and behavior.** `living-population-contracts`/
+`-runtime`: needs, per-archetype `RhythmSchedule`, perception, utility-based
+`selectBehavior`, herd/flock `GroupState`, `computeEncounterOpportunities`
+(population presence layered on Sprint 7's `AvailableEncounter` →
+`EncounterOpportunity`). Cow herd + bird flock seeded for Vrindavan.
 
-**Sprint 8 — World Embodiment Layer.** No new StudioK content — Sprint
-6's `ExperienceDescription` already supplied the presentation-intent
-StudioK layer Sprint 8 needed, so no governance gate was reached. New
-`@avatark/world-embodiment-contracts` + `@avatark/world-embodiment-runtime`
-packages: `WorldSnapshot` → `WorldEmbodimentSnapshot` (spatial layout,
-environment/entity/encounter presentation, current + reachable regions),
-`InteractionIntent` boundary (renderer → Host → existing Sprint 5
-orchestrator, never a new mutation path), delta reconciliation
-(ADD/UPDATE/REMOVE/UNCHANGED by stable id), capability negotiation, and a
-headless Unreal-*compatible* command translator (`CreateRegion`/
-`UpdateEnvironment`/`PlaceEntity`/etc — zero Unreal dependency). Web
-reference renderer now consumes the embodiment contract instead of
-reading Living Systems internals directly. Proved Web/Unreal-command
-semantic parity and reusability for a wholly fictional world, all without
-touching Runtime Kernel code. 996/996 unit tests, 62/62 Playwright across
-desktop/tablet/mobile (15 new Sprint 8 + 15 updated Sprint 7 + 32 Sprint
-5/6 baseline).
+**Sprint 11 — Emergent encounters and world memory.** `world-memory-contracts`/
+`-runtime`: deterministic significance filtering, `WorldEvent`/
+`EntityMemoryEntry` derivation, `EncounterHistoryEntry` status-transition
+log (`AVAILABLE`/`RESOLVED`/`NO_LONGER_AVAILABLE`), return recognition.
+**Named a debt here:** `recordEncounterResolved` existed but was never
+called from `lib/` — closed for real in Sprint 14 (see below).
+
+**Sprint 12 — Social ecology and persistent relationships.** `social-ecology-contracts`/
+`-runtime`: `RelationshipState`/`FamiliarityState`/`HomeRange`/
+`SeparationState`/`ReunionEvent`. One found-and-fixed idempotency bug
+(evidence double-counted on a same-instant replay). **Deferred the
+encounter-mechanism debt again** (§24 of its own final report).
+
+**Sprint 13 — Living rhythms and place occupancy.** `living-rhythms-contracts`/
+`-runtime`: world-shared `DayPhase` (distinct from Sprint 10's
+per-archetype `RhythmPhase`), `RoutineWindow`/`DailyRhythmDefinition`,
+`GroupRoutineIntent`, `PlaceOccupancy`, bounded `PlaceRhythmProfile`,
+`ResourceOpportunity` (2 new tags: `rest`, `corridor`). `selectBehavior`
+gained optional `dayPhase`/`routineWindow`. This sprint was itself
+interrupted mid-build by an account switch and resumed cleanly from the
+exact in-progress state — proof the stacked-branch/worktree approach
+survives a session handoff, which is exactly what's happening again
+tonight.
+
+**Sprint 14 — Encounter realization and consequence.** The big one
+tonight. Reconciled the two-sprint-old encounter-mechanism debt (Sprint
+11 §24 / Sprint 12 §24 / Sprint 13 debt #2) **by inventory, not
+rewrite**: Sprint 7's `AvailableEncounter` (POTENTIAL), Sprint 10's
+`EncounterOpportunity` (AVAILABLE), and Sprint 11's `EncounterHistoryEntry`
+(coarse status log) were already correctly layered and stay untouched.
+The legacy visitor-facing `select-encounter` InteractionIntent
+(`lib/worldEmbodiment/intentDispatcher.ts`) was explicitly, consciously
+left alone — it never mutated anything and predates world-instance
+persistence; rewiring it would be a bigger, riskier refactor than this
+mission needed, and it was named as a deliberate scope boundary rather
+than silently dropped. New: `encounter-realization-contracts`/`-runtime`
+(`EncounterRecord`, closed `EncounterConsequence` union, pure
+`resolveEncounterRealization`/`deriveConsequences`, content-derived
+idempotent ids) and `lib/encounterRealization/hostService.ts`
+(`wakeWorldWithEncounterRealization`, composing Sprint 13's own wake
+chain, never bypassing it). All 7 mission-required scenarios proved as
+real tests: causal encounter, missed encounter, historical feedback
+(Encounter A → relationship/memory change → later behavior differs →
+Encounter B more/less likely — the mission's own critical
+path-dependence proof), offscreen realization, protected-narrative
+blocking, replay/idempotency (via Sprint 9's real checkpoint mechanism),
+and Living Forest world-neutrality. `recordEncounterResolved`
+(Sprint 11) finally called for the first time. One real bug caught
+during the sprint (an early multi-instance test draft advanced the
+world by a simulated hour against a 1-tick/ms policy, triggering a
+3.6M-tick synchronous simulation) — fixed, and flagged below as a
+performance hazard for whoever writes Sprint 15.
+
+## Test/quality state (independently verified this session, not just self-reported)
+
+- **1398/1398 tests passing** at Sprint 14's tip (`085e169`). Baseline
+  climbed 1277 → 1347 (Sprint 13) → 1398 (Sprint 14).
+- `npm run typecheck` clean at every sprint boundary tonight.
+- `npm run lint` clean except the same pre-existing findings, confirmed
+  by diffing each flagged file against the commit *before* that
+  sprint's own changes (`git diff <prior-sprint-sha> -- <file>` showing
+  zero output) — not just asserted. The 7 errors / 7 warnings live in:
+  `components/account/LivingWorldDetailView.tsx` (2 React-hooks-in-effect
+  errors), `lib/capabilities/adminGrants.test.ts`,
+  `lib/capabilities/queries.test.ts`, `lib/livingPopulation/vrindavanPopulationDefinition.ts`,
+  `lib/organizations/acceptInvitation.test.ts`,
+  `packages/account/src/testing/mockAdapters.ts`,
+  `packages/account/src/ui/ProfileTab.tsx`,
+  `packages/living-systems-contracts/src/snapshot.test.ts` — all
+  unrelated to Living Vrindavan work, none touched by any sprint tonight.
 
 ## Explicit constraints still in force (nobody lifted these)
 
-- None of Sprints 5–8 are merged into `feature/avatar-platform-rc3`. Do
+- None of Sprints 5–14 are merged into `feature/avatar-platform-rc3`. Do
   not merge without being asked again.
-- No database migrations have been applied anywhere.
+- No database migrations have been applied anywhere, ever, across every
+  sprint. Prepared-but-unapplied migrations now go up to
+  `031_encounter_realization.sql`, all registered in
+  `supabase/scripts/run-platform-migrations.js`'s `MIGRATION_ORDER` for
+  traceability only.
 - `Living Forest` / `Living Stillness` / `Living Symphony` / `Living
-  Forge` are still on the original generic `SAMPLE_WORLD_DEFINITIONS`
-  fixture — untouched through all four sprints, confirmed by `git diff
-  --stat` showing zero changes to `packages/living-world-runtime` or its
-  singleton composition each sprint. Only Living Vrindavan is real.
-- Do not build Unreal, PCG, GameK, PrometheusK, or StreamK integration —
-  every sprint's own instructions deferred these, and Sprint 8's Unreal
-  adapter is explicitly headless/schema-only (no engine installed, no
-  project created).
-- Sprint 8's `select-encounter` intent intentionally causes no persisted
-  state change — Sprint 7 never gave encounters a "selected" consequence,
-  and Sprint 8 didn't invent one.
+  Forge` remain the generic `SAMPLE_WORLD_DEFINITIONS` fixture — only
+  Living Vrindavan is real, franchise-specific. Living Forest is now
+  also the alternate-world portability proof for the ENTIRE Sprint
+  7–14 causal/population/memory/social/rhythm/encounter-realization
+  stack, with zero core changes and zero franchise-name references
+  (grep-verified each sprint).
+- Do not build Unreal, PCG, GameK, PrometheusK, or StreamK integration.
+- Protected canonical narrative remains read-only, gate-only, with no
+  write path anywhere — re-verified via dependency-boundary tests every
+  sprint since 11, and Sprint 14's realization resolver adds a second,
+  defense-in-depth check on top of Sprint 7's original gate rather than
+  trusting it alone.
 
 ## Loose ends / technical debt (small, named, not blocking)
 
-1. StudioK repos have no git remotes in this environment — all work is
-   committed locally only, across five tags (`v0.1.0`–`v0.3.0` on two
-   repos) that would need pushing if a real remote appears later.
-2. AvatarK's StudioK artifact pins remain manually-vendored, reviewed
-   JSON copies (`lib/livingWorldRuntime/vendor/`), not real package-
-   registry dependencies — acceptable per Sprint 6/7's own closure
-   criteria; upgrade path is real publishing once these repos have
-   remotes.
-3. `nextLocations`'s derivation logic doesn't exclude already-visited-
-   but-still-reachable locations (e.g. Yamuna reappears as "next" when
-   standing at Kadamba Grove, since it's still a legal revisit). Not a
-   bug — just noted, not fixed (unchanged since Sprint 5).
-4. `EntityPresentation.visible` is always `true` in Sprint 8's reference
-   model — no per-archetype "away" lifecycle-phase vocabulary exists yet
-   (would need a StudioK schema addition, not invented unilaterally).
-5. Sprint 8's spatial layout is an abstract graph position (BFS depth +
-   sibling spread), not real-world/Unreal-ready geometry — deliberately
-   out of scope ("do not build production terrain").
-6. Same in-memory/no-Postgres limitation every sprint since Sprint 4 has
-   carried: Living World state, Living Systems shared-world state, and
-   the Experience Registry all reset on process restart.
-7. Two real regressions were found and fixed *during* Sprint 8 (a
-   duplicate `aria-live` region and a duplicate "Ambient sound" button
-   label, caused by Sprint 8's panel changes colliding with Sprint 6's
-   existing component on the same page) — caught by re-running the
-   Sprint 5/6 Playwright baseline, not missed silently. Worth remembering
-   as a category of risk for Sprint 9: any new panel sharing a page with
-   `LivingWorldDetailView` needs to check for label/aria collisions.
-8. `studiok-canon`'s STK-WO-003 is `In Progress`, not `Closed` — one
-   Deliverable (updating `studiok-docs`'s Canon section) was out of
-   Sprint 5's own repo scope and was never done. Unchanged since Sprint 5.
+Carried forward from the Sprint 8 snapshot (items 1–8 there are
+unchanged — StudioK repos still have no remotes, artifact pins still
+manually vendored, in-memory/no-Postgres state still resets on restart,
+etc. — see git history of this file for the full original list). New
+since then:
+
+9. **The legacy `select-encounter` InteractionIntent is still
+   disconnected from world-instance persistence** (`lib/worldEmbodiment/intentDispatcher.ts`).
+   Never unsafe (never mutated anything), but a visitor's own
+   acknowledgment of an "available" encounter still doesn't know about
+   the real, persistent, population-scoped encounter/realization
+   pipeline. Named explicitly in `docs/SPRINT14_GROUND_TRUTH.md` as a
+   conscious, deferred scope boundary — a future sprint's own job if the
+   product ever needs the visitor's UI to reflect real realized-encounter
+   state directly, rather than through `getEncounterRecords`/the
+   embodiment wrapper.
+10. **Performance hazard found in Sprint 14, fixed in the test that hit
+    it, not yet guarded against systemically:** the reference tick policy
+    is 1 tick/ms. Any future test or Host code that advances a world by
+    simulated wall-clock durations (hours/days) rather than a small tick
+    delta will trigger a multi-million-tick synchronous catch-up loop.
+    Worth a real look in Sprint 15 — either a documented "don't do this"
+    convention (cheapest) or a batched/logarithmic catch-up strategy
+    (bigger).
+11. `EncounterRecord`'s `REMEMBERED` and `SUPERSEDED` lifecycle statuses
+    are modeled but not yet produced by the reference resolver — reserved
+    vocabulary, same "prove the mechanism, not exhaust the design space"
+    posture every prior sprint has used for its own reserved-but-unused
+    values.
+12. Entity-need/routine-intent/movement-intent consequences were
+    deliberately NOT wired as a direct write in Sprint 14 (would create a
+    second writer into `EntityBehaviorState`, which the population tick
+    loop alone owns) — "changed future behavior" flows only through the
+    existing `RESOURCE_PREFERENCE` → `memoryHint` → `selectBehavior`
+    bridge. If a future sprint wants richer behavioral consequences
+    (e.g. a direct routine-intent nudge), it needs a real design
+    decision about a second writer, not a quick patch.
 
 ## Verifying this snapshot is still accurate
 
 ```bash
-# AvatarK
-cd /home/user/workspace/avatark-platform-web-sprint8-world-embodiment && git log --oneline -3
-# StudioK (no remotes, so purely local state)
-cd /home/user/workspace/studiok-canon && git log --oneline -3 && git tag -l
-cd /home/user/workspace/studiok-specifications && git log --oneline -3 && git tag -l
-cd /home/user/workspace/studiok-platform && git log --oneline -3
+cd /home/user/workspace/avatark-platform-web-sprint8-world-embodiment
+git branch --show-current   # expect feature/sprint14-encounter-realization
+git log --oneline -7        # expect 085e169 at HEAD, sprint9..sprint14 below it
+git status --short          # expect nothing (clean)
+
 # RC3 untouched
 cd /home/user/workspace/avatark-platform-web-rc3-validation && git log --oneline -1 && git status --short
-# Full test suite (996 tests as of this snapshot)
-cd /home/user/workspace/avatark-platform-web-sprint8-world-embodiment && pnpm install --prefer-offline && npm test
+
+# Full test suite (1398 tests as of this snapshot)
+cd /home/user/workspace/avatark-platform-web-sprint8-world-embodiment
+pnpm install --prefer-offline && npm test && npm run typecheck
 ```
 
 ## Recommended next step
 
-Sprint 8 ended with: **WORLD EMBODIMENT FOUNDATION VERIFIED — READY FOR
-SPRINT 9**. Sprint 9 scope was not specified. Likely candidates, given
-the layering established so far (Canon → Specification → Living Systems
-→ Embodiment → Renderer Adapter):
+Sprint 14 ended with: **ENCOUNTER REALIZATION & CONSEQUENCE FOUNDATION
+VERIFIED — READY FOR SPRINT 15**. Its own final report's exact
+recommendation for Sprint 15 (see `docs/SPRINT14_FINAL_REPORT.md`'s own
+closing section for the fully-reasoned version):
 
-- A second real Living World (Forest/Stillness/Symphony/Forge) proving
-  the full Sprint 5–8 stack generalizes beyond fixtures/tests to a real
-  StudioK-authored world — the most direct "prove reusability for real"
-  next step.
-- Deepening the protected-narrative layer (currently an honest, always-
-  unresolved placeholder) with a real canonical-narrative system, now
-  that Sprint 8's boundary contract for it exists.
-- Beginning the real Unreal adapter implementation, now that Sprint 8's
-  headless command schema is proven — explicitly deferred by every prior
-  sprint's own instructions until asked for directly.
+- Address the performance hazard (loose end #10 above) before it bites
+  a future catch-up-heavy test.
+- Decide whether the legacy `select-encounter` visitor intent (loose end
+  #9) should finally be wired into the real persistence/realization
+  pipeline, now that pipeline fully exists.
+- Expand the realization causal-factor set and/or the reserved
+  `SocialInteractionCategory`/`EncounterRealizationStatus` vocabulary
+  (`follow`/`gather`/`avoid`, `REMEMBERED`/`SUPERSEDED`) now that the
+  core mechanism is proven end to end.
 
 Ask before assuming which.
