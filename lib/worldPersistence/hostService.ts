@@ -24,6 +24,51 @@ export { resolveDurableWorldSnapshot as getWorldSnapshot, resolveDurableWorldEmb
 const DEFAULT_LEASE_TTL_MS = 60_000
 const DEFAULT_TICK_POLICY = fixedRateTickPolicy(1) // reference rate: 1 logical tick per elapsed ms, tuned only for this environment's own tests -- product tick pacing is policy, not core (Phase 5)
 
+// Sprint 20, §10/§45 debt #2: a NEW, additive primitive -- deliberately
+// NOT wired into `wakeWorld`/`wakeWorldWithSpatialEcology`/
+// `wakeWorldWithCanonicalEvents` below or in any sibling Sprint 16/18
+// file. An earlier version of this fix DID wrap those directly and was
+// reverted after `npm test` caught a real regression: `advanceWorld`
+// (Sprint 9's own explicit, owner-gated advancement) is designed to be
+// called in a LATER, SEPARATE request after `wakeWorld`, while still
+// relying on that same lease -- `hostService.test.ts`'s own "the lease
+// holder can explicitly advance the world further after waking it" and
+// two other existing tests depend on this exact multi-call-same-lease
+// composition. Auto-releasing inside `wakeWorld` itself breaks that
+// real, intentional, already-tested workflow -- releasing is a
+// SESSION-boundary decision only the caller composing a chain can make,
+// not something a shared primitive may impose underneath it.
+//
+// This function exists for the Sprint 20 `wakeLivingWorld` v1 facade
+// (Phase 0 §3/§8, not yet built as of Part A) to use: THAT facade
+// defines "one request = one session" and is the correct, and only,
+// place to acquire-and-always-release within a single call, closing the
+// verified "no Host code path ever releases a lease" production gap
+// (§10/§45 debt #2) without touching any existing Sprint 9-19 function's
+// observable behavior. "Is the CURRENT lease still mine?" (re-read
+// fresh, by ownerId) is deliberately checked instead of releasing a
+// captured version number: correct whether `fn` never got far enough to
+// acquire anything (current is null or someone else's -- release is
+// skipped, a safe no-op) or acquired then renewed internally (current's
+// version has already moved past whatever was captured at entry).
+//
+// Deliberately does NOT retry `acquire` on a same-owner conflict (a
+// genuinely concurrent second call from the SAME ownerId while the
+// first is still mid-chain). That is NOT the bug this closes -- it is
+// the single-writer invariant (§11) doing its job: two catch-up passes
+// racing against the same worldInstanceId is exactly what the lease
+// exists to prevent, even from a "trusted" caller.
+export async function releasingWorldLeaseAfter<T>(worldInstanceId: WorldInstanceId, ownerId: WorldOwnerId, fn: () => Promise<T>): Promise<T> {
+  try {
+    return await fn()
+  } finally {
+    const current = await worldLeaseRepository.getCurrent(worldInstanceId)
+    if (current && current.ownerId === ownerId) {
+      await worldLeaseRepository.release(worldInstanceId, ownerId, current.leaseVersion)
+    }
+  }
+}
+
 export async function getWorldState(worldInstanceId: WorldInstanceId, now: () => string = () => new Date().toISOString()): Promise<DurableWorldState> {
   await ensureWorldInstance(worldInstanceId, now)
   return loadOrSeedDurableWorldState(worldInstanceId, now)
