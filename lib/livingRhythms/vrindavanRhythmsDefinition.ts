@@ -32,6 +32,13 @@ export const COW_DAILY_RHYTHM: DailyRhythmDefinition = {
   id: "avatark-population-cow-routine",
   entries: [
     { dayPhase: "MORNING", eligibleActivities: ["GRAZE", "DRINK"], preferredResourceTypes: ["vegetation", "water"], socialAffinity: 0.05, restBias: 0, movementBias: 0.15 },
+    // Build 03, Phase0 §13/§35's own recommended Grishma-readiness
+    // content delta: the real MIDDAY gap, filled with reduced activity
+    // and a rest/water preference -- the concrete realization of "heat
+    // rises -> shelter/water preference increases," composing the
+    // existing rhythm + resource-affordance mechanism (§15), zero new
+    // engine capability, zero new season.
+    { dayPhase: "MIDDAY", eligibleActivities: ["REST"], preferredResourceTypes: ["water", "rest"], socialAffinity: 0, restBias: 0.25, movementBias: 0.05 },
     { dayPhase: "DUSK", eligibleActivities: ["REST"], preferredResourceTypes: ["rest"], socialAffinity: 0.05, restBias: 0.35, movementBias: 0.1 },
     { dayPhase: "NIGHT", eligibleActivities: ["REST"], preferredResourceTypes: ["rest"], socialAffinity: 0, restBias: 0.4, movementBias: 0 },
   ],
@@ -46,6 +53,10 @@ export const BIRD_FLOCK_DAILY_RHYTHM: DailyRhythmDefinition = {
   id: "avatark-population-bird-flock-routine",
   entries: [
     { dayPhase: "MORNING", eligibleActivities: ["SOCIALIZE"], preferredResourceTypes: ["gathering"], socialAffinity: 0.3, restBias: 0, movementBias: 0.1 },
+    // Build 03, Phase0 §13/§35: the same MIDDAY content delta as the
+    // cow's own entry above, biasing toward shelter/rest instead of the
+    // afternoon corridor travel this archetype otherwise prefers.
+    { dayPhase: "MIDDAY", eligibleActivities: ["REST"], preferredResourceTypes: ["shelter", "rest"], socialAffinity: 0, restBias: 0.25, movementBias: 0.05 },
     { dayPhase: "AFTERNOON", eligibleActivities: ["MOVE_TO_RESOURCE", "FOLLOW_GROUP"], preferredResourceTypes: ["corridor"], socialAffinity: 0.1, restBias: 0, movementBias: 0.3 },
     { dayPhase: "DUSK", eligibleActivities: ["REST"], preferredResourceTypes: ["rest"], socialAffinity: 0, restBias: 0.35, movementBias: 0 },
   ],

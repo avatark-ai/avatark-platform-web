@@ -37,4 +37,17 @@ export const VRINDAVAN_EMERGENT_ENCOUNTER_RULES: EmergentEncounterRule[] = [
     requiresEventCategory: "REUNION_OCCURRED",
     withinLastTicks: 10,
   },
+  // Build 03, Phase0 §17's own recommended addition: the direct Yamuna
+  // parallel to Kadamba Grove's own existing rule above -- before this,
+  // Yamuna (the herd's own real home range, and the world's only
+  // reflection-capable location) had ZERO emergent rules, a real,
+  // named gap. Reuses EmergentEncounterRule's existing shape verbatim;
+  // no new engine, no new WorldEventCategory.
+  {
+    ruleId: "avatark-population-recent-watering-yamuna",
+    category: "ambient",
+    requiresLocationId: "yamuna",
+    requiresEventCategory: "POPULATION_MOVEMENT",
+    withinLastTicks: 10,
+  },
 ]
