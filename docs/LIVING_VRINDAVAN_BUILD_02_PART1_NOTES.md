@@ -1,7 +1,7 @@
 ---
 build: living-vrindavan-build-02
 phase: implementation-part-1
-status: PART 1 COMPLETE -- PART 2 (reqs 8-12, acceptance proofs A-J, final report) TO FOLLOW
+status: PART 1 COMPLETE -- PART 2 (reqs 8-12, acceptance proofs A-J, final report) COMPLETE, see docs/LIVING_VRINDAVAN_BUILD_02_FINAL_REPORT.md
 base: feature/living-vrindavan-build-01 @ 7b6c759, merged with feature/living-vrindavan-build-02-phase0 @ 8c96d5d
 ---
 
