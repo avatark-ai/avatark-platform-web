@@ -25,7 +25,7 @@
     "dist"
   ],
   "scripts": {
-    "test": "node --experimental-strip-types --test src/dayPhaseResolution.test.ts src/resourceOpportunityResolution.test.ts src/routineResolution.test.ts src/groupRoutineResolution.test.ts src/placeOccupancyResolution.test.ts src/placeRhythmEvolution.test.ts src/socialInteractionResolution.test.ts",
+    "test": "node --experimental-strip-types --test src/dayPhaseResolution.test.ts src/resourceOpportunityResolution.test.ts src/routineResolution.test.ts src/groupRoutineResolution.test.ts src/placeOccupancyResolution.test.ts src/placeRhythmEvolution.test.ts src/socialInteractionResolution.test.ts src/livingForestRhythmsPortability.test.ts",
     "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
   },
   "publishConfig": {
