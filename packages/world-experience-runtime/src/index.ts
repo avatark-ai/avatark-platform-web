@@ -1,0 +1,8 @@
+export { resolveArrivalDecision } from "./arrivalDecision.ts"
+export { resolveCanonicalScopeLocationIds } from "./canonicalScope.ts"
+export type { ComposePlaceContinuityInput } from "./placeContinuity.ts"
+export { composePlaceContinuity } from "./placeContinuity.ts"
+export type { ComposeOrientationInput } from "./orientation.ts"
+export { composeOrientation } from "./orientation.ts"
+export type { ComposeWorldExperienceSnapshotInput } from "./worldExperienceSnapshot.ts"
+export { composeWorldExperienceSnapshot } from "./worldExperienceSnapshot.ts"

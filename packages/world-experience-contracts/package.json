@@ -1,0 +1,45 @@
+{
+  "name": "@avatark/world-experience-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Renderer-neutral contracts for Build 04's World Experience layer: Arrival policy (first-ever/returning/stale/canon-directed/safe-fallback), a declarative Experience Graph (visitor-experience stage vocabulary and allowed transitions -- descriptive, never a gate on the autonomous simulation), Place Continuity (what a place exposes to a visitor, derived from existing runtime truth, never a second world-state store), Orientation (world-awareness Q&A: where am I / what is around me / what is happening / where can I go / what has changed), and the World Experience Snapshot Unreal-handoff aggregate. No implementations, no new persisted state -- every field here is either a pure derivation input/output shape or a re-export of an existing contract shape (world-embodiment/spatial-ecology/canonical-event/world-memory/living-rhythms), never a duplicate world-state authority.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@avatark/runtime-contracts": "workspace:*",
+    "@avatark/spatial-ecology-contracts": "workspace:*",
+    "@avatark/world-embodiment-contracts": "workspace:*",
+    "@avatark/canonical-event-contracts": "workspace:*",
+    "@avatark/world-memory-contracts": "workspace:*",
+    "@avatark/living-rhythms-contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "node --experimental-strip-types --test src/experienceGraph.test.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
+  }
+}

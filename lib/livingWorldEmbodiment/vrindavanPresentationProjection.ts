@@ -1,9 +1,10 @@
 import type { EmbodiedTransition, WorldEmbodimentProvenance } from "@avatark/world-embodiment-contracts"
 import type { EmbodiedRegion } from "@avatark/world-embodiment-contracts"
 import type { ProtectedNarrativeProjection, VisitorContextProjection } from "@avatark/living-systems-contracts"
-import type { PatchState } from "@avatark/spatial-ecology-contracts"
+import type { PatchState, TerritoryPressure, RouteState } from "@avatark/spatial-ecology-contracts"
 import type { AdaptationEffect } from "@avatark/world-adaptation-contracts"
 import type { WorldInstanceCanonicalProjectionState } from "@avatark/canonical-event-contracts"
+import type { EncounterHistoryStatus, HistoricalMarker, ReturnRecognition, WorldEvent } from "@avatark/world-memory-contracts"
 import { getEmbodimentWithCanonicalEvents } from "../canonicalEvents/hostService.ts"
 import type { LocationRhythmSummary } from "../livingRhythms/hostService.ts"
 
@@ -32,6 +33,7 @@ const defaultNow = () => new Date().toISOString()
 // not recompute or reinterpret a single value.
 export interface VrindavanPresentationState {
   worldId: string
+  worldVersion: number
   simulationTick: number
   season: { id: string; name: string }
   generatedAt: string
@@ -57,6 +59,24 @@ export interface VrindavanPresentationState {
   // unmodified -- presented, never mutable through this or any
   // renderer path (Build 02's own Canon-firewall requirement).
   canonicalProjections: WorldInstanceCanonicalProjectionState[]
+  // Build 04, §C/§I: Sprint 16's own real territory/route fields --
+  // already computed by `withSpatialEcology.spatialSnapshot` (the same
+  // object `patchEcology` above is drawn from), simply never surfaced
+  // past this projection's own flattening step until now.
+  territoryPressures: TerritoryPressure[]
+  routeStates: RouteState[]
+  // Build 04, §C/§I: Sprint 11's own real World Memory history --
+  // already computed by `getEmbodimentWithHistory` (the innermost link
+  // in this same onion), including `returnRecognition` (Sprint 11,
+  // never previously wired into ANY presentation/route path -- see
+  // docs/LIVING_VRINDAVAN_BUILD_04_RECONCILIATION.md) -- surfaced here
+  // additively, zero new engine capability.
+  history: {
+    recentWorldChanges: WorldEvent[]
+    historicalMarkers: HistoricalMarker[]
+    returnRecognition: ReturnRecognition | null
+    encounterHistoryState: { ruleId: string; status: EncounterHistoryStatus | null }[]
+  }
 }
 
 export async function projectVrindavanPresentation(worldInstanceId: string, userId: string, locationId: string, reachableLocationIds: string[], sinceTick: number | null = null, now: () => string = defaultNow): Promise<VrindavanPresentationState> {
@@ -71,6 +91,7 @@ export async function projectVrindavanPresentation(worldInstanceId: string, user
 
   return {
     worldId: base.worldId,
+    worldVersion: base.worldVersion,
     simulationTick: base.simulationTick,
     season: base.season,
     generatedAt: base.generatedAt,
@@ -84,5 +105,8 @@ export async function projectVrindavanPresentation(worldInstanceId: string, user
     rhythms: withRhythms.rhythms,
     adaptationEffects: withAdaptation.adaptationEffects,
     canonicalProjections: withCanonicalEvents.canonicalProjections,
+    territoryPressures: withSpatialEcology.spatialSnapshot.territoryPressures,
+    routeStates: withSpatialEcology.spatialSnapshot.routeStates,
+    history: withHistory.history,
   }
 }
