@@ -1,0 +1,495 @@
+{
+  "worldId": "living-forest-fixture",
+  "userId": "dev-inspector",
+  "generatedAt": "2026-08-10T06:00:05.000Z",
+  "suggestedStage": "RECOGNITION_OF_CHANGE",
+  "arrival": {
+    "locationId": "forest-clearing",
+    "reason": "RETURNING_TO_PRIOR_PLACE",
+    "isFirstEverVisit": false,
+    "priorLocationId": "forest-clearing",
+    "worldChangedSinceLastVisit": true
+  },
+  "orientation": {
+    "worldId": "living-forest-fixture",
+    "userId": "dev-inspector",
+    "generatedAt": "2026-08-10T06:00:05.000Z",
+    "whereAmI": {
+      "locationId": "forest-clearing",
+      "name": "Clearing",
+      "season": { "id": "drought", "name": "Drought" },
+      "dayPhase": "MIDDAY"
+    },
+    "whatIsAroundMe": {
+      "nearbyEntityCount": 0,
+      "occupancyLevel": "QUIET",
+      "presentationHints": []
+    },
+    "whatIsHappening": {
+      "encounterOpportunityCount": 0,
+      "activeCanonicalPresence": [],
+      "groupRoutineIntentCount": 0
+    },
+    "whereCanIGo": [
+      { "locationId": "forest-stream", "reachable": true, "viaRouteId": null, "routeTraversable": null },
+      { "locationId": "forest-pond", "reachable": true, "viaRouteId": null, "routeTraversable": null }
+    ],
+    "whatHasChanged": {
+      "sinceLastVisit": true,
+      "facts": [
+        { "type": "season_changed", "sourceCategories": ["SEASON_TRANSITION"], "occurrenceCount": 1 },
+        { "type": "population_relocated", "sourceCategories": ["POPULATION_MOVEMENT"], "occurrenceCount": 2 }
+      ]
+    },
+    "arrival": {
+      "locationId": "forest-clearing",
+      "reason": "RETURNING_TO_PRIOR_PLACE",
+      "isFirstEverVisit": false,
+      "priorLocationId": "forest-clearing",
+      "worldChangedSinceLastVisit": true
+    }
+  },
+  "place": {
+    "worldId": "living-forest-fixture",
+    "locationId": "forest-clearing",
+    "tick": 5,
+    "season": { "id": "drought", "name": "Drought" },
+    "region": {
+      "locationId": "forest-clearing",
+      "name": "Clearing",
+      "spatialNode": {
+        "id": "forest-clearing",
+        "parentId": null,
+        "role": "hub",
+        "transform": { "position": { "x": 0, "y": 0, "z": 0 } },
+        "bounds": { "radius": 30 },
+        "tags": ["clearing"]
+      },
+      "environment": {
+        "atmosphere": { "semantic": "dry-clearing-drought", "temperatureBand": "high", "illuminationSemantic": "midday-bright" },
+        "water": { "semantic": "none", "levelBand": "low" },
+        "vegetation": { "semantic": "dry-clearing-grass", "densityBand": "low" },
+        "sensoryCues": [{ "channel": "ambientAudio", "semantic": "dry-wind-ambient" }]
+      },
+      "entities": [],
+      "encounters": []
+    },
+    "patchState": {
+      "patchId": "patch-forest-p01",
+      "tick": 5,
+      "vegetationCondition": "low",
+      "hydrologyCondition": "low",
+      "resourceAvailability": ["vegetation", "shelter", "gathering"],
+      "occupancyLevel": "QUIET",
+      "presentEntityIds": [],
+      "presentGroupIds": [],
+      "movementPermeability": 1,
+      "ecologicalPressure": 0
+    },
+    "territoryPressure": null,
+    "dayPhase": "MIDDAY",
+    "occupancy": {
+      "locationId": "forest-clearing",
+      "tick": 5,
+      "presentEntityIds": [],
+      "presentGroupIds": [],
+      "entityCountsByArchetype": {},
+      "activityMix": {},
+      "occupancyLevel": "QUIET"
+    },
+    "groupRoutineIntents": [],
+    "resourceOpportunities": [
+      { "locationId": "forest-clearing", "category": "vegetation", "available": true, "tick": 5 },
+      { "locationId": "forest-clearing", "category": "shelter", "available": true, "tick": 5 },
+      { "locationId": "forest-clearing", "category": "gathering", "available": true, "tick": 5 }
+    ],
+    "nearbyEntities": [],
+    "encounterOpportunities": [],
+    "nearbyDestinations": [
+      { "locationId": "forest-stream", "reachable": true, "viaRouteId": null, "routeTraversable": null },
+      { "locationId": "forest-pond", "reachable": true, "viaRouteId": null, "routeTraversable": null }
+    ],
+    "routeStates": [],
+    "canonicalPresence": [],
+    "rememberedConsequences": [
+      {
+        "id": "hm-0001",
+        "worldId": "living-forest-fixture",
+        "locationId": "forest-clearing",
+        "tick": 5,
+        "category": "population_departed",
+        "detail": { "note": "herd relocated away from the clearing toward water" },
+        "provenance": {
+          "derivedFromEventIds": [],
+          "derivationRule": "population-tick-delta",
+          "causalReferences": [{ "kind": "need", "ref": "water" }]
+        }
+      }
+    ],
+    "presentationHints": [],
+    "visitor": { "userId": "dev-inspector", "hasVisitedBefore": true, "meaningfulEncounterCount": 0, "reflectionCount": 0 }
+  },
+  "nearbyPlaces": [
+    {
+      "worldId": "living-forest-fixture",
+      "locationId": "forest-stream",
+      "tick": 5,
+      "season": { "id": "drought", "name": "Drought" },
+      "region": {
+        "locationId": "forest-stream",
+        "name": "Stream",
+        "spatialNode": {
+          "id": "forest-stream",
+          "parentId": "forest-clearing",
+          "role": "resource-edge",
+          "transform": { "position": { "x": 400, "y": 200, "z": 0 } },
+          "bounds": { "radius": 20 },
+          "tags": ["riverbank"]
+        },
+        "environment": {
+          "atmosphere": { "semantic": "dry-streambank-drought", "temperatureBand": "high", "illuminationSemantic": "midday-bright" },
+          "water": { "semantic": "low-flow-stream", "levelBand": "low" },
+          "vegetation": { "semantic": "sparse-streambank", "densityBand": "low" },
+          "sensoryCues": [{ "channel": "ambientAudio", "semantic": "thin-water-trickle" }]
+        },
+        "entities": [
+          {
+            "entityId": "deer-2",
+            "archetypeId": "deer",
+            "locationId": "forest-stream",
+            "visible": true,
+            "presentationArchetype": "deer",
+            "activityHint": "drinking",
+            "animationSemantic": "drink-idle",
+            "audioSemantic": null,
+            "movementSemantic": null,
+            "movementTargetLocationId": null,
+            "groupId": "deer-herd-1"
+          }
+        ],
+        "encounters": []
+      },
+      "patchState": {
+        "patchId": "patch-forest-p02",
+        "tick": 5,
+        "vegetationCondition": "low",
+        "hydrologyCondition": "low",
+        "resourceAvailability": ["water"],
+        "occupancyLevel": "RESTING",
+        "presentEntityIds": ["deer-2"],
+        "presentGroupIds": ["deer-herd-1"],
+        "movementPermeability": 1,
+        "ecologicalPressure": 0
+      },
+      "territoryPressure": null,
+      "dayPhase": "MIDDAY",
+      "occupancy": {
+        "locationId": "forest-stream",
+        "tick": 5,
+        "presentEntityIds": ["deer-2"],
+        "presentGroupIds": ["deer-herd-1"],
+        "entityCountsByArchetype": { "deer": 1 },
+        "activityMix": { "DRINK": 1 },
+        "occupancyLevel": "RESTING"
+      },
+      "groupRoutineIntents": [
+        { "groupId": "deer-herd-1", "intent": "MOVE_TO_RESOURCE", "targetLocationId": "forest-stream", "tick": 5 }
+      ],
+      "resourceOpportunities": [
+        { "locationId": "forest-stream", "category": "water", "available": true, "tick": 5 }
+      ],
+      "nearbyEntities": [
+        {
+          "entityId": "deer-2",
+          "archetypeId": "deer",
+          "locationId": "forest-stream",
+          "visible": true,
+          "presentationArchetype": "deer",
+          "activityHint": "drinking",
+          "animationSemantic": "drink-idle",
+          "audioSemantic": null,
+          "movementSemantic": null,
+          "movementTargetLocationId": null,
+          "groupId": "deer-herd-1"
+        }
+      ],
+      "encounterOpportunities": [],
+      "nearbyDestinations": [
+        { "locationId": "forest-clearing", "reachable": true, "viaRouteId": null, "routeTraversable": null },
+        { "locationId": "forest-pond", "reachable": true, "viaRouteId": null, "routeTraversable": null }
+      ],
+      "routeStates": [],
+      "canonicalPresence": [],
+      "rememberedConsequences": [],
+      "presentationHints": [],
+      "visitor": { "userId": "dev-inspector", "hasVisitedBefore": true, "meaningfulEncounterCount": 0, "reflectionCount": 0 }
+    },
+    {
+      "worldId": "living-forest-fixture",
+      "locationId": "forest-pond",
+      "tick": 5,
+      "season": { "id": "drought", "name": "Drought" },
+      "region": {
+        "locationId": "forest-pond",
+        "name": "Pond",
+        "spatialNode": {
+          "id": "forest-pond",
+          "parentId": "forest-clearing",
+          "role": "resource-edge",
+          "transform": { "position": { "x": -350, "y": 250, "z": 0 } },
+          "bounds": { "radius": 20 },
+          "tags": ["wetland"]
+        },
+        "environment": {
+          "atmosphere": { "semantic": "dry-wetland-drought", "temperatureBand": "high", "illuminationSemantic": "midday-bright" },
+          "water": { "semantic": "receding-pond", "levelBand": "low" },
+          "vegetation": { "semantic": "wetland-drawdown", "densityBand": "low" },
+          "sensoryCues": [{ "channel": "ambientAudio", "semantic": "still-water-ambient" }]
+        },
+        "entities": [
+          {
+            "entityId": "deer-1",
+            "archetypeId": "deer",
+            "locationId": "forest-pond",
+            "visible": true,
+            "presentationArchetype": "deer",
+            "activityHint": "drinking",
+            "animationSemantic": "drink-idle",
+            "audioSemantic": null,
+            "movementSemantic": null,
+            "movementTargetLocationId": null,
+            "groupId": "deer-herd-1"
+          }
+        ],
+        "encounters": []
+      },
+      "patchState": {
+        "patchId": "patch-forest-p03",
+        "tick": 5,
+        "vegetationCondition": "low",
+        "hydrologyCondition": "low",
+        "resourceAvailability": ["water"],
+        "occupancyLevel": "RESTING",
+        "presentEntityIds": ["deer-1"],
+        "presentGroupIds": ["deer-herd-1"],
+        "movementPermeability": 1,
+        "ecologicalPressure": 0
+      },
+      "territoryPressure": null,
+      "dayPhase": "MIDDAY",
+      "occupancy": {
+        "locationId": "forest-pond",
+        "tick": 5,
+        "presentEntityIds": ["deer-1"],
+        "presentGroupIds": ["deer-herd-1"],
+        "entityCountsByArchetype": { "deer": 1 },
+        "activityMix": { "DRINK": 1 },
+        "occupancyLevel": "RESTING"
+      },
+      "groupRoutineIntents": [
+        { "groupId": "deer-herd-1", "intent": "MOVE_TO_RESOURCE", "targetLocationId": "forest-pond", "tick": 5 }
+      ],
+      "resourceOpportunities": [
+        { "locationId": "forest-pond", "category": "water", "available": true, "tick": 5 }
+      ],
+      "nearbyEntities": [
+        {
+          "entityId": "deer-1",
+          "archetypeId": "deer",
+          "locationId": "forest-pond",
+          "visible": true,
+          "presentationArchetype": "deer",
+          "activityHint": "drinking",
+          "animationSemantic": "drink-idle",
+          "audioSemantic": null,
+          "movementSemantic": null,
+          "movementTargetLocationId": null,
+          "groupId": "deer-herd-1"
+        }
+      ],
+      "encounterOpportunities": [],
+      "nearbyDestinations": [
+        { "locationId": "forest-clearing", "reachable": true, "viaRouteId": null, "routeTraversable": null },
+        { "locationId": "forest-stream", "reachable": true, "viaRouteId": null, "routeTraversable": null }
+      ],
+      "routeStates": [],
+      "canonicalPresence": [],
+      "rememberedConsequences": [
+        {
+          "id": "hm-0002",
+          "worldId": "living-forest-fixture",
+          "locationId": "forest-pond",
+          "tick": 5,
+          "category": "memory_directed_relocation",
+          "detail": { "note": "deer-1 returned to a previously-known resource location from seeded memory, not the raw deterministic default" },
+          "provenance": {
+            "derivedFromEventIds": [],
+            "derivationRule": "seeded-prior-history",
+            "causalReferences": [{ "kind": "memory", "ref": "PREVIOUS_RESOURCE_LOCATION" }]
+          }
+        }
+      ],
+      "presentationHints": [],
+      "visitor": { "userId": "dev-inspector", "hasVisitedBefore": true, "meaningfulEncounterCount": 0, "reflectionCount": 0 }
+    }
+  ],
+  "recentWorldChanges": [
+    {
+      "id": "we-f-0001",
+      "worldId": "living-forest-fixture",
+      "tick": 3,
+      "category": "SEASON_TRANSITION",
+      "locationId": null,
+      "participantEntityIds": [],
+      "causalReferences": [{ "kind": "season", "ref": "drought" }],
+      "consequences": [],
+      "significance": "LANDMARK",
+      "retentionTier": "LANDMARK",
+      "provenance": {
+        "derivedFromEventIds": [],
+        "derivationRule": "season-schedule-advance",
+        "causalReferences": [{ "kind": "season", "ref": "drought" }]
+      },
+      "occurredAt": "2026-08-10T06:00:03.000Z"
+    },
+    {
+      "id": "we-f-0002",
+      "worldId": "living-forest-fixture",
+      "tick": 4,
+      "category": "POPULATION_MOVEMENT",
+      "locationId": "forest-clearing",
+      "participantEntityIds": ["deer-1", "deer-2"],
+      "causalReferences": [{ "kind": "need", "ref": "water" }],
+      "consequences": [
+        { "type": "HISTORICAL_MARKER", "targetEntityId": null, "targetGroupId": "deer-herd-1", "targetLocationId": "forest-clearing", "detail": { "note": "herd dispersed from the clearing toward water" } }
+      ],
+      "significance": "MEANINGFUL",
+      "retentionTier": "DURABLE",
+      "provenance": {
+        "derivedFromEventIds": [],
+        "derivationRule": "population-tick-delta",
+        "causalReferences": [{ "kind": "need", "ref": "water" }]
+      },
+      "occurredAt": "2026-08-10T06:00:04.000Z"
+    }
+  ],
+  "embodiment": {
+    "worldId": "living-forest-fixture",
+    "worldVersion": 1,
+    "simulationTick": 5,
+    "season": { "id": "drought", "name": "Drought" },
+    "current": {
+      "locationId": "forest-clearing",
+      "name": "Clearing",
+      "spatialNode": {
+        "id": "forest-clearing",
+        "parentId": null,
+        "role": "hub",
+        "transform": { "position": { "x": 0, "y": 0, "z": 0 } },
+        "bounds": { "radius": 30 },
+        "tags": ["clearing"]
+      },
+      "environment": {
+        "atmosphere": { "semantic": "dry-clearing-drought", "temperatureBand": "high", "illuminationSemantic": "midday-bright" },
+        "water": { "semantic": "none", "levelBand": "low" },
+        "vegetation": { "semantic": "dry-clearing-grass", "densityBand": "low" },
+        "sensoryCues": [{ "channel": "ambientAudio", "semantic": "dry-wind-ambient" }]
+      },
+      "entities": [],
+      "encounters": []
+    },
+    "reachable": [
+      {
+        "locationId": "forest-stream",
+        "name": "Stream",
+        "spatialNode": {
+          "id": "forest-stream",
+          "parentId": "forest-clearing",
+          "role": "resource-edge",
+          "transform": { "position": { "x": 400, "y": 200, "z": 0 } },
+          "bounds": { "radius": 20 },
+          "tags": ["riverbank"]
+        },
+        "environment": {
+          "atmosphere": { "semantic": "dry-streambank-drought", "temperatureBand": "high", "illuminationSemantic": "midday-bright" },
+          "water": { "semantic": "low-flow-stream", "levelBand": "low" },
+          "vegetation": { "semantic": "sparse-streambank", "densityBand": "low" },
+          "sensoryCues": [{ "channel": "ambientAudio", "semantic": "thin-water-trickle" }]
+        },
+        "entities": [
+          {
+            "entityId": "deer-2",
+            "archetypeId": "deer",
+            "locationId": "forest-stream",
+            "visible": true,
+            "presentationArchetype": "deer",
+            "activityHint": "drinking",
+            "animationSemantic": "drink-idle",
+            "audioSemantic": null,
+            "movementSemantic": null,
+            "movementTargetLocationId": null,
+            "groupId": "deer-herd-1"
+          }
+        ],
+        "encounters": []
+      },
+      {
+        "locationId": "forest-pond",
+        "name": "Pond",
+        "spatialNode": {
+          "id": "forest-pond",
+          "parentId": "forest-clearing",
+          "role": "resource-edge",
+          "transform": { "position": { "x": -350, "y": 250, "z": 0 } },
+          "bounds": { "radius": 20 },
+          "tags": ["wetland"]
+        },
+        "environment": {
+          "atmosphere": { "semantic": "dry-wetland-drought", "temperatureBand": "high", "illuminationSemantic": "midday-bright" },
+          "water": { "semantic": "receding-pond", "levelBand": "low" },
+          "vegetation": { "semantic": "wetland-drawdown", "densityBand": "low" },
+          "sensoryCues": [{ "channel": "ambientAudio", "semantic": "still-water-ambient" }]
+        },
+        "entities": [
+          {
+            "entityId": "deer-1",
+            "archetypeId": "deer",
+            "locationId": "forest-pond",
+            "visible": true,
+            "presentationArchetype": "deer",
+            "activityHint": "drinking",
+            "animationSemantic": "drink-idle",
+            "audioSemantic": null,
+            "movementSemantic": null,
+            "movementTargetLocationId": null,
+            "groupId": "deer-herd-1"
+          }
+        ],
+        "encounters": []
+      }
+    ],
+    "transitions": [
+      { "toLocationId": "forest-stream", "affordance": "gradual-emergence" },
+      { "toLocationId": "forest-pond", "affordance": "gradual-emergence" }
+    ],
+    "visitorContext": {
+      "userId": "dev-inspector",
+      "lastLocationId": "forest-clearing",
+      "meaningfulEncounterCount": 0,
+      "reflectionCount": 0
+    },
+    "protectedNarrative": {
+      "worldId": "living-forest-fixture",
+      "episodeRef": null,
+      "sceneRef": null,
+      "resolved": false
+    },
+    "generatedAt": "2026-08-10T06:00:05.000Z",
+    "provenance": {
+      "worldArtifactSpecId": "STK-CAN-999",
+      "experienceArtifactSpecId": "STK-CAN-999",
+      "systemsArtifactSpecId": "STK-CAN-999",
+      "canonDocIds": ["STK-CAN-999"]
+    }
+  }
+}

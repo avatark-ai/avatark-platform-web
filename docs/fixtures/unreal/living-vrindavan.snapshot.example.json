@@ -1,0 +1,621 @@
+{
+  "worldId": "living-vrindavan",
+  "userId": "dev-inspector",
+  "generatedAt": "2026-08-11T12:00:00.000Z",
+  "suggestedStage": "RECOGNITION_OF_CHANGE",
+  "arrival": {
+    "locationId": "yamuna",
+    "reason": "RETURNING_TO_PRIOR_PLACE",
+    "isFirstEverVisit": false,
+    "priorLocationId": "vrindavan-entry",
+    "worldChangedSinceLastVisit": true
+  },
+  "orientation": {
+    "worldId": "living-vrindavan",
+    "userId": "dev-inspector",
+    "generatedAt": "2026-08-11T12:00:00.000Z",
+    "whereAmI": {
+      "locationId": "yamuna",
+      "name": "Yamuna",
+      "season": { "id": "vasanta", "name": "Vasanta" },
+      "dayPhase": "MIDDAY"
+    },
+    "whatIsAroundMe": {
+      "nearbyEntityCount": 2,
+      "occupancyLevel": "ACTIVE",
+      "presentationHints": [
+        { "kind": "entity-archetype", "id": "avatark-population-cow", "label": "Cows at the riverbank" }
+      ]
+    },
+    "whatIsHappening": {
+      "encounterOpportunityCount": 1,
+      "activeCanonicalPresence": [],
+      "groupRoutineIntentCount": 0
+    },
+    "whereCanIGo": [
+      { "locationId": "vrindavan-entry", "reachable": true, "viaRouteId": null, "routeTraversable": null },
+      { "locationId": "kadamba-grove", "reachable": true, "viaRouteId": null, "routeTraversable": null },
+      { "locationId": "govardhan-path", "reachable": true, "viaRouteId": "route-govardhan-path", "routeTraversable": true }
+    ],
+    "whatHasChanged": {
+      "sinceLastVisit": true,
+      "facts": [
+        { "type": "season_changed", "sourceCategories": ["SEASON_TRANSITION"], "occurrenceCount": 1 },
+        { "type": "population_relocated", "sourceCategories": ["POPULATION_MOVEMENT"], "occurrenceCount": 2 }
+      ]
+    },
+    "arrival": {
+      "locationId": "yamuna",
+      "reason": "RETURNING_TO_PRIOR_PLACE",
+      "isFirstEverVisit": false,
+      "priorLocationId": "vrindavan-entry",
+      "worldChangedSinceLastVisit": true
+    }
+  },
+  "place": {
+    "worldId": "living-vrindavan",
+    "locationId": "yamuna",
+    "tick": 42,
+    "season": { "id": "vasanta", "name": "Vasanta" },
+    "region": {
+      "locationId": "yamuna",
+      "name": "Yamuna",
+      "spatialNode": {
+        "id": "yamuna",
+        "parentId": null,
+        "role": "hub",
+        "transform": { "position": { "x": 0, "y": 0, "z": 0 } },
+        "bounds": { "radius": 40 },
+        "tags": ["riverbank", "hub", "reflection-capable"]
+      },
+      "environment": {
+        "atmosphere": { "semantic": "warm-flowering-vasanta", "temperatureBand": "moderate", "illuminationSemantic": "midday-bright" },
+        "water": { "semantic": "flowing-riverbank", "levelBand": "moderate" },
+        "vegetation": { "semantic": "riverbank-reeds", "densityBand": "moderate" },
+        "sensoryCues": [
+          { "channel": "ambientAudio", "semantic": "river-flow-ambient" },
+          { "channel": "visual", "semantic": "flowering-drift" }
+        ]
+      },
+      "entities": [
+        {
+          "entityId": "avatark-population-cow-1",
+          "archetypeId": "avatark-population-cow",
+          "locationId": "yamuna",
+          "visible": true,
+          "presentationArchetype": "cow",
+          "activityHint": "drinking",
+          "animationSemantic": "drink-idle",
+          "audioSemantic": null,
+          "movementSemantic": null,
+          "movementTargetLocationId": null,
+          "groupId": "avatark-population-cow-herd"
+        },
+        {
+          "entityId": "avatark-population-cow-2",
+          "archetypeId": "avatark-population-cow",
+          "locationId": "yamuna",
+          "visible": true,
+          "presentationArchetype": "cow",
+          "activityHint": "grazing",
+          "animationSemantic": "graze-idle",
+          "audioSemantic": null,
+          "movementSemantic": null,
+          "movementTargetLocationId": null,
+          "groupId": "avatark-population-cow-herd"
+        }
+      ],
+      "encounters": [
+        { "ruleId": "yamuna-flowering-reflection", "locationId": "yamuna", "category": "reflective", "interactionAffordance": "begin-reflection" },
+        { "ruleId": "yamuna-narrative-gate", "locationId": "yamuna", "category": "narrative-protected", "interactionAffordance": "observe" }
+      ]
+    },
+    "patchState": {
+      "patchId": "patch-yamuna",
+      "tick": 42,
+      "vegetationCondition": "moderate",
+      "hydrologyCondition": "moderate",
+      "resourceAvailability": ["water"],
+      "occupancyLevel": "ACTIVE",
+      "presentEntityIds": ["avatark-population-cow-1", "avatark-population-cow-2"],
+      "presentGroupIds": ["avatark-population-cow-herd"],
+      "movementPermeability": 1,
+      "ecologicalPressure": 0
+    },
+    "territoryPressure": null,
+    "dayPhase": "MIDDAY",
+    "occupancy": {
+      "locationId": "yamuna",
+      "tick": 42,
+      "presentEntityIds": ["avatark-population-cow-1", "avatark-population-cow-2"],
+      "presentGroupIds": ["avatark-population-cow-herd"],
+      "entityCountsByArchetype": { "avatark-population-cow": 2 },
+      "activityMix": { "DRINK": 0.5, "GRAZE": 0.5 },
+      "occupancyLevel": "ACTIVE"
+    },
+    "groupRoutineIntents": [
+      { "groupId": "avatark-population-cow-herd", "intent": "OCCUPY_PLACE", "targetLocationId": "yamuna", "tick": 42 }
+    ],
+    "resourceOpportunities": [
+      { "locationId": "yamuna", "category": "water", "available": true, "tick": 42 }
+    ],
+    "nearbyEntities": [
+      {
+        "entityId": "avatark-population-cow-1",
+        "archetypeId": "avatark-population-cow",
+        "locationId": "yamuna",
+        "visible": true,
+        "presentationArchetype": "cow",
+        "activityHint": "drinking",
+        "animationSemantic": "drink-idle",
+        "audioSemantic": null,
+        "movementSemantic": null,
+        "movementTargetLocationId": null,
+        "groupId": "avatark-population-cow-herd"
+      },
+      {
+        "entityId": "avatark-population-cow-2",
+        "archetypeId": "avatark-population-cow",
+        "locationId": "yamuna",
+        "visible": true,
+        "presentationArchetype": "cow",
+        "activityHint": "grazing",
+        "animationSemantic": "graze-idle",
+        "audioSemantic": null,
+        "movementSemantic": null,
+        "movementTargetLocationId": null,
+        "groupId": "avatark-population-cow-herd"
+      }
+    ],
+    "encounterOpportunities": [
+      { "ruleId": "yamuna-flowering-reflection", "locationId": "yamuna", "category": "reflective", "interactionAffordance": "begin-reflection" },
+      { "ruleId": "yamuna-narrative-gate", "locationId": "yamuna", "category": "narrative-protected", "interactionAffordance": "observe" }
+    ],
+    "nearbyDestinations": [
+      { "locationId": "vrindavan-entry", "reachable": true, "viaRouteId": null, "routeTraversable": null },
+      { "locationId": "kadamba-grove", "reachable": true, "viaRouteId": null, "routeTraversable": null },
+      { "locationId": "govardhan-path", "reachable": true, "viaRouteId": "route-govardhan-path", "routeTraversable": true }
+    ],
+    "routeStates": [
+      { "routeId": "route-govardhan-path", "tick": 42, "traversable": true }
+    ],
+    "canonicalPresence": [],
+    "rememberedConsequences": [],
+    "presentationHints": [],
+    "visitor": {
+      "userId": "dev-inspector",
+      "hasVisitedBefore": true,
+      "meaningfulEncounterCount": 1,
+      "reflectionCount": 1
+    }
+  },
+  "nearbyPlaces": [
+    {
+      "worldId": "living-vrindavan",
+      "locationId": "vrindavan-entry",
+      "tick": 42,
+      "season": { "id": "vasanta", "name": "Vasanta" },
+      "region": {
+        "locationId": "vrindavan-entry",
+        "name": "Vrindavan Entry",
+        "spatialNode": {
+          "id": "vrindavan-entry",
+          "parentId": "yamuna",
+          "role": "threshold",
+          "transform": { "position": { "x": -120, "y": 0, "z": 0 } },
+          "bounds": { "radius": 30 },
+          "tags": ["threshold"]
+        },
+        "environment": {
+          "atmosphere": { "semantic": "warm-flowering-vasanta", "temperatureBand": "moderate", "illuminationSemantic": "midday-bright" },
+          "water": { "semantic": "none", "levelBand": "low" },
+          "vegetation": { "semantic": "path-corridor-grass", "densityBand": "low" },
+          "sensoryCues": [{ "channel": "ambientAudio", "semantic": "distant-river-ambient" }]
+        },
+        "entities": [],
+        "encounters": []
+      },
+      "patchState": {
+        "patchId": "patch-vrindavan-entry",
+        "tick": 42,
+        "vegetationCondition": "moderate",
+        "hydrologyCondition": "low",
+        "resourceAvailability": [],
+        "occupancyLevel": "QUIET",
+        "presentEntityIds": [],
+        "presentGroupIds": [],
+        "movementPermeability": 1,
+        "ecologicalPressure": 0
+      },
+      "territoryPressure": null,
+      "dayPhase": "MIDDAY",
+      "occupancy": {
+        "locationId": "vrindavan-entry",
+        "tick": 42,
+        "presentEntityIds": [],
+        "presentGroupIds": [],
+        "entityCountsByArchetype": {},
+        "activityMix": {},
+        "occupancyLevel": "QUIET"
+      },
+      "groupRoutineIntents": [],
+      "resourceOpportunities": [],
+      "nearbyEntities": [],
+      "encounterOpportunities": [],
+      "nearbyDestinations": [
+        { "locationId": "yamuna", "reachable": true, "viaRouteId": null, "routeTraversable": null }
+      ],
+      "routeStates": [],
+      "canonicalPresence": [],
+      "rememberedConsequences": [],
+      "presentationHints": [],
+      "visitor": { "userId": "dev-inspector", "hasVisitedBefore": true, "meaningfulEncounterCount": 0, "reflectionCount": 0 }
+    },
+    {
+      "worldId": "living-vrindavan",
+      "locationId": "kadamba-grove",
+      "tick": 42,
+      "season": { "id": "vasanta", "name": "Vasanta" },
+      "region": {
+        "locationId": "kadamba-grove",
+        "name": "Kadamba Grove",
+        "spatialNode": {
+          "id": "kadamba-grove",
+          "parentId": "yamuna",
+          "role": "grove",
+          "transform": { "position": { "x": 80, "y": 60, "z": 0 } },
+          "bounds": { "radius": 35 },
+          "tags": ["grove-interior"]
+        },
+        "environment": {
+          "atmosphere": { "semantic": "warm-flowering-vasanta", "temperatureBand": "moderate", "illuminationSemantic": "dappled-shade" },
+          "water": { "semantic": "none", "levelBand": "low" },
+          "vegetation": { "semantic": "dense-grove-canopy", "densityBand": "high" },
+          "sensoryCues": [{ "channel": "ambientAudio", "semantic": "bird-flock-ambient" }]
+        },
+        "entities": [
+          {
+            "entityId": "avatark-population-bird-flock-1",
+            "archetypeId": "avatark-population-bird-flock",
+            "locationId": "kadamba-grove",
+            "visible": true,
+            "presentationArchetype": "bird-flock",
+            "activityHint": "foraging",
+            "animationSemantic": "flock-forage",
+            "audioSemantic": "bird-calls",
+            "movementSemantic": null,
+            "movementTargetLocationId": null,
+            "groupId": "avatark-population-bird-flock"
+          }
+        ],
+        "encounters": [
+          { "ruleId": "kadamba-grove-ambient-presence", "locationId": "kadamba-grove", "category": "ambient", "interactionAffordance": "observe" }
+        ]
+      },
+      "patchState": {
+        "patchId": "patch-kadamba-grove",
+        "tick": 42,
+        "vegetationCondition": "high",
+        "hydrologyCondition": "moderate",
+        "resourceAvailability": ["shelter", "gathering"],
+        "occupancyLevel": "ACTIVE",
+        "presentEntityIds": ["avatark-population-bird-flock-1"],
+        "presentGroupIds": ["avatark-population-bird-flock"],
+        "movementPermeability": 1,
+        "ecologicalPressure": 0
+      },
+      "territoryPressure": null,
+      "dayPhase": "MIDDAY",
+      "occupancy": {
+        "locationId": "kadamba-grove",
+        "tick": 42,
+        "presentEntityIds": ["avatark-population-bird-flock-1"],
+        "presentGroupIds": ["avatark-population-bird-flock"],
+        "entityCountsByArchetype": { "avatark-population-bird-flock": 1 },
+        "activityMix": { "SOCIALIZE": 1 },
+        "occupancyLevel": "ACTIVE"
+      },
+      "groupRoutineIntents": [
+        { "groupId": "avatark-population-bird-flock", "intent": "GATHER", "targetLocationId": "kadamba-grove", "tick": 42 }
+      ],
+      "resourceOpportunities": [
+        { "locationId": "kadamba-grove", "category": "shelter", "available": true, "tick": 42 },
+        { "locationId": "kadamba-grove", "category": "gathering", "available": true, "tick": 42 }
+      ],
+      "nearbyEntities": [
+        {
+          "entityId": "avatark-population-bird-flock-1",
+          "archetypeId": "avatark-population-bird-flock",
+          "locationId": "kadamba-grove",
+          "visible": true,
+          "presentationArchetype": "bird-flock",
+          "activityHint": "foraging",
+          "animationSemantic": "flock-forage",
+          "audioSemantic": "bird-calls",
+          "movementSemantic": null,
+          "movementTargetLocationId": null,
+          "groupId": "avatark-population-bird-flock"
+        }
+      ],
+      "encounterOpportunities": [
+        { "ruleId": "kadamba-grove-ambient-presence", "locationId": "kadamba-grove", "category": "ambient", "interactionAffordance": "observe" }
+      ],
+      "nearbyDestinations": [
+        { "locationId": "yamuna", "reachable": true, "viaRouteId": null, "routeTraversable": null }
+      ],
+      "routeStates": [],
+      "canonicalPresence": [],
+      "rememberedConsequences": [],
+      "presentationHints": [],
+      "visitor": { "userId": "dev-inspector", "hasVisitedBefore": false, "meaningfulEncounterCount": 0, "reflectionCount": 0 }
+    },
+    {
+      "worldId": "living-vrindavan",
+      "locationId": "govardhan-path",
+      "tick": 42,
+      "season": { "id": "vasanta", "name": "Vasanta" },
+      "region": {
+        "locationId": "govardhan-path",
+        "name": "Govardhan Path",
+        "spatialNode": {
+          "id": "govardhan-path",
+          "parentId": "yamuna",
+          "role": "corridor",
+          "transform": { "position": { "x": 60, "y": -80, "z": 0 } },
+          "bounds": { "radius": 50 },
+          "tags": ["path-corridor"]
+        },
+        "environment": {
+          "atmosphere": { "semantic": "warm-flowering-vasanta", "temperatureBand": "moderate", "illuminationSemantic": "midday-bright" },
+          "water": { "semantic": "none", "levelBand": "low" },
+          "vegetation": { "semantic": "open-grass-corridor", "densityBand": "low" },
+          "sensoryCues": [{ "channel": "ambientAudio", "semantic": "open-air-ambient" }]
+        },
+        "entities": [],
+        "encounters": []
+      },
+      "patchState": {
+        "patchId": "patch-govardhan-path",
+        "tick": 42,
+        "vegetationCondition": "low",
+        "hydrologyCondition": "low",
+        "resourceAvailability": ["corridor"],
+        "occupancyLevel": "QUIET",
+        "presentEntityIds": [],
+        "presentGroupIds": [],
+        "movementPermeability": 1,
+        "ecologicalPressure": 0
+      },
+      "territoryPressure": null,
+      "dayPhase": "MIDDAY",
+      "occupancy": {
+        "locationId": "govardhan-path",
+        "tick": 42,
+        "presentEntityIds": [],
+        "presentGroupIds": [],
+        "entityCountsByArchetype": {},
+        "activityMix": {},
+        "occupancyLevel": "QUIET"
+      },
+      "groupRoutineIntents": [],
+      "resourceOpportunities": [
+        { "locationId": "govardhan-path", "category": "corridor", "available": true, "tick": 42 }
+      ],
+      "nearbyEntities": [],
+      "encounterOpportunities": [],
+      "nearbyDestinations": [
+        { "locationId": "yamuna", "reachable": true, "viaRouteId": "route-govardhan-path", "routeTraversable": true }
+      ],
+      "routeStates": [
+        { "routeId": "route-govardhan-path", "tick": 42, "traversable": true }
+      ],
+      "canonicalPresence": [
+        { "canonicalEventId": "canonical-event-govardhan-lifting", "status": "DORMANT", "isApprovedCanon": false }
+      ],
+      "rememberedConsequences": [],
+      "presentationHints": [],
+      "visitor": { "userId": "dev-inspector", "hasVisitedBefore": false, "meaningfulEncounterCount": 0, "reflectionCount": 0 }
+    }
+  ],
+  "recentWorldChanges": [
+    {
+      "id": "we-0001",
+      "worldId": "living-vrindavan",
+      "tick": 40,
+      "category": "SEASON_TRANSITION",
+      "locationId": null,
+      "participantEntityIds": [],
+      "causalReferences": [{ "kind": "season", "ref": "vasanta" }],
+      "consequences": [],
+      "significance": "LANDMARK",
+      "retentionTier": "LANDMARK",
+      "provenance": {
+        "derivedFromEventIds": [],
+        "derivationRule": "season-schedule-advance",
+        "causalReferences": [{ "kind": "season", "ref": "vasanta" }]
+      },
+      "occurredAt": "2026-08-11T11:00:00.000Z"
+    },
+    {
+      "id": "we-0002",
+      "worldId": "living-vrindavan",
+      "tick": 41,
+      "category": "POPULATION_MOVEMENT",
+      "locationId": "yamuna",
+      "participantEntityIds": ["avatark-population-cow-1", "avatark-population-cow-2"],
+      "causalReferences": [{ "kind": "need", "ref": "thirst" }],
+      "consequences": [
+        { "type": "HISTORICAL_MARKER", "targetEntityId": null, "targetGroupId": "avatark-population-cow-herd", "targetLocationId": "yamuna", "detail": { "note": "herd returned to Yamuna" } }
+      ],
+      "significance": "MEANINGFUL",
+      "retentionTier": "DURABLE",
+      "provenance": {
+        "derivedFromEventIds": [],
+        "derivationRule": "population-tick-delta",
+        "causalReferences": [{ "kind": "need", "ref": "thirst" }]
+      },
+      "occurredAt": "2026-08-11T11:30:00.000Z"
+    }
+  ],
+  "embodiment": {
+    "worldId": "living-vrindavan",
+    "worldVersion": 1,
+    "simulationTick": 42,
+    "season": { "id": "vasanta", "name": "Vasanta" },
+    "current": {
+      "locationId": "yamuna",
+      "name": "Yamuna",
+      "spatialNode": {
+        "id": "yamuna",
+        "parentId": null,
+        "role": "hub",
+        "transform": { "position": { "x": 0, "y": 0, "z": 0 } },
+        "bounds": { "radius": 40 },
+        "tags": ["riverbank", "hub", "reflection-capable"]
+      },
+      "environment": {
+        "atmosphere": { "semantic": "warm-flowering-vasanta", "temperatureBand": "moderate", "illuminationSemantic": "midday-bright" },
+        "water": { "semantic": "flowing-riverbank", "levelBand": "moderate" },
+        "vegetation": { "semantic": "riverbank-reeds", "densityBand": "moderate" },
+        "sensoryCues": [
+          { "channel": "ambientAudio", "semantic": "river-flow-ambient" },
+          { "channel": "visual", "semantic": "flowering-drift" }
+        ]
+      },
+      "entities": [
+        {
+          "entityId": "avatark-population-cow-1",
+          "archetypeId": "avatark-population-cow",
+          "locationId": "yamuna",
+          "visible": true,
+          "presentationArchetype": "cow",
+          "activityHint": "drinking",
+          "animationSemantic": "drink-idle",
+          "audioSemantic": null,
+          "movementSemantic": null,
+          "movementTargetLocationId": null,
+          "groupId": "avatark-population-cow-herd"
+        },
+        {
+          "entityId": "avatark-population-cow-2",
+          "archetypeId": "avatark-population-cow",
+          "locationId": "yamuna",
+          "visible": true,
+          "presentationArchetype": "cow",
+          "activityHint": "grazing",
+          "animationSemantic": "graze-idle",
+          "audioSemantic": null,
+          "movementSemantic": null,
+          "movementTargetLocationId": null,
+          "groupId": "avatark-population-cow-herd"
+        }
+      ],
+      "encounters": [
+        { "ruleId": "yamuna-flowering-reflection", "locationId": "yamuna", "category": "reflective", "interactionAffordance": "begin-reflection" },
+        { "ruleId": "yamuna-narrative-gate", "locationId": "yamuna", "category": "narrative-protected", "interactionAffordance": "observe" }
+      ]
+    },
+    "reachable": [
+      {
+        "locationId": "vrindavan-entry",
+        "name": "Vrindavan Entry",
+        "spatialNode": {
+          "id": "vrindavan-entry",
+          "parentId": "yamuna",
+          "role": "threshold",
+          "transform": { "position": { "x": -120, "y": 0, "z": 0 } },
+          "bounds": { "radius": 30 },
+          "tags": ["threshold"]
+        },
+        "environment": {
+          "atmosphere": { "semantic": "warm-flowering-vasanta", "temperatureBand": "moderate", "illuminationSemantic": "midday-bright" },
+          "water": { "semantic": "none", "levelBand": "low" },
+          "vegetation": { "semantic": "path-corridor-grass", "densityBand": "low" },
+          "sensoryCues": [{ "channel": "ambientAudio", "semantic": "distant-river-ambient" }]
+        },
+        "entities": [],
+        "encounters": []
+      },
+      {
+        "locationId": "kadamba-grove",
+        "name": "Kadamba Grove",
+        "spatialNode": {
+          "id": "kadamba-grove",
+          "parentId": "yamuna",
+          "role": "grove",
+          "transform": { "position": { "x": 80, "y": 60, "z": 0 } },
+          "bounds": { "radius": 35 },
+          "tags": ["grove-interior"]
+        },
+        "environment": {
+          "atmosphere": { "semantic": "warm-flowering-vasanta", "temperatureBand": "moderate", "illuminationSemantic": "dappled-shade" },
+          "water": { "semantic": "none", "levelBand": "low" },
+          "vegetation": { "semantic": "dense-grove-canopy", "densityBand": "high" },
+          "sensoryCues": [{ "channel": "ambientAudio", "semantic": "bird-flock-ambient" }]
+        },
+        "entities": [
+          {
+            "entityId": "avatark-population-bird-flock-1",
+            "archetypeId": "avatark-population-bird-flock",
+            "locationId": "kadamba-grove",
+            "visible": true,
+            "presentationArchetype": "bird-flock",
+            "activityHint": "foraging",
+            "animationSemantic": "flock-forage",
+            "audioSemantic": "bird-calls",
+            "movementSemantic": null,
+            "movementTargetLocationId": null,
+            "groupId": "avatark-population-bird-flock"
+          }
+        ],
+        "encounters": [
+          { "ruleId": "kadamba-grove-ambient-presence", "locationId": "kadamba-grove", "category": "ambient", "interactionAffordance": "observe" }
+        ]
+      },
+      {
+        "locationId": "govardhan-path",
+        "name": "Govardhan Path",
+        "spatialNode": {
+          "id": "govardhan-path",
+          "parentId": "yamuna",
+          "role": "corridor",
+          "transform": { "position": { "x": 60, "y": -80, "z": 0 } },
+          "bounds": { "radius": 50 },
+          "tags": ["path-corridor"]
+        },
+        "environment": {
+          "atmosphere": { "semantic": "warm-flowering-vasanta", "temperatureBand": "moderate", "illuminationSemantic": "midday-bright" },
+          "water": { "semantic": "none", "levelBand": "low" },
+          "vegetation": { "semantic": "open-grass-corridor", "densityBand": "low" },
+          "sensoryCues": [{ "channel": "ambientAudio", "semantic": "open-air-ambient" }]
+        },
+        "entities": [],
+        "encounters": []
+      }
+    ],
+    "transitions": [
+      { "toLocationId": "vrindavan-entry", "affordance": "threshold-crossing" },
+      { "toLocationId": "kadamba-grove", "affordance": "gradual-emergence" },
+      { "toLocationId": "govardhan-path", "affordance": "branching-choice" }
+    ],
+    "visitorContext": {
+      "userId": "dev-inspector",
+      "lastLocationId": "vrindavan-entry",
+      "meaningfulEncounterCount": 1,
+      "reflectionCount": 1
+    },
+    "protectedNarrative": {
+      "worldId": "living-vrindavan",
+      "episodeRef": null,
+      "sceneRef": null,
+      "resolved": false
+    },
+    "generatedAt": "2026-08-11T12:00:00.000Z",
+    "provenance": {
+      "worldArtifactSpecId": "STK-CAN-001",
+      "experienceArtifactSpecId": "STK-SPEC-006",
+      "systemsArtifactSpecId": "STK-CAN-006",
+      "canonDocIds": ["STK-CAN-001", "STK-CAN-006", "STK-SPEC-006"]
+    }
+  }
+}
