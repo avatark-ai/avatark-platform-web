@@ -1,0 +1,44 @@
+{
+  "_fixtureNote": "Minimal fragment derived from the certified LS-KERNEL-01 Narrative IR fixture in studiok-specifications (living-symphony/ls-kernel-01.narrative.json), trimmed to only the entities/event/rules needed to test DELIBERATE_NON_ACTION. This is a test fixture, not a canonical artifact -- 'digest' below is a fixture placeholder, never a real certified SHA-256 value, and must never be treated as one.",
+  "provenance": {
+    "sourceId": "LS-KERNEL-01",
+    "digest": "test-fixture-digest-not-canonical",
+    "ruleId": "dwell-reveals-approach",
+    "eventId": "dwell-at-water"
+  },
+  "entities": [
+    { "id": "consumer", "type": "narrative-subject" }
+  ],
+  "events": {
+    "nonAction": {
+      "id": "dwell-at-water",
+      "kind": "NON_ACTION",
+      "subject": "consumer",
+      "actor": "CONSUMER",
+      "time": "visit-1-water-dwell",
+      "evidenceLeft": "INDIRECT"
+    },
+    "mutuallyExclusiveAction": {
+      "id": "action-clears-obstruction",
+      "kind": "ACTION",
+      "subject": "consumer",
+      "actor": "CONSUMER",
+      "time": "visit-1-water-choice",
+      "beforeState": "obstruction-present",
+      "afterState": "obstruction-cleared",
+      "evidenceLeft": "STATE_CHANGE"
+    }
+  },
+  "rules": [
+    {
+      "id": "dwell-reveals-approach",
+      "condition": { "type": "EVENT_KIND_COUNT", "target": "consumer", "params": { "kind": "NON_ACTION", "count": 1 } },
+      "effect": [{ "kind": "RUNTIME_REQUIREMENT", "value": "DELIBERATE_NON_ACTION" }]
+    },
+    {
+      "id": "non-action-unscored",
+      "condition": { "type": "EVENT_KIND_COUNT", "target": "consumer", "params": { "kind": "NON_ACTION", "count": 1 } },
+      "effect": [{ "kind": "RUNTIME_REQUIREMENT", "value": "UNSCORED_EVALUATION" }]
+    }
+  ]
+}
