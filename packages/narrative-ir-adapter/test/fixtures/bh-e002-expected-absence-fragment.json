@@ -1,0 +1,49 @@
+{
+  "_fixtureNote": "Minimal fragment derived from the certified BH-E002 Narrative IR fixture in studiok-specifications (living-symphony/bh-e002.narrative.json), trimmed to only the expectation/events/rule needed to test EXPECTED_STATE_COMPARISON. This is a test fixture, not a canonical artifact -- 'digest' below is a fixture placeholder, never a real certified SHA-256 value, and must never be treated as one.",
+  "provenance": {
+    "sourceId": "BH-E002",
+    "digest": "test-fixture-digest-not-canonical",
+    "ruleId": "meaningful-absence-requires-relational-evidence",
+    "eventId": "occupancy-check-fails"
+  },
+  "entities": [
+    { "id": "the-role-bearing-object", "type": "pattern-object" },
+    { "id": "another-entity", "type": "other-life" }
+  ],
+  "states": {
+    "patternEvidence": [
+      { "id": "object-wear-evidence", "subject": "the-role-bearing-object", "property": "wearPattern", "value": "legible-repeated-use" },
+      { "id": "other-entity-orientation", "subject": "another-entity", "property": "behaviorOrientation", "value": "still-oriented-toward-gap" }
+    ],
+    "actual": { "id": "expected-presence-absent", "subject": "the-role-bearing-object", "property": "occupancy", "value": "absent" }
+  },
+  "expectation": {
+    "id": "occupancy-expectation",
+    "subject": "the-role-bearing-object",
+    "property": "occupancy",
+    "origin": "WORLD_PATTERN",
+    "patternEvidence": ["object-wear-evidence", "other-entity-orientation"],
+    "disconfirmationCount": 1
+  },
+  "events": {
+    "withinWindow": {
+      "id": "occupancy-check-within-window",
+      "kind": "OBSERVATION",
+      "subject": "the-role-bearing-object",
+      "actor": "UNSPECIFIED",
+      "observation": { "target": "occupancy-expectation", "outcome": "DEVIATED", "withinPatternWindow": true }
+    },
+    "fails": {
+      "id": "occupancy-check-fails",
+      "kind": "OBSERVATION",
+      "subject": "the-role-bearing-object",
+      "actor": "UNSPECIFIED",
+      "observation": { "target": "occupancy-expectation", "outcome": "DEVIATED", "withinPatternWindow": false }
+    }
+  },
+  "rule": {
+    "id": "meaningful-absence-requires-relational-evidence",
+    "condition": { "type": "EXPECTATION_STATUS", "target": "occupancy-expectation", "params": { "requireNonEmptyPatternEvidence": true } },
+    "effect": [{ "kind": "RUNTIME_REQUIREMENT", "value": "EXPECTED_STATE_COMPARISON" }]
+  }
+}

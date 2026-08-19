@@ -9,3 +9,10 @@ export type { NonActionEvidence, NonActionQualification } from "./nonActionQuali
 
 export type { EvidenceActor, ObservedEvent, EvidenceCompleteness, EvidenceWindow, DerivationResult } from "./deriveNonActionQualification.ts"
 export { deriveNonActionQualification } from "./deriveNonActionQualification.ts"
+
+export type { ExpectationOrigin, ExpectationReference } from "./expectationReference.ts"
+
+export type { ExpectedAbsenceFact } from "./expectedAbsenceFact.ts"
+
+export type { ObservedOutcome, ExpectationEvaluationContext, ExpectationEvaluationResult } from "./expectationEvaluation.ts"
+export { evaluateExpectation } from "./expectationEvaluation.ts"

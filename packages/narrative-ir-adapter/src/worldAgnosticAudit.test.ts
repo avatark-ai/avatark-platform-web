@@ -19,6 +19,7 @@ const FORBIDDEN_TERMS = [
   "animal",
   "chair",
   "vrindavan",
+  "krishna",
 ]
 
 test("T10: production src/ contains no Living-Symphony-specific vocabulary", () => {
