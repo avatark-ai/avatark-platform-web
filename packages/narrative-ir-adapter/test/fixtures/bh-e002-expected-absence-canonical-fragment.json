@@ -1,0 +1,28 @@
+{
+  "_fixtureNote": "Canonical-schema-shaped fragment, hand-authored against studiok-living-symphony-compiler's schemas/ir/v0/{place-memory,expected-pattern-state,runtime-requirements}.schema.json (IR 0.3.0), covering the same EXPECTED_STATE_COMPARISON scenario as the pre-migration bh-e002-expected-absence-fragment.json (STK-SPEC-007-shaped) fixture -- modeled directly on this repository's own certified fixtures/positive/C-repeated-pattern-gap-perceptible-absence.json shape (three confirmations then a disconfirmed gap). 'digest' below is a fixture placeholder, never a real certified SHA-256 value, and must never be treated as one.",
+  "fixtureId": "r05-bh-e002-canonical",
+  "digest": "test-fixture-digest-not-canonical",
+  "documents": {
+    "place-memory/waiting-hollow": {
+      "irVersion": "0.3.0",
+      "placeId": "place/waiting-hollow",
+      "currentPhysicalState": { "arrangement": "worn-toward-one-spot" },
+      "currentEcologicalState": {},
+      "causalHistory": [],
+      "narrativeMeaning": { "residueClass": "broken-rhythm-residue" },
+      "expectedPatternState": {
+        "irVersion": "0.3.0",
+        "presence": "EXPECTED_BUT_MISSING",
+        "confidence": 0.7,
+        "confirmationSequence": ["CONFIRMED", "CONFIRMED", "CONFIRMED", "DISCONFIRMED"]
+      }
+    },
+    "runtime-requirements/occupancy-pattern": {
+      "irVersion": "0.3.0",
+      "id": "runtime-requirements/occupancy-pattern",
+      "requires": ["EXPECTED_STATE_COMPARISON"]
+    }
+  },
+  "subjectId": "place/waiting-hollow",
+  "property": "occupancy"
+}

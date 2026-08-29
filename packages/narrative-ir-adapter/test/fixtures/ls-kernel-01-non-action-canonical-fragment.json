@@ -1,0 +1,26 @@
+{
+  "_fixtureNote": "Canonical-schema-shaped fragment, hand-authored against studiok-living-symphony-compiler's schemas/ir/v0/{action,runtime-requirements}.schema.json (IR 0.3.0), covering the same DELIBERATE_NON_ACTION scenario as the pre-migration ls-kernel-01-non-action-fragment.json (STK-SPEC-007-shaped) fixture. Not a byte-for-byte port of any single compiler fixture -- authored to exercise this package's canonical translation layer (R05) against a document map shaped exactly like a real compiled fixture (fixtureId, documents:{...}), per LW_COMPILER_R02_ARTIFACT_IDENTITY_CONTRACT.md's identity boundary. 'digest' below is a fixture placeholder, never a real certified SHA-256 value, and must never be treated as one.",
+  "fixtureId": "r05-ls-kernel-01-canonical",
+  "digest": "test-fixture-digest-not-canonical",
+  "documents": {
+    "action/dwell-at-water": {
+      "irVersion": "0.3.0",
+      "id": "action/dwell-at-water",
+      "kind": "NON_ACTION",
+      "verb": "WAIT_DWELL"
+    },
+    "action/clears-obstruction": {
+      "irVersion": "0.3.0",
+      "id": "action/clears-obstruction",
+      "kind": "ACTION",
+      "verb": "CLEAR_OBSTRUCTION"
+    },
+    "runtime-requirements/dwell-reveals-approach": {
+      "irVersion": "0.3.0",
+      "id": "runtime-requirements/dwell-reveals-approach",
+      "requires": ["DELIBERATE_NON_ACTION", "UNSCORED_EVALUATION"]
+    }
+  },
+  "subjectId": "consumer",
+  "contextId": "context-1"
+}

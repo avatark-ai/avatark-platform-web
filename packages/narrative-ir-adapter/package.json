@@ -2,7 +2,7 @@
   "name": "@avatark/narrative-ir-adapter",
   "version": "0.1.0",
   "private": true,
-  "description": "Translation contracts between the canonical Narrative IR (studiok-specifications) and runtime-neutral host contracts. First capability: DELIBERATE_NON_ACTION (ArtifactReference, RuntimeCapabilities, ActionOpportunity, NonActionQualification, deriveNonActionQualification) -- world-agnostic, host-agnostic, persistence-agnostic, zero runtime dependencies.",
+  "description": "Translation contracts between the canonical Narrative IR (avatark-ai/studiok-living-world-compiler, IR 0.3.0) and runtime-neutral host contracts. First capability: DELIBERATE_NON_ACTION (ArtifactReference, RuntimeCapabilities, ActionOpportunity, NonActionQualification, deriveNonActionQualification) -- world-agnostic, host-agnostic, persistence-agnostic, zero runtime dependencies.",
   "exports": {
     ".": {
       "types": "./src/index.ts",

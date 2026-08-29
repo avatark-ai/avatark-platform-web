@@ -16,3 +16,21 @@ export type { ExpectedAbsenceFact } from "./expectedAbsenceFact.ts"
 
 export type { ObservedOutcome, ExpectationEvaluationContext, ExpectationEvaluationResult } from "./expectationEvaluation.ts"
 export { evaluateExpectation } from "./expectationEvaluation.ts"
+
+export type {
+  CanonicalAction,
+  CanonicalEventOrigin,
+  CanonicalExpectedPatternState,
+  CanonicalRuntimeRequirementsDocument,
+  CompiledArtifactIdentity,
+} from "./canonicalNarrativeIR.ts"
+
+export { evidenceActorFromCanonicalEventOrigin } from "./translation/evidenceActorFromCanonical.ts"
+export { artifactReferenceFromCanonical } from "./translation/artifactReferenceFromCanonical.ts"
+export type { CanonicalActionOpportunityContext } from "./translation/actionOpportunityFromCanonical.ts"
+export { actionOpportunityFromCanonicalAction } from "./translation/actionOpportunityFromCanonical.ts"
+export type { CanonicalExpectationContext } from "./translation/expectationReferenceFromCanonical.ts"
+export {
+  disconfirmationCountFromConfirmationSequence,
+  expectationReferenceFromCanonical,
+} from "./translation/expectationReferenceFromCanonical.ts"
