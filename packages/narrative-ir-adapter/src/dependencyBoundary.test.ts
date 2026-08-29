@@ -26,9 +26,29 @@ test("boundary: this package declares zero runtime dependencies", () => {
 // artifactReference.ts); only a real code dependency is forbidden.
 const IMPORT_SPECIFIER = /(?:from\s+|require\()\s*["']([^"']+)["']/g
 
+// R07: walks src/ AND its subdirectories (e.g. src/translation/) -- widened
+// from a top-level-only scan because the pre-existing scan silently never
+// reached src/translation/*.ts (readdirSync is non-recursive; a directory
+// entry doesn't end in ".ts", so it was filtered out with no failure and no
+// signal). Every existing translation/*.ts file already passes this wider
+// scan unchanged; this closes a real coverage gap rather than only guarding
+// this gate's own new file.
+function collectProductionTsFiles(dir: string): string[] {
+  const entries = readdirSync(dir, { withFileTypes: true })
+  const files: string[] = []
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      files.push(...collectProductionTsFiles(path.join(dir, entry.name)).map(f => path.join(entry.name, f)))
+    } else if (entry.name.endsWith(".ts") && !entry.name.endsWith(".test.ts")) {
+      files.push(entry.name)
+    }
+  }
+  return files
+}
+
 test("boundary: production src/ imports none of the forbidden runtime packages", () => {
   const srcDir = path.dirname(fileURLToPath(import.meta.url))
-  const productionFiles = readdirSync(srcDir).filter(name => name.endsWith(".ts") && !name.endsWith(".test.ts"))
+  const productionFiles = collectProductionTsFiles(srcDir)
 
   for (const file of productionFiles) {
     const contents = readFileSync(path.join(srcDir, file), "utf8")

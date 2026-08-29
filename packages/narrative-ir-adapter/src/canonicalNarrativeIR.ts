@@ -60,3 +60,22 @@ export interface CompiledArtifactIdentity {
   fixtureId: string
   digest: string
 }
+
+// schemas/ir/v0/visit-transition.schema.json -- {irVersion, kind, visitOrdinal?,
+// relationshipDepth?}. R07: "Return is a structurally distinct transition
+// from FirstEntry, not FirstEntry replayed with different data (RETURN !=
+// RESET)." Deliberately carries NO worldId/userId/placeId/tick field of its
+// own -- exactly as narrow as canonical Action (see actionOpportunityFromCanonical.ts's
+// own comment on this pattern): identity and chronology remain host-supplied
+// framing, never smuggled into this world-agnostic narrative marker.
+// `visitOrdinal` is required when `kind` is RETURN and must be able to
+// exceed 2 (schema note, citing EV-017) -- an architecture that only
+// accepts exactly 2 is a defect. `relationshipDepth` is documented as
+// "derived from RelationshipHistory length at lowering time; not
+// independently stored here" -- carried through verbatim, never
+// recomputed by this package.
+export interface CanonicalVisitTransition {
+  kind: "FIRST_ENTRY" | "RETURN"
+  visitOrdinal?: number
+  relationshipDepth?: number
+}

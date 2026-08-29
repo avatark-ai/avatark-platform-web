@@ -1,0 +1,14 @@
+{
+  "_fixtureNote": "Canonical-schema-shaped fragment, hand-authored against studiok-living-symphony-compiler's schemas/ir/v0/visit-transition.schema.json (IR 0.3.0), companion FIRST_ENTRY case to r07-living-vrindavan-return-visit-2.json. Same real Living Vrindavan envelope framing (worldId/userId/locationId), no new canon.",
+  "fixtureId": "r07-living-vrindavan-first-entry",
+  "digest": "test-fixture-digest-not-canonical",
+  "documents": {
+    "visit-transition/living-vrindavan-first-entry": {
+      "irVersion": "0.3.0",
+      "kind": "FIRST_ENTRY"
+    }
+  },
+  "worldId": "living-vrindavan-r07-continuity",
+  "userId": "r07-continuity-visitor",
+  "locationId": "yamuna"
+}

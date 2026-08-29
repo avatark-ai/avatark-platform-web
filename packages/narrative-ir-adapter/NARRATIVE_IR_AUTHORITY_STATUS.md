@@ -38,6 +38,7 @@ this package's current source authority.
 | ExpectedPatternState | `schemas/ir/v0/expected-pattern-state.schema.json` (`presence`, `confidence`, `confirmationSequence`) | `ExpectationReference`, `ExpectationEvaluationContext.disconfirmationCountSoFar` (derived, not stored) | No — `evaluateExpectation()` unchanged |
 | RuntimeRequirement | `schemas/ir/v0/runtime-requirements.schema.json` (`requires[]`) | `RuntimeCapabilities` | No — already byte-identical vocabulary (ported in the compiler's own `LW-COMPILER-R03`); `checkActivation()` unchanged |
 | Artifact identity (`ruleId`/`eventId`) | `runtime-requirements/*` document `id` (ruleId-equivalent) + the triggering `Action`/`Occurrence` document `id` (eventId) | `ArtifactReference` | N/A — pure data carrier |
+| VisitTransition *(added `R07`)* | `schemas/ir/v0/visit-transition.schema.json` (`kind`, `visitOrdinal?`, `relationshipDepth?`) | `VisitContext` (`translation/visitContextFromCanonical.ts`) | N/A — pure data carrier; `computeReturnRecognition()` itself (`@avatark/world-memory-runtime`) remains untouched and unimported here |
 
 ## Known unresolved semantic differences (not blockers, documented honestly)
 

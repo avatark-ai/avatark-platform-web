@@ -1,0 +1,16 @@
+{
+  "_fixtureNote": "Canonical-schema-shaped fragment, hand-authored against studiok-living-symphony-compiler's schemas/ir/v0/visit-transition.schema.json (IR 0.3.0). Envelope framing (worldId/userId/locationId) reuses real, already-evidenced Living Vrindavan identifiers from this repository's own lib/livingWorldExperience/vrindavanFlagshipLeaveReturn.test.ts (a real Yamuna-place, Vasanta->Grishma leave/return proof) rather than inventing new canon -- no new Vrindavan content is asserted by this fixture. 'digest' is a fixture placeholder, never a real certified SHA-256 value.",
+  "fixtureId": "r07-living-vrindavan-return-visit-2",
+  "digest": "test-fixture-digest-not-canonical",
+  "documents": {
+    "visit-transition/living-vrindavan-return-2": {
+      "irVersion": "0.3.0",
+      "kind": "RETURN",
+      "visitOrdinal": 2,
+      "relationshipDepth": 1
+    }
+  },
+  "worldId": "living-vrindavan-r07-continuity",
+  "userId": "r07-continuity-visitor",
+  "locationId": "yamuna"
+}

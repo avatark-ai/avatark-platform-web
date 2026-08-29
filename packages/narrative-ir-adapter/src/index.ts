@@ -23,7 +23,10 @@ export type {
   CanonicalExpectedPatternState,
   CanonicalRuntimeRequirementsDocument,
   CompiledArtifactIdentity,
+  CanonicalVisitTransition,
 } from "./canonicalNarrativeIR.ts"
+
+export type { VisitKind, VisitContext } from "./visitContext.ts"
 
 export { evidenceActorFromCanonicalEventOrigin } from "./translation/evidenceActorFromCanonical.ts"
 export { artifactReferenceFromCanonical } from "./translation/artifactReferenceFromCanonical.ts"
@@ -34,3 +37,4 @@ export {
   disconfirmationCountFromConfirmationSequence,
   expectationReferenceFromCanonical,
 } from "./translation/expectationReferenceFromCanonical.ts"
+export { visitContextFromCanonical } from "./translation/visitContextFromCanonical.ts"
