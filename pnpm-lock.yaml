@@ -89,6 +89,9 @@ importers:
       '@avatark/motion':
         specifier: workspace:*
         version: link:packages/motion
+      '@avatark/narrative-ir-adapter':
+        specifier: workspace:*
+        version: link:packages/narrative-ir-adapter
       '@avatark/narrative-runtime':
         specifier: workspace:*
         version: link:packages/narrative-runtime
