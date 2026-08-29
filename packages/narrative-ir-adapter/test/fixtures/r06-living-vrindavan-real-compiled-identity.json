@@ -1,0 +1,21 @@
+{
+  "_fixtureNote": "R06 -- Cross-World Falsification. Unlike this package's other canonical-shaped fixtures (hand-authored, R05), the `digest` value below is REAL: it is the actual SHA-256 output of running studiok-living-symphony-compiler's own scripts/compile-living-world-artifact.mjs (unmodified) against scripts/fixtures/r06-living-vrindavan-flute-across-yamuna.json (a genuine second-domain, Living Vrindavan fixture -- not Living Symphony) at compiler HEAD de68213. Reproduce with: `cd studiok-living-symphony-compiler && node scripts/compile-living-world-artifact.mjs scripts/fixtures/r06-living-vrindavan-flute-across-yamuna.json` (stderr prints `DIGEST sha256:<this value>`). This closes the exact gap R05/R05C left open: the ArtifactReference convention (ruleId -> runtime-requirements document id, eventId -> triggering Action id) is here tested against a real compiled artifact end-to-end, not a hand-authored placeholder. The scenario itself does not assert Krishna identity -- see the compiler-side fixture's own note and LW_COMPILER_R06_CROSS_WORLD_FALSIFICATION.md.",
+  "fixtureId": "r06-living-vrindavan-flute-across-yamuna",
+  "digest": "7108d56f55772a93a807afe748c2e2200d9463fe9dc0a88cf7248345bf6653a5",
+  "runtimeRequirementsDocument": {
+    "id": "runtime-requirements/flute-signal-non-action",
+    "requires": ["DELIBERATE_NON_ACTION"]
+  },
+  "nonAction": {
+    "id": "action/grove-keeper-remains-with-herd",
+    "kind": "NON_ACTION",
+    "verb": "REMAIN_WITH_HERD"
+  },
+  "qualifyingAction": {
+    "id": "action/grove-keeper-moves-toward-source",
+    "kind": "ACTION",
+    "verb": "MOVE_TOWARD_SOUND_SOURCE"
+  },
+  "subjectId": "entity/grove-keeper",
+  "contextId": "place/kadamba-grove"
+}
