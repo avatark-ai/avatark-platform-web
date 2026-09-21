@@ -31,3 +31,6 @@ export { EPISODE_CERTIFICATION_AUTHORITY_IDENTITY, EPISODE_CERTIFICATION_POLICY_
 export { certifyEpisodeCandidateWithProposal } from "./episodeCertifyContent.ts"
 
 export { runtimeProjectabilityOf } from "./runtimeProjectability.ts"
+
+export { CERTIFIED_EPISODE_CONTRACT_VERSION, serializeCertifiedEpisodeContract } from "./contractSerialization.ts"
+export type { CertifiedEpisodeContractDocument, ContractSerializationResult } from "./contractSerialization.ts"

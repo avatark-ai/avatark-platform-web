@@ -60,6 +60,7 @@ const OWN_SOURCE_FILES = [
   "episodeCandidateContent.ts",
   "episodeCertifyContent.ts",
   "runtimeProjectability.ts",
+  "contractSerialization.ts",
 ]
 
 test("T1: the package's public exports contain no World-mutation, runtime-execution, or legacy-Episode-authority surface", () => {
