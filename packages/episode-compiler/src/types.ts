@@ -46,3 +46,62 @@ export type EpisodeCompilationRefusalReason =
 export type EpisodeCompilationResult =
   | { readonly decision: "COMPILED"; readonly foundation: EpisodeCompilationFoundation }
   | { readonly decision: "REJECTED"; readonly reason: EpisodeCompilationRefusalReason; readonly detail: string }
+
+// --- STK-WO-009 Phase F (G10D-2): the real Episode Candidate contract. ---
+//
+// EpisodeCandidate is the governed semantic output STK-WO-009's own Phase F
+// text requires ("a real Episode Candidate output... traceably produced
+// only from a Certified Interpretation"). It is NOT EpisodeCompilationFoundation
+// with a new name: it is derived independently from the same
+// CertifiedInterpretation input (see compile.ts vs episodeCandidate.ts),
+// under its own, separately-versioned candidate-contract identity, so its
+// own identity never collides with Foundation's.
+//
+// Deliberately minimal: CertifiedInterpretation (Phase D) still carries no
+// narrative claim, theme, ordering, or plot -- only structural/provenance
+// content. A candidate derived from it can therefore only be
+// structural/provenance content too. No scene, beat, encounter, character
+// arc, dialogue, conflict, or dramatic ordering is invented to fill that
+// gap -- see this gate's completion report section on semantic
+// sufficiency.
+export interface EpisodeCandidate {
+  readonly episodeCandidateId: string
+  readonly status: "candidate"
+  readonly certified: false
+  readonly sourceCertifiedInterpretationId: string
+  readonly sourceCandidateId: string
+  readonly sourceInterpretationInputIdentity: string
+  readonly compilerIdentity: EpisodeCompilerIdentity
+}
+
+export type EpisodeCandidateRefusalReason = "INVALID_CERTIFIED_INTERPRETATION" | "INVALID_COMPILER_IDENTITY"
+
+export type EpisodeCandidateResult =
+  | { readonly decision: "COMPILED"; readonly episodeCandidate: EpisodeCandidate }
+  | { readonly decision: "REJECTED"; readonly reason: EpisodeCandidateRefusalReason; readonly detail: string }
+
+// --- STK-WO-009 Phase F: the second governed certification transition, ---
+// --- EpisodeCandidate -> Certification -> CertifiedEpisode, mirroring ---
+// --- Phase D's own pattern exactly, per the Work Order's own explicit ---
+// --- Phase F exit criterion.                                          ---
+export interface CertifiedEpisode {
+  readonly certifiedEpisodeId: string
+  readonly episodeCandidateId: string
+  readonly sourceCertifiedInterpretationId: string
+  readonly sourceCandidateId: string
+  readonly sourceInterpretationInputIdentity: string
+  readonly compilerIdentity: EpisodeCompilerIdentity
+  readonly certificationAuthorityIdentity: EpisodeCompilerIdentity
+  readonly certificationPolicyIdentity: EpisodeCompilerIdentity
+}
+
+export type EpisodeCertificationRefusalReason =
+  | "INVALID_CANDIDATE"
+  | "ALREADY_CERTIFIED"
+  | "INVALID_SOURCE_CERTIFIED_INTERPRETATION"
+  | "INVALID_CANDIDATE_IDENTITY"
+  | "INVALID_PROVENANCE"
+
+export type EpisodeCertificationResult =
+  | { readonly decision: "CERTIFIED"; readonly certifiedEpisode: CertifiedEpisode }
+  | { readonly decision: "REFUSED"; readonly reason: EpisodeCertificationRefusalReason; readonly detail: string }

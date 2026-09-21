@@ -49,7 +49,7 @@ const FORBIDDEN_IMPORT_FRAGMENTS = [
   "anthropic",
 ]
 
-const OWN_SOURCE_FILES = ["index.ts", "types.ts", "validation.ts", "compile.ts"]
+const OWN_SOURCE_FILES = ["index.ts", "types.ts", "validation.ts", "compile.ts", "episodeCandidate.ts", "episodeCertify.ts"]
 
 test("T1: the package's public exports contain no World-mutation, runtime-execution, or legacy-Episode-authority surface", () => {
   const exportNames = Object.keys(episodeCompiler)
@@ -85,12 +85,32 @@ test("T4: the one sanctioned dependency's own dependency graph still cannot tran
   assert.deepStrictEqual(Object.keys(niPackageJson.dependencies as Record<string, unknown>), ["@avatark/narrative-ir-adapter"])
 })
 
-test("T5: compile.ts (code only) never invokes certification -- the Episode Compiler consumes an already-produced CertifiedInterpretation and never certifies one itself", () => {
-  const codeOnly = readFileSync(fileURLToPath(new URL("./compile.ts", import.meta.url)), "utf8")
-    .split("\n")
-    .filter((line) => !line.trim().startsWith("//"))
-    .join("\n")
-  assert.ok(!codeOnly.includes("certifyInterpretationCandidate"))
+test("T5: compile.ts and episodeCandidate.ts (code only) never invoke Interpretation certification -- the Episode Compiler consumes an already-produced CertifiedInterpretation and never certifies one itself", () => {
+  for (const file of ["compile.ts", "episodeCandidate.ts"]) {
+    const codeOnly = readFileSync(fileURLToPath(new URL(`./${file}`, import.meta.url)), "utf8")
+      .split("\n")
+      .filter((line) => !line.trim().startsWith("//"))
+      .join("\n")
+    assert.ok(!codeOnly.includes("certifyInterpretationCandidate"), `${file} must not invoke Interpretation certification`)
+  }
+})
+
+// STK-WO-009 Phase F (G10D-2): derive(...) != certify(...) at the Episode
+// stage too, mirroring Phase D's own mandatory invariant one stage
+// downstream.
+test("T5b: episodeCandidate.ts and compile.ts (code only) never reference the Episode certifier -- the candidate/foundation derivation paths must never self-certify", () => {
+  for (const file of ["episodeCandidate.ts", "compile.ts"]) {
+    const codeOnly = readFileSync(fileURLToPath(new URL(`./${file}`, import.meta.url)), "utf8")
+      .split("\n")
+      .filter((line) => !line.trim().startsWith("//"))
+      .join("\n")
+    assert.ok(!codeOnly.includes("certifyEpisodeCandidate"), `${file} must not reference the Episode certifier`)
+  }
+})
+
+test("T5c: certifyEpisodeCandidate and compileEpisodeCandidate are distinct functions -- the public API never aliases Candidate derivation as Certified promotion", () => {
+  assert.notEqual(episodeCompiler.certifyEpisodeCandidate, episodeCompiler.compileEpisodeCandidate)
+  assert.equal(typeof episodeCompiler.certifyEpisodeCandidate, "function")
 })
 
 test("T6: no own source file introduces Scene/Beat/Encounter/NarrativeEntity as a local type or value (code only)", () => {
@@ -106,12 +126,21 @@ test("T6: no own source file introduces Scene/Beat/Encounter/NarrativeEntity as 
   }
 })
 
-test("T7: no own source file introduces a Phase-F Episode Candidate type -- Phase E's output is explicitly a foundation, never named or shaped as a candidate", () => {
-  for (const file of OWN_SOURCE_FILES) {
-    const codeOnly = readFileSync(fileURLToPath(new URL(`./${file}`, import.meta.url)), "utf8")
-      .split("\n")
-      .filter((line) => !line.trim().startsWith("//"))
-      .join("\n")
-    assert.ok(!codeOnly.includes("EpisodeCandidate"), `${file} must not declare an EpisodeCandidate type -- that is Phase F's contract`)
-  }
+// STK-WO-009 Phase F (G10D-2): EpisodeCandidate is now the real, governed
+// contract this Work Order's own Phase F exit criteria requires -- the
+// Phase-E-era guard that it must not exist is superseded, not weakened
+// (the field this test now proves is the section 9 disposition decision:
+// Foundation and Candidate are independent siblings over the same
+// CertifiedInterpretation input, never a pipeline where one feeds the
+// other).
+test("T7: compile.ts (Foundation) and episodeCandidate.ts (Candidate) never import each other -- both derive independently from CertifiedInterpretation, neither is the other's input", () => {
+  const compileCode = readFileSync(fileURLToPath(new URL("./compile.ts", import.meta.url)), "utf8")
+  const candidateCode = readFileSync(fileURLToPath(new URL("./episodeCandidate.ts", import.meta.url)), "utf8")
+  assert.ok(!compileCode.includes("episodeCandidate.ts"))
+  assert.ok(!candidateCode.includes("./compile.ts"))
+})
+
+test("T8: CertifiedEpisode is never aliased to or confused with CertifiedInterpretation -- distinct types, distinct certification authority/policy identities", () => {
+  assert.notDeepStrictEqual(episodeCompiler.EPISODE_CERTIFICATION_AUTHORITY_IDENTITY, { name: "narrative-interpretation-certification", version: "0.1.0" })
+  assert.notDeepStrictEqual(episodeCompiler.EPISODE_CERTIFICATION_POLICY_IDENTITY, { name: "structural-provenance-identity-policy", version: "1" })
 })

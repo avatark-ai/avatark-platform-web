@@ -1,7 +1,7 @@
 # Episode Compiler — Charter
 
-**Governed by:** `PLT-ADR-009` (Narrative Interpretation and Episode Authority), `STK-WO-009` Phase E.
-**Status:** Foundation only (Phase E). Phase F defines the real Episode Candidate contract.
+**Governed by:** `PLT-ADR-009` (Narrative Interpretation and Episode Authority), `STK-WO-009` Phases E-F.
+**Status:** Foundation (Phase E) + the real Episode Candidate contract and its own certification transition (Phase F).
 
 ## What this package owns
 
@@ -37,13 +37,17 @@ provenance continuity back to its one authorized source.
   Writer, Story Twin, CinemaK, or StreamK. Those are downstream
   consumers/surfaces of a future Certified Episode, never inputs to this
   package.
-- **Certification.** This package never calls
-  `certifyInterpretationCandidate`, never certifies anything itself, and
-  never constructs a fake `CertifiedInterpretation`. Who or what is
-  authorized to invoke certification in a real governed review process is
-  an explicitly unresolved production-governance question (`STK-WO-009`'s
+- **Interpretation certification.** This package never calls
+  `certifyInterpretationCandidate`, never certifies a
+  `NarrativeInterpretationCandidate`, and never constructs a fake
+  `CertifiedInterpretation`. Who or what is authorized to invoke
+  Interpretation certification in a real governed review process is an
+  explicitly unresolved production-governance question (`STK-WO-009`'s
   own "Human / Founders decision points") — this package does not resolve
-  or bypass it.
+  or bypass it. The **same** unresolved-authority pattern applies one
+  stage downstream to this package's own Episode certification (below):
+  `certifyEpisodeCandidate` never invokes itself automatically, and who is
+  authorized to invoke it in a real review process is equally unresolved.
 
 ## The governed input boundary
 
@@ -74,13 +78,57 @@ in `dt4m-os`):
 None of these is imported by this package as semantic authority. Encounter
 remains `UNRESOLVED`. `NarrativeEntity` remains `ABSENT`.
 
-## Phase boundary
+## What EpisodeCandidate is (Phase F)
 
-**Phase E (this):** package foundation, governed input boundary,
-deterministic compilation primitive, provenance continuity. Output:
-`EpisodeCompilationFoundation` — deliberately not named or shaped as a
-candidate.
+`EpisodeCandidate` (`compileEpisodeCandidate()`) is the real, governed
+semantic output `STK-WO-009`'s own Phase F exit criteria requires: a
+structural/provenance-only candidate, derived independently from the same
+`CertifiedInterpretation` input `EpisodeCompilationFoundation` (Phase E)
+already consumes — the two are siblings over the same governed input, not
+a pipeline; neither is the other's input (see `src/authorityBoundary.test.ts`
+`T7`). It carries:
 
-**Phase F (not yet authorized):** the real Episode Candidate contract and
-its own provenance. This charter does not document Phase-F behavior as
-implemented, because it is not.
+- `episodeCandidateId` — deterministic, `sha256` of the upstream certified
+  identity, this compiler's own identity, and a separately-versioned
+  candidate-contract identity (`EPISODE_CANDIDATE_CONTRACT_IDENTITY`) — no
+  wall-clock time, no random id.
+- `status: "candidate"` / `certified: false` — the same non-certified
+  discriminant `NarrativeInterpretationCandidate` uses.
+- `sourceCertifiedInterpretationId` / `sourceCandidateId` /
+  `sourceInterpretationInputIdentity` — the exact upstream identity chain,
+  copied verbatim, never reconstructed.
+- `compilerIdentity`.
+
+## What EpisodeCandidate is NOT (and why)
+
+`CertifiedInterpretation` (Phase C/D) still carries no narrative claim,
+theme, ordering, or plot — only structural/provenance content. A candidate
+derived from it can therefore only be structural/provenance content too.
+No scene, beat, encounter, character arc, dialogue, conflict, or dramatic
+ordering was invented to fill that gap — see
+`STUDIOK_UI_M1_G10D2_EPISODE_CANDIDATE_PROVENANCE_REPORT.md` in `dt4m-os`
+for the full semantic-sufficiency analysis. Runtime `Scene`/`Beat` remain
+`KEEP_AS_RUNTIME_REPRESENTATION`, unchanged; this package does not
+introduce a semantic Scene or Beat of its own. Encounter remains
+`UNRESOLVED`. `NarrativeEntity` remains `ABSENT`.
+
+## Episode certification (Phase F)
+
+`STK-WO-009`'s own Phase F exit criteria explicitly requires a second
+governed certification transition, mirroring Phase D's Interpretation
+certification exactly: `EpisodeCandidate → Certification → CertifiedEpisode`.
+`certifyEpisodeCandidate()` (`src/episodeCertify.ts`) is deliberately
+separate from `compileEpisodeCandidate()` (`derive(...) != certify(...)`,
+proven statically) and never trusts a presented candidate's own claimed
+fields — it independently recomputes a fresh one via
+`compileEpisodeCandidate()` itself and compares by value. `CertifiedEpisode`
+carries its own `certificationAuthorityIdentity`/`certificationPolicyIdentity`,
+distinct from Interpretation's own certification identities.
+
+## Deferred (not this package's job, not yet authorized)
+
+Runtime projection (Phase G — `@avatark/narrative-runtime`, untouched) and
+Experience/production/distribution integration (Phase H — `Experience`,
+`WatchFirstEntry`, `Practice`, Writer, Story Twin, CinemaK, StreamK, all
+untouched) remain fully out of scope. This charter does not document
+either as implemented, because neither is.
