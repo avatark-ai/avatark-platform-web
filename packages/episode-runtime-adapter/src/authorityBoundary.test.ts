@@ -42,7 +42,7 @@ const FORBIDDEN_IMPORT_FRAGMENTS = [
   "anthropic",
 ]
 
-const OWN_SOURCE_FILES = ["index.ts", "types.ts", "project.ts"]
+const OWN_SOURCE_FILES = ["index.ts", "types.ts", "project.ts", "resolve.ts"]
 
 test("PB1: package exports load without error", () => {
   assert.equal(typeof episodeRuntimeAdapter.projectCertifiedEpisode, "function")

@@ -168,18 +168,21 @@ test("PJ8: the projected definition contains no string value that was not source
   }
 })
 
-// 9. no invented entity/place refs -- beats carry no NarrativeReferences at
-// all (the runtime's own refs fields have no legitimate carrier for
-// evidence ids; see project.ts's own header comment), so none can be
-// fabricated.
-test("PJ9: no projected beat carries a fabricated refs object -- refs is always absent, never a guessed World/entity/place reference", () => {
+// 9. no invented entity/place refs -- beats carry only a real, resolvable
+// refs.asset (G10D-6 Track A); no World/entity/place reference field is
+// ever populated (no legitimate carrier for those exists -- see project.ts's
+// own header comment).
+test("PJ9: no projected beat carries a World/entity/place reference -- only the real, resolvable refs.asset (G10D-6 Track A) is ever set", () => {
   const episode = realCertifiedEpisode()
   const result = projectCertifiedEpisode(episode)
   assert.equal(result.decision, "PROJECTED")
   if (result.decision !== "PROJECTED") throw new Error("unreachable")
   for (const scene of result.definition.seasons[0].episodes[0].scenes) {
     for (const beat of scene.beats) {
-      assert.equal((beat as { refs?: unknown }).refs, undefined)
+      const refs = (beat as { refs?: Record<string, unknown> }).refs
+      assert.ok(refs !== undefined, "every narration beat must carry a real refs.asset")
+      assert.deepEqual(Object.keys(refs), ["asset"])
+      assert.ok(typeof refs.asset === "object" && refs.asset !== null)
     }
   }
 })

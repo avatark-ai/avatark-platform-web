@@ -1,6 +1,6 @@
 # Episode Runtime Adapter — Charter
 
-**Governed by:** `STK-WO-009` Phase G (G10D-5 Stage 4).
+**Governed by:** `STK-WO-009` Phase G (G10D-5 Stage 4; payload closed G10D-6 Track A, no ADR change needed).
 **Status:** Real, tested adapter — the honest scope below is deliberate, not a placeholder.
 
 ## What this package owns
@@ -49,31 +49,46 @@ than fabricating content. For a real, content-bearing `CertifiedEpisode`:
   `segment.label`. None is ever a placeholder like `"Episode 1"` or
   `"Scene 1"`.
 
-## Honest scope — what does NOT reach the runtime, and why
+## Narrative payload (G10D-6 Track A — `PAYLOAD_EXISTING_MECHANISM_REUSABLE`)
 
 `@avatark/narrative-runtime`'s real, unmodified `NarrationBeat` carries no
 prose/text field of its own — narrative content is referenced externally
-via `refs.asset` (`NarrativeAssetRef`), and this package has no real,
-persisted asset to point at. Two real fields therefore do **not** reach the
-projected `NarrativeDefinition`:
+via `refs.asset` (`NarrativeAssetRef`), a mechanism that already exists in
+`narrative-runtime`'s own ratified shape but had never been populated or
+resolved by anything, in any prior gate. This package now does both,
+entirely on its own side:
 
-- `EpisodeSegment.statement` (the actual semantic prose) — has no
-  legitimate carrier in the runtime's current schema.
-- `EpisodeSegment.evidenceReferences` — `NarrativeReferences`' `world`
-  field names a whole `WorldRef`, not a specific evidentiary fact; using it
-  to carry an evidence id would be a type misuse, not a legitimate mapping.
+- `project.ts` sets a real `refs.asset.assetId` on every `NarrationBeat` —
+  a deterministic `sha256` of the real `certifiedEpisodeId` and the real
+  segment's own `segmentId` (same `deriveRuntimeId()` every other runtime
+  id in this package already uses — no second derivation algorithm).
+- `resolve.ts`'s `resolveEpisodeSegmentProse(certifiedEpisode, assetId)`
+  maps that same id back to the real, exact `EpisodeSegment.statement` —
+  recomputing each candidate id the identical way, never trusting a
+  presented mapping. An unknown `assetId` resolves to `undefined`, never a
+  fabricated string.
 
-This is a real, evidenced limitation of the current, unmodified
-`narrative-runtime` contract — not an oversight of this adapter. Closing it
-requires either a real asset-persistence mechanism (out of scope here) or a
-`narrative-runtime` schema change (`STK-WO-009` Phase G's own explicit
-non-goal: "modifying `narrative-runtime` itself... requires its own
-separate, explicitly-authorized gate"). See the G10D-5 master report's own
-Phase G section for the full classification
-(`PARTIAL_RUNTIME_PROJECTION_ONLY`).
+**No `narrative-runtime` schema change was made or needed.** This closes
+the prose half of Phase G's own `PARTIAL_RUNTIME_PROJECTION_ONLY`
+classification without reopening that Work Order's explicit non-goal
+("modifying `narrative-runtime` itself... requires its own separate,
+explicitly-authorized gate") — because nothing in `narrative-runtime` was
+touched.
+
+`EpisodeSegment.evidenceReferences` still deliberately does **not** reach
+the projected `NarrativeDefinition` — classified `OBSERVABILITY_REQUIRED` /
+`UI_PROVENANCE_ONLY` / `NOT_REQUIRED_DOWNSTREAM` for runtime execution
+specifically (G10D-6 Track A): `narrative-runtime` has no evidence/World
+concept at all by design, and `NarrativeReferences.world` names a whole
+`WorldRef`, not a specific evidentiary fact — mapping an evidence id into
+it would be a type misuse, not a legitimate mapping. Evidence references
+remain real and present on the `CertifiedEpisode` itself, for
+provenance/certification/future UI use, where they actually belong.
 
 ## Deferred (not this package's job, not yet authorized)
 
 Experience/production/distribution integration (Phase H — `Experience`,
 `WatchFirstEntry`, `Practice`, Writer, Story Twin, CinemaK, StreamK, all
-untouched) remains fully out of scope.
+untouched) remains fully out of scope for this package specifically — see
+`PLT-ADR-010` and the G10D-6 completion report for how that boundary is
+now being crossed.

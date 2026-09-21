@@ -1,24 +1,33 @@
-// STK-WO-009 Phase G (G10D-5 Stage 4): projects a real, content-bearing
-// CertifiedEpisode into @avatark/narrative-runtime's existing
-// NarrativeDefinition shape. One direction only -- nothing here ever
-// constructs, certifies, or mutates a CertifiedEpisode, an EpisodeCandidate,
-// or any Interpretation-stage artifact. Never modifies narrative-runtime
-// itself (STK-WO-009's own explicit Phase G non-goal).
+// STK-WO-009 Phase G (G10D-5 Stage 4; payload closed G10D-6 Track A):
+// projects a real, content-bearing CertifiedEpisode into
+// @avatark/narrative-runtime's existing NarrativeDefinition shape. One
+// direction only -- nothing here ever constructs, certifies, or mutates a
+// CertifiedEpisode, an EpisodeCandidate, or any Interpretation-stage
+// artifact. Never modifies narrative-runtime itself (STK-WO-009's own
+// explicit Phase G non-goal).
 //
-// HONEST SCOPE (recorded here, not only in the gate's own completion
-// report, so the limitation travels with the code): narrative-runtime's
-// real, unmodified NarrationBeat carries no text/prose field of its own --
-// prose content is referenced externally via `refs.asset`
-// (NarrativeAssetRef), which this package has no real, persisted asset to
-// point at. A segment's `statement` (the actual semantic prose) and its
-// `evidenceReferences` therefore do NOT reach the projected
-// NarrativeDefinition -- only `title`/`label` values (which the runtime's
-// own schema actually has a field for) and structurally valid linear
-// transitions do. This is a real, evidenced limitation of the current,
-// unmodified runtime contract, not an oversight of this adapter -- closing
-// it would require either a real asset-persistence mechanism (out of
-// scope) or a narrative-runtime schema change (explicitly out of Phase
-// G's own scope, requiring its own separately-authorized gate).
+// PAYLOAD (G10D-6 Track A, decision PAYLOAD_EXISTING_MECHANISM_REUSABLE):
+// narrative-runtime's real, unmodified NarrationBeat carries no text/prose
+// field of its own -- prose is referenced externally via `refs.asset`
+// (NarrativeAssetRef), a mechanism that already exists in narrative-runtime's
+// own ratified shape but had never been populated or resolved by anything.
+// This adapter now does both, entirely on its own side (no narrative-runtime
+// change): every NarrationBeat's `refs.asset.assetId` is a deterministic
+// hash of the real segmentId (see deriveRuntimeId), and resolve.ts's
+// resolveEpisodeSegmentProse() maps that same id back to the real, exact
+// `segment.statement` -- never a fabricated asset, never invented prose.
+//
+// EVIDENCE REFERENCES (G10D-6 Track A, classification
+// OBSERVABILITY_REQUIRED / UI_PROVENANCE_ONLY / NOT_REQUIRED_DOWNSTREAM for
+// runtime execution specifically): `EpisodeSegment.evidenceReferences` are
+// deliberately NOT projected into the NarrativeDefinition. narrative-runtime
+// has no evidence/World concept at all (by design -- `WorldRef` is
+// explicitly unimplemented), and `NarrativeReferences.world` names a whole
+// World, not a specific evidentiary fact, so mapping an evidence id into it
+// would be a type misuse, not a legitimate mapping. Evidence references
+// remain real, present, and traceable on the CertifiedEpisode itself (for
+// provenance/certification/future UI "why is this in the episode" use) --
+// they simply do not belong in the execution-only runtime layer.
 import { createHash } from "node:crypto"
 import { runtimeProjectabilityOf } from "@avatark/episode-compiler"
 import type { CertifiedEpisode } from "@avatark/episode-compiler"
@@ -32,10 +41,17 @@ const PROJECTION_IDENTITY = { name: "episode-runtime-adapter", version: "0.1.0" 
 // identity plus a fixed, documented namespace suffix -- never the semantic
 // id reused verbatim (semantic identity and runtime identity are
 // deliberately distinct namespaces, per PLT-ADR-009's "runtime execution
-// does not confer semantic authority" invariant), never random.
-function deriveRuntimeId(certifiedEpisodeId: string, namespace: string): string {
+// does not confer semantic authority" invariant), never random. Exported
+// (not package-private) so resolve.ts's asset-id derivation is proven to
+// use this exact function, never a second, divergent algorithm.
+export function deriveRuntimeId(certifiedEpisodeId: string, namespace: string): string {
   return createHash("sha256").update(JSON.stringify({ certifiedEpisodeId, projectionIdentity: PROJECTION_IDENTITY, namespace })).digest("hex")
 }
+
+// The one namespace prefix resolve.ts also uses -- kept here, next to
+// deriveRuntimeId, so the two files can never drift apart on the asset-id
+// scheme.
+export const ASSET_ID_NAMESPACE_PREFIX = "prose-asset:"
 
 // Never throws -- a non-projectable or malformed CertifiedEpisode produces
 // a REJECTED result. Read-only: reads its argument, constructs new
@@ -84,7 +100,8 @@ export function projectCertifiedEpisode(certifiedEpisode: unknown): EpisodeProje
     // safe because it depends only on that segment's own segmentId, not on
     // anything computed during this iteration.
     const next: Transition = isLast ? { to: "end" } : { to: "scene", sceneId: deriveRuntimeId(episode.certifiedEpisodeId, `scene:${content.segments[index + 1].segmentId}`) }
-    const beat: Beat = { id: beatId, kind: "narration", next }
+    const assetId = deriveRuntimeId(episode.certifiedEpisodeId, `${ASSET_ID_NAMESPACE_PREFIX}${segment.segmentId}`)
+    const beat: Beat = { id: beatId, kind: "narration", next, refs: { asset: { assetId, kind: "narrative-prose" } } }
     const scene: Scene = { id: sceneId, title: segment.label, entryBeatId: beatId, beats: [beat] }
     scenes.push(scene)
   }
