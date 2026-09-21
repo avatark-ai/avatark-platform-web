@@ -15,7 +15,8 @@
     "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
   },
   "dependencies": {
-    "@avatark/narrative-interpretation": "workspace:*"
+    "@avatark/narrative-interpretation": "workspace:*",
+    "@avatark/episode-semantic-generation": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5"

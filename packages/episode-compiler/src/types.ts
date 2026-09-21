@@ -13,8 +13,10 @@
 // as a type from @avatark/narrative-interpretation -- never hand-mirrored,
 // never a shadow interface, never accepted as `any`.
 import type { CertifiedInterpretation } from "@avatark/narrative-interpretation"
+import type { ContentOriginIdentity, EpisodeContent, EpisodeContentProposal } from "@avatark/episode-semantic-generation"
 
 export type { CertifiedInterpretation }
+export type { ContentOriginIdentity, EpisodeContent, EpisodeContentProposal }
 
 export interface EpisodeCompilerIdentity {
   readonly name: string
@@ -64,6 +66,14 @@ export type EpisodeCompilationResult =
 // arc, dialogue, conflict, or dramatic ordering is invented to fill that
 // gap -- see this gate's completion report section on semantic
 // sufficiency.
+// STK-WO-009 Stage 3 (G10D-5): EpisodeCandidate is extended ADDITIVELY with
+// the PLT-ADR-009 amendment's semantic content contract. A content-free
+// EpisodeCandidate (all four fields below absent) remains exactly as
+// structurally valid as it was under Phase F -- compileEpisodeCandidate()
+// is untouched, byte-for-byte, and every one of its existing tests still
+// exercises it directly. The four fields below are populated only by the
+// new, separate compileEpisodeCandidateWithProposal() sibling function
+// (episodeCandidateContent.ts), never retrofitted onto the original path.
 export interface EpisodeCandidate {
   readonly episodeCandidateId: string
   readonly status: "candidate"
@@ -72,9 +82,24 @@ export interface EpisodeCandidate {
   readonly sourceCandidateId: string
   readonly sourceInterpretationInputIdentity: string
   readonly compilerIdentity: EpisodeCompilerIdentity
+  // Present only when compiled from a real EpisodeContentProposal
+  // (@avatark/episode-semantic-generation). Copied verbatim from the
+  // proposal, never reconstructed.
+  readonly content?: EpisodeContent
+  readonly contentIdentity?: string
+  readonly contentOriginIdentity?: ContentOriginIdentity
+  // The exact upstream EpisodeContentProposal's own identity -- distinct
+  // from sourceCertifiedInterpretationId/sourceCandidateId, which name the
+  // Interpretation-stage provenance this candidate already carried before
+  // Stage 3.
+  readonly sourceProposalId?: string
 }
 
-export type EpisodeCandidateRefusalReason = "INVALID_CERTIFIED_INTERPRETATION" | "INVALID_COMPILER_IDENTITY"
+export type EpisodeCandidateRefusalReason =
+  | "INVALID_CERTIFIED_INTERPRETATION"
+  | "INVALID_COMPILER_IDENTITY"
+  | "INVALID_PROPOSAL"
+  | "PROPOSAL_SOURCE_MISMATCH"
 
 export type EpisodeCandidateResult =
   | { readonly decision: "COMPILED"; readonly episodeCandidate: EpisodeCandidate }
@@ -84,6 +109,10 @@ export type EpisodeCandidateResult =
 // --- EpisodeCandidate -> Certification -> CertifiedEpisode, mirroring ---
 // --- Phase D's own pattern exactly, per the Work Order's own explicit ---
 // --- Phase F exit criterion.                                          ---
+// Extended additively, exactly like EpisodeCandidate above -- a
+// content-free CertifiedEpisode (Phase F's own shape) remains fully valid;
+// certifyEpisodeCandidate() is untouched. Content fields are populated only
+// by the new certifyEpisodeCandidateWithProposal() sibling function.
 export interface CertifiedEpisode {
   readonly certifiedEpisodeId: string
   readonly episodeCandidateId: string
@@ -93,6 +122,10 @@ export interface CertifiedEpisode {
   readonly compilerIdentity: EpisodeCompilerIdentity
   readonly certificationAuthorityIdentity: EpisodeCompilerIdentity
   readonly certificationPolicyIdentity: EpisodeCompilerIdentity
+  readonly content?: EpisodeContent
+  readonly contentIdentity?: string
+  readonly contentOriginIdentity?: ContentOriginIdentity
+  readonly sourceProposalId?: string
 }
 
 export type EpisodeCertificationRefusalReason =
@@ -101,7 +134,17 @@ export type EpisodeCertificationRefusalReason =
   | "INVALID_SOURCE_CERTIFIED_INTERPRETATION"
   | "INVALID_CANDIDATE_IDENTITY"
   | "INVALID_PROVENANCE"
+  | "INVALID_PROPOSAL"
+  | "CONTENT_MISMATCH"
 
 export type EpisodeCertificationResult =
   | { readonly decision: "CERTIFIED"; readonly certifiedEpisode: CertifiedEpisode }
   | { readonly decision: "REFUSED"; readonly reason: EpisodeCertificationRefusalReason; readonly detail: string }
+
+// STK-WO-009 Stage 3 (G10D-5): a truthful predicate, never a stored field
+// -- a consumer (a future Phase G, not this package) asks this question on
+// demand rather than trusting a cached value that could drift from the
+// CertifiedEpisode's own actual content. A content-free CertifiedEpisode
+// (Phase F's own shape) is always NOT_RUNTIME_PROJECTABLE; Phase G must
+// fail closed on it, never fabricate content to fill the gap.
+export type RuntimeProjectability = "RUNTIME_PROJECTABLE" | "NOT_RUNTIME_PROJECTABLE"

@@ -49,7 +49,18 @@ const FORBIDDEN_IMPORT_FRAGMENTS = [
   "anthropic",
 ]
 
-const OWN_SOURCE_FILES = ["index.ts", "types.ts", "validation.ts", "compile.ts", "episodeCandidate.ts", "episodeCertify.ts"]
+const OWN_SOURCE_FILES = [
+  "index.ts",
+  "types.ts",
+  "validation.ts",
+  "compile.ts",
+  "episodeCandidate.ts",
+  "episodeCertify.ts",
+  "proposalValidation.ts",
+  "episodeCandidateContent.ts",
+  "episodeCertifyContent.ts",
+  "runtimeProjectability.ts",
+]
 
 test("T1: the package's public exports contain no World-mutation, runtime-execution, or legacy-Episode-authority surface", () => {
   const exportNames = Object.keys(episodeCompiler)
@@ -61,10 +72,14 @@ test("T1: the package's public exports contain no World-mutation, runtime-execut
   }
 })
 
-test("T2: the package declares exactly one runtime dependency (@avatark/narrative-interpretation) -- nothing broader", () => {
+// STK-WO-009 Stage 3 (G10D-5): the PLT-ADR-009 amendment ratifies exactly
+// one new sanctioned dependency for this package --
+// @avatark/episode-semantic-generation, the proposal-only boundary this
+// package consumes. Nothing broader was added alongside it.
+test("T2: the package declares exactly its two ratified runtime dependencies (@avatark/narrative-interpretation, @avatark/episode-semantic-generation) -- nothing broader", () => {
   const packageJsonPath = fileURLToPath(new URL("../package.json", import.meta.url))
   const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8")) as Record<string, unknown>
-  assert.deepStrictEqual(Object.keys(packageJson.dependencies as Record<string, unknown>), ["@avatark/narrative-interpretation"])
+  assert.deepStrictEqual(Object.keys(packageJson.dependencies as Record<string, unknown>), ["@avatark/narrative-interpretation", "@avatark/episode-semantic-generation"])
 })
 
 test("T3: no own source file (code, not explanatory comments) imports Lane-1, narrative-ir-adapter, narrative-runtime, World-mutation/runtime packages, Writer/Story-Twin/CinemaK/StreamK, or any LLM/model client", () => {
@@ -79,10 +94,16 @@ test("T3: no own source file (code, not explanatory comments) imports Lane-1, na
   }
 })
 
-test("T4: the one sanctioned dependency's own dependency graph still cannot transitively reach a World-mutation or narrative-runtime API", () => {
+test("T4: the narrative-interpretation dependency's own dependency graph still cannot transitively reach a World-mutation or narrative-runtime API", () => {
   const niPackageJsonPath = fileURLToPath(new URL("../../narrative-interpretation/package.json", import.meta.url))
   const niPackageJson = JSON.parse(readFileSync(niPackageJsonPath, "utf8")) as Record<string, unknown>
   assert.deepStrictEqual(Object.keys(niPackageJson.dependencies as Record<string, unknown>), ["@avatark/narrative-ir-adapter"])
+})
+
+test("T4b: the episode-semantic-generation dependency's own dependency graph still cannot transitively reach narrative-runtime, CinemaK, StreamK, or a model SDK", () => {
+  const esgPackageJsonPath = fileURLToPath(new URL("../../episode-semantic-generation/package.json", import.meta.url))
+  const esgPackageJson = JSON.parse(readFileSync(esgPackageJsonPath, "utf8")) as Record<string, unknown>
+  assert.deepStrictEqual(Object.keys(esgPackageJson.dependencies as Record<string, unknown>), ["@avatark/narrative-interpretation"])
 })
 
 test("T5: compile.ts and episodeCandidate.ts (code only) never invoke Interpretation certification -- the Episode Compiler consumes an already-produced CertifiedInterpretation and never certifies one itself", () => {

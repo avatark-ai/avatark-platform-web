@@ -21,7 +21,7 @@
 import { CERTIFICATION_AUTHORITY_IDENTITY, CERTIFICATION_POLICY_IDENTITY, deriveCertifiedInterpretationId } from "@avatark/narrative-interpretation"
 import type { CertifiedInterpretation } from "./types.ts"
 
-function isNonEmptyString(value: unknown): value is string {
+export function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.length > 0
 }
 
