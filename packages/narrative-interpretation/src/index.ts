@@ -37,6 +37,7 @@ export {
   CERTIFICATION_POLICY_IDENTITY,
   SUPPORTED_SOURCE_IR_VERSIONS,
   certifyInterpretationCandidate,
+  deriveCertifiedInterpretationId,
 } from "./certify.ts"
 
 export {

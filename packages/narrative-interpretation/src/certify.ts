@@ -73,7 +73,15 @@ function isWellFormedSha256Hex(value: string): boolean {
 // the certifying authority + the policy applied) -- never a wall-clock
 // timestamp or random id, so it must never contaminate or be contaminated
 // by anything time-dependent.
-function deriveCertifiedInterpretationId(candidateId: string): string {
+//
+// STK-WO-009 Phase E (G10D-1): exported (not merely internal) so a
+// downstream Episode-Compiler-authority consumer can verify a presented
+// CertifiedInterpretation's own certifiedInterpretationId is self-consistent
+// with its candidateId, without copying certification's own evidence
+// policy. This is a narrow factoring, not a duplicated algorithm -- see
+// that consuming package's own validation module for the honest limits of
+// what this proves.
+export function deriveCertifiedInterpretationId(candidateId: string): string {
   const basis = JSON.stringify({
     candidateId,
     certificationAuthorityIdentity: CERTIFICATION_AUTHORITY_IDENTITY,

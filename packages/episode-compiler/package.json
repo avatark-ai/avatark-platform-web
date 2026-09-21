@@ -1,0 +1,39 @@
+{
+  "name": "@avatark/episode-compiler",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PLT-ADR-009 / STK-WO-009 Phase E: the Episode Compiler authority foundation. Consumes only a governed CertifiedInterpretation (never raw World evidence, never an uncertified candidate) and produces a deterministic, non-mutating compilation foundation -- not yet a full Episode Candidate (Phase F). Owns semantic Episode authority going forward; does not execute Episodes (@avatark/narrative-runtime, untouched), does not mutate World state, and does not certify interpretations.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "test": "node --experimental-strip-types --test src/*.test.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
+  },
+  "dependencies": {
+    "@avatark/narrative-interpretation": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
+  }
+}
