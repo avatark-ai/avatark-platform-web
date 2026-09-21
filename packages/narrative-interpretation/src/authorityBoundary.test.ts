@@ -27,6 +27,8 @@ const FORBIDDEN_EXPORT_NAME_FRAGMENTS = [
 // @avatark/narrative-ir-adapter -- deliberately dropped from this list
 // (see T17/T19 below, which prove the sanctioned dependency itself carries
 // no mutation capability) while every other forbidden fragment remains.
+// STK-WO-009 Phase D (G10C-4) adds Writer/Story-Twin/CinemaK/StreamK -- the
+// certifier must never import any of these production-authority packages.
 const FORBIDDEN_IMPORT_FRAGMENTS = [
   "narrative-runtime",
   "world-memory",
@@ -36,9 +38,13 @@ const FORBIDDEN_IMPORT_FRAGMENTS = [
   "world-experience",
   "canonical-event",
   "episode-compiler",
+  "story-twin",
+  "storytwin",
+  "cinemak",
+  "streamk",
 ]
 
-const OWN_SOURCE_FILES = ["index.ts", "types.ts", "errors.ts", "validation.ts", "provenance.ts", "interpret.ts", "worldEvidence.ts"]
+const OWN_SOURCE_FILES = ["index.ts", "types.ts", "errors.ts", "validation.ts", "provenance.ts", "interpret.ts", "worldEvidence.ts", "identity.ts", "certify.ts"]
 
 test("T16: the package's public exports contain no World-mutation, Episode-compiler, or Episode-semantic-authority surface", () => {
   const exportNames = Object.keys(narrativeInterpretation)
@@ -69,4 +75,21 @@ test("T19: the one sanctioned dependency (@avatark/narrative-ir-adapter) itself 
   const adapterPackageJsonPath = fileURLToPath(new URL("../../narrative-ir-adapter/package.json", import.meta.url))
   const adapterPackageJson = JSON.parse(readFileSync(adapterPackageJsonPath, "utf8")) as Record<string, unknown>
   assert.equal(adapterPackageJson.dependencies, undefined)
+})
+
+// STK-WO-009 Phase D (G10C-4): the mandatory interpret(...) != certify(...) separation, proven statically rather
+// than only by convention -- the derivation path must be structurally incapable of self-certifying.
+test("T20: interpret.ts and worldEvidence.ts (the candidate derivation path) never import or reference the certifier in CODE (not explanatory comments)", () => {
+  for (const file of ["interpret.ts", "worldEvidence.ts", "identity.ts"]) {
+    const codeOnly = readFileSync(fileURLToPath(new URL(`./${file}`, import.meta.url)), "utf8")
+      .split("\n")
+      .filter((line) => !line.trim().startsWith("//"))
+      .join("\n")
+    assert.ok(!codeOnly.includes("certify"), `${file} must not reference the certifier -- the candidate derivation path must never self-certify`)
+  }
+})
+
+test("T21: certifyInterpretationCandidate and interpretNarrativeEvidence are distinct functions -- the public API never aliases Candidate derivation as Certified promotion", () => {
+  assert.notEqual(narrativeInterpretation.certifyInterpretationCandidate, narrativeInterpretation.interpretNarrativeEvidence)
+  assert.equal(typeof narrativeInterpretation.certifyInterpretationCandidate, "function")
 })

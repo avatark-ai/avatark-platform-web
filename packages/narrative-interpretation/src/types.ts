@@ -106,3 +106,50 @@ export interface NarrativeInterpretationCandidate {
   readonly derivedFromEvidenceIds: readonly string[]
   readonly provenance: InterpretationProvenance
 }
+
+// --- STK-WO-009 Phase D (G10C-4): the certification boundary. ---
+//
+// Certified by a separate, non-self-invoking function (certify.ts) that
+// takes an already-derived candidate plus the raw input/identity it claims
+// to derive from, and independently recomputes both identities. Nothing
+// in interpret.ts/worldEvidence.ts imports certify.ts, and nothing in
+// certify.ts is reachable from interpretNarrativeEvidence() -- see this
+// gate's static authority-boundary test.
+//
+// Certification means only: this exact candidate, from this exact
+// interpreter, from this exact governed evidence input, with this exact
+// provenance, satisfied the ratified structural/provenance/identity
+// certification policy below. It does NOT mean World truth changed, an
+// Episode was created, an Experience was published, or narrative quality
+// was judged -- no such judgment is made anywhere in this package.
+export interface NamedVersionedIdentity {
+  readonly name: string
+  readonly version: string
+}
+
+export interface CertifiedInterpretation {
+  // Deterministic: sha256(candidateId + certificationAuthorityIdentity +
+  // certificationPolicyIdentity). Never a wall-clock timestamp or random
+  // id -- see certify.ts's deriveCertifiedInterpretationId.
+  readonly certifiedInterpretationId: string
+  readonly candidateId: string
+  readonly interpretationInputIdentity: string
+  readonly interpreterIdentity: InterpreterIdentity
+  readonly evidenceProvenance: readonly EvidenceProvenanceEntry[]
+  readonly certificationAuthorityIdentity: NamedVersionedIdentity
+  readonly certificationPolicyIdentity: NamedVersionedIdentity
+}
+
+export type CertificationRefusalReason =
+  | "INVALID_CANDIDATE"
+  | "ALREADY_CERTIFIED"
+  | "INVALID_INPUT_IDENTITY"
+  | "INVALID_CANDIDATE_IDENTITY"
+  | "MISSING_REQUIRED_EVIDENCE"
+  | "INVALID_SOURCE_DIGEST"
+  | "UNSUPPORTED_SOURCE_VERSION"
+  | "INVALID_PROVENANCE"
+
+export type CertificationResult =
+  | { readonly decision: "CERTIFIED"; readonly certifiedInterpretation: CertifiedInterpretation }
+  | { readonly decision: "REFUSED"; readonly reason: CertificationRefusalReason; readonly detail: string }
