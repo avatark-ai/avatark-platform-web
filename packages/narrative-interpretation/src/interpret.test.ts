@@ -91,9 +91,16 @@ test("T12: no fabricated evidence ids -- derivedFromEvidenceIds contains exactly
   assert.deepStrictEqual(candidate.provenance.sourceEvidenceIds, ["ev-1", "ev-2"])
 })
 
-test("T13: provenance is honest about what Phase A cannot yet populate", () => {
+test("T13: provenance is honest about which evidence classes remain unintegrated, and generic opaque evidence is classified NOT_YET_INTEGRATED, never fabricated as real", () => {
   const candidate = interpretNarrativeEvidence(validInput(), IDENTITY)
-  assert.ok(candidate.provenance.notYetIntegrated.includes("worldHistoryLineage"))
+  assert.ok(candidate.provenance.notYetIntegrated.includes("TRACE"))
+  assert.ok(candidate.provenance.notYetIntegrated.includes("HISTORY_POOL"))
+  assert.equal(candidate.provenance.evidenceProvenance.length, 2)
+  for (const entry of candidate.provenance.evidenceProvenance) {
+    assert.equal(entry.integration, "NOT_YET_INTEGRATED")
+    assert.equal(entry.adapterIdentity, undefined)
+    assert.equal(entry.sourceArtifact, undefined)
+  }
 })
 
 test("T14: input objects are not mutated by interpretation", () => {

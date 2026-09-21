@@ -1,12 +1,20 @@
 import {
   CertificationAttemptRejectedError,
+  MalformedAdaptedEvidenceError,
   MalformedInterpretationInputError,
   MissingInterpreterIdentityError,
+  UnsupportedEvidenceKindError,
   UnsupportedInputSchemaVersionError,
 } from "./errors.ts"
+import { NOT_YET_INTEGRATED_EVIDENCE_CLASSES } from "./provenance.ts"
+import { ADAPTED_EVIDENCE_SOURCE_KIND, isAdaptedExpectedAbsenceEvidencePayload } from "./worldEvidence.ts"
 import type { InterpreterIdentity, NarrativeEvidenceItem, NarrativeInterpretationInput } from "./types.ts"
 
 export const SUPPORTED_INPUT_SCHEMA_VERSIONS: readonly string[] = ["1"]
+
+// Evidence sourceKind values this package recognizes as a real,
+// adapter-connected evidence class today.
+const RECOGNIZED_ADAPTED_EVIDENCE_KINDS: readonly string[] = [ADAPTED_EVIDENCE_SOURCE_KIND]
 
 export function validateInterpreterIdentity(identity: InterpreterIdentity | undefined | null): InterpreterIdentity {
   if (!identity || typeof identity !== "object") {
@@ -32,6 +40,14 @@ function validateEvidenceItem(item: unknown, index: number): NarrativeEvidenceIt
   if (!("payload" in record)) {
     throw new MalformedInterpretationInputError(`evidence[${index}].payload is required`)
   }
+
+  if (NOT_YET_INTEGRATED_EVIDENCE_CLASSES.includes(record.sourceKind)) {
+    throw new UnsupportedEvidenceKindError(record.sourceKind)
+  }
+  if (RECOGNIZED_ADAPTED_EVIDENCE_KINDS.includes(record.sourceKind) && !isAdaptedExpectedAbsenceEvidencePayload(record.payload)) {
+    throw new MalformedAdaptedEvidenceError(record.sourceKind, "payload does not match the adapted PlaceMemory.expectedPatternState shape (missing/invalid adapterIdentity, expectationId, subjectId, property, origin, evidenceStateIds, logicalTick, disconfirmationCount, or artifactReference)")
+  }
+
   return { evidenceId: record.evidenceId, sourceKind: record.sourceKind, payload: record.payload }
 }
 

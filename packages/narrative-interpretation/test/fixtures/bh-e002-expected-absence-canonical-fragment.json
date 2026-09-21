@@ -1,0 +1,28 @@
+{
+  "_fixtureNote": "STK-WO-009 Phase B (G10C-2): byte-for-byte copy of packages/narrative-ir-adapter/test/fixtures/bh-e002-expected-absence-canonical-fragment.json -- the real, canonical-schema-shaped fixture @avatark/narrative-ir-adapter's own certified R05-B tests are run against (studiok-living-symphony-compiler schemas/ir/v0/{place-memory,expected-pattern-state,runtime-requirements}.schema.json, IR 0.3.0). Copied rather than imported cross-package so this package's own tests stay self-contained; not a new or re-authored fixture. 'digest' below is the same fixture placeholder the adapter's own fixture carries, never a real certified SHA-256 value, and must never be treated as one -- see this gate's completion report for why a real compiler-computed digest was not substituted.",
+  "fixtureId": "r05-bh-e002-canonical",
+  "digest": "test-fixture-digest-not-canonical",
+  "documents": {
+    "place-memory/waiting-hollow": {
+      "irVersion": "0.3.0",
+      "placeId": "place/waiting-hollow",
+      "currentPhysicalState": { "arrangement": "worn-toward-one-spot" },
+      "currentEcologicalState": {},
+      "causalHistory": [],
+      "narrativeMeaning": { "residueClass": "broken-rhythm-residue" },
+      "expectedPatternState": {
+        "irVersion": "0.3.0",
+        "presence": "EXPECTED_BUT_MISSING",
+        "confidence": 0.7,
+        "confirmationSequence": ["CONFIRMED", "CONFIRMED", "CONFIRMED", "DISCONFIRMED"]
+      }
+    },
+    "runtime-requirements/occupancy-pattern": {
+      "irVersion": "0.3.0",
+      "id": "runtime-requirements/occupancy-pattern",
+      "requires": ["EXPECTED_STATE_COMPARISON"]
+    }
+  },
+  "subjectId": "place/waiting-hollow",
+  "property": "occupancy"
+}

@@ -23,9 +23,12 @@ const FORBIDDEN_EXPORT_NAME_FRAGMENTS = [
   "writerepisode",
 ]
 
+// STK-WO-009 Phase B sanctions exactly one governed dependency,
+// @avatark/narrative-ir-adapter -- deliberately dropped from this list
+// (see T17/T19 below, which prove the sanctioned dependency itself carries
+// no mutation capability) while every other forbidden fragment remains.
 const FORBIDDEN_IMPORT_FRAGMENTS = [
   "narrative-runtime",
-  "narrative-ir-adapter",
   "world-memory",
   "world-persistence",
   "world-adaptation",
@@ -35,7 +38,7 @@ const FORBIDDEN_IMPORT_FRAGMENTS = [
   "episode-compiler",
 ]
 
-const OWN_SOURCE_FILES = ["index.ts", "types.ts", "errors.ts", "validation.ts", "provenance.ts", "interpret.ts"]
+const OWN_SOURCE_FILES = ["index.ts", "types.ts", "errors.ts", "validation.ts", "provenance.ts", "interpret.ts", "worldEvidence.ts"]
 
 test("T16: the package's public exports contain no World-mutation, Episode-compiler, or Episode-semantic-authority surface", () => {
   const exportNames = Object.keys(narrativeInterpretation)
@@ -47,17 +50,23 @@ test("T16: the package's public exports contain no World-mutation, Episode-compi
   }
 })
 
-test("T17: the package declares zero runtime dependencies -- it cannot transitively reach a World-mutation or Episode-compiler API", () => {
+test("T17: the package declares exactly one runtime dependency (the governed, read-only @avatark/narrative-ir-adapter) -- nothing broader snuck in", () => {
   const packageJsonPath = fileURLToPath(new URL("../package.json", import.meta.url))
   const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8")) as Record<string, unknown>
-  assert.equal(packageJson.dependencies, undefined)
+  assert.deepStrictEqual(Object.keys(packageJson.dependencies as Record<string, unknown>), ["@avatark/narrative-ir-adapter"])
 })
 
-test("T18: no own source file imports from narrative-runtime, narrative-ir-adapter, or any World-mutation/persistence package", () => {
+test("T18: no own source file imports from narrative-runtime, or any World-mutation/persistence package", () => {
   for (const file of OWN_SOURCE_FILES) {
     const contents = readFileSync(fileURLToPath(new URL(`./${file}`, import.meta.url)), "utf8")
     for (const fragment of FORBIDDEN_IMPORT_FRAGMENTS) {
       assert.ok(!contents.includes(fragment), `${file} must not reference "${fragment}"`)
     }
   }
+})
+
+test("T19: the one sanctioned dependency (@avatark/narrative-ir-adapter) itself declares zero runtime dependencies, so this package's dependency graph still cannot transitively reach a World-mutation or Episode-compiler API", () => {
+  const adapterPackageJsonPath = fileURLToPath(new URL("../../narrative-ir-adapter/package.json", import.meta.url))
+  const adapterPackageJson = JSON.parse(readFileSync(adapterPackageJsonPath, "utf8")) as Record<string, unknown>
+  assert.equal(adapterPackageJson.dependencies, undefined)
 })

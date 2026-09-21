@@ -32,3 +32,17 @@ export class CertificationAttemptRejectedError extends NarrativeInterpretationEr
     this.name = "CertificationAttemptRejectedError"
   }
 }
+
+export class UnsupportedEvidenceKindError extends NarrativeInterpretationError {
+  constructor(sourceKind: string) {
+    super(`Evidence sourceKind "${sourceKind}" names a real Lane-1 evidence class this package has not yet connected (STK-WO-009 Phase B). It must not be silently accepted as opaque, undifferentiated evidence -- that would misrepresent a named, still-unintegrated authority as ordinary caller-supplied data.`)
+    this.name = "UnsupportedEvidenceKindError"
+  }
+}
+
+export class MalformedAdaptedEvidenceError extends NarrativeInterpretationError {
+  constructor(sourceKind: string, reason: string) {
+    super(`Evidence declared sourceKind "${sourceKind}" (a real, adapter-connected evidence class) but its payload does not match that class's adapted shape: ${reason}. It must not be silently repaired, downgraded to opaque, or fabricated.`)
+    this.name = "MalformedAdaptedEvidenceError"
+  }
+}
