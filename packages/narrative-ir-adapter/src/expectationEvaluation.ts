@@ -93,6 +93,7 @@ export function evaluateExpectation(
     subjectId: expectation.subjectId,
     property: expectation.property,
     origin: expectation.origin,
+    irVersion: expectation.irVersion,
     evidenceStateIds: [...expectation.patternEvidence],
     logicalTick: context.logicalTick,
     disconfirmationCount: context.disconfirmationCountSoFar + 1,

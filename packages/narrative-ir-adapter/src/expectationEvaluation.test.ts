@@ -7,12 +7,20 @@ import type { ExpectationReference } from "./expectationReference.ts"
 import { evaluateExpectation } from "./expectationEvaluation.ts"
 import type { ExpectationEvaluationContext } from "./expectationEvaluation.ts"
 
+// This fixture is the pre-migration STK-SPEC-007-shaped fragment (its own
+// _fixtureNote says so) -- it predates canonical irVersion entirely, so
+// there is no real source value to preserve here. STK-WO-009 Phase C
+// (G10C-3): a fixed, clearly-non-canonical placeholder, never a value this
+// test could mistake for real Lane-1 authority.
+const PRE_CANONICAL_FIXTURE_IR_VERSION = "pre-canonical-test-fixture"
+
 function expectationFromFixture(): ExpectationReference {
   return {
     expectationId: fixture.expectation.id,
     subjectId: fixture.expectation.subject,
     property: fixture.expectation.property,
     origin: fixture.expectation.origin as ExpectationReference["origin"],
+    irVersion: PRE_CANONICAL_FIXTURE_IR_VERSION,
     patternEvidence: fixture.expectation.patternEvidence,
     artifactReference: {
       sourceId: fixture.provenance.sourceId,
@@ -146,6 +154,7 @@ test("T15: causal humility -- ExpectedAbsenceFact contains no invented causal co
       "subjectId",
       "property",
       "origin",
+      "irVersion",
       "evidenceStateIds",
       "logicalTick",
       "disconfirmationCount",

@@ -17,6 +17,10 @@ export interface ExpectationReference {
   subjectId: string
   property: string
   origin: ExpectationOrigin
+  // STK-WO-009 Phase C (G10C-3): the source ExpectedPatternState's own
+  // irVersion, carried through unchanged -- see canonicalNarrativeIR.ts's
+  // CanonicalExpectedPatternState comment for why this was previously lost.
+  irVersion: string
   patternEvidence: readonly string[]
   artifactReference: ArtifactReference
   persistenceIntent?: PersistenceIntent

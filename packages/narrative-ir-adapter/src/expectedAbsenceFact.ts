@@ -11,6 +11,9 @@ export interface ExpectedAbsenceFact {
   subjectId: string
   property: string
   origin: ExpectationOrigin
+  // STK-WO-009 Phase C (G10C-3): the source ExpectedPatternState's own
+  // irVersion, carried through from ExpectationReference unchanged.
+  irVersion: string
   evidenceStateIds: string[]
   logicalTick: number
   disconfirmationCount: number

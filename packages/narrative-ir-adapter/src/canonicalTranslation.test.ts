@@ -152,6 +152,42 @@ test("R05-B: canonical ExpectedPatternState with a trailing DISCONFIRMED produce
   }
 })
 
+// STK-WO-009 Phase C (G10C-3): irVersion regression -- the source node's own
+// version must survive translation and evaluation unchanged, never
+// hard-coded and never dropped.
+test("R05-J: the source ExpectedPatternState's own irVersion survives into ExpectationReference and into the evaluated ExpectedAbsenceFact unchanged", () => {
+  const placeMemory = expectationFixture.documents["place-memory/waiting-hollow"]
+  const eps = placeMemory.expectedPatternState as CanonicalExpectedPatternState
+  const runtimeRequirementsDoc = expectationFixture.documents["runtime-requirements/occupancy-pattern"]
+
+  const artifactReference = artifactReferenceFromCanonical(
+    { fixtureId: expectationFixture.fixtureId, digest: expectationFixture.digest },
+    runtimeRequirementsDoc,
+    placeMemory.placeId,
+  )
+  const expectation = expectationReferenceFromCanonical(eps, {
+    expectationId: `expectation-${placeMemory.placeId}`,
+    subjectId: expectationFixture.subjectId,
+    property: expectationFixture.property,
+    artifactReference,
+  })
+  assert.equal(expectation.irVersion, eps.irVersion)
+  assert.equal(expectation.irVersion, "0.3.0", "this fixture's own documents declare irVersion 0.3.0 -- asserting the literal proves the value came from the fixture, not a hard-coded default")
+
+  const disconfirmationCountSoFar = disconfirmationCountFromConfirmationSequence(eps.confirmationSequence.slice(0, -1))
+  const result = evaluateExpectation(expectation, {
+    observedOutcome: "DEVIATED",
+    withinPatternWindow: false,
+    evidenceCompleteness: "COMPLETE",
+    logicalTick: 10,
+    disconfirmationCountSoFar,
+  })
+  assert.equal(result.status, "EXPECTED_ABSENCE")
+  if (result.status === "EXPECTED_ABSENCE") {
+    assert.equal(result.fact.irVersion, eps.irVersion)
+  }
+})
+
 test("R05-B: disconfirmationCountFromConfirmationSequence is a derived view, never a second stored authority", () => {
   assert.equal(disconfirmationCountFromConfirmationSequence(["CONFIRMED", "CONFIRMED", "CONFIRMED", "DISCONFIRMED"]), 1)
   assert.equal(disconfirmationCountFromConfirmationSequence([]), 0)
@@ -159,7 +195,7 @@ test("R05-B: disconfirmationCountFromConfirmationSequence is a derived view, nev
 })
 
 test("R05-B: an empty canonical confirmationSequence collapses to NOT_APPLICABLE (evaluator gate preserved)", () => {
-  const eps: CanonicalExpectedPatternState = { presence: "NEVER_PRESENT", confidence: 0, confirmationSequence: [] }
+  const eps: CanonicalExpectedPatternState = { irVersion: "0.3.0", presence: "NEVER_PRESENT", confidence: 0, confirmationSequence: [] }
   const runtimeRequirementsDoc = expectationFixture.documents["runtime-requirements/occupancy-pattern"]
   const artifactReference = artifactReferenceFromCanonical(
     { fixtureId: expectationFixture.fixtureId, digest: expectationFixture.digest },

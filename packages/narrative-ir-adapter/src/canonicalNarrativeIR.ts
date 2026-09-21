@@ -32,7 +32,15 @@ export type CanonicalEventOrigin = "CONSUMER_CAUSED" | "WORLD_PROCESS_CAUSED" | 
 // there is no `id`/`subject`/`property` field on this node itself; it is
 // always embedded in a containing PlaceMemory (keyed by that PlaceMemory's
 // own placeId) rather than independently addressable.
+//
+// STK-WO-009 Phase C (G10C-3): `irVersion` is required by the real schema
+// (part of its `required` array) but was missing from this hand-mirrored
+// type until now -- a real, disclosed gap found during Phase B and closed
+// here. Every existing canonical-fragment fixture already carries this
+// field on its own expectedPatternState node (it was simply never read);
+// no fixture needed to change.
 export interface CanonicalExpectedPatternState {
+  irVersion: string
   presence: "NEVER_PRESENT" | "PRESENT" | "TEMPORARILY_NOT_PRESENT" | "EXPECTED_BUT_MISSING"
   confidence: number
   confirmationSequence: readonly ("CONFIRMED" | "DISCONFIRMED")[]

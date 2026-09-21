@@ -58,11 +58,21 @@ export interface EvidenceProvenanceEntry {
     readonly ruleId: string
     readonly eventId: string
   }
+  // STK-WO-009 Phase C (G10C-3): the source record's own irVersion, present
+  // only for ADAPTED_REAL entries whose source actually carries one.
+  readonly sourceIrVersion?: string
 }
 
 export interface InterpretationProvenance {
   readonly interpreterIdentity: InterpreterIdentity
   readonly inputSchemaVersion: string
+  // STK-WO-009 Phase C (G10C-3): a deterministic identity of the exact
+  // authoritative/adapted evidence set (schemaVersion + every evidence
+  // item's full content) -- independent of interpreterIdentity. Separated
+  // from candidateId (below) so a future consumer can ask "would a
+  // different interpreter version reach the same input?" without the two
+  // questions being conflated in one hash.
+  readonly interpretationInputIdentity: string
   readonly sourceEvidenceIds: readonly string[]
   // Per-item real lineage -- see EvidenceProvenanceEntry above.
   readonly evidenceProvenance: readonly EvidenceProvenanceEntry[]
@@ -75,6 +85,19 @@ export interface InterpretationProvenance {
   // has been connected.
   readonly notYetIntegrated: readonly string[]
 }
+
+// STK-WO-009 Phase C (G10C-3): the minimum-sufficient-evidence classification
+// for a real Lane-1 evidence class, per this gate's own required taxonomy.
+// See provenance.ts's EVIDENCE_REQUIREMENT_CLASSIFICATION for the actual
+// per-class judgments, and the gate's completion report for the reasoning
+// behind each one.
+export type EvidenceRequirementClassification =
+  | "REQUIRED_FOR_CANDIDATE_IDENTITY"
+  | "REQUIRED_FOR_CANDIDATE_MEANING"
+  | "REQUIRED_FOR_CAUSAL_EXPLAINABILITY"
+  | "OPTIONAL_CONTEXT"
+  | "DEFER_TO_LATER_PHASE"
+  | "NOT_RELEVANT_TO_INTERPRETATION"
 
 export interface NarrativeInterpretationCandidate {
   readonly candidateId: string

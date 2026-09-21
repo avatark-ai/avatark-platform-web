@@ -44,6 +44,11 @@ export interface AdaptedExpectedAbsenceEvidencePayload {
   readonly subjectId: string
   readonly property: string
   readonly origin: ExpectationOrigin
+  // STK-WO-009 Phase C (G10C-3): the source ExpectedPatternState's own
+  // irVersion, carried through from the adapter's ExpectedAbsenceFact.irVersion
+  // unchanged -- closes the Phase-B-disclosed gap where this field was
+  // dropped by the adapter's own (now-fixed) translation.
+  readonly irVersion: string
   readonly evidenceStateIds: readonly string[]
   readonly logicalTick: number
   readonly disconfirmationCount: number
@@ -62,6 +67,7 @@ export function evidenceItemFromExpectedAbsenceFact(fact: ExpectedAbsenceFact): 
     subjectId: fact.subjectId,
     property: fact.property,
     origin: fact.origin,
+    irVersion: fact.irVersion,
     evidenceStateIds: fact.evidenceStateIds,
     logicalTick: fact.logicalTick,
     disconfirmationCount: fact.disconfirmationCount,
@@ -103,6 +109,9 @@ export function isAdaptedExpectedAbsenceEvidencePayload(value: unknown): value i
     return false
   }
   if (!isNonEmptyString(record.expectationId) || !isNonEmptyString(record.subjectId) || !isNonEmptyString(record.property)) {
+    return false
+  }
+  if (!isNonEmptyString(record.irVersion)) {
     return false
   }
   if (record.origin !== "WORLD_PATTERN" && record.origin !== "OBSERVER_KNOWLEDGE") {

@@ -58,6 +58,9 @@ export function expectationReferenceFromCanonical(
     subjectId: ctx.subjectId,
     property: ctx.property,
     origin: "WORLD_PATTERN",
+    // STK-WO-009 Phase C (G10C-3): carried from the source node, never
+    // hard-coded to the current Lane-1 version.
+    irVersion: expectedPatternState.irVersion,
     patternEvidence: expectedPatternState.confirmationSequence.map((_, index) => `${ctx.expectationId}-evidence-${index}`),
     artifactReference: ctx.artifactReference,
     persistenceIntent: ctx.persistenceIntent,

@@ -109,17 +109,25 @@ test("WB4: real source identity (subjectId/property/expectationId) survives the 
   assert.equal(entry.integration, "ADAPTED_REAL")
 })
 
-// 6. Source version -- honestly NOT preserved: @avatark/narrative-ir-adapter's
-// own hand-mirrored canonical types (CanonicalAction, CanonicalExpectedPatternState,
-// ArtifactReference, ExpectedAbsenceFact) carry no irVersion field at all
-// (confirmed directly against canonicalNarrativeIR.ts), so this package has
-// nothing to preserve at this boundary. Proven here by absence, not
-// asserted by a fabricated field.
-test("WB5: irVersion is honestly absent from the adapted evidence payload -- never fabricated because the adapter itself does not carry it", () => {
+// 5 (source irVersion preservation, STK-WO-009 Phase C / G10C-3). Phase B
+// found this gap and left it open (WB5 used to assert the field's absence);
+// Phase C closed it in the adapter itself (canonicalNarrativeIR.ts,
+// expectationReference.ts, expectedAbsenceFact.ts, expectationEvaluation.ts
+// -- see the adapter's own new R05-J regression test), so this package now
+// carries the real value through rather than fabricating or omitting it.
+test("WB5: the source ExpectedPatternState's own irVersion survives unchanged into the adapted evidence payload -- never fabricated, never hard-coded", () => {
   const fact = realExpectedAbsenceFact()
   const item = evidenceItemFromExpectedAbsenceFact(fact)
-  const payload = item.payload as Record<string, unknown>
-  assert.equal("irVersion" in payload, false)
+  const payload = item.payload as { irVersion: string }
+  assert.equal(payload.irVersion, fact.irVersion)
+  assert.equal(payload.irVersion, "0.3.0", "this fixture's own documents declare irVersion 0.3.0 -- asserting the literal proves the value came from the fixture, not a default")
+})
+
+test("WB5b: sourceIrVersion is carried into candidate provenance", () => {
+  const fact = realExpectedAbsenceFact()
+  const item = evidenceItemFromExpectedAbsenceFact(fact)
+  const entry = interpretNarrativeEvidence(inputWith(item), IDENTITY).provenance.evidenceProvenance[0]
+  assert.equal(entry.sourceIrVersion, fact.irVersion)
 })
 
 // 8. Canonical digest is preserved where available (as a fixture placeholder, honestly labeled, never treated as certified).
@@ -218,4 +226,103 @@ test("WB15: exercising the real evidence path never writes back to the fixture f
   realExpectedAbsenceFact({ digest: "probe-digest", confirmationSequence: ["DISCONFIRMED"] })
   const after = readFileSync(fixturePath, "utf8")
   assert.equal(before, after)
+})
+
+// --- STK-WO-009 Phase C (G10C-3): interpretationInputIdentity / candidateId separation ---
+
+// 10. Identical source evidence -> identical interpretation input identity.
+test("WC1: interpretationInputIdentity depends only on evidence content, not on interpreter identity", () => {
+  const item = evidenceItemFromExpectedAbsenceFact(realExpectedAbsenceFact())
+  const asV1 = interpretNarrativeEvidence(inputWith(item), IDENTITY)
+  const asV2 = interpretNarrativeEvidence(inputWith(item), { name: "narrative-interpretation", version: "0.2.0" })
+  assert.equal(asV1.provenance.interpretationInputIdentity, asV2.provenance.interpretationInputIdentity)
+})
+
+// 13. Changed interpreter version -> changed candidate identity (even though the input identity is provably the same one).
+test("WC2: a different interpreter version changes candidateId while interpretationInputIdentity proves the evidence set is unchanged", () => {
+  const item = evidenceItemFromExpectedAbsenceFact(realExpectedAbsenceFact())
+  const asV1 = interpretNarrativeEvidence(inputWith(item), IDENTITY)
+  const asV2 = interpretNarrativeEvidence(inputWith(item), { name: "narrative-interpretation", version: "0.2.0" })
+  assert.notEqual(asV1.candidateId, asV2.candidateId)
+  assert.equal(asV1.provenance.interpretationInputIdentity, asV2.provenance.interpretationInputIdentity)
+})
+
+// 11. Changed authoritative content -> changed input identity (the interpretationInputIdentity field itself, not just candidateId).
+test("WC3: a genuinely different confirmationSequence changes interpretationInputIdentity, not only candidateId", () => {
+  const baseline = interpretNarrativeEvidence(inputWith(evidenceItemFromExpectedAbsenceFact(realExpectedAbsenceFact())), IDENTITY)
+  const changed = interpretNarrativeEvidence(
+    inputWith(evidenceItemFromExpectedAbsenceFact(realExpectedAbsenceFact({ confirmationSequence: ["CONFIRMED", "DISCONFIRMED"] }))),
+    IDENTITY,
+  )
+  assert.notEqual(baseline.provenance.interpretationInputIdentity, changed.provenance.interpretationInputIdentity)
+})
+
+// --- STK-WO-009 Phase C (G10C-3): real compiler-produced SHA-256 digest, proof level C ---
+//
+// This digest was produced once, by this gate, by directly invoking the
+// real, unmodified Lane-1 compiler
+// (studiok-living-symphony-compiler/scripts/compile-living-world-artifact.mjs)
+// against that repository's own real, pre-existing, unmodified fixture
+// fixtures/positive/C-repeated-pattern-gap-perceptible-absence.json:
+//
+//   node scripts/compile-living-world-artifact.mjs \
+//     fixtures/positive/C-repeated-pattern-gap-perceptible-absence.json
+//   stderr: DIGEST sha256:7a823c5abc98bc21c53f4be3ea7444625ca89b7baa679731ab514ba77d84efba
+//
+// Independently re-verified by hashing the compiler's own canonical stdout
+// bytes with node:crypto directly (not trusting the script's stderr claim
+// alone) -- same digest. Embedded here as a literal, not fetched at
+// test-time: this package must not runtime-depend on that repository (see
+// this gate's completion report for why). This is proof level C (a real
+// compiler invocation), not level D (a live production World History
+// service) -- see the report's proof-level statement.
+const REAL_COMPILER_FIXTURE_ID = "C-repeated-pattern-gap-perceptible-absence"
+const REAL_COMPILER_DIGEST = "7a823c5abc98bc21c53f4be3ea7444625ca89b7baa679731ab514ba77d84efba"
+
+test("WC4: the embedded real compiler digest is a genuine 64-hex-character SHA-256, not a placeholder shape", () => {
+  assert.match(REAL_COMPILER_DIGEST, /^[0-9a-f]{64}$/)
+  assert.notEqual(REAL_COMPILER_DIGEST, fixture.digest, "must not be the fixture-placeholder digest")
+})
+
+// 7 & 8. Real compiler SHA-256 reaches candidate provenance; the adapter does not replace it.
+test("WC5: pairing the real compiler-produced fixtureId+digest through the real, unmodified adapter carries the real digest unchanged into candidate provenance", () => {
+  const runtimeRequirementsDoc = fixture.documents["runtime-requirements/occupancy-pattern"] as { id: string; requires: readonly string[] }
+  const placeMemory = fixture.documents["place-memory/waiting-hollow"] as { placeId: string; expectedPatternState: CanonicalExpectedPatternState }
+
+  const artifactReference = artifactReferenceFromCanonical(
+    { fixtureId: REAL_COMPILER_FIXTURE_ID, digest: REAL_COMPILER_DIGEST },
+    runtimeRequirementsDoc,
+    placeMemory.placeId,
+  )
+  assert.equal(artifactReference.digest, REAL_COMPILER_DIGEST, "the adapter must carry the real digest through unchanged, never recompute it")
+  assert.equal(artifactReference.sourceId, REAL_COMPILER_FIXTURE_ID)
+
+  const expectation = expectationReferenceFromCanonical(placeMemory.expectedPatternState, {
+    expectationId: `expectation-${placeMemory.placeId}`,
+    subjectId: fixture.subjectId,
+    property: fixture.property,
+    artifactReference,
+  })
+  const disconfirmationCountSoFar = disconfirmationCountFromConfirmationSequence(placeMemory.expectedPatternState.confirmationSequence.slice(0, -1))
+  const result = evaluateExpectation(expectation, {
+    observedOutcome: "DEVIATED",
+    withinPatternWindow: false,
+    evidenceCompleteness: "COMPLETE",
+    logicalTick: 10,
+    disconfirmationCountSoFar,
+  })
+  assert.equal(result.status, "EXPECTED_ABSENCE")
+  if (result.status !== "EXPECTED_ABSENCE") {
+    throw new Error("unreachable")
+  }
+
+  const item = evidenceItemFromExpectedAbsenceFact(result.fact)
+  const candidate = interpretNarrativeEvidence(inputWith(item), IDENTITY)
+  const entry = candidate.provenance.evidenceProvenance[0]
+  assert.equal(entry.sourceArtifact?.digest, REAL_COMPILER_DIGEST)
+
+  // 9. The interpreter's own candidateId is a different hash of many
+  // things (including this digest) -- never the digest itself, and never
+  // presented as if it were source authority.
+  assert.notEqual(candidate.candidateId, REAL_COMPILER_DIGEST)
 })
