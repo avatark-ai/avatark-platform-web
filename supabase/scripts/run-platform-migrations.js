@@ -99,7 +99,10 @@ const MIGRATION_ORDER = [
   '035_participation.sql',
   // WORLDK-M09: durable visitor/world absence ledger. Same precedent,
   // NOT applied (proven only against a disposable local Postgres).
-  '036_world_visitor_continuity.sql',
+  // WORLDK-P11: renumbered 036 -> 037 (byte-identical SQL). 036 is
+  // reserved for 036_certification_authority.sql on the narrative-ir-adapter
+  // lineage, which is expected to land first.
+  '037_world_visitor_continuity.sql',
 ]
 
 async function main() {

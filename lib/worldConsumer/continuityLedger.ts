@@ -7,7 +7,7 @@
 // There is deliberately NO write for browsing, viewing a projection, or
 // submitting an entry intent, so none of those can ever move lastSeen.
 //
-// Semantics are those of supabase/migrations/036_world_visitor_continuity.sql.
+// Semantics are those of supabase/migrations/037_world_visitor_continuity.sql.
 // InMemoryContinuityLedger mirrors them exactly (same test suite runs
 // against both); PostgresContinuityLedger calls the migration's functions.
 
@@ -133,7 +133,7 @@ export class InMemoryContinuityLedger implements VisitorContinuityLedger {
   }
 }
 
-// ── Postgres (migration 036) ───────────────────────────────────────
+// ── Postgres (migration 037) ───────────────────────────────────────
 
 /** Minimal query surface (satisfied by `pg`'s Pool/Client). */
 export interface SqlQueryable {

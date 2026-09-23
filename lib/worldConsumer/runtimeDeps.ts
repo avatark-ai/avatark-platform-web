@@ -5,7 +5,7 @@
 // so the API honestly answers PROJECTION_UNAVAILABLE rather than serving
 // fixture facts as production truth.
 //
-// Ledger: Postgres (migration 036 functions) when
+// Ledger: Postgres (migration 037 functions) when
 // WORLD_CONSUMER_LEDGER_DATABASE_URL is set; otherwise a process-local
 // in-memory ledger (non-durable — suitable only for preview).
 

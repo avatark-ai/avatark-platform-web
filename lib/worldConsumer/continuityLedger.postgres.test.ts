@@ -1,5 +1,5 @@
 // Runs the SAME ledger semantics suite against real Postgres with
-// supabase/migrations/036_world_visitor_continuity.sql applied.
+// supabase/migrations/037_world_visitor_continuity.sql applied.
 //
 // Requires WORLD_CONSUMER_TEST_DATABASE_URL pointing at a DISPOSABLE local
 // database (never shared/production). Skipped — visibly — when unset.
@@ -22,7 +22,7 @@ if (!url) {
   if (!/@(localhost|127\.0\.0\.1)(:\d+)?\//.test(url)) throw new Error("refusing to run: WORLD_CONSUMER_TEST_DATABASE_URL must point at a local disposable database")
   const pool = new pg.Pool({ connectionString: url, max: 2 })
 
-  // Minimal Supabase-shaped prerequisites for migration 036 (auth.users, auth.uid(), roles).
+  // Minimal Supabase-shaped prerequisites for migration 037 (auth.users, auth.uid(), roles).
   const ready = (async () => {
     await pool.query(`
       DO $$ BEGIN
@@ -34,7 +34,7 @@ if (!url) {
       CREATE OR REPLACE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $f$ SELECT nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $f$;
       DROP TABLE IF EXISTS world_visitor_continuity CASCADE;
     `)
-    await pool.query(readFileSync(path.join(here, "../../supabase/migrations/036_world_visitor_continuity.sql"), "utf8"))
+    await pool.query(readFileSync(path.join(here, "../../supabase/migrations/037_world_visitor_continuity.sql"), "utf8"))
   })()
 
   const subject = async () => {
@@ -43,17 +43,17 @@ if (!url) {
     return id
   }
 
-  runContinuityLedgerSuite("postgres ledger (migration 036)", async () => {
+  runContinuityLedgerSuite("postgres ledger (migration 037)", async () => {
     await ready
     return { ledger: new PostgresContinuityLedger(pool), subject }
   })
 
-  test("postgres: migration is additive and idempotent (re-applying 036 keeps rows)", async () => {
+  test("postgres: migration is additive and idempotent (re-applying 037 keeps rows)", async () => {
     await ready
     const ledger = new PostgresContinuityLedger(pool)
     const s = await subject()
     await ledger.recordConfirmedEntry({ worldId: "living-forest", subjectId: s, at: "2026-09-23T10:00:00.000Z", worldTick: 1, placeId: null })
-    await pool.query(readFileSync(path.join(here, "../../supabase/migrations/036_world_visitor_continuity.sql"), "utf8"))
+    await pool.query(readFileSync(path.join(here, "../../supabase/migrations/037_world_visitor_continuity.sql"), "utf8"))
     assert.equal((await ledger.get("living-forest", s))!.visitCount, 1)
   })
 
