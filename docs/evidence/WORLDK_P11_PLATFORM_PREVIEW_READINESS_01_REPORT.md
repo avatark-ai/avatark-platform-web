@@ -182,6 +182,7 @@ WorldK signs in with `signInWithOtp` and `emailRedirectTo = <origin>/auth/callba
 ## 20. Deployment Evidence
 
 - **Deployment:** pushing `feature/worldk-p11-platform-preview` triggers the existing Vercel Git integration, which creates a Preview (non-production) deployment in PRODUCTION consumer mode, gated by SSO.
+- **Observed after push:** deployment `avatark-platform-q1c6n58dt-avatark.vercel.app` (commit `97dd72f`, target Preview) is READY. `GET /api/worlds/living-forest/public-projection` → `302` to `vercel.com/sso-api`, which confirms blocker 3 on the P11 deployment itself.
 - **Not changed:** no production deployment, no Vercel project settings, no env vars, no DNS.
 
 ## 21. WorldK Mutation Audit
