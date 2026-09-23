@@ -97,6 +97,9 @@ const MIGRATION_ORDER = [
   '034_canonical_events.sql',
   // Sprint 19: same precedent, NOT applied.
   '035_participation.sql',
+  // WORLDK-M09: durable visitor/world absence ledger. Same precedent,
+  // NOT applied (proven only against a disposable local Postgres).
+  '036_world_visitor_continuity.sql',
 ]
 
 async function main() {
