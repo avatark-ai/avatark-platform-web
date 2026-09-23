@@ -16,6 +16,9 @@ import type { CapabilityGrantRow } from './types.ts'
 // looks unpolished.
 const CAPABILITY_LABELS: Record<string, string> = {
   'platform.capability.manage': 'Manage capability grants',
+  // PLT-ADR-015: per-subject-kind certification invocation (never publish).
+  'certification.invoke.interpretation': 'Certify narrative interpretations',
+  'certification.invoke.episode': 'Certify episodes',
 }
 
 export function friendlyCapabilityLabel(capability: string): string {

@@ -279,3 +279,38 @@ test('revokeCapabilityGrant rejects an empty grantId before touching the databas
   assert.equal(result.status, 'error')
   assert.equal(client.state.platform_audit_events.length, 0)
 })
+
+// PLT-ADR-015 §2: certification-invocation grants are administrator-issued,
+// never self-assigned, and platform-scoped.
+test('createCapabilityGrant issues a certification-invocation grant from an administrator to another user', async () => {
+  const client = makeFakeAdminClient()
+  const result = await createCapabilityGrant(client as never, 'admin-1', {
+    userId: 'user-1',
+    capability: 'certification.invoke.episode',
+    scopeType: 'platform',
+  })
+  assert.equal(result.status, 'ready')
+  if (result.status === 'ready') assert.equal(result.data.grantedBy, 'admin-1')
+})
+
+test('createCapabilityGrant refuses a self-assigned certification-invocation grant, even for an administrator', async () => {
+  const client = makeFakeAdminClient()
+  const result = await createCapabilityGrant(client as never, 'admin-1', {
+    userId: 'admin-1',
+    capability: 'certification.invoke.interpretation',
+    scopeType: 'platform',
+  })
+  assert.equal(result.status, 'error')
+  assert.equal(client.state.capability_grants.length, 0)
+})
+
+test('createCapabilityGrant refuses a non-platform-scoped certification-invocation grant', async () => {
+  const client = makeFakeAdminClient()
+  const result = await createCapabilityGrant(client as never, 'admin-1', {
+    userId: 'user-1',
+    capability: 'certification.invoke.episode',
+    scopeType: 'product',
+    scopeId: 'streamk',
+  })
+  assert.equal(result.status, 'error')
+})

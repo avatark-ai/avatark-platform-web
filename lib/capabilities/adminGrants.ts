@@ -24,6 +24,8 @@ export interface CreateCapabilityGrantInput {
 
 // Matches any RFC-4122-shaped UUID (not just v4) -- gen_random_uuid()
 // produces v4, but this is a format check, not a version assertion.
+const CERTIFICATION_CAPABILITY_PREFIX = 'certification.invoke.'
+
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 export async function listGrantsForUser(admin: SupabaseClient, userId: string): Promise<AdminGrantResult<CapabilityGrantRow[]>> {
@@ -83,6 +85,13 @@ export async function createCapabilityGrant(
   const capability = typeof input.capability === 'string' ? input.capability.trim() : ''
   if (!userId) return { status: 'error', message: 'userId is required' }
   if (!capability) return { status: 'error', message: 'capability is required' }
+  // PLT-ADR-015 §2: a certification-invocation grant is administrator-issued
+  // and never self-assigned, and exists only at platform scope. (The
+  // Certification Authority independently refuses a self-assigned grant.)
+  if (capability.startsWith(CERTIFICATION_CAPABILITY_PREFIX)) {
+    if (userId === actorId) return { status: 'error', message: 'a certification-invocation grant cannot be self-assigned' }
+    if (input.scopeType !== 'platform') return { status: 'error', message: 'certification-invocation grants are platform-scoped' }
+  }
   if (input.scopeType !== 'platform' && input.scopeType !== 'product' && input.scopeType !== 'organization') {
     return { status: 'error', message: 'scopeType must be one of platform, product, organization' }
   }

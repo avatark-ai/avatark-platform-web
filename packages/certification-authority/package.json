@@ -1,0 +1,41 @@
+{
+  "name": "@avatark/certification-authority",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PLT-ADR-015: the narrative Certification Authority -- sole issuer of immutable, Ed25519-attested Certification Records for Interpretation and Episode certification. Wraps the existing pure evaluators unmodified; checks an administrator-issued per-subject-kind invocation grant; persists every issued record and every refused invocation through durable ports. Never publishes, promotes or mutates World state.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "test": "node --experimental-strip-types --test src/*.test.ts",
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
+  },
+  "dependencies": {
+    "@avatark/narrative-interpretation": "workspace:*",
+    "@avatark/episode-compiler": "workspace:*"
+  },
+  "devDependencies": {
+    "@avatark/episode-semantic-generation": "workspace:*",
+    "typescript": "^5"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    }
+  }
+}
