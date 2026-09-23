@@ -1,0 +1,38 @@
+{
+  "name": "@avatark/world-consumer-contracts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "WorldK consumer contracts v1 (PublicWorldProjection, VisitorWorldProjection + SinceYouWereHere, WorldEntryIntent/Result, StreamK NarrativeContext). Owner: AvatarK Platform. WorldK is a consumer only. Frozen M07 JSON Schemas ship in schemas/v1.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./schemas/v1/*": "./schemas/v1/*"
+  },
+  "types": "./src/index.ts",
+  "devDependencies": {
+    "typescript": "^5"
+  },
+  "files": [
+    "dist",
+    "schemas"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      },
+      "./schemas/v1/*": "./schemas/v1/*"
+    }
+  }
+}

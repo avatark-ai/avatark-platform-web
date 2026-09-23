@@ -15,6 +15,8 @@ const BUILD_ORDER = [
   "account", "locale", "appearance",
   // Runtime Kernel (also leaves: zero @avatark/* dependencies).
   "runtime-contracts", "narrative-runtime", "living-world-runtime", "experience-registry", "context-runtime", "experience-runtime",
+  // WorldK consumer contracts (leaf: zero @avatark/* dependencies).
+  "world-consumer-contracts",
   // One hop: each depends only on leaves above.
   "navigation",     // -> product-registry
   "living-echo",    // -> timeline, recommendations

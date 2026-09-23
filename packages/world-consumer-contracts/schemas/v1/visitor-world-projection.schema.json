@@ -1,0 +1,254 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://contracts.avatark.ai/worldk/v1/visitor-world-projection.schema.json",
+  "title": "VisitorWorldProjection v1 (includes SinceYouWereHereProjection)",
+  "description": "PRIVATE, authenticated projection of one visitor's relationship with one Living World, keyed by (worldId, AvatarK subjectId). OWNER/PRODUCER: AvatarK Platform World Memory. CONSUMER: WorldK. Cache: private only (never shared/CDN). Personalization SELECTS world truth; it never alters it — every change links to public occurrences.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "contract", "worldId", "status", "subjectId", "cacheScope", "freshness", "projection"],
+  "properties": {
+    "schemaVersion": { "$ref": "common.schema.json#/definitions/schemaVersion" },
+    "contract": { "const": "visitor-world-projection" },
+    "worldId": { "$ref": "common.schema.json#/definitions/worldId" },
+    "status": {
+      "type": "string",
+      "enum": ["OK", "UNAUTHENTICATED", "UNAUTHORIZED", "WORLD_NOT_FOUND", "PROJECTION_UNAVAILABLE"]
+    },
+    "subjectId": {
+      "description": "Derived by the platform from the verified session — never supplied by WorldK. Present iff status is OK, UNAUTHORIZED or PROJECTION_UNAVAILABLE.",
+      "oneOf": [{ "$ref": "common.schema.json#/definitions/subjectId" }, { "type": "null" }]
+    },
+    "cacheScope": { "const": "PRIVATE" },
+    "freshness": { "$ref": "common.schema.json#/definitions/freshness" },
+    "projection": { "oneOf": [{ "$ref": "#/definitions/projection" }, { "type": "null" }] }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "OK" } } },
+      "then": {
+        "properties": {
+          "subjectId": { "$ref": "common.schema.json#/definitions/subjectId" },
+          "projection": { "$ref": "#/definitions/projection" },
+          "freshness": { "properties": { "state": { "enum": ["CURRENT", "STALE"] } } }
+        }
+      },
+      "else": {
+        "properties": {
+          "projection": { "type": "null" },
+          "freshness": { "properties": { "state": { "const": "UNAVAILABLE" } } }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "enum": ["UNAUTHENTICATED", "WORLD_NOT_FOUND"] } } },
+      "then": { "properties": { "subjectId": { "type": "null" } } }
+    },
+    {
+      "if": { "properties": { "status": { "enum": ["UNAUTHORIZED", "PROJECTION_UNAVAILABLE"] } } },
+      "then": { "properties": { "subjectId": { "$ref": "common.schema.json#/definitions/subjectId" } } }
+    }
+  ],
+  "definitions": {
+    "projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relationship", "returnContext", "sinceYouWereHere"],
+      "properties": {
+        "relationship": { "$ref": "#/definitions/relationship" },
+        "returnContext": { "$ref": "#/definitions/returnContext" },
+        "sinceYouWereHere": { "$ref": "#/definitions/sinceYouWereHere" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "relationship": { "properties": { "state": { "const": "NO_PRIOR_VISIT" } } } } },
+          "then": {
+            "properties": {
+              "returnContext": { "properties": { "arrivalKind": { "const": "FIRST_VISIT" }, "continuity": { "const": "NOT_APPLICABLE" } } },
+              "sinceYouWereHere": { "properties": { "state": { "const": "NOT_APPLICABLE_FIRST_VISIT" } } }
+            }
+          },
+          "else": {
+            "properties": {
+              "returnContext": { "properties": { "arrivalKind": { "const": "RETURNING" } } },
+              "sinceYouWereHere": { "properties": { "state": { "enum": ["NO_MEANINGFUL_CHANGES", "CHANGES", "UNAVAILABLE"] } } }
+            }
+          }
+        }
+      ]
+    },
+    "relationship": {
+      "description": "VisitorWorldRelationship. Authority: platform World Memory absence ledger (semantics frozen in M07; persistence NOT yet implemented — see report §7).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "visitCount", "firstEnteredAt", "lastEnteredAt", "lastLeftAt", "lastSeen", "encounteredPlaceIds"],
+      "properties": {
+        "state": { "type": "string", "enum": ["NO_PRIOR_VISIT", "VISITED"] },
+        "visitCount": {
+          "description": "Count of CONFIRMED entries (runtime-confirmed arrival), not WorldK page views and not entry intents.",
+          "type": "integer", "minimum": 0
+        },
+        "firstEnteredAt": { "oneOf": [{ "$ref": "common.schema.json#/definitions/timestamp" }, { "type": "null" }] },
+        "lastEnteredAt": { "oneOf": [{ "$ref": "common.schema.json#/definitions/timestamp" }, { "type": "null" }] },
+        "lastLeftAt": {
+          "description": "Null while a visit is open or when the last visit ended without a recorded leave.",
+          "oneOf": [{ "$ref": "common.schema.json#/definitions/timestamp" }, { "type": "null" }]
+        },
+        "lastSeen": {
+          "description": "The latest point at which the visitor was confirmed PRESENT in the world. Anchor of the Since-You-Were-Here interval.",
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["at", "worldTick", "basis"],
+              "properties": {
+                "at": { "$ref": "common.schema.json#/definitions/timestamp" },
+                "worldTick": { "$ref": "common.schema.json#/definitions/worldTick" },
+                "basis": { "type": "string", "enum": ["LEAVE_RECORDED", "PRESENCE_TIMEOUT", "ENTRY_CONFIRMED"] }
+              }
+            },
+            { "type": "null" }
+          ]
+        },
+        "encounteredPlaceIds": {
+          "description": "Public placeIds the visitor has been confirmed present at. Never includes non-public places.",
+          "type": "array", "uniqueItems": true, "items": { "$ref": "common.schema.json#/definitions/placeId" }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "state": { "const": "NO_PRIOR_VISIT" } } },
+          "then": {
+            "properties": {
+              "visitCount": { "const": 0 },
+              "firstEnteredAt": { "type": "null" },
+              "lastEnteredAt": { "type": "null" },
+              "lastLeftAt": { "type": "null" },
+              "lastSeen": { "type": "null" },
+              "encounteredPlaceIds": { "maxItems": 0 }
+            }
+          },
+          "else": {
+            "properties": {
+              "visitCount": { "minimum": 1 },
+              "firstEnteredAt": { "$ref": "common.schema.json#/definitions/timestamp" },
+              "lastEnteredAt": { "$ref": "common.schema.json#/definitions/timestamp" }
+            }
+          }
+        }
+      ]
+    },
+    "returnContext": {
+      "description": "Continuity state the platform will apply on the next ENTER (mirrors ArrivalDecision / R07 VisitContinuity). Informational for WorldK copy (ENTER vs RETURN label); the entry decision itself is made at ENTER time.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["arrivalKind", "lastPlaceId", "continuity"],
+      "properties": {
+        "arrivalKind": { "type": "string", "enum": ["FIRST_VISIT", "RETURNING"] },
+        "lastPlaceId": { "oneOf": [{ "$ref": "common.schema.json#/definitions/placeId" }, { "type": "null" }] },
+        "continuity": {
+          "type": "string",
+          "enum": ["NOT_APPLICABLE", "RECOGNIZED", "NO_CONTINUITY_RECORD"]
+        }
+      }
+    },
+    "sinceYouWereHere": {
+      "description": "SinceYouWereHereProjection. Derived by the PLATFORM from: authoritative world change (World Memory events in the interval) + the visitor's absence interval (lastSeen → current) + relationship + a versioned deterministic relevance policy. WorldK renders only.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "interval", "summary", "changes", "omittedChangeCount", "selectionPolicy", "unavailableReason"],
+      "properties": {
+        "state": { "type": "string", "enum": ["NOT_APPLICABLE_FIRST_VISIT", "NO_MEANINGFUL_CHANGES", "CHANGES", "UNAVAILABLE"] },
+        "interval": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["since", "through"],
+              "properties": {
+                "since": { "$ref": "#/definitions/intervalPoint" },
+                "through": { "$ref": "#/definitions/intervalPoint" }
+              }
+            },
+            { "type": "null" }
+          ]
+        },
+        "summary": { "oneOf": [{ "type": "string", "minLength": 1, "maxLength": 400 }, { "type": "null" }] },
+        "changes": { "type": "array", "items": { "$ref": "#/definitions/change" } },
+        "omittedChangeCount": {
+          "description": "World-significant changes in the interval NOT selected by the relevance policy (still visible in public History).",
+          "type": "integer", "minimum": 0
+        },
+        "selectionPolicy": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["policyId", "version"],
+              "properties": {
+                "policyId": { "$ref": "common.schema.json#/definitions/semanticId" },
+                "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" }
+              }
+            },
+            { "type": "null" }
+          ]
+        },
+        "unavailableReason": {
+          "oneOf": [{ "type": "string", "enum": ["NO_CONTINUITY_RECORD", "SOURCE_UNAVAILABLE"] }, { "type": "null" }]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "state": { "const": "CHANGES" } } },
+          "then": { "properties": { "interval": { "type": "object" }, "changes": { "minItems": 1 }, "selectionPolicy": { "type": "object" }, "unavailableReason": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "state": { "const": "NO_MEANINGFUL_CHANGES" } } },
+          "then": { "properties": { "interval": { "type": "object" }, "changes": { "maxItems": 0 }, "omittedChangeCount": { "const": 0 }, "selectionPolicy": { "type": "object" }, "unavailableReason": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "state": { "const": "NOT_APPLICABLE_FIRST_VISIT" } } },
+          "then": { "properties": { "interval": { "type": "null" }, "summary": { "type": "null" }, "changes": { "maxItems": 0 }, "omittedChangeCount": { "const": 0 }, "selectionPolicy": { "type": "null" }, "unavailableReason": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "state": { "const": "UNAVAILABLE" } } },
+          "then": { "properties": { "changes": { "maxItems": 0 }, "unavailableReason": { "type": "string" } } }
+        }
+      ]
+    },
+    "intervalPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["at", "worldTick"],
+      "properties": {
+        "at": { "$ref": "common.schema.json#/definitions/timestamp" },
+        "worldTick": { "$ref": "common.schema.json#/definitions/worldTick" }
+      }
+    },
+    "change": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["changeId", "kind", "placeIds", "summary", "worldTime", "worldSignificance", "visitorRelevance", "linkedOccurrenceIds"],
+      "properties": {
+        "changeId": { "$ref": "common.schema.json#/definitions/opaqueId" },
+        "kind": {
+          "description": "Consumer vocabulary mapped 1:1 from World Memory ReturnRecognitionFactType.",
+          "type": "string",
+          "enum": ["SEASON_CHANGED", "ENVIRONMENT_CHANGED", "POPULATION_MOVED", "ENCOUNTER_CHANGED", "KNOWN_ENTITY_CHANGED", "RELATIONSHIP_CHANGED", "WORLD_EVENT"]
+        },
+        "placeIds": { "type": "array", "items": { "$ref": "common.schema.json#/definitions/placeId" } },
+        "summary": { "type": "string", "minLength": 1, "maxLength": 400 },
+        "worldTime": { "$ref": "common.schema.json#/definitions/worldTime" },
+        "worldSignificance": { "$ref": "common.schema.json#/definitions/worldSignificance" },
+        "visitorRelevance": {
+          "description": "VISITOR relevance (private, per-visitor selection reason) — distinct from worldSignificance (world truth). DIRECT = involves a place/entity this visitor encountered; FAMILIAR_PLACE = at a place this visitor visited; WORLD_WIDE = world-scale change selected for every returning visitor.",
+          "type": "string",
+          "enum": ["DIRECT", "FAMILIAR_PLACE", "WORLD_WIDE"]
+        },
+        "linkedOccurrenceIds": {
+          "description": "Public History occurrenceIds this change is derived from. Must be non-empty: a change with no public occurrence is not world truth.",
+          "type": "array", "minItems": 1, "items": { "$ref": "common.schema.json#/definitions/opaqueId" }
+        }
+      }
+    }
+  }
+}

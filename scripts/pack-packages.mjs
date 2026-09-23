@@ -14,6 +14,7 @@ const PACKAGES = [
   "invitations", "journey", "living-echo", "living-world-runtime", "locale",
   "membership", "motion", "narrative-runtime", "navigation", "notifications", "organizations",
   "product-registry", "recommendations", "runtime-contracts", "timeline",
+  "world-consumer-contracts",
 ];
 
 const OUT_DIR = "dist-packages";

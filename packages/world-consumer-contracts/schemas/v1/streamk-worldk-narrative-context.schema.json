@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://contracts.avatark.ai/worldk/v1/streamk-worldk-narrative-context.schema.json",
+  "title": "StreamK → WorldK NarrativeContext v1",
+  "description": "INFORMATIONAL-ONLY narrative arrival context, parsed by WorldK from the URL StreamK's existing buildWorldHandoffUrl() already emits (streamk-web/lib/storyWorldGateway.ts). SOURCE: StreamK. Handoff semantics shared by StreamK/WorldK. Authority over world state, world history, visitor memory or runtime: NONE. It can only explain arrival (\"You watched …\") and carry a place HINT. URL mapping (unchanged StreamK params): story→storySlug, episode→episodeSlug, entry→entryExperienceId, place→placeHint, signal/signalMode/cue→continuity. The worldId comes from the WorldK URL path, never a query param. IGNORED BY WORLDK: avatarKId, anon (identity comes only from the verified AvatarK session). Unknown params are dropped. Invalid values drop the whole context (arrival treated as organic).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "contract", "source", "worldId", "storySlug", "episodeSlug", "entryExperienceId", "placeHint", "continuity", "worldStateAuthority"],
+  "properties": {
+    "schemaVersion": { "$ref": "common.schema.json#/definitions/schemaVersion" },
+    "contract": { "const": "streamk-worldk-narrative-context" },
+    "source": { "const": "streamk" },
+    "worldId": { "$ref": "common.schema.json#/definitions/worldId" },
+    "storySlug": { "$ref": "common.schema.json#/definitions/semanticId" },
+    "episodeSlug": { "$ref": "common.schema.json#/definitions/semanticId" },
+    "entryExperienceId": { "$ref": "common.schema.json#/definitions/semanticId" },
+    "placeHint": {
+      "description": "Semantic place HINT (StreamK WorldEntryContext.placeId). The platform may honor or ignore it at ENTER; it never asserts the place's state.",
+      "oneOf": [{ "$ref": "common.schema.json#/definitions/placeId" }, { "type": "null" }]
+    },
+    "continuity": {
+      "description": "StreamK WorldContinuityContext carried through unresolved.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["signal", "mode", "cueId"],
+          "properties": {
+            "signal": { "$ref": "common.schema.json#/definitions/semanticId" },
+            "mode": { "type": "string", "enum": ["continue", "recover"] },
+            "cueId": { "oneOf": [{ "$ref": "common.schema.json#/definitions/semanticId" }, { "type": "null" }] }
+          }
+        },
+        { "type": "null" }
+      ]
+    },
+    "worldStateAuthority": {
+      "description": "Structural guard: NarrativeContext can never be read as world state.",
+      "const": "NONE"
+    }
+  }
+}

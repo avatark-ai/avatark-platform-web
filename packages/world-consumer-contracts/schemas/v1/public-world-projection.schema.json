@@ -1,0 +1,225 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://contracts.avatark.ai/worldk/v1/public-world-projection.schema.json",
+  "title": "PublicWorldProjection v1",
+  "description": "PUBLIC, unauthenticated, cacheable consumer projection of one Living World. OWNER/PRODUCER: AvatarK Platform Living World Host. CONSUMER: WorldK. Derived from authoritative world state (runtime) and World Memory; History is an aggregate READ (PLT-ADR-009), never a competing history authority. Contains no visitor-private data.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "contract", "worldId", "status", "freshness", "projection"],
+  "properties": {
+    "schemaVersion": { "$ref": "common.schema.json#/definitions/schemaVersion" },
+    "contract": { "const": "public-world-projection" },
+    "worldId": { "$ref": "common.schema.json#/definitions/worldId" },
+    "status": {
+      "description": "OK = projection present (freshness says CURRENT or STALE). WORLD_NOT_FOUND = no such public world. PROJECTION_UNAVAILABLE = world exists but no projection can be served.",
+      "type": "string",
+      "enum": ["OK", "WORLD_NOT_FOUND", "PROJECTION_UNAVAILABLE"]
+    },
+    "freshness": { "$ref": "common.schema.json#/definitions/freshness" },
+    "projection": { "oneOf": [{ "$ref": "#/definitions/projection" }, { "type": "null" }] }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "OK" } } },
+      "then": {
+        "properties": {
+          "projection": { "$ref": "#/definitions/projection" },
+          "freshness": { "properties": { "state": { "enum": ["CURRENT", "STALE"] } } }
+        }
+      },
+      "else": {
+        "properties": {
+          "projection": { "type": "null" },
+          "freshness": { "properties": { "state": { "const": "UNAVAILABLE" } } }
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["world", "now", "places", "activity", "history", "stories"],
+      "properties": {
+        "world": { "$ref": "#/definitions/world" },
+        "now": { "$ref": "#/definitions/now" },
+        "places": { "type": "array", "items": { "$ref": "#/definitions/place" } },
+        "activity": { "type": "array", "items": { "$ref": "#/definitions/activity" } },
+        "history": { "$ref": "#/definitions/history" },
+        "stories": { "type": "array", "items": { "$ref": "#/definitions/storyLink" } }
+      }
+    },
+    "world": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["worldId", "slug", "displayName", "worldType", "lifecycle"],
+      "properties": {
+        "worldId": { "$ref": "common.schema.json#/definitions/worldId" },
+        "slug": { "$ref": "common.schema.json#/definitions/slug" },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "worldType": { "const": "PERSISTENT_LIVING_WORLD" },
+        "lifecycle": {
+          "description": "Consumer-visible world lifecycle (publication/operation status), NOT runtime health.",
+          "type": "string",
+          "enum": ["PREVIEW", "OPEN", "PAUSED", "CLOSED"]
+        }
+      }
+    },
+    "now": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["worldTime", "summary", "season", "dayPhase", "conditions", "activeProcesses", "highlightActivityIds"],
+      "properties": {
+        "worldTime": { "$ref": "common.schema.json#/definitions/worldTime" },
+        "summary": { "type": "string", "minLength": 1, "maxLength": 400 },
+        "season": { "oneOf": [{ "$ref": "common.schema.json#/definitions/labelled" }, { "type": "null" }] },
+        "dayPhase": { "oneOf": [{ "$ref": "common.schema.json#/definitions/labelled" }, { "type": "null" }] },
+        "conditions": { "type": "array", "items": { "$ref": "#/definitions/condition" } },
+        "activeProcesses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["processId", "label", "placeIds"],
+            "properties": {
+              "processId": { "$ref": "common.schema.json#/definitions/semanticId" },
+              "label": { "type": "string", "minLength": 1, "maxLength": 120 },
+              "placeIds": { "type": "array", "items": { "$ref": "common.schema.json#/definitions/placeId" } }
+            }
+          }
+        },
+        "highlightActivityIds": { "type": "array", "items": { "$ref": "common.schema.json#/definitions/opaqueId" } }
+      }
+    },
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "label"],
+      "properties": {
+        "kind": { "type": "string", "enum": ["WEATHER", "WATER", "ECOLOGY", "OTHER"] },
+        "id": { "$ref": "common.schema.json#/definitions/semanticId" },
+        "label": { "type": "string", "minLength": 1, "maxLength": 120 }
+      }
+    },
+    "place": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["placeId", "slug", "displayName", "summary", "state", "recentChange", "history"],
+      "properties": {
+        "placeId": { "$ref": "common.schema.json#/definitions/placeId" },
+        "slug": { "$ref": "common.schema.json#/definitions/slug" },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "summary": { "type": "string", "minLength": 1, "maxLength": 400 },
+        "state": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["summary", "conditions"],
+          "properties": {
+            "summary": { "type": "string", "minLength": 1, "maxLength": 400 },
+            "conditions": { "type": "array", "items": { "$ref": "#/definitions/condition" } }
+          }
+        },
+        "recentChange": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["occurrenceId", "summary", "worldTime"],
+              "properties": {
+                "occurrenceId": { "$ref": "common.schema.json#/definitions/opaqueId" },
+                "summary": { "type": "string", "minLength": 1, "maxLength": 400 },
+                "worldTime": { "$ref": "common.schema.json#/definitions/worldTime" }
+              }
+            },
+            { "type": "null" }
+          ]
+        },
+        "history": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["state", "entryCount"],
+          "properties": {
+            "state": { "type": "string", "enum": ["AVAILABLE", "EMPTY", "UNAVAILABLE"] },
+            "entryCount": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "activity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["activityId", "kind", "placeIds", "summary", "worldTime", "significance", "occurrenceId"],
+      "properties": {
+        "activityId": { "$ref": "common.schema.json#/definitions/opaqueId" },
+        "kind": { "type": "string", "enum": ["OCCURRENCE", "ONGOING_PROCESS", "ENCOUNTER_AVAILABLE"] },
+        "placeIds": { "type": "array", "items": { "$ref": "common.schema.json#/definitions/placeId" } },
+        "summary": { "type": "string", "minLength": 1, "maxLength": 400 },
+        "worldTime": { "$ref": "common.schema.json#/definitions/worldTime" },
+        "significance": { "$ref": "common.schema.json#/definitions/worldSignificance" },
+        "occurrenceId": { "oneOf": [{ "$ref": "common.schema.json#/definitions/opaqueId" }, { "type": "null" }] }
+      }
+    },
+    "history": {
+      "description": "Aggregate READ over authoritative world history (PLT-ADR-009). Reverse-chronological. Never written by WorldK.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "entries", "hasMore"],
+      "properties": {
+        "state": { "type": "string", "enum": ["AVAILABLE", "EMPTY", "UNAVAILABLE"] },
+        "entries": { "type": "array", "items": { "$ref": "#/definitions/historyEntry" } },
+        "hasMore": { "type": "boolean" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "state": { "const": "AVAILABLE" } } },
+          "then": { "properties": { "entries": { "minItems": 1 } } },
+          "else": { "properties": { "entries": { "maxItems": 0 }, "hasMore": { "const": false } } }
+        }
+      ]
+    },
+    "historyEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["occurrenceId", "kind", "placeIds", "summary", "worldTime", "significance", "provenance", "consequences"],
+      "properties": {
+        "occurrenceId": { "$ref": "common.schema.json#/definitions/opaqueId" },
+        "kind": { "type": "string", "enum": ["SEASON", "ENVIRONMENT", "POPULATION", "ENCOUNTER", "ENTITY", "SOCIAL", "CANONICAL_EVENT"] },
+        "placeIds": { "type": "array", "items": { "$ref": "common.schema.json#/definitions/placeId" } },
+        "summary": { "type": "string", "minLength": 1, "maxLength": 400 },
+        "worldTime": { "$ref": "common.schema.json#/definitions/worldTime" },
+        "significance": { "$ref": "common.schema.json#/definitions/worldSignificance" },
+        "provenance": {
+          "description": "EMERGENT = recorded by the living world. CANONICAL_EVENT = an authorized StudioK canonical event projected into the world.",
+          "type": "string",
+          "enum": ["EMERGENT", "CANONICAL_EVENT"]
+        },
+        "consequences": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "placeId", "summary"],
+            "properties": {
+              "kind": { "type": "string", "enum": ["PLACE_MARKED", "RESOURCE_CHANGED", "ENCOUNTER_ELIGIBILITY_CHANGED", "GROUP_RELATIONSHIP_CHANGED"] },
+              "placeId": { "oneOf": [{ "$ref": "common.schema.json#/definitions/placeId" }, { "type": "null" }] },
+              "summary": { "type": "string", "minLength": 1, "maxLength": 400 }
+            }
+          }
+        }
+      }
+    },
+    "storyLink": {
+      "description": "A StreamK story related to this world. Discovery link only; carries no world state.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "storySlug", "episodeSlug", "title", "relation"],
+      "properties": {
+        "source": { "const": "streamk" },
+        "storySlug": { "$ref": "common.schema.json#/definitions/semanticId" },
+        "episodeSlug": { "oneOf": [{ "$ref": "common.schema.json#/definitions/semanticId" }, { "type": "null" }] },
+        "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "relation": { "type": "string", "enum": ["SET_IN_WORLD", "ENTERS_WORLD"] }
+      }
+    }
+  }
+}

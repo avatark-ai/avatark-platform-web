@@ -1,0 +1,162 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://contracts.avatark.ai/worldk/v1/world-entry.schema.json",
+  "title": "WorldEntryIntent / WorldEntryResult v1",
+  "description": "World-neutral ENTER contract. OWNER/RESOLVER: AvatarK Platform. CONSUMER/SUBMITTER: WorldK. Auth required. ONE intent covers ENTER and RETURN — the platform resolves first-visit vs return from its own continuity state (ArrivalDecision / World Memory ledger). WorldK never selects GPU, machine, region, Unreal process, renderer, server or runtime instance; the result never reveals them.",
+  "oneOf": [{ "$ref": "#/definitions/intent" }, { "$ref": "#/definitions/result" }],
+  "definitions": {
+    "intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "contract", "intentId", "worldId", "requestedPlaceId", "narrativeContext", "client"],
+      "properties": {
+        "schemaVersion": { "$ref": "common.schema.json#/definitions/schemaVersion" },
+        "contract": { "const": "world-entry-intent" },
+        "intentId": {
+          "description": "Client-minted idempotency key (UUID). Re-submitting the same intentId returns the same resolution.",
+          "type": "string", "format": "uuid"
+        },
+        "worldId": { "$ref": "common.schema.json#/definitions/worldId" },
+        "requestedPlaceId": {
+          "description": "Optional public placeId the visitor chose (e.g. from Place Detail). A request, not a command; the platform decides arrival.",
+          "oneOf": [{ "$ref": "common.schema.json#/definitions/placeId" }, { "type": "null" }]
+        },
+        "narrativeContext": {
+          "oneOf": [{ "$ref": "streamk-worldk-narrative-context.schema.json" }, { "type": "null" }]
+        },
+        "client": {
+          "description": "Coarse, declared-per-request client capabilities (never stored; mirrors the platform's 'declared per session, never stored' renderer-capability rule). Input to platform negotiation only.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["surface", "capabilities"],
+          "properties": {
+            "surface": { "type": "string", "enum": ["WEB"] },
+            "capabilities": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["webgl2", "touchPrimary", "viewportClass", "reducedMotion"],
+              "properties": {
+                "webgl2": { "type": "boolean" },
+                "touchPrimary": { "type": "boolean" },
+                "viewportClass": { "type": "string", "enum": ["COMPACT", "MEDIUM", "EXPANDED"] },
+                "reducedMotion": { "type": "boolean" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "contract", "intentId", "worldId", "subjectId", "outcome", "arrival", "handoff", "pending", "unavailable", "denied"],
+      "properties": {
+        "schemaVersion": { "$ref": "common.schema.json#/definitions/schemaVersion" },
+        "contract": { "const": "world-entry-result" },
+        "intentId": { "type": "string", "format": "uuid" },
+        "worldId": { "$ref": "common.schema.json#/definitions/worldId" },
+        "subjectId": {
+          "description": "Echo of the session-derived subject. Null only for AUTHENTICATION_REQUIRED.",
+          "oneOf": [{ "$ref": "common.schema.json#/definitions/subjectId" }, { "type": "null" }]
+        },
+        "outcome": {
+          "type": "string",
+          "enum": ["READY", "PENDING", "UNAVAILABLE", "DENIED", "AUTHENTICATION_REQUIRED"]
+        },
+        "arrival": { "oneOf": [{ "$ref": "#/definitions/arrival" }, { "type": "null" }] },
+        "handoff": { "oneOf": [{ "$ref": "#/definitions/handoff" }, { "type": "null" }] },
+        "pending": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["reason", "retryAfterSeconds"],
+              "properties": {
+                "reason": { "type": "string", "enum": ["PREPARING", "QUEUED"] },
+                "retryAfterSeconds": { "type": "integer", "minimum": 1, "maximum": 300 }
+              }
+            },
+            { "type": "null" }
+          ]
+        },
+        "unavailable": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["reason", "retryAfterSeconds"],
+              "properties": {
+                "reason": { "type": "string", "enum": ["WORLD_NOT_FOUND", "NOT_YET_OPEN", "WORLD_CLOSED", "RUNTIME_UNAVAILABLE", "AT_CAPACITY", "CLIENT_UNSUPPORTED"] },
+                "retryAfterSeconds": { "oneOf": [{ "type": "integer", "minimum": 1 }, { "type": "null" }] }
+              }
+            },
+            { "type": "null" }
+          ]
+        },
+        "denied": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["reason"],
+              "properties": {
+                "reason": { "type": "string", "enum": ["NOT_ENTITLED", "ACCOUNT_RESTRICTED"] }
+              }
+            },
+            { "type": "null" }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "outcome": { "const": "READY" } } },
+          "then": { "properties": { "subjectId": { "$ref": "common.schema.json#/definitions/subjectId" }, "arrival": { "$ref": "#/definitions/arrival" }, "handoff": { "$ref": "#/definitions/handoff" }, "pending": { "type": "null" }, "unavailable": { "type": "null" }, "denied": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "outcome": { "const": "PENDING" } } },
+          "then": { "properties": { "subjectId": { "$ref": "common.schema.json#/definitions/subjectId" }, "handoff": { "type": "null" }, "pending": { "type": "object" }, "unavailable": { "type": "null" }, "denied": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "outcome": { "const": "UNAVAILABLE" } } },
+          "then": { "properties": { "subjectId": { "$ref": "common.schema.json#/definitions/subjectId" }, "arrival": { "type": "null" }, "handoff": { "type": "null" }, "pending": { "type": "null" }, "unavailable": { "type": "object" }, "denied": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "outcome": { "const": "DENIED" } } },
+          "then": { "properties": { "subjectId": { "$ref": "common.schema.json#/definitions/subjectId" }, "arrival": { "type": "null" }, "handoff": { "type": "null" }, "pending": { "type": "null" }, "unavailable": { "type": "null" }, "denied": { "type": "object" } } }
+        },
+        {
+          "if": { "properties": { "outcome": { "const": "AUTHENTICATION_REQUIRED" } } },
+          "then": { "properties": { "subjectId": { "type": "null" }, "arrival": { "type": "null" }, "handoff": { "type": "null" }, "pending": { "type": "null" }, "unavailable": { "type": "null" }, "denied": { "type": "null" } } }
+        }
+      ]
+    },
+    "arrival": {
+      "description": "Consumer projection of the platform ArrivalDecision.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "placeId", "reason", "requestedPlaceHonored"],
+      "properties": {
+        "kind": { "type": "string", "enum": ["FIRST_VISIT", "RETURNING"] },
+        "placeId": { "$ref": "common.schema.json#/definitions/placeId" },
+        "reason": {
+          "description": "Maps ArrivalReason: FIRST_EVER_VISIT→FIRST_VISIT_ENTRY, RETURNING_TO_PRIOR_PLACE→PRIOR_PLACE, CANON_DIRECTED_ENTRY→WORLD_DIRECTED, STALE_PRIOR_LOCATION_FALLBACK|SAFE_FALLBACK_ENTRY→SAFE_FALLBACK.",
+          "type": "string",
+          "enum": ["FIRST_VISIT_ENTRY", "PRIOR_PLACE", "WORLD_DIRECTED", "SAFE_FALLBACK"]
+        },
+        "requestedPlaceHonored": { "type": "boolean" }
+      }
+    },
+    "handoff": {
+      "description": "Opaque runtime-boundary crossing. The href is a platform-issued, short-lived, single-use URL on a platform-controlled origin; WorldK navigates to it and must not parse, persist or log it. No infrastructure identifiers may appear as fields.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "href", "expiresAt", "singleUse"],
+      "properties": {
+        "kind": { "const": "NAVIGATE" },
+        "href": { "type": "string", "format": "uri", "pattern": "^https://" },
+        "expiresAt": { "$ref": "common.schema.json#/definitions/timestamp" },
+        "singleUse": { "const": true }
+      }
+    }
+  }
+}

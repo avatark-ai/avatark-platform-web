@@ -1,0 +1,124 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://contracts.avatark.ai/worldk/v1/common.schema.json",
+  "title": "WorldK consumer contracts v1 — common definitions",
+  "description": "Shared primitives for the WorldK consumption contracts (M07). Owner: AvatarK Platform. Contains no runtime/kernel/compiler types.",
+  "definitions": {
+    "schemaVersion": {
+      "description": "Contract version MAJOR.MINOR. Consumers accept any 1.x; a MAJOR bump is a breaking change and a new contract.",
+      "type": "string",
+      "pattern": "^1\\.[0-9]+$"
+    },
+    "semanticId": {
+      "description": "Stable, opaque, kebab-case identifier. Identity only, never display copy. Never reused for a different entity.",
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "maxLength": 64
+    },
+    "opaqueId": {
+      "description": "Producer-minted opaque identifier (event/change/activity ids). Consumers must not parse it.",
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+    },
+    "worldId": { "$ref": "#/definitions/semanticId" },
+    "placeId": { "$ref": "#/definitions/semanticId" },
+    "slug": {
+      "description": "URL/display slug. May change over time (with redirects); never used as identity.",
+      "$ref": "#/definitions/semanticId"
+    },
+    "subjectId": {
+      "description": "AvatarK IdentityClaims.subjectId (backed by Supabase auth.users.id in the platform project). PRIVATE.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "worldTick": {
+      "description": "Authoritative logical world time (platform WorldClock tick). Machine-only: WorldK MUST NOT display it as consumer copy.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "worldTime": {
+      "description": "A point in world time: authoritative tick underneath + producer-supplied consumer-safe label.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["worldTick", "label"],
+      "properties": {
+        "worldTick": { "$ref": "#/definitions/worldTick" },
+        "label": { "type": "string", "minLength": 1, "maxLength": 120 }
+      }
+    },
+    "labelled": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label"],
+      "properties": {
+        "id": { "$ref": "#/definitions/semanticId" },
+        "label": { "type": "string", "minLength": 1, "maxLength": 120 }
+      }
+    },
+    "worldSignificance": {
+      "description": "WORLD significance, decided by World Memory's significance filter (MemorySignificance minus NOT_SIGNIFICANT, which is never projected). World truth — identical for every viewer.",
+      "type": "string",
+      "enum": ["MEANINGFUL", "LANDMARK"]
+    },
+    "freshness": {
+      "description": "Producer-declared freshness. WorldK never infers freshness beyond one mechanical rule: a CURRENT payload read after staleAfter MUST be rendered as STALE.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "generatedAt", "validAsOf", "staleAfter", "source", "reason"],
+      "properties": {
+        "state": { "type": "string", "enum": ["CURRENT", "STALE", "UNAVAILABLE"] },
+        "generatedAt": { "$ref": "#/definitions/timestamp" },
+        "validAsOf": {
+          "description": "Wall-clock instant the underlying authoritative state represents.",
+          "oneOf": [{ "$ref": "#/definitions/timestamp" }, { "type": "null" }]
+        },
+        "staleAfter": {
+          "oneOf": [{ "$ref": "#/definitions/timestamp" }, { "type": "null" }]
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["worldTick", "worldVersion", "sourceRevision"],
+          "properties": {
+            "worldTick": { "oneOf": [{ "$ref": "#/definitions/worldTick" }, { "type": "null" }] },
+            "worldVersion": { "oneOf": [{ "type": "integer", "minimum": 0 }, { "type": "null" }] },
+            "sourceRevision": {
+              "description": "Opaque producer revision (e.g. world artifact digest / projection build). Consumers compare for equality only.",
+              "oneOf": [{ "type": "string", "minLength": 1, "maxLength": 128 }, { "type": "null" }]
+            }
+          }
+        },
+        "reason": {
+          "description": "Why the state is not CURRENT. Null when CURRENT.",
+          "oneOf": [
+            { "type": "string", "enum": ["SOURCE_LAGGING", "SOURCE_OFFLINE", "NOT_YET_PUBLISHED", "WORLD_NOT_FOUND"] },
+            { "type": "null" }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "state": { "const": "CURRENT" } } },
+          "then": {
+            "properties": {
+              "validAsOf": { "$ref": "#/definitions/timestamp" },
+              "staleAfter": { "$ref": "#/definitions/timestamp" },
+              "reason": { "type": "null" },
+              "source": { "properties": { "worldTick": { "$ref": "#/definitions/worldTick" } } }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "state": { "enum": ["STALE", "UNAVAILABLE"] } } },
+          "then": { "properties": { "reason": { "type": "string" } } }
+        },
+        {
+          "if": { "properties": { "state": { "const": "STALE" } } },
+          "then": { "properties": { "validAsOf": { "$ref": "#/definitions/timestamp" } } }
+        }
+      ]
+    }
+  }
+}

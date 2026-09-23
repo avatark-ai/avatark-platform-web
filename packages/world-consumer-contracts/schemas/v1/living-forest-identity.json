@@ -1,0 +1,57 @@
+{
+  "contract": "living-world-identity",
+  "schemaVersion": "1.0",
+  "frozenBy": "WORLDK-M07-CONSUMPTION-CONTRACT-FREEZE-01",
+  "world": {
+    "worldId": "living-forest",
+    "worldSlug": "living-forest",
+    "displayName": "Living Forest",
+    "status": "FROZEN_PRODUCTION_IDENTITY",
+    "rationale": "Matches StreamK WorldId union (streamk-web/types/storyWorldGateway.types.ts) and studio-atlas authoring fixture id (dt4m-os apps/studio-atlas/src/lib/world-authoring/fixtures/living-forest.ts). Only the kernel vertical slice deviates, and it is a fixture."
+  },
+  "nonProductionAliases": [
+    {
+      "id": "living-forest-fixture",
+      "source": "avatark-platform-web feature/studiok-living-world-kernel-vertical-slice @ 23fa307, lib/livingForest/definition.ts",
+      "status": "FIXTURE_ONLY",
+      "rule": "Must never appear in any production projection, entry result or URL. The platform binds runtime world instances to worldId 'living-forest'."
+    }
+  ],
+  "identityRules": {
+    "worldId": "Immutable opaque kebab-case identity. Never display copy. Never reused.",
+    "worldSlug": "Routing/display slug. Equal to worldId at Launch-01 but independently changeable (old slugs redirect). Never used as a key in contracts.",
+    "placeId": "Immutable opaque kebab-case public identity of a place, unique within its world. Consumer contracts key places ONLY by placeId.",
+    "placeSlug": "Routing/display slug for a place; may change with redirects; never a key.",
+    "separation": "WorldK routes MAY use slugs; every contract payload, ledger row and link parameter uses ids."
+  },
+  "placeIdentityMapping": {
+    "semanticAuthority": "StudioK Canon/authoring mints the place (IR Place.id, IR ids are opaque with no worldId — compiler schemas/ir/v0/common.schema.json).",
+    "runtimeBinding": "AvatarK Platform Living World Host binds IR Place.id → runtime LocationId/PlaceDefinition.id → projection placeId in a platform-owned binding table.",
+    "consumerExposure": "Only the projection placeId (+ slug/displayName) reaches WorldK. IR ids and runtime LocationIds are never exposed.",
+    "rule": "projection placeId == canonical StudioK place id once canon exists; runtime LocationIds may differ and are mapped, never leaked."
+  },
+  "launch01Places": {
+    "status": "PROVISIONAL_NOT_FROZEN",
+    "reason": "No Living Forest canon document exists (studiok-canon has none) and the two existing sources disagree: studio-atlas 'canopy-clearing' vs kernel slice locations 'forest-clearing' / 'forest-stream' / 'forest-pond'. M07 freezes the RULES, not these ids.",
+    "fixturePlaceIds": [
+      { "placeId": "forest-clearing", "placeSlug": "clearing", "status": "FIXTURE_ONLY", "runtimeLocationId": "forest-clearing", "studioAtlasPlaceId": null, "irPlaceId": null },
+      { "placeId": "forest-stream", "placeSlug": "stream", "status": "FIXTURE_ONLY", "runtimeLocationId": "forest-stream", "studioAtlasPlaceId": null, "irPlaceId": null },
+      { "placeId": "forest-pond", "placeSlug": "pond", "status": "FIXTURE_ONLY", "runtimeLocationId": "forest-pond", "studioAtlasPlaceId": null, "irPlaceId": null }
+    ],
+    "unreconciled": [
+      { "id": "canopy-clearing", "source": "studio-atlas fixtures/living-forest.ts", "note": "Placeholder authoring place; relation to runtime forest-clearing undecided." }
+    ]
+  },
+  "narrative": {
+    "storySlug": "the-forest-remembers",
+    "episodeSlug": "cinematic-episode-01",
+    "entryExperienceId": "enter-living-forest",
+    "status": "PROPOSED_FIXTURE",
+    "note": "'The Forest Remembers' exists nowhere in any repository (M06). These slugs are proposed for the future StreamK launch config; StreamK owns the final values."
+  },
+  "product": {
+    "productId": "worldk",
+    "status": "NOT_REGISTERED",
+    "note": "Future @avatark/product-registry entry — see report §11. Not modified in M07."
+  }
+}
