@@ -14,6 +14,12 @@ export const config = {
     // exclusion, this proxy throws on every request in any environment
     // with no Supabase project configured, including this one -- see
     // docs/RUNTIME_HOST_INTEGRATION.md.
-    '/((?!_next/static|_next/image|favicon.ico|dev(?:/|$)|api/dev(?:/|$)|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    //
+    // api/worlds/:worldId/public-projection is excluded too (WORLDK-M09):
+    // it is a public, shared-cacheable consumer contract that must never
+    // read or refresh a session -- a Set-Cookie on a CDN-cacheable
+    // response would leak one visitor's session to others. The PRIVATE
+    // visitor-projection route stays behind this proxy.
+    '/((?!_next/static|_next/image|favicon.ico|dev(?:/|$)|api/dev(?:/|$)|api/worlds/[^/]+/public-projection$|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
