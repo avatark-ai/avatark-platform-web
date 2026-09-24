@@ -1,0 +1,7 @@
+{
+  "git": {
+    "deploymentEnabled": {
+      "feature/worldk-p11b-platform-preview-provisioning": false
+    }
+  }
+}
