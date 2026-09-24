@@ -14,10 +14,18 @@ const path = require('path')
 // Known project refs this script must NEVER be pointed at, per explicit
 // instruction -- PrometheusK, prometheusk-test, arenak-prod, and legacy
 // AvatarK production are all real, unrelated infrastructure.
+//
+// WORLDK-P11B: the org project named `avatark-platform-test`
+// (hapoerzbcnagyfafqojg) was originally this runner's intended target, but
+// it is now the live backend of the production deployment (next.avatark.ai)
+// and the shared Platform/GameK/StreamK identity project. Its name does not
+// make it a test database; it is forbidden like any other production ref.
+// Non-production platform work targets `avatark-platform-preview`.
 const FORBIDDEN_PROJECT_REFS = [
+  'hapoerzbcnagyfafqojg', // avatark-platform-test -- PRODUCTION despite its name
   'bxerfgwrtwowzgahdgrj', // PrometheusK production
   'ibgalrzhwnitbgrqoesu', // prometheusk-test
-  'qvwgrupvaetzcxlizccu', // legacy avatark-web production
+  'qvwgrupvaetzcxlizccu', // legacy avatark-web production (org name: arenak-prod)
 ]
 
 function assertPlatformTestDatabase() {
@@ -31,6 +39,13 @@ function assertPlatformTestDatabase() {
       console.error(`PLATFORM_DATABASE_URL references a known, unrelated project (${ref}). Refusing to run.`)
       process.exit(1)
     }
+  }
+  // Optional positive check: when the caller names the project it intends
+  // to migrate, the URL must actually point at it.
+  const expectedRef = process.env.PLATFORM_EXPECTED_PROJECT_REF
+  if (expectedRef && !url.includes(expectedRef)) {
+    console.error(`PLATFORM_DATABASE_URL does not reference PLATFORM_EXPECTED_PROJECT_REF (${expectedRef}). Refusing to run.`)
+    process.exit(1)
   }
   return url
 }
