@@ -118,6 +118,9 @@ const MIGRATION_ORDER = [
   // reserved for 036_certification_authority.sql on the narrative-ir-adapter
   // lineage, which is expected to land first.
   '037_world_visitor_continuity.sql',
+  // WORLDK-P11B: RLS/grant/EXECUTE hardening found by the preview schema
+  // audit. Applied to avatark-platform-preview only. Does not depend on 036.
+  '038_platform_schema_security_hardening.sql',
 ]
 
 async function main() {
