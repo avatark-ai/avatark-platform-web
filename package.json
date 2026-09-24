@@ -21,6 +21,7 @@
     "@avatark/bootstrap": "workspace:*",
     "@avatark/canonical-event-contracts": "workspace:*",
     "@avatark/canonical-event-runtime": "workspace:*",
+    "@avatark/certification-authority": "workspace:*",
     "@avatark/context-runtime": "workspace:*",
     "@avatark/encounter-realization-contracts": "workspace:*",
     "@avatark/encounter-realization-runtime": "workspace:*",

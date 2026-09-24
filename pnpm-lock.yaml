@@ -32,6 +32,9 @@ importers:
       '@avatark/canonical-event-runtime':
         specifier: workspace:*
         version: link:packages/canonical-event-runtime
+      '@avatark/certification-authority':
+        specifier: workspace:*
+        version: link:packages/certification-authority
       '@avatark/context-runtime':
         specifier: workspace:*
         version: link:packages/context-runtime
@@ -343,6 +346,22 @@ importers:
         specifier: ^5
         version: 5.9.3
 
+  packages/certification-authority:
+    dependencies:
+      '@avatark/episode-compiler':
+        specifier: workspace:*
+        version: link:../episode-compiler
+      '@avatark/narrative-interpretation':
+        specifier: workspace:*
+        version: link:../narrative-interpretation
+    devDependencies:
+      '@avatark/episode-semantic-generation':
+        specifier: workspace:*
+        version: link:../episode-semantic-generation
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
   packages/context-runtime:
     devDependencies:
       typescript:
@@ -391,6 +410,42 @@ importers:
       '@avatark/world-memory-contracts':
         specifier: workspace:*
         version: link:../world-memory-contracts
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/episode-compiler:
+    dependencies:
+      '@avatark/episode-semantic-generation':
+        specifier: workspace:*
+        version: link:../episode-semantic-generation
+      '@avatark/narrative-interpretation':
+        specifier: workspace:*
+        version: link:../narrative-interpretation
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/episode-runtime-adapter:
+    dependencies:
+      '@avatark/episode-compiler':
+        specifier: workspace:*
+        version: link:../episode-compiler
+      '@avatark/narrative-runtime':
+        specifier: workspace:*
+        version: link:../narrative-runtime
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/episode-semantic-generation:
+    dependencies:
+      '@avatark/narrative-interpretation':
+        specifier: workspace:*
+        version: link:../narrative-interpretation
     devDependencies:
       typescript:
         specifier: ^5
@@ -575,6 +630,16 @@ importers:
       '@types/react':
         specifier: ^19
         version: 19.2.17
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/narrative-interpretation:
+    dependencies:
+      '@avatark/narrative-ir-adapter':
+        specifier: workspace:*
+        version: link:../narrative-ir-adapter
+    devDependencies:
       typescript:
         specifier: ^5
         version: 5.9.3
