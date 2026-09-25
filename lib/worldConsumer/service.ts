@@ -88,11 +88,17 @@ export async function getVisitorWorldProjection(worldId: string, visitor: Verifi
   }
   const facts = await deps.facts.load(binding.runtimeWorldId)
   if (!facts) return unavailableVisitorProjection(worldId, visitor.subjectId, now, "SOURCE_OFFLINE")
-  const [continuity, evidence, encountered] = await Promise.all([
-    deps.ledger.get(binding.consumerWorldId, visitor.subjectId),
-    deps.priorVisitEvidence(binding, visitor.subjectId),
-    deps.encounteredEntityIds(binding, visitor.subjectId),
-  ])
+  let continuity: ContinuityRecord | null, evidence: PriorVisitEvidence | null, encountered: string[]
+  try {
+    ;[continuity, evidence, encountered] = await Promise.all([
+      deps.ledger.get(binding.consumerWorldId, visitor.subjectId),
+      deps.priorVisitEvidence(binding, visitor.subjectId),
+      deps.encounteredEntityIds(binding, visitor.subjectId),
+    ])
+  } catch {
+    // Durable continuity unreadable: say so; never guess a relationship.
+    return unavailableVisitorProjection(worldId, visitor.subjectId, now, "SOURCE_OFFLINE")
+  }
   try {
     return guard(
       produceVisitorWorldProjection({ binding, facts, publicProjection, subjectId: visitor.subjectId, continuity, priorVisitEvidence: evidence, encounteredEntityIds: encountered, now }),

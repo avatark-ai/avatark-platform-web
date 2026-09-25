@@ -121,7 +121,27 @@ const MIGRATION_ORDER = [
   // WORLDK-P11B: RLS/grant/EXECUTE hardening found by the preview schema
   // audit. Applied to avatark-platform-preview only. Does not depend on 036.
   '038_platform_schema_security_hardening.sql',
+  // WORLDK-M13: durable visitor lifecycle authority. PREVIEW-CERTIFICATION
+  // ONLY -- see PREVIEW_ONLY_MIGRATIONS below.
+  '039_world_visitor_lifecycle_authority.sql',
 ]
+
+// Migrations approved for exactly one project. The runner refuses to apply
+// them anywhere else (including when PLATFORM_EXPECTED_PROJECT_REF is unset),
+// and stops before them rather than skipping, so later files never run out
+// of order on another target.
+const PREVIEW_ONLY_MIGRATIONS = {
+  '039_world_visitor_lifecycle_authority.sql': 'gxjdbfpyyrycvqzozyty', // avatark-platform-preview
+}
+
+function assertMigrationTarget(file, dbUrl) {
+  const onlyRef = PREVIEW_ONLY_MIGRATIONS[file]
+  if (!onlyRef) return
+  if (process.env.PLATFORM_EXPECTED_PROJECT_REF !== onlyRef || !dbUrl.includes(onlyRef)) {
+    console.error(`${file} is approved for ${onlyRef} only. Refusing to apply it to this target.`)
+    process.exit(1)
+  }
+}
 
 async function main() {
   const dbUrl = assertPlatformTestDatabase()
@@ -165,6 +185,7 @@ async function main() {
         console.log(`${file}: already applied (checksum match), skipping.`)
         continue
       }
+      assertMigrationTarget(file, dbUrl)
       process.stdout.write(`Applying ${file} ... `)
       await client.query(content)
       await client.query('INSERT INTO schema_migrations (filename, checksum) VALUES ($1, $2)', [file, checksum])

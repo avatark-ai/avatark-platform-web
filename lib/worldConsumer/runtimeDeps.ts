@@ -5,23 +5,20 @@
 // so the API honestly answers PROJECTION_UNAVAILABLE rather than serving
 // fixture facts as production truth.
 //
-// Ledger: Postgres (migration 037 functions) when
-// WORLD_CONSUMER_LEDGER_DATABASE_URL is set; otherwise a process-local
-// in-memory ledger (non-durable — suitable only for preview).
+// Continuity (WORLDK-M13): durable Postgres continuity (037/039), read
+// through the verified visitor's OWN session so RLS read_own applies. The
+// deployment holds no continuity DB credential and no writer; there is no
+// in-memory or process-local fallback (a failed read answers
+// PROJECTION_UNAVAILABLE). Lifecycle writes happen only through the 039
+// lifecycle authority, outside every request path.
 
-import pg from "pg"
+import { createClient } from "@/lib/supabase/server"
 import type { WorldConsumerMode } from "./bindings.ts"
-import { InMemoryContinuityLedger, PostgresContinuityLedger, type VisitorContinuityLedger } from "./continuityLedger.ts"
 import { createLivingForestFixtureFactSource } from "./facts.ts"
 import type { WorldConsumerDeps } from "./service.ts"
+import { SessionRlsContinuityReader, type SessionContinuityClient } from "./sessionContinuity.ts"
 
 let cached: WorldConsumerDeps | null = null
-
-function createLedger(): VisitorContinuityLedger {
-  const url = process.env.WORLD_CONSUMER_LEDGER_DATABASE_URL
-  if (!url) return new InMemoryContinuityLedger()
-  return new PostgresContinuityLedger(new pg.Pool({ connectionString: url, max: 4 }))
-}
 
 export function getWorldConsumerDeps(): WorldConsumerDeps {
   if (cached) return cached
@@ -29,7 +26,9 @@ export function getWorldConsumerDeps(): WorldConsumerDeps {
   cached = {
     mode,
     facts: createLivingForestFixtureFactSource(new Date().toISOString()),
-    ledger: createLedger(),
+    // createClient() binds to the current request's cookies, so this shared
+    // reader always reads as the visitor whose request is being served.
+    ledger: new SessionRlsContinuityReader(async () => (await createClient()) as unknown as SessionContinuityClient),
     // No runtime visit store or participation store is wired for Living
     // Forest yet: report "no evidence" honestly rather than inventing any.
     priorVisitEvidence: async () => null,
