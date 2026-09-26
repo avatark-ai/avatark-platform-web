@@ -130,6 +130,9 @@ const MIGRATION_ORDER = [
   // WORLDK-M14-A5: pg_cron access for the presence-sweep schedule. PREVIEW-
   // CERTIFICATION ONLY -- see PREVIEW_ONLY_MIGRATIONS below.
   '041_world_presence_sweep_schedule.sql',
+  // WORLDK-M14-A4: read-only derived runtime liveness view. PREVIEW-
+  // CERTIFICATION ONLY -- see PREVIEW_ONLY_MIGRATIONS below.
+  '042_world_runtime_instance_liveness.sql',
 ]
 
 // Migrations approved for exactly one project. The runner refuses to apply
@@ -140,6 +143,7 @@ const PREVIEW_ONLY_MIGRATIONS = {
   '039_world_visitor_lifecycle_authority.sql': 'gxjdbfpyyrycvqzozyty', // avatark-platform-preview
   '040_world_entry_runtime_authority.sql': 'gxjdbfpyyrycvqzozyty', // avatark-platform-preview
   '041_world_presence_sweep_schedule.sql': 'gxjdbfpyyrycvqzozyty', // avatark-platform-preview
+  '042_world_runtime_instance_liveness.sql': 'gxjdbfpyyrycvqzozyty', // avatark-platform-preview
 }
 
 function assertMigrationTarget(file, dbUrl) {
