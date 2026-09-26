@@ -1,0 +1,7 @@
+{
+  "//": "WORLDK-M14-B5: the media control plane E2E imports services/worldk-signalling (own node_modules), so it is type-checked here, never by the Next build.",
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "noEmit": true, "incremental": false, "typeRoots": ["./node_modules/@types", "./services/worldk-signalling/node_modules/@types"] },
+  "include": ["next-env.d.ts", "lib/worldEntry/mediaControlPlane.e2e.test.ts"],
+  "exclude": ["node_modules"]
+}

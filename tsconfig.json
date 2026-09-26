@@ -31,5 +31,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "services"]
+  "exclude": ["node_modules", "services", "lib/worldEntry/mediaControlPlane.e2e.test.ts"]
 }
