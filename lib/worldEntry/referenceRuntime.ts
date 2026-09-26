@@ -22,6 +22,7 @@
 // act only on sessions the Platform created from a redeemed ticket and
 // bound to its own allocation. Its only credential is its Platform-issued
 // per-instance runtime credential, sent only to the Runtime Ingress.
+import { createHash } from "node:crypto"
 import { RuntimeBridge, type BridgeResult, type IngressReply, type RendererEvent, type RuntimeBridgeTransport } from "@avatark/runtime-bridge"
 import type { RuntimePollResult, RuntimeSessionWork } from "./authorityDb.ts"
 import type { RuntimeOp } from "./runtimeIngress.ts"
@@ -58,7 +59,7 @@ export type RuntimeEvent =
   | { kind: "PRESENCE"; sessionId: string; outcome: string }
   | { kind: "DEPARTURE"; sessionId: string; outcome: string }
   | { kind: "DISCONNECT"; sessionId: string; outcome: string }
-  | { kind: "REFUSED"; op: RuntimeOp; status: number; error: string }
+  | { kind: "REFUSED"; op: RuntimeOp | "attach"; status: number; error: string }
 
 export interface ReferenceRuntimeOptions {
   readiness?: "STARTING" | "READY"
@@ -155,6 +156,21 @@ export class ReferenceRuntime {
     if (kind === "ARRIVAL" || kind === "PRESENCE") this.lastHeartbeatAt.set(sessionId, this.opts.now())
     this.opts.onEvent({ kind, sessionId, outcome })
     return outcome
+  }
+
+  /**
+   * WORLDK-M14-B4: the stub signalling relay handed this runtime a visitor's
+   * stream authorization for one of its sessions. Verified by the Platform
+   * (Runtime Ingress `attach`); never an arrival. Returns the outcome or null.
+   */
+  async attachStream(sessionId: string, authorization: string): Promise<string | null> {
+    const reply = await this.bridge.attach(sessionId, createHash("sha256").update(authorization, "utf8").digest("hex"))
+    if (!reply) return null
+    if (reply.status !== 200) {
+      this.opts.onEvent({ kind: "REFUSED", op: "attach", status: reply.status, error: String(reply.body.error) })
+      return null
+    }
+    return String(reply.body.outcome)
   }
 
   /** The visitor joined this runtime session. */

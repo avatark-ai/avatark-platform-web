@@ -22,6 +22,19 @@ export interface RuntimeBridgeTransport {
   post(op: RuntimeOp, body: Record<string, unknown>): Promise<IngressReply>
 }
 
+/**
+ * WORLDK-M14-B4: the stream attachment Runtime Ingress operation. It is NOT a
+ * B1 RendererEvent and not part of RUNTIME_OPS (B1 stays frozen): the bridge
+ * host calls it explicitly with the digest of the authorization it received
+ * for one of its claimed sessions. Attach is never arrival and never changes
+ * the local session state. It reuses the injected transport unchanged: a
+ * transport maps an op to its ingress path generically (/api/runtime/v1/<op>).
+ */
+export const ATTACH_OP = "attach"
+export type IngressOp = RuntimeOp | typeof ATTACH_OP
+
+const SHA256_HEX = /^[0-9a-f]{64}$/
+
 /** The Platform's binding for a claimed session (from the claim reply). */
 export interface SessionBinding {
   sessionId: string
@@ -104,6 +117,18 @@ export class RuntimeBridge {
     const next = stateAfterReply(command, prior, reply)
     this.states.set(sessionId, next)
     return { command, reply, state: next }
+  }
+
+  /**
+   * Presents sha256(authorization) (lowercase hex; the adapter hashes) for a
+   * session this bridge has claimed. Refused locally, without I/O, for a
+   * session not claimed here or already terminal.
+   */
+  async attach(sessionId: string, authorizationSha256Hex: string): Promise<IngressReply | null> {
+    const state = this.state(sessionId)
+    if ((state !== "CLAIMED" && state !== "JOINED") || !SHA256_HEX.test(authorizationSha256Hex)) return null
+    const post = this.transport.post.bind(this.transport) as (op: IngressOp, body: Record<string, unknown>) => Promise<IngressReply>
+    return post(ATTACH_OP, { sessionId, authorizationSha256: authorizationSha256Hex })
   }
 
   /** Handles an UNTRUSTED versioned message: parsed first, never throws on bad input. */

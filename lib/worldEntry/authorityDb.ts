@@ -29,6 +29,7 @@ export type EntryAuthorityCode =
   | "RUNTIME_CREDENTIAL_INVALID" | "RUNTIME_CREDENTIAL_REVOKED" | "RUNTIME_CREDENTIAL_EXPIRED" | "RUNTIME_INSTANCE_REVOKED"
   | "STREAM_CAPABILITY_INVALID" | "STREAM_CAPABILITY_EXPIRED" | "STREAM_CAPABILITY_CONSUMED" | "STREAM_CAPABILITY_BINDING_MISMATCH"
   | "STREAM_SESSION_NOT_IN_WORLD" | "STREAM_CAPABILITY_LIMIT"
+  | "STREAM_AUTHORIZATION_INVALID" | "STREAM_AUTHORIZATION_BINDING_MISMATCH" | "STREAM_ALREADY_ATTACHED" | "STREAM_ATTACH_WINDOW_EXPIRED" | "STREAM_SESSION_NOT_ELIGIBLE"
   | "PERMISSION_DENIED" | "UNAVAILABLE"
 
 const KNOWN = new Set<string>([
@@ -41,6 +42,7 @@ const KNOWN = new Set<string>([
   "RUNTIME_CREDENTIAL_INVALID", "RUNTIME_CREDENTIAL_REVOKED", "RUNTIME_CREDENTIAL_EXPIRED", "RUNTIME_INSTANCE_REVOKED",
   "STREAM_CAPABILITY_INVALID", "STREAM_CAPABILITY_EXPIRED", "STREAM_CAPABILITY_CONSUMED", "STREAM_CAPABILITY_BINDING_MISMATCH",
   "STREAM_SESSION_NOT_IN_WORLD", "STREAM_CAPABILITY_LIMIT",
+  "STREAM_AUTHORIZATION_INVALID", "STREAM_AUTHORIZATION_BINDING_MISMATCH", "STREAM_ALREADY_ATTACHED", "STREAM_ATTACH_WINDOW_EXPIRED", "STREAM_SESSION_NOT_ELIGIBLE",
 ])
 
 export const RUNTIME_AUTH_CODES: ReadonlySet<EntryAuthorityCode> = new Set([
@@ -277,6 +279,18 @@ export class PgEntryAuthorityDb implements EntryAuthorityDb {
   async streamCapabilityIssue(viewSha256: Buffer, capabilitySha256: Buffer) {
     const [r] = await this.call("SELECT * FROM world_stream_capability_issue($1, $2)", [viewSha256, capabilitySha256])
     return { worldId: r.world_id as string, expiresAt: iso(r.expires_at) as string }
+  }
+
+  // WORLDK-M14-B4 (044): the allocated renderer's attachment (Runtime Ingress).
+  async runtimeStreamAttach(credentialId: string, secretSha256: Buffer, sessionId: string, authorizationSha256: Buffer) {
+    const [r] = await this.call("SELECT world_runtime_stream_attach($1, $2, $3, $4) AS r", [credentialId, secretSha256, sessionId, authorizationSha256])
+    return r.r as { outcome: "ATTACHED"; sessionId: string }
+  }
+
+  /** Preview stub relay routing: the browser's own session for an attachable authorization. */
+  async streamAttachmentRoute(viewSha256: Buffer, authorizationSha256: Buffer) {
+    const [r] = await this.call("SELECT world_stream_attachment_route($1, $2) AS s", [viewSha256, authorizationSha256])
+    return r.s as string
   }
 
   async streamCapabilityRedeem(capabilitySha256: Buffer, viewSha256: Buffer, worldId: string, authorizationSha256: Buffer) {

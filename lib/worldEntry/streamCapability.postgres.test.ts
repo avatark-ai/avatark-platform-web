@@ -175,6 +175,8 @@ if (!url) {
     before(async () => {
       ;({ su, owner } = await createSupabaseShapedDb(url, dbName, { through040: true }))
       await owner.query(readFileSync(path.join(here, "../../supabase/migrations/043_world_stream_capability_authority.sql"), "utf8"))
+      // M14-B4 (owner Q1(a)): 044 replaces the shared stream predicate (CLAIMED, not IN_WORLD).
+      await owner.query(readFileSync(path.join(here, "../../supabase/migrations/044_world_stream_attachment_authority.sql"), "utf8"))
       await owner.query(`ALTER ROLE worldk_platform_entry_preview LOGIN PASSWORD '${scramVerifier(PLATFORM_PW)}'`)
       db = new PgEntryAuthorityDb(urlFor(url, dbName, "worldk_platform_entry_preview", PLATFORM_PW), { allowLocal: true, ssl: false })
       rt = await register("m14b3-runtime")
@@ -256,7 +258,9 @@ if (!url) {
       assert.deepEqual(await stateDigest(), digest, "the refusal inferred no timeout (not a lifecycle writer)")
       // Unknown / forged session capability.
       codes.UNKNOWN_SESSION = await issueCode(newSecret())
-      for (const [k, v] of Object.entries(codes)) assert.equal(v, k === "UNKNOWN_SESSION" ? "SESSION_NOT_FOUND" : "STREAM_SESSION_NOT_IN_WORLD", k)
+      // M14-B4 Q1(a): a session CLAIMED by its allocated runtime is stream-eligible before ARRIVAL.
+      assert.equal(codes.CLAIMED_NOT_JOINED, "ISSUED")
+      for (const [k, v] of Object.entries(codes)) if (k !== "CLAIMED_NOT_JOINED") assert.equal(v, k === "UNKNOWN_SESSION" ? "SESSION_NOT_FOUND" : "STREAM_SESSION_NOT_IN_WORLD", k)
       // HTTP: every such refusal is the same opaque 403.
       for (const c of [leaving.cookie, recon.cookie, stale.cookie, newSecret()]) assert.deepEqual(await issueHttp(c), { status: 403, body: { status: "REFUSED" } })
       assert.deepEqual(await issueHttp(null), { status: 403, body: { status: "REFUSED" } })
@@ -569,7 +573,7 @@ if (!url) {
       // the postgres/owner session is not the Platform credential: the gate refuses it
       await assert.rejects(owner.query("SELECT * FROM world_stream_capability_issue($1, $2)", [sha256("x"), sha256("y")]), /AUTHORITY_INVALID/)
       // the Platform role gained EXECUTE on exactly the two 043 entry points (vs the 040 set)
-      const granted = (await su.query(`SELECT p.proname FROM pg_proc p, aclexplode(p.proacl) a WHERE a.grantee = $1::regrole AND a.privilege_type = 'EXECUTE' AND p.proname LIKE 'world_stream_%' ORDER BY 1`, [ENTRY_AUTHORITY_ROLE])).rows.map((r) => r.proname)
+      const granted = (await su.query(`SELECT p.proname FROM pg_proc p, aclexplode(p.proacl) a WHERE a.grantee = $1::regrole AND a.privilege_type = 'EXECUTE' AND p.proname LIKE 'world_stream_capability_%' ORDER BY 1`, [ENTRY_AUTHORITY_ROLE])).rows.map((r) => r.proname)
       assert.deepEqual(granted, ["world_stream_capability_issue", "world_stream_capability_redeem"])
       evidence.N12 = { tableGrants, rls: { enabled: rls.r, policies: Number(rls.p) }, matrix }
     })

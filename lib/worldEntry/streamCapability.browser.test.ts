@@ -111,6 +111,7 @@ if (!url) {
   before(async () => {
     ;({ su, owner } = await createSupabaseShapedDb(url, dbName, { through040: true }))
     await owner.query(readFileSync(path.join(here, "../../supabase/migrations/043_world_stream_capability_authority.sql"), "utf8"))
+    await owner.query(readFileSync(path.join(here, "../../supabase/migrations/044_world_stream_attachment_authority.sql"), "utf8"))
     await owner.query(`ALTER ROLE worldk_platform_entry_preview LOGIN PASSWORD '${scramVerifier(PLATFORM_PW)}'`)
     db = new PgEntryAuthorityDb(urlFor(url, dbName, "worldk_platform_entry_preview", PLATFORM_PW), { allowLocal: true, ssl: false })
 

@@ -1,0 +1,133 @@
+{
+  "Q1a": {
+    "redeemedUnclaimed": "STREAM_SESSION_NOT_IN_WORLD",
+    "claimedNotJoined": "ISSUED",
+    "claimedLeaveRequested": "STREAM_SESSION_NOT_IN_WORLD",
+    "claimedThenEnded": "STREAM_SESSION_NOT_IN_WORLD"
+  },
+  "G1": {
+    "reply": [
+      "outcome",
+      "sessionId"
+    ],
+    "row": [
+      "attach_window_ends_at",
+      "attached_at",
+      "authorization_sha256",
+      "instance_id",
+      "session_id"
+    ],
+    "windowSeconds": 60,
+    "arrivalAfterAttach": "VISIT_OPENED"
+  },
+  "G2": {
+    "foreignSession": "403:SESSION_NOT_BOUND",
+    "ownSessionForeignAuthorization": "403:STREAM_AUTHORIZATION_BINDING_MISMATCH",
+    "sdkLocalRefusal": "null"
+  },
+  "G3": {
+    "expiredDb": "RUNTIME_CREDENTIAL_EXPIRED",
+    "revokedDb": "RUNTIME_CREDENTIAL_REVOKED",
+    "wrongSecretDb": "RUNTIME_CREDENTIAL_INVALID",
+    "revokedHttp": "401",
+    "instanceRevoked": "401:RUNTIME_UNAUTHORIZED"
+  },
+  "G4": {
+    "replay": "STREAM_ALREADY_ATTACHED",
+    "secondAuthorizationSameSession": "STREAM_ALREADY_ATTACHED"
+  },
+  "G5": {
+    "heldLock": "T2 blocked on Lock, then STREAM_ALREADY_ATTACHED",
+    "race": {
+      "attempts": 16,
+      "attached": 1,
+      "alreadyAttached": 15
+    }
+  },
+  "G6": {
+    "at61s": "STREAM_ATTACH_WINDOW_EXPIRED",
+    "at59s": "ATTACHED"
+  },
+  "G7": {
+    "ended": "409:STREAM_SESSION_NOT_ELIGIBLE",
+    "superseded": "409:STREAM_SESSION_NOT_ELIGIBLE",
+    "leaveRequested": "409:STREAM_SESSION_NOT_ELIGIBLE",
+    "departed": "409:STREAM_SESSION_NOT_ELIGIBLE",
+    "presenceExpired": "409:STREAM_SESSION_NOT_ELIGIBLE"
+  },
+  "G8": {
+    "crossSubject": "403:STREAM_AUTHORIZATION_BINDING_MISMATCH",
+    "crossSession": "403:STREAM_AUTHORIZATION_BINDING_MISMATCH",
+    "rawCapability": "403:STREAM_AUTHORIZATION_INVALID",
+    "forged": "403:STREAM_AUTHORIZATION_INVALID",
+    "sessionCookieAsAuthorization": "403:STREAM_AUTHORIZATION_INVALID",
+    "unredeemedCapability": "403:STREAM_AUTHORIZATION_INVALID"
+  },
+  "G9": {
+    "asTicket": "TICKET_INVALID",
+    "asSessionView": "SESSION_NOT_FOUND",
+    "asLeave": "SESSION_NOT_FOUND",
+    "asRuntimeSecretArrival": "RUNTIME_CREDENTIAL_INVALID",
+    "asRuntimeSecretAttach": "RUNTIME_CREDENTIAL_INVALID",
+    "asStreamCapability": "STREAM_CAPABILITY_INVALID",
+    "asIngressBearer": "401"
+  },
+  "G10": {
+    "browserBody": {
+      "status": "ATTACHED"
+    },
+    "foreignBrowser": 403,
+    "misroutedToWrongRenderer": 403,
+    "noRenderer": 403
+  },
+  "G11": {
+    "tableGrants": [],
+    "rls": {
+      "enabled": true,
+      "policies": 0
+    },
+    "matrix": {
+      "anon": {
+        "tableAny": false,
+        "world_runtime_stream_attach(uuid,bytea,uuid,bytea)": false,
+        "world_stream_attachment_route(bytea,bytea)": false,
+        "world_m14b3_session_in_world(world_runtime_sessions)": false
+      },
+      "authenticated": {
+        "tableAny": false,
+        "world_runtime_stream_attach(uuid,bytea,uuid,bytea)": false,
+        "world_stream_attachment_route(bytea,bytea)": false,
+        "world_m14b3_session_in_world(world_runtime_sessions)": false
+      },
+      "service_role": {
+        "tableAny": false,
+        "world_runtime_stream_attach(uuid,bytea,uuid,bytea)": false,
+        "world_stream_attachment_route(bytea,bytea)": false,
+        "world_m14b3_session_in_world(world_runtime_sessions)": false
+      },
+      "worldk_platform_entry_authority": {
+        "tableAny": false,
+        "world_runtime_stream_attach(uuid,bytea,uuid,bytea)": true,
+        "world_stream_attachment_route(bytea,bytea)": true,
+        "world_m14b3_session_in_world(world_runtime_sessions)": false
+      },
+      "worldk_platform_entry_preview": {
+        "tableAny": false,
+        "world_runtime_stream_attach(uuid,bytea,uuid,bytea)": false,
+        "world_stream_attachment_route(bytea,bytea)": false,
+        "world_m14b3_session_in_world(world_runtime_sessions)": false
+      }
+    },
+    "platformRoleStreamGrants": [
+      "world_runtime_stream_attach",
+      "world_stream_attachment_route",
+      "world_stream_capability_issue",
+      "world_stream_capability_redeem"
+    ]
+  },
+  "G12": {
+    "plaintextsChecked": 41,
+    "tablesScanned": 16,
+    "hits": 0
+  }
+}

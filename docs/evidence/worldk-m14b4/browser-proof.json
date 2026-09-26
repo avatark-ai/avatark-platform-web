@@ -1,0 +1,38 @@
+{
+  "browser": {
+    "chromium": "151.0.7922.34",
+    "preClaim": 403,
+    "attach": {
+      "step": "attach",
+      "status": 200,
+      "body": {
+        "status": "ATTACHED"
+      },
+      "replay": 403
+    },
+    "attachedByAllocatedRenderer": true,
+    "arrivalAfterAttach": "VISIT_OPENED",
+    "crossSite": "BLOCKED",
+    "browserBodies": [
+      [
+        "status"
+      ],
+      [
+        "capability",
+        "expiresInSeconds",
+        "status",
+        "worldId"
+      ],
+      [
+        "authorization",
+        "status"
+      ],
+      [
+        "status"
+      ],
+      [
+        "status"
+      ]
+    ]
+  }
+}

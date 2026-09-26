@@ -1,6 +1,10 @@
 // WORLDK-M14-A: Platform Runtime Ingress (D1, D2).
 //
-//   POST /api/runtime/v1/:op    op = poll | claim | arrival | presence | departure | disconnect
+//   POST /api/runtime/v1/:op    op = poll | claim | arrival | presence | departure | disconnect | attach
+//
+// `attach` (WORLDK-M14-B4) is the allocated renderer's stream attachment: it
+// presents sha256(authorization) for a session bound to it. It is not a
+// lifecycle op (never arrival) and not part of the B1 RendererEvent vocabulary.
 //   Authorization: Bearer wkrt1.<credentialId>.<secret>
 //
 // The ONLY surface a runtime talks to. A runtime submits evidence; the
@@ -22,9 +26,16 @@ import { isUuid, platformIssuedCredentialAuthenticator, type RuntimeAuthenticato
 
 export const RUNTIME_OPS = ["poll", "claim", "arrival", "presence", "departure", "disconnect"] as const
 export type RuntimeOp = (typeof RUNTIME_OPS)[number]
+/** B4: outside the B1 op set (which the SDK mirrors exactly); see the header. */
+export const ATTACH_OP = "attach"
+
+/** The attach op's database call (044); kept off EntryAuthorityDb so existing implementers are unaffected. */
+export interface RuntimeAttachDb {
+  runtimeStreamAttach(credentialId: string, secretSha256: Buffer, sessionId: string, authorizationSha256: Buffer): Promise<{ outcome: "ATTACHED"; sessionId: string }>
+}
 
 export interface RuntimeIngressDeps {
-  db: EntryAuthorityDb | null
+  db: (EntryAuthorityDb & Partial<RuntimeAttachDb>) | null
   mode: WorldConsumerMode
   bindings?: readonly WorldBinding[]
   facts: WorldFactSource
@@ -37,6 +48,8 @@ const json = (body: unknown, status: number) => new Response(JSON.stringify(body
 const STATUS: Partial<Record<string, number>> = {
   SESSION_NOT_BOUND: 403, WORLD_MISMATCH: 403, AUTHORITY_INVALID: 403, PERMISSION_DENIED: 403,
   RECEIPT_CONFLICT: 409, EVENT_ID_CONFLICT: 409, VISIT_ALREADY_OPEN: 409, VISIT_ID_REUSED: 409,
+  STREAM_AUTHORIZATION_INVALID: 403, STREAM_AUTHORIZATION_BINDING_MISMATCH: 403, STREAM_ALREADY_ATTACHED: 409,
+  STREAM_ATTACH_WINDOW_EXPIRED: 409, STREAM_SESSION_NOT_ELIGIBLE: 409,
   SESSION_ENDED: 409, SESSION_NOT_CLAIMED: 409, SESSION_NOT_JOINED: 409, ALLOCATION_RELEASED: 409,
   NO_OPEN_VISIT: 409, VISIT_CLOSED: 409, VISIT_MISMATCH: 409, TICK_REGRESSION: 409, INVALID_READINESS: 400, RECEIPT_IDENTITY_REQUIRED: 400,
 }
@@ -55,7 +68,7 @@ function isObj(v: unknown): v is Record<string, unknown> {
 }
 
 export async function handleRuntimeIngress(request: Request, op: string, deps: RuntimeIngressDeps): Promise<Response> {
-  if (!(RUNTIME_OPS as readonly string[]).includes(op)) return json({ error: "NOT_FOUND" }, 404)
+  if (!(RUNTIME_OPS as readonly string[]).includes(op) && op !== ATTACH_OP) return json({ error: "NOT_FOUND" }, 404)
   const principal = (deps.authenticator ?? platformIssuedCredentialAuthenticator).principal(request.headers)
   if (!principal) return json({ error: "RUNTIME_UNAUTHORIZED" }, 401)
   if (!deps.db) return json({ error: "UNAVAILABLE" }, 503)
@@ -78,6 +91,13 @@ export async function handleRuntimeIngress(request: Request, op: string, deps: R
     if (!isUuid(body.sessionId)) return json({ error: "INVALID_REQUEST" }, 400)
     const sessionId = body.sessionId
     if (op === "claim") return json(await db.runtimeClaim(credentialId, secretSha256, sessionId), 200)
+    if (op === ATTACH_OP) {
+      const h = body.authorizationSha256
+      if (typeof h !== "string" || !/^[0-9a-f]{64}$/.test(h) || Object.keys(body).length !== 2) return json({ error: "INVALID_REQUEST" }, 400)
+      if (!db.runtimeStreamAttach) return json({ error: "UNAVAILABLE" }, 503)
+      const r = await db.runtimeStreamAttach(credentialId, secretSha256, sessionId, Buffer.from(h, "hex"))
+      return json({ outcome: r.outcome, sessionId: r.sessionId }, 200)
+    }
 
     if (!isUuid(body.receiptId) || typeof body.worldId !== "string") return json({ error: "INVALID_REQUEST" }, 400)
     const { receiptId, worldId } = body
