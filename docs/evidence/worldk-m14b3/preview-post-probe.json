@@ -1,0 +1,46 @@
+[
+ {
+  "snapshot": {
+   "digest": {
+    "allocations": "5849a920279aedd5680d45950593f9ae",
+    "continuity": "4d26bc09c7c3c5f136a2d8460a306457",
+    "credentials": "592e23c551798e2f3d959c6c95ba13ab",
+    "events": "1f9d1d4370702616f1193fbc1e8e2d7c",
+    "instances": "d6aa6a842edfebcc4f84f97e2be250d8",
+    "policies": "a7c60b1df7beb9162466421138d1563c",
+    "presence": "1ee2bdcfc901e163f867df43a2b5f468",
+    "receipts": "f43fe69d3d23861c3af6580c8ec641a7",
+    "sessions": "353ba4d73377494f7382d718f97d1a0e",
+    "tickets": "4e79b19f938c9d764f6cd8dd7f0ee018"
+   },
+   "has043Table": true,
+   "ledgerTail": [
+    {
+     "applied_at": "2026-09-25T03:20:43.764879+00:00",
+     "checksum": "2617e6cd1bcf",
+     "filename": "039_world_visitor_lifecycle_authority.sql"
+    },
+    {
+     "applied_at": "2026-09-26T02:57:14.392231+00:00",
+     "checksum": "e3bb5c1d3ff7",
+     "filename": "040_world_entry_runtime_authority.sql"
+    },
+    {
+     "applied_at": "2026-09-26T13:55:11.505806+00:00",
+     "checksum": "6c2a42c5c44a",
+     "filename": "041_world_presence_sweep_schedule.sql"
+    },
+    {
+     "applied_at": "2026-09-26T14:49:12.794621+00:00",
+     "checksum": "9da8eb759f8c",
+     "filename": "042_world_runtime_instance_liveness.sql"
+    },
+    {
+     "applied_at": "2026-09-26T19:06:36.109823+00:00",
+     "checksum": "180016d8e40e",
+     "filename": "043_world_stream_capability_authority.sql"
+    }
+   ]
+  }
+ }
+]

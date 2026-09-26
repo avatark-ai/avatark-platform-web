@@ -1,0 +1,15 @@
+stream_page_no_cookie 404 <meta name="viewport"
+stream_page_forged_cookie 200 <meta name="viewport"
+issue_no_origin 403 {"status":"REFUSED"}
+issue_null_origin 403 {"status":"REFUSED"}
+issue_foreign_origin 403 {"status":"REFUSED"}
+issue_no_cookie 403 {"status":"REFUSED"}
+issue_subject_in_body 400 {"status":"MALFORMED"}
+issue_forged_session_DB 403 {"status":"REFUSED"}
+authorize_forged_cap_DB 403 {"status":"REFUSED"}
+authorize_malformed_cap 403 {"status":"REFUSED"}
+authorize_form_post 400 {"status":"MALFORMED"}
+stream_non_gateway_path 401 {"error":"MACHINE_UNAUTHORIZED"}
+production_host_stream 404 <html data-dpl-id="dpl_FdYo7Sr2mq9322hgQkzqtvwa18kW" lang="e
+production_host_issue 404 <html data-dpl-id="dpl_FdYo7Sr2mq9322hgQkzqtvwa18kW" lang="e
+ingress_still_401 401 {"error":"RUNTIME_UNAUTHORIZED"}
