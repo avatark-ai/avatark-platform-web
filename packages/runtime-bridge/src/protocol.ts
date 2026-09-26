@@ -1,4 +1,4 @@
-// WORLDK-M14-B1: RuntimeBridge protocol — the renderer-neutral contract
+// @avatark/runtime-bridge — WORLDK-M14-B1 RuntimeBridge protocol (extracted in M14-B2) — the renderer-neutral contract
 // between a renderer runtime (the reference runtime today; an Unreal/Pixel
 // Streaming bridge in M15) and the EXISTING Platform Runtime Ingress (M14-A).
 //
@@ -20,7 +20,9 @@
 //     Expiry is the Platform's scheduled presence sweep (M14-A5). Nothing is fabricated.
 //   * InteractionIntent enter-world / leave-world are world-simulation
 //     interaction semantics. They are NEVER a lifecycle path: no ingress op, ever.
-import type { RuntimeOp } from "./runtimeIngress.ts"
+/** The Runtime Ingress operations a bridge may request (the Platform owns their semantics). */
+export const RUNTIME_OPS = ["poll", "claim", "arrival", "presence", "departure", "disconnect"] as const
+export type RuntimeOp = (typeof RUNTIME_OPS)[number]
 
 export const RUNTIME_BRIDGE_PROTOCOL = "worldk.runtime-bridge"
 export const RUNTIME_BRIDGE_SCHEMA_VERSION = "1.0"

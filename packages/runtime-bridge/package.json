@@ -1,0 +1,44 @@
+{
+  "name": "@avatark/runtime-bridge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Renderer-neutral RuntimeBridge protocol (schemaVersion 1.0): the contract between a renderer runtime and the AvatarK Platform Runtime Ingress. Protocol, local state machine, validation, JSON Schema, conformance fixtures. Not a lifecycle authority; no networking, credentials or URLs (transport is injected).",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./schemas/v1/*": "./schemas/v1/*",
+    "./fixtures/v1/*": "./fixtures/v1/*",
+    "./spec/*": "./spec/*"
+  },
+  "types": "./src/index.ts",
+  "devDependencies": {
+    "typescript": "^5"
+  },
+  "files": [
+    "dist",
+    "schemas",
+    "fixtures",
+    "spec"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json --outDir dist --declaration --noEmit false --rewriteRelativeImportExtensions --module esnext --moduleResolution bundler && node ../../scripts/fix-dts-extensions.mjs dist"
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      },
+      "./schemas/v1/*": "./schemas/v1/*",
+      "./fixtures/v1/*": "./fixtures/v1/*",
+      "./spec/*": "./spec/*"
+    }
+  }
+}

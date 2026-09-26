@@ -1,7 +1,6 @@
-// WORLDK-M14-A: non-Unreal REFERENCE RUNTIME (D6), re-based on the
-// @avatark/runtime-bridge SDK in WORLDK-M14-B2 (compatibility migration:
-// identical wire behavior, proven against the frozen pre-B2 copy in
-// testing/referenceRuntime.legacy.ts).
+// FROZEN COPY of lib/worldEntry/referenceRuntime.ts at 752035c (pre-M14-B2), kept ONLY as the
+// behavior oracle for the SDK-backed ReferenceRuntime equivalence test. Never used at runtime.
+// WORLDK-M14-A: non-Unreal REFERENCE RUNTIME (D6).
 //
 // Protocol certification only: it implements exactly the Runtime Ingress
 // protocol the later Unreal bridge will implement, and nothing else — no
@@ -12,24 +11,27 @@
 //   heartbeats -> DEPARTURE receipt when the visitor leaves; DISCONNECT when
 //   the (simulated) stream drops.
 //
-// Every ingress command comes from the SDK (commandFor / stateAfterReply).
-// This adapter owns only what the SDK deliberately does not: the transport
-// (HTTP + the per-instance credential), the step loop, heartbeat timing and
-// the renderer's own decisions (auto-join, simulated hang/drop).
-//
 // It is NOT the M13 Preview Lifecycle Harness: it holds no database
 // credential, cannot choose a subject, visit, time, tick or place, and can
 // act only on sessions the Platform created from a redeemed ticket and
 // bound to its own allocation. Its only credential is its Platform-issued
 // per-instance runtime credential, sent only to the Runtime Ingress.
-import { RuntimeBridge, type BridgeResult, type IngressReply, type RendererEvent, type RuntimeBridgeTransport } from "@avatark/runtime-bridge"
-import type { RuntimePollResult, RuntimeSessionWork } from "./authorityDb.ts"
-import type { RuntimeOp } from "./runtimeIngress.ts"
+//
+// In this reference runtime a visitor "joins" when the runtime accepts the
+// claimed session; there is no media channel. The Unreal bridge will send
+// the same ARRIVAL receipt when the visitor's stream session is established.
+import { randomUUID } from "node:crypto"
+import type { RuntimeBinding, RuntimePollResult, RuntimeSessionWork } from "../authorityDb.ts"
+import type { RuntimeOp } from "../runtimeIngress.ts"
 
-export type { IngressReply }
+export interface IngressReply {
+  status: number
+  body: Record<string, unknown>
+}
 
-/** The injected Runtime Ingress transport (the SDK's transport boundary). */
-export type IngressTransport = RuntimeBridgeTransport
+export interface IngressTransport {
+  post(op: RuntimeOp, body: Record<string, unknown>): Promise<IngressReply>
+}
 
 /** HTTPS transport to the Platform Runtime Ingress. The bearer is sent nowhere else. */
 export function httpIngressTransport(baseUrl: string, bearer: string, fetchImpl: typeof fetch = fetch): IngressTransport {
@@ -60,6 +62,13 @@ export type RuntimeEvent =
   | { kind: "DISCONNECT"; sessionId: string; outcome: string }
   | { kind: "REFUSED"; op: RuntimeOp; status: number; error: string }
 
+interface Tracked {
+  binding: RuntimeBinding | null
+  lastHeartbeatAt: number
+  departed: boolean
+  dropped: boolean
+}
+
 export interface ReferenceRuntimeOptions {
   readiness?: "STARTING" | "READY"
   /** Accept the visitor automatically once a session is claimed (default true). */
@@ -69,14 +78,14 @@ export interface ReferenceRuntimeOptions {
 }
 
 export class ReferenceRuntime {
-  private readonly bridge: RuntimeBridge
+  private readonly transport: IngressTransport
   private readonly opts: Required<Omit<ReferenceRuntimeOptions, "onEvent">> & { onEvent: (e: RuntimeEvent) => void }
-  private readonly lastHeartbeatAt = new Map<string, number>()
+  private readonly sessions = new Map<string, Tracked>()
   private heartbeatSeconds = 15
   private heartbeatsSuspended = false
 
   constructor(transport: IngressTransport, opts: ReferenceRuntimeOptions = {}) {
-    this.bridge = new RuntimeBridge({ transport })
+    this.transport = transport
     this.opts = {
       readiness: opts.readiness ?? "READY",
       autoJoin: opts.autoJoin ?? true,
@@ -99,21 +108,17 @@ export class ReferenceRuntime {
     this.heartbeatsSuspended = true
   }
 
-  /** Runs one renderer fact through the SDK; reports a Platform refusal like the pre-SDK runtime did. */
-  private async fact(event: RendererEvent): Promise<BridgeResult> {
-    const r = await this.bridge.handle(event)
-    if (r.reply && r.reply.status !== 200 && r.command.kind === "INGRESS") {
-      this.opts.onEvent({ kind: "REFUSED", op: r.command.op, status: r.reply.status, error: String(r.reply.body.error ?? "") })
+  private async send(op: RuntimeOp, body: Record<string, unknown>): Promise<IngressReply | null> {
+    const r = await this.transport.post(op, body)
+    if (r.status !== 200) {
+      this.opts.onEvent({ kind: "REFUSED", op, status: r.status, error: String(r.body.error ?? "") })
+      return null
     }
     return r
   }
 
-  private ok(r: BridgeResult): IngressReply | null {
-    return r.reply && r.reply.status === 200 ? r.reply : null
-  }
-
   async poll(): Promise<RuntimePollResult | null> {
-    const r = this.ok(await this.fact({ kind: "RENDERER_AVAILABLE", readiness: this.opts.readiness }))
+    const r = await this.send("poll", { readiness: this.opts.readiness })
     if (!r) return null
     const res = r.body as unknown as RuntimePollResult
     this.heartbeatSeconds = res.heartbeatSeconds
@@ -127,16 +132,24 @@ export class ReferenceRuntime {
     for (const w of polled.sessions) await this.advance(w)
   }
 
-  private async advance(w: RuntimeSessionWork): Promise<void> {
-    const state = this.bridge.state(w.sessionId)
-    if (state === "DEPARTED" || state === "DROPPED" || state === "ENDED_BY_PLATFORM") return
-    if (state === "UNCLAIMED") {
-      const r = this.ok(await this.fact({ kind: "ALLOCATION_ACQUIRED", sessionId: w.sessionId }))
-      if (!r) return
-      this.opts.onEvent({ kind: "CLAIMED", sessionId: w.sessionId, reconnect: this.bridge.binding(w.sessionId)?.reconnect === true })
+  private track(sessionId: string): Tracked {
+    let t = this.sessions.get(sessionId)
+    if (!t) {
+      t = { binding: null, lastHeartbeatAt: 0, departed: false, dropped: false }
+      this.sessions.set(sessionId, t)
     }
-    // The Platform's facts win over local memory (e.g. a restarted runtime process).
-    this.bridge.observeWork([w])
+    return t
+  }
+
+  private async advance(w: RuntimeSessionWork): Promise<void> {
+    const t = this.track(w.sessionId)
+    if (t.departed || t.dropped) return
+    if (!t.binding) {
+      const r = await this.send("claim", { sessionId: w.sessionId })
+      if (!r) return
+      t.binding = r.body as unknown as RuntimeBinding
+      this.opts.onEvent({ kind: "CLAIMED", sessionId: w.sessionId, reconnect: t.binding.reconnect })
+    }
     if (!w.joined) {
       if (this.opts.autoJoin) await this.join(w.sessionId)
       return
@@ -145,34 +158,52 @@ export class ReferenceRuntime {
       await this.leave(w.sessionId)
       return
     }
-    if (!this.heartbeatsSuspended && this.opts.now() - (this.lastHeartbeatAt.get(w.sessionId) ?? 0) >= this.heartbeatSeconds * 1000) await this.heartbeat(w.sessionId)
+    if (!this.heartbeatsSuspended && this.opts.now() - t.lastHeartbeatAt >= this.heartbeatSeconds * 1000) await this.heartbeat(w.sessionId)
   }
 
-  private async receipt(event: RendererEvent, kind: "ARRIVAL" | "PRESENCE" | "DEPARTURE" | "DISCONNECT", sessionId: string): Promise<string | null> {
-    const r = this.ok(await this.fact(event))
-    if (!r) return null
-    const outcome = String(r.body.outcome)
-    if (kind === "ARRIVAL" || kind === "PRESENCE") this.lastHeartbeatAt.set(sessionId, this.opts.now())
-    this.opts.onEvent({ kind, sessionId, outcome })
-    return outcome
+  private async receipt(op: "arrival" | "presence" | "departure" | "disconnect", sessionId: string): Promise<string | null> {
+    const t = this.track(sessionId)
+    if (!t.binding) return null
+    const r = await this.send(op, { receiptId: randomUUID(), sessionId, worldId: t.binding.worldId })
+    return r ? String(r.body.outcome) : null
   }
 
   /** The visitor joined this runtime session. */
-  join(sessionId: string): Promise<string | null> {
-    return this.receipt({ kind: "STREAM_JOINED", sessionId }, "ARRIVAL", sessionId)
+  async join(sessionId: string): Promise<string | null> {
+    const outcome = await this.receipt("arrival", sessionId)
+    if (outcome) {
+      this.track(sessionId).lastHeartbeatAt = this.opts.now()
+      this.opts.onEvent({ kind: "ARRIVAL", sessionId, outcome })
+    }
+    return outcome
   }
 
-  heartbeat(sessionId: string): Promise<string | null> {
-    return this.receipt({ kind: "PRESENCE_TICK", sessionId }, "PRESENCE", sessionId)
+  async heartbeat(sessionId: string): Promise<string | null> {
+    const outcome = await this.receipt("presence", sessionId)
+    if (outcome) {
+      this.track(sessionId).lastHeartbeatAt = this.opts.now()
+      this.opts.onEvent({ kind: "PRESENCE", sessionId, outcome })
+    }
+    return outcome
   }
 
   /** The visitor left (explicit leave-world). */
-  leave(sessionId: string): Promise<string | null> {
-    return this.receipt({ kind: "VISITOR_LEFT", sessionId }, "DEPARTURE", sessionId)
+  async leave(sessionId: string): Promise<string | null> {
+    const outcome = await this.receipt("departure", sessionId)
+    if (outcome) {
+      this.track(sessionId).departed = true
+      this.opts.onEvent({ kind: "DEPARTURE", sessionId, outcome })
+    }
+    return outcome
   }
 
   /** The stream dropped. Not a departure: the grace window runs. */
-  disconnect(sessionId: string): Promise<string | null> {
-    return this.receipt({ kind: "STREAM_LOST", sessionId }, "DISCONNECT", sessionId)
+  async disconnect(sessionId: string): Promise<string | null> {
+    const outcome = await this.receipt("disconnect", sessionId)
+    if (outcome) {
+      this.track(sessionId).dropped = true
+      this.opts.onEvent({ kind: "DISCONNECT", sessionId, outcome })
+    }
+    return outcome
   }
 }

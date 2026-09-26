@@ -1,4 +1,4 @@
-// WORLDK-M14-B1 unit tests (no database): the RuntimeBridge mapping, the
+// @avatark/runtime-bridge unit tests (no database, no network) — WORLDK-M14-B1, extracted in M14-B2: the RuntimeBridge mapping, the
 // lifecycle firewall, versioning, the canonical JSON Schema and the fixtures.
 import { test } from "node:test"
 import assert from "node:assert/strict"
@@ -10,12 +10,12 @@ import Ajv from "ajv"
 import {
   AUTHORITY_MATRIX, commandFor, FORBIDDEN_BRIDGE_FIELDS, parseBridgeMessage, RENDERER_EVENT_KINDS, RUNTIME_BRIDGE_PROTOCOL, RUNTIME_BRIDGE_SCHEMA_VERSION, stateAfterReply,
   type BridgeSessionState, type RendererEvent,
-} from "./runtimeBridgeProtocol.ts"
+} from "./protocol.ts"
 
 const here = path.dirname(fileURLToPath(import.meta.url))
-const FIX = path.join(here, "runtimeBridgeFixtures")
+const FIX = path.join(here, "../fixtures/v1")
 const ajv = new Ajv({ allErrors: true, strict: false })
-const validateSchema = ajv.compile(JSON.parse(readFileSync(path.join(here, "runtime-bridge-message.schema.json"), "utf8")))
+const validateSchema = ajv.compile(JSON.parse(readFileSync(path.join(here, "../schemas/v1/runtime-bridge-message.schema.json"), "utf8")))
 const STATES: BridgeSessionState[] = ["UNCLAIMED", "CLAIMED", "JOINED", "DEPARTED", "DROPPED", "ENDED_BY_PLATFORM"]
 const S = randomUUID()
 const ctx = { receiptId: randomUUID(), worldId: "living-forest" }
@@ -111,8 +111,8 @@ test("versioning fixture: parser and canonical schema agree; major mismatch fail
 })
 
 test("fixtures: every renderer message in every scenario is schema-valid and parses", () => {
-  const files = readdirSync(FIX).filter((f) => /^0[1-7]-.*\.json$/.test(f))
-  assert.equal(files.length, 7)
+  const files = readdirSync(FIX).filter((f) => /^0[1-79]-.*\.json$/.test(f))
+  assert.equal(files.length, 8)
   for (const f of files) {
     const fx = JSON.parse(readFileSync(path.join(FIX, f), "utf8")) as { steps: { renderer?: Record<string, unknown>; session?: string }[] }
     for (const s of fx.steps.filter((x) => x.renderer)) {

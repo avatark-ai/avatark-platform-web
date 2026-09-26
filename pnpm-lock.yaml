@@ -125,6 +125,9 @@ importers:
       '@avatark/renderer-contracts':
         specifier: workspace:*
         version: link:packages/renderer-contracts
+      '@avatark/runtime-bridge':
+        specifier: workspace:*
+        version: link:packages/runtime-bridge
       '@avatark/runtime-contracts':
         specifier: workspace:*
         version: link:packages/runtime-contracts
@@ -702,6 +705,12 @@ importers:
       '@avatark/runtime-contracts':
         specifier: workspace:*
         version: link:../runtime-contracts
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/runtime-bridge:
     devDependencies:
       typescript:
         specifier: ^5

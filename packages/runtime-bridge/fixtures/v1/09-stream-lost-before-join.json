@@ -1,0 +1,69 @@
+{
+ "scenario": "stream lost before the stream joined (CLAIMED)",
+ "description": "STREAM_LOST while the bridge is only CLAIMED maps to DISCONNECT. The ingress answers GRACE_RUNNING with graceEndsAt = null (no Visit exists, so there is no grace timer) and ends the session. No ARRIVAL, no DEPARTURE, no continuity row: nothing is fabricated. The Platform releases the unused allocation (ABANDONED) on its own sweep.",
+ "steps": [
+  {
+   "renderer": {
+    "kind": "RENDERER_AVAILABLE",
+    "readiness": "READY"
+   },
+   "expectOp": "poll"
+  },
+  {
+   "platform": "ENTER_AND_REDEEM",
+   "as": "S1"
+  },
+  {
+   "renderer": {
+    "kind": "ALLOCATION_ACQUIRED"
+   },
+   "session": "S1",
+   "expectOp": "claim",
+   "expectState": "CLAIMED"
+  },
+  {
+   "renderer": {
+    "kind": "STREAM_LOST"
+   },
+   "session": "S1",
+   "expectOp": "disconnect",
+   "expectOutcome": "GRACE_RUNNING",
+   "expectReplyNull": [
+    "graceEndsAt"
+   ],
+   "expectState": "DROPPED"
+  },
+  {
+   "expectLifecycle": {
+    "noContinuityRow": true,
+    "events": [],
+    "sessionEnded": {
+     "S1": "DISCONNECTED"
+    }
+   }
+  },
+  {
+   "renderer": {
+    "kind": "STREAM_JOINED"
+   },
+   "session": "S1",
+   "expectRefused": "SESSION_DROPPED"
+  },
+  {
+   "platform": "SWEEP",
+   "expectTimedOut": 0
+  },
+  {
+   "expectLifecycle": {
+    "noContinuityRow": true,
+    "events": [],
+    "allocation": {
+     "S1": {
+      "state": "RELEASED",
+      "release": "ABANDONED"
+     }
+    }
+   }
+  }
+ ]
+}
