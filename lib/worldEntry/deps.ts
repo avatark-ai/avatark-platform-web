@@ -10,6 +10,8 @@ import type { GatewayDeps } from "./gateway.ts"
 import type { WorldEntryDeps } from "./resolver.ts"
 import type { RuntimeIngressDeps } from "./runtimeIngress.ts"
 import type { StreamCapabilityDeps } from "./streamCapability.ts"
+import { SIGNALLING_KEY_ENV, type SignallingRouteDeps } from "./signallingRoute.ts"
+import { SIGNALLING_URL_ENV, type MediaPageDeps } from "./mediaPlayerPage.ts"
 
 /** The handoff gateway lives on the Platform-controlled Preview origin (D5). */
 export const HANDOFF_ORIGIN = `https://${MACHINE_INGRESS_HOST}`
@@ -40,6 +42,14 @@ export function getGatewayDeps(): GatewayDeps {
 export function getRuntimeIngressDeps(): RuntimeIngressDeps {
   const c = getWorldConsumerDeps()
   return { db: getEntryAuthorityDb(), mode: c.mode, bindings: c.bindings, facts: c.facts }
+}
+
+export function getSignallingRouteDeps(): SignallingRouteDeps {
+  return { db: getEntryAuthorityDb(), configuredKey: process.env[SIGNALLING_KEY_ENV] }
+}
+
+export function getMediaPageDeps(): MediaPageDeps {
+  return { db: getEntryAuthorityDb(), signallingUrl: process.env[SIGNALLING_URL_ENV] }
 }
 
 export function getStreamCapabilityDeps(): StreamCapabilityDeps {

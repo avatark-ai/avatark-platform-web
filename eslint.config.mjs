@@ -18,6 +18,9 @@ const eslintConfig = defineConfig([
     // ESM import syntax, and should not be held to the app's
     // TypeScript/ESM conventions.
     "supabase/scripts/**",
+    // WORLDK-M14-B5: services/** are standalone Node services with their own
+    // package.json/lockfile and tsconfig, never part of the Next app build.
+    "services/**",
     // .claude/worktrees/** holds other sessions' git worktrees (their own
     // full checkouts, including their own generated .next/ build output).
     // Not this repo's source -- must never be linted as if it were.

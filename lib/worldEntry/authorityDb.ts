@@ -287,6 +287,12 @@ export class PgEntryAuthorityDb implements EntryAuthorityDb {
     return r.r as { outcome: "ATTACHED"; sessionId: string }
   }
 
+  // WORLDK-M14-B5 (045): the signalling-facing route, keyed by the authorization alone.
+  async signallingRoute(authorizationSha256: Buffer) {
+    const [r] = await this.call("SELECT * FROM world_stream_signalling_route($1)", [authorizationSha256])
+    return { routeKey: r.route_key as string, attached: r.attached === true }
+  }
+
   /** Preview stub relay routing: the browser's own session for an attachable authorization. */
   async streamAttachmentRoute(viewSha256: Buffer, authorizationSha256: Buffer) {
     const [r] = await this.call("SELECT world_stream_attachment_route($1, $2) AS s", [viewSha256, authorizationSha256])

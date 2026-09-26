@@ -173,6 +173,21 @@ export class ReferenceRuntime {
     return String(reply.body.outcome)
   }
 
+  /**
+   * WORLDK-M14-B5: attach with the authorization DIGEST the signalling layer
+   * relayed (the renderer never holds the plaintext). Same ingress op as
+   * attachStream; returns the outcome or null.
+   */
+  async attachStreamDigest(sessionId: string, authorizationSha256Hex: string): Promise<string | null> {
+    const reply = await this.bridge.attach(sessionId, authorizationSha256Hex)
+    if (!reply) return null
+    if (reply.status !== 200) {
+      this.opts.onEvent({ kind: "REFUSED", op: "attach", status: reply.status, error: String(reply.body.error) })
+      return null
+    }
+    return String(reply.body.outcome)
+  }
+
   /** The visitor joined this runtime session. */
   join(sessionId: string): Promise<string | null> {
     return this.receipt({ kind: "STREAM_JOINED", sessionId }, "ARRIVAL", sessionId)

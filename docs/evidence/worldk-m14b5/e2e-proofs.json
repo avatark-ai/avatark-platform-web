@@ -1,0 +1,156 @@
+{
+  "fullChain": {
+    "msToJoined": 2803,
+    "joinedOutcome": "VISIT_OPENED",
+    "arrivals": 1,
+    "rendererLogOrder": [
+      "REGISTERED",
+      "PLAYER_CONNECTED",
+      "ATTACH",
+      "OFFER_SENT",
+      "MEDIA",
+      "MEDIA",
+      "MEDIA",
+      "MEDIA",
+      "OUTPUT",
+      "FACT"
+    ]
+  },
+  "admission": {
+    "refusedReasons": [
+      "NO_AUTHORIZATION",
+      "NOT_ROUTABLE",
+      "AUTHORIZATION_REUSED"
+    ],
+    "allRefusedWithoutConfigOrOffer": true
+  },
+  "enumeration": {
+    "ignored": [
+      "listStreamers",
+      "subscribe",
+      "unsubscribe"
+    ],
+    "streamerListSent": false
+  },
+  "notJoined": {
+    "wsConnectedAndPlayerConnectedOnly": {
+      "seenOffer": true,
+      "ice": "new",
+      "rendererSaw": [
+        "REGISTERED",
+        "PLAYER_CONNECTED",
+        "ATTACH",
+        "OFFER_SENT"
+      ],
+      "phase": "ESTABLISHING"
+    },
+    "iceConnectedAndDataChannelOpenNoAck": {
+      "seenOffer": true,
+      "ice": "connected",
+      "rendererSaw": [
+        "REGISTERED",
+        "PLAYER_CONNECTED",
+        "ATTACH",
+        "OFFER_SENT",
+        "MEDIA:ICE_STATE:checking",
+        "MEDIA:ICE_STATE:connected",
+        "MEDIA:DATA_CHANNEL:true"
+      ],
+      "phase": "ESTABLISHING"
+    },
+    "wrongNonce": {
+      "seenOffer": true,
+      "ice": "disconnected",
+      "rendererSaw": [
+        "REGISTERED",
+        "PLAYER_CONNECTED",
+        "ATTACH",
+        "OFFER_SENT",
+        "MEDIA:ICE_STATE:checking",
+        "MEDIA:ICE_STATE:connected",
+        "MEDIA:DATA_CHANNEL:true",
+        "MEDIA:ACK",
+        "OUTPUT",
+        "MEDIA:DATA_CHANNEL:false",
+        "MEDIA:ICE_STATE:closed"
+      ],
+      "phase": "FAILED"
+    },
+    "replayedNonceFromAnotherPeer": {
+      "seenOffer": true,
+      "ice": "disconnected",
+      "rendererSaw": [
+        "REGISTERED",
+        "PLAYER_CONNECTED",
+        "ATTACH",
+        "OFFER_SENT",
+        "MEDIA:ICE_STATE:checking",
+        "MEDIA:ICE_STATE:connected",
+        "MEDIA:DATA_CHANNEL:true",
+        "MEDIA:ACK",
+        "OUTPUT",
+        "MEDIA:DATA_CHANNEL:false",
+        "MEDIA:ICE_STATE:closed"
+      ],
+      "phase": "FAILED"
+    }
+  },
+  "noDecodedFrame": {
+    "honest": {
+      "phase": "ESTABLISHING",
+      "iceConnected": true,
+      "dataChannelOpen": true,
+      "ackAccepted": false,
+      "rendererFlowing": false
+    },
+    "earlyAck": {
+      "phase": "ESTABLISHING",
+      "iceConnected": true,
+      "dataChannelOpen": true,
+      "ackAccepted": true,
+      "rendererFlowing": false
+    }
+  },
+  "wrongRenderer": {
+    "squatBlockedLegitRegistration": true,
+    "offerBlocked": "NOT_ATTACHED",
+    "attachments": 0
+  },
+  "reconnectInGrace": {
+    "lost": "GRACE_RUNNING",
+    "resumed": "SESSION_RESUMED",
+    "arrivals": 1,
+    "visitCount": 1
+  },
+  "preJoinFailure": {
+    "reason": "MEDIA_ESTABLISHMENT_TIMEOUT",
+    "arrivals": 0,
+    "reattachRefused": true
+  },
+  "relay": {
+    "players": 2,
+    "rendererSelectedPairs": [
+      {
+        "local": "relay",
+        "remote": "relay"
+      },
+      {
+        "local": "relay",
+        "remote": "relay"
+      }
+    ],
+    "credentialsMinted": 2,
+    "distinct": true,
+    "ttlSeconds": 300,
+    "candidatesSeenByBrowser": 3,
+    "allRelay": true,
+    "nonRelayCandidatesDroppedBySignalling": 0
+  },
+  "iceDebounce": {
+    "transientRecoveredMs": 2202,
+    "streamLostAfterMs": 10024,
+    "reason": "ICE_DISCONNECTED_10S",
+    "outcome": "GRACE_RUNNING"
+  },
+  "replayAcrossRestart": "ALREADY_ATTACHED"
+}

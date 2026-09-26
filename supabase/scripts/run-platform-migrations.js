@@ -139,6 +139,9 @@ const MIGRATION_ORDER = [
   // WORLDK-M14-B4: renderer attachment authority (+ the approved B3 stream
   // predicate change). PREVIEW-CERTIFICATION ONLY -- see PREVIEW_ONLY_MIGRATIONS below.
   '044_world_stream_attachment_authority.sql',
+  // WORLDK-M14-B5: signalling route authority (read-only, authorization-keyed).
+  // PREVIEW-CERTIFICATION ONLY -- see PREVIEW_ONLY_MIGRATIONS below.
+  '045_world_stream_signalling_route.sql',
 ]
 
 // Migrations approved for exactly one project. The runner refuses to apply
@@ -152,6 +155,7 @@ const PREVIEW_ONLY_MIGRATIONS = {
   '042_world_runtime_instance_liveness.sql': 'gxjdbfpyyrycvqzozyty', // avatark-platform-preview
   '043_world_stream_capability_authority.sql': 'gxjdbfpyyrycvqzozyty', // avatark-platform-preview
   '044_world_stream_attachment_authority.sql': 'gxjdbfpyyrycvqzozyty', // avatark-platform-preview
+  '045_world_stream_signalling_route.sql': 'gxjdbfpyyrycvqzozyty', // avatark-platform-preview
 }
 
 function assertMigrationTarget(file, dbUrl) {

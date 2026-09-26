@@ -1,0 +1,18 @@
+{
+  "name": "@avatark/worldk-signalling",
+  "version": "0.1.0",
+  "private": true,
+  "description": "WORLDK-M14-B5 Platform-controlled signalling service (GPU-independent media control plane). Not part of the Next app or the pnpm workspace.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "start": "node --experimental-strip-types src/cli.ts",
+    "test": "node --experimental-strip-types --test src/*.test.ts"
+  },
+  "dependencies": {
+    "@epicgames-ps/lib-pixelstreamingcommon-ue5.8": "0.1.0",
+    "@epicgames-ps/lib-pixelstreamingsignalling-ue5.8": "0.2.0",
+    "ws": "8.22.0"
+  }
+}
