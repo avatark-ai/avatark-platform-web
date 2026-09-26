@@ -38,12 +38,19 @@ const PAGE_HEADERS = {
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string)
 
-function page(title: string, body: string, status: number, refreshSeconds?: number): Response {
+// The status page hosts the Leave form. Under "no-referrer" a browser sends
+// `Origin: null` on that same-origin POST (Fetch "serialize a request
+// origin"), which handleLeave rightly refuses. "same-origin" restores the real
+// Origin for same-origin requests only; cross-origin requests still carry no
+// referrer, and the ticket URL is never this page's URL (it 303s away).
+const STATUS_PAGE_HEADERS = { ...PAGE_HEADERS, "Referrer-Policy": "same-origin" }
+
+function page(title: string, body: string, status: number, refreshSeconds?: number, headers: Record<string, string> = PAGE_HEADERS): Response {
   const refresh = refreshSeconds ? `<meta http-equiv="refresh" content="${refreshSeconds}">` : ""
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${refresh}<title>${esc(title)}</title>
 <style>body{font:16px/1.5 system-ui,sans-serif;max-width:36rem;margin:3rem auto;padding:0 1rem;color:#1d2b22;background:#f6f4ee}h1{font-size:1.4rem}.meta{color:#55635a;font-size:.9rem}button{font:inherit;padding:.5rem 1rem}</style>
 </head><body>${body}</body></html>`
-  return new Response(html, { status, headers: PAGE_HEADERS })
+  return new Response(html, { status, headers })
 }
 
 function worldName(worldId: string, bindings: readonly WorldBinding[]): string {
@@ -105,7 +112,7 @@ export async function handleSessionView(request: Request, deps: GatewayDeps): Pr
   const w = worldName(v.worldId, deps.bindings ?? WORLD_BINDINGS)
   const c = COPY[v.state]
   const leave = c.leave ? `<form method="post" action="${LEAVE_PATH}"><button type="submit">Leave ${esc(w)}</button></form>` : ""
-  return page(c.title(w), `<h1>${esc(c.title(w))}</h1>${c.body(w)}${leave}`, 200, c.refresh)
+  return page(c.title(w), `<h1>${esc(c.title(w))}</h1>${c.body(w)}${leave}`, 200, c.refresh, STATUS_PAGE_HEADERS)
 }
 
 /** Same-origin POST only; the cookie is SameSite=Lax as well. */
