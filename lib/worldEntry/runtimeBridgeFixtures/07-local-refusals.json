@@ -1,0 +1,101 @@
+{
+ "scenario": "out-of-order renderer facts are refused locally",
+ "description": "The bridge never sends an ingress op for a fact that is impossible in its local state.",
+ "steps": [
+  {
+   "renderer": {
+    "kind": "RENDERER_AVAILABLE",
+    "readiness": "READY"
+   },
+   "expectOp": "poll"
+  },
+  {
+   "platform": "ENTER_AND_REDEEM",
+   "as": "S1"
+  },
+  {
+   "renderer": {
+    "kind": "STREAM_JOINED"
+   },
+   "session": "S1",
+   "expectRefused": "NOT_CLAIMED"
+  },
+  {
+   "renderer": {
+    "kind": "PRESENCE_TICK"
+   },
+   "session": "S1",
+   "expectRefused": "NOT_JOINED"
+  },
+  {
+   "renderer": {
+    "kind": "VISITOR_LEFT"
+   },
+   "session": "S1",
+   "expectRefused": "NOT_JOINED"
+  },
+  {
+   "renderer": {
+    "kind": "ALLOCATION_ACQUIRED"
+   },
+   "session": "S1",
+   "expectOp": "claim",
+   "expectState": "CLAIMED"
+  },
+  {
+   "renderer": {
+    "kind": "ALLOCATION_ACQUIRED"
+   },
+   "session": "S1",
+   "expectRefused": "ALREADY_CLAIMED"
+  },
+  {
+   "renderer": {
+    "kind": "STREAM_JOINED"
+   },
+   "session": "S1",
+   "expectOp": "arrival",
+   "expectOutcome": "VISIT_OPENED",
+   "expectState": "JOINED"
+  },
+  {
+   "renderer": {
+    "kind": "STREAM_JOINED"
+   },
+   "session": "S1",
+   "expectRefused": "ALREADY_JOINED"
+  },
+  {
+   "renderer": {
+    "kind": "VISITOR_LEFT"
+   },
+   "session": "S1",
+   "expectOp": "departure",
+   "expectState": "DEPARTED"
+  },
+  {
+   "renderer": {
+    "kind": "PRESENCE_TICK"
+   },
+   "session": "S1",
+   "expectRefused": "SESSION_DEPARTED"
+  },
+  {
+   "renderer": {
+    "kind": "STREAM_LOST"
+   },
+   "session": "S1",
+   "expectRefused": "SESSION_DEPARTED"
+  },
+  {
+   "expectLifecycle": {
+    "visitOpen": false,
+    "visitCount": 1,
+    "events": [
+     "CONFIRMED_ARRIVAL/RUNTIME_CONFIRMED",
+     "CONFIRMED_DEPARTURE/RUNTIME_CONFIRMED"
+    ]
+   }
+  }
+ ]
+}

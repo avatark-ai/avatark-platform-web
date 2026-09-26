@@ -1,0 +1,74 @@
+{
+ "scenario": "visitor leaves through the Platform gateway",
+ "description": "The visitor's Leave on the gateway is a request; the renderer sees leaveRequested in its work and reports VISITOR_LEFT -> DEPARTURE. The request alone is not a departure.",
+ "steps": [
+  {
+   "renderer": {
+    "kind": "RENDERER_AVAILABLE",
+    "readiness": "READY"
+   },
+   "expectOp": "poll"
+  },
+  {
+   "platform": "ENTER_AND_REDEEM",
+   "as": "S1"
+  },
+  {
+   "renderer": {
+    "kind": "ALLOCATION_ACQUIRED"
+   },
+   "session": "S1",
+   "expectOp": "claim",
+   "expectState": "CLAIMED"
+  },
+  {
+   "renderer": {
+    "kind": "STREAM_JOINED"
+   },
+   "session": "S1",
+   "expectOp": "arrival",
+   "expectOutcome": "VISIT_OPENED",
+   "expectState": "JOINED"
+  },
+  {
+   "platform": "GATEWAY_LEAVE",
+   "session": "S1"
+  },
+  {
+   "expectLifecycle": {
+    "visitOpen": true,
+    "visitCount": 1,
+    "events": [
+     "CONFIRMED_ARRIVAL/RUNTIME_CONFIRMED"
+    ]
+   }
+  },
+  {
+   "renderer": {
+    "kind": "RENDERER_AVAILABLE",
+    "readiness": "READY"
+   },
+   "expectOp": "poll",
+   "expectWorkLeaveRequested": "S1"
+  },
+  {
+   "renderer": {
+    "kind": "VISITOR_LEFT"
+   },
+   "session": "S1",
+   "expectOp": "departure",
+   "expectState": "DEPARTED"
+  },
+  {
+   "expectLifecycle": {
+    "visitOpen": false,
+    "visitCount": 1,
+    "basis": "LEAVE_RECORDED",
+    "events": [
+     "CONFIRMED_ARRIVAL/RUNTIME_CONFIRMED",
+     "CONFIRMED_DEPARTURE/RUNTIME_CONFIRMED"
+    ]
+   }
+  }
+ ]
+}

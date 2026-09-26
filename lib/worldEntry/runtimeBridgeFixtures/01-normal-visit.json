@@ -1,0 +1,62 @@
+{
+ "scenario": "normal visit",
+ "description": "available -> allocation acquired -> stream joined -> presence -> explicit leave: exactly one RUNTIME_CONFIRMED arrival and departure.",
+ "steps": [
+  {
+   "renderer": {
+    "kind": "RENDERER_AVAILABLE",
+    "readiness": "READY"
+   },
+   "expectOp": "poll"
+  },
+  {
+   "platform": "ENTER_AND_REDEEM",
+   "as": "S1"
+  },
+  {
+   "renderer": {
+    "kind": "ALLOCATION_ACQUIRED"
+   },
+   "session": "S1",
+   "expectOp": "claim",
+   "expectState": "CLAIMED"
+  },
+  {
+   "renderer": {
+    "kind": "STREAM_JOINED"
+   },
+   "session": "S1",
+   "expectOp": "arrival",
+   "expectOutcome": "VISIT_OPENED",
+   "expectState": "JOINED"
+  },
+  {
+   "renderer": {
+    "kind": "PRESENCE_TICK"
+   },
+   "session": "S1",
+   "expectOp": "presence",
+   "expectOutcome": "PRESENCE_RECORDED",
+   "expectState": "JOINED"
+  },
+  {
+   "renderer": {
+    "kind": "VISITOR_LEFT"
+   },
+   "session": "S1",
+   "expectOp": "departure",
+   "expectState": "DEPARTED"
+  },
+  {
+   "expectLifecycle": {
+    "visitOpen": false,
+    "visitCount": 1,
+    "basis": "LEAVE_RECORDED",
+    "events": [
+     "CONFIRMED_ARRIVAL/RUNTIME_CONFIRMED",
+     "CONFIRMED_DEPARTURE/RUNTIME_CONFIRMED"
+    ]
+   }
+  }
+ ]
+}

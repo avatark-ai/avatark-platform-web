@@ -1,0 +1,111 @@
+{
+ "scenario": "reconnect within grace keeps the same Visit",
+ "description": "After STREAM_LOST the visitor re-enters through the Platform; the reconnect session's STREAM_JOINED answers SESSION_RESUMED: same Visit, no second lifecycle ARRIVAL. The dropped session is never revived.",
+ "steps": [
+  {
+   "renderer": {
+    "kind": "RENDERER_AVAILABLE",
+    "readiness": "READY"
+   },
+   "expectOp": "poll"
+  },
+  {
+   "platform": "ENTER_AND_REDEEM",
+   "as": "S1"
+  },
+  {
+   "renderer": {
+    "kind": "ALLOCATION_ACQUIRED"
+   },
+   "session": "S1",
+   "expectOp": "claim",
+   "expectState": "CLAIMED"
+  },
+  {
+   "renderer": {
+    "kind": "STREAM_JOINED"
+   },
+   "session": "S1",
+   "expectOp": "arrival",
+   "expectOutcome": "VISIT_OPENED",
+   "expectState": "JOINED"
+  },
+  {
+   "renderer": {
+    "kind": "STREAM_LOST"
+   },
+   "session": "S1",
+   "expectOp": "disconnect",
+   "expectOutcome": "GRACE_RUNNING",
+   "expectState": "DROPPED"
+  },
+  {
+   "renderer": {
+    "kind": "STREAM_JOINED"
+   },
+   "session": "S1",
+   "expectRefused": "SESSION_DROPPED"
+  },
+  {
+   "platform": "ENTER_AND_REDEEM",
+   "as": "S2",
+   "expectReconnect": true
+  },
+  {
+   "renderer": {
+    "kind": "RENDERER_AVAILABLE",
+    "readiness": "READY"
+   },
+   "expectOp": "poll"
+  },
+  {
+   "renderer": {
+    "kind": "ALLOCATION_ACQUIRED"
+   },
+   "session": "S2",
+   "expectOp": "claim",
+   "expectState": "CLAIMED"
+  },
+  {
+   "renderer": {
+    "kind": "STREAM_JOINED"
+   },
+   "session": "S2",
+   "expectOp": "arrival",
+   "expectOutcome": "SESSION_RESUMED",
+   "expectState": "JOINED"
+  },
+  {
+   "expectLifecycle": {
+    "visitOpen": true,
+    "visitCount": 1,
+    "sameVisit": [
+     "S1",
+     "S2"
+    ],
+    "events": [
+     "CONFIRMED_ARRIVAL/RUNTIME_CONFIRMED"
+    ]
+   }
+  },
+  {
+   "renderer": {
+    "kind": "VISITOR_LEFT"
+   },
+   "session": "S2",
+   "expectOp": "departure",
+   "expectState": "DEPARTED"
+  },
+  {
+   "expectLifecycle": {
+    "visitOpen": false,
+    "visitCount": 1,
+    "basis": "LEAVE_RECORDED",
+    "events": [
+     "CONFIRMED_ARRIVAL/RUNTIME_CONFIRMED",
+     "CONFIRMED_DEPARTURE/RUNTIME_CONFIRMED"
+    ]
+   }
+  }
+ ]
+}

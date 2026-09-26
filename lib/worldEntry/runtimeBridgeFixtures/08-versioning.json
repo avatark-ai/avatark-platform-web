@@ -1,0 +1,181 @@
+{
+ "scenario": "versioning and boundary refusals",
+ "description": "Parser and schema behaviour for untrusted messages. Major mismatch fails closed (RESYNC_REQUIRED); newer minor is accepted with unknown fields ignored; forbidden authority fields and malformed input are rejected. Never a crash.",
+ "messages": [
+  {
+   "message": {
+    "protocol": "worldk.runtime-bridge",
+    "schemaVersion": "1.0",
+    "event": {
+     "kind": "STREAM_JOINED",
+     "sessionId": "0b7d4c2e-5a1f-4c3d-9e8f-1a2b3c4d5e6f"
+    }
+   },
+   "expect": "ACCEPTED",
+   "schemaValid": true
+  },
+  {
+   "message": {
+    "protocol": "worldk.runtime-bridge",
+    "schemaVersion": "1.7",
+    "event": {
+     "kind": "STREAM_JOINED",
+     "sessionId": "0b7d4c2e-5a1f-4c3d-9e8f-1a2b3c4d5e6f",
+     "futureHint": "x"
+    }
+   },
+   "expect": "ACCEPTED",
+   "minorAhead": true,
+   "schemaValid": true
+  },
+  {
+   "message": {
+    "protocol": "worldk.runtime-bridge",
+    "schemaVersion": "2.0",
+    "event": {
+     "kind": "STREAM_JOINED",
+     "sessionId": "0b7d4c2e-5a1f-4c3d-9e8f-1a2b3c4d5e6f"
+    }
+   },
+   "expect": "RESYNC_REQUIRED",
+   "schemaValid": false
+  },
+  {
+   "message": {
+    "protocol": "worldk.runtime-bridge",
+    "schemaVersion": "0.9",
+    "event": {
+     "kind": "STREAM_JOINED",
+     "sessionId": "0b7d4c2e-5a1f-4c3d-9e8f-1a2b3c4d5e6f"
+    }
+   },
+   "expect": "RESYNC_REQUIRED",
+   "schemaValid": false
+  },
+  {
+   "message": {
+    "protocol": "worldk.runtime-bridge",
+    "schemaVersion": "1.0",
+    "event": {
+     "kind": "STREAM_JOINED",
+     "sessionId": "0b7d4c2e-5a1f-4c3d-9e8f-1a2b3c4d5e6f",
+     "visitId": "0b7d4c2e-5a1f-4c3d-9e8f-1a2b3c4d5e6f"
+    }
+   },
+   "expect": "REJECTED",
+   "reason": "FORBIDDEN_FIELD:visitId",
+   "schemaValid": false
+  },
+  {
+   "message": {
+    "protocol": "worldk.runtime-bridge",
+    "schemaVersion": "1.0",
+    "event": {
+     "kind": "VISITOR_LEFT",
+     "sessionId": "0b7d4c2e-5a1f-4c3d-9e8f-1a2b3c4d5e6f",
+     "occurredAt": "2026-09-26T00:00:00Z"
+    }
+   },
+   "expect": "REJECTED",
+   "reason": "FORBIDDEN_FIELD:occurredAt",
+   "schemaValid": false
+  },
+  {
+   "message": {
+    "protocol": "worldk.runtime-bridge",
+    "schemaVersion": "1.0",
+    "event": {
+     "kind": "PRESENCE_TICK",
+     "sessionId": "0b7d4c2e-5a1f-4c3d-9e8f-1a2b3c4d5e6f"
+    },
+    "subjectId": "0b7d4c2e-5a1f-4c3d-9e8f-1a2b3c4d5e6f"
+   },
+   "expect": "REJECTED",
+   "reason": "FORBIDDEN_FIELD:subjectId",
+   "schemaValid": false
+  },
+  {
+   "message": {
+    "protocol": "worldk.runtime-bridge",
+    "schemaVersion": "1.0",
+    "event": {
+     "kind": "STREAM_JOINED",
+     "sessionId": "not-a-uuid"
+    }
+   },
+   "expect": "REJECTED",
+   "reason": "INVALID_SESSION_ID",
+   "schemaValid": false
+  },
+  {
+   "message": {
+    "protocol": "worldk.runtime-bridge",
+    "schemaVersion": "1.0",
+    "event": {
+     "kind": "TELEPORT",
+     "sessionId": "0b7d4c2e-5a1f-4c3d-9e8f-1a2b3c4d5e6f"
+    }
+   },
+   "expect": "REJECTED",
+   "reason": "UNKNOWN_EVENT",
+   "schemaValid": false
+  },
+  {
+   "message": {
+    "protocol": "worldk.runtime-bridge",
+    "schemaVersion": "1.0",
+    "event": {
+     "kind": "RENDERER_AVAILABLE",
+     "readiness": "OFFLINE"
+    }
+   },
+   "expect": "REJECTED",
+   "reason": "INVALID_READINESS",
+   "schemaValid": false
+  },
+  {
+   "message": {
+    "protocol": "worldk.runtime-bridge",
+    "event": {
+     "kind": "RENDERER_ABANDONED"
+    }
+   },
+   "expect": "REJECTED",
+   "reason": "INVALID_SCHEMA_VERSION",
+   "schemaValid": false
+  },
+  {
+   "message": {
+    "protocol": "other",
+    "schemaVersion": "1.0",
+    "event": {
+     "kind": "RENDERER_ABANDONED"
+    }
+   },
+   "expect": "REJECTED",
+   "reason": "UNKNOWN_PROTOCOL",
+   "schemaValid": false
+  },
+  {
+   "message": "garbage",
+   "expect": "REJECTED",
+   "reason": "NOT_AN_OBJECT",
+   "schemaValid": false
+  },
+  {
+   "message": {
+    "protocol": "worldk.runtime-bridge",
+    "schemaVersion": "1.0",
+    "event": {
+     "kind": "WORLD_INTERACTION",
+     "intent": {
+      "type": "enter-world",
+      "worldId": "living-forest"
+     }
+    }
+   },
+   "expect": "ACCEPTED",
+   "schemaValid": true
+  }
+ ]
+}

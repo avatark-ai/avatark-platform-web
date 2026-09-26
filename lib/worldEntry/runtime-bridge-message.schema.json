@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "runtime-bridge-message.schema.json",
+  "title": "WorldK RuntimeBridge message (M14-B1)",
+  "description": "Renderer-neutral facts a renderer runtime reports about its OWN Platform sessions. OWNER/AUTHORITY: AvatarK Platform (Runtime Ingress). A message never carries subject, visit, allocation, instance, time, tick, place or lifecycle authority: the ingress derives them. Major-version mismatch must fail closed (resync); newer minor versions may add optional fields, which receivers ignore. enter-world / leave-world interactions are world-simulation semantics and never a lifecycle path.",
+  "type": "object",
+  "required": ["protocol", "schemaVersion", "event"],
+  "properties": {
+    "protocol": { "const": "worldk.runtime-bridge" },
+    "schemaVersion": { "type": "string", "pattern": "^1\\.[0-9]+$" },
+    "event": { "$ref": "#/definitions/event" }
+  },
+  "not": { "$ref": "#/definitions/forbiddenFields" },
+  "definitions": {
+    "uuid": { "type": "string", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" },
+    "forbiddenFields": {
+      "anyOf": [
+        { "required": ["subjectId"] }, { "required": ["visitId"] }, { "required": ["allocationId"] }, { "required": ["instanceId"] },
+        { "required": ["occurredAt"] }, { "required": ["worldTick"] }, { "required": ["tick"] }, { "required": ["placeId"] },
+        { "required": ["authority"] }, { "required": ["authorityKind"] }, { "required": ["eventType"] }, { "required": ["basis"] }
+      ]
+    },
+    "sessionEvent": {
+      "type": "object",
+      "required": ["kind", "sessionId"],
+      "properties": {
+        "kind": { "enum": ["ALLOCATION_ACQUIRED", "STREAM_JOINED", "PRESENCE_TICK", "STREAM_LOST", "VISITOR_LEFT"] },
+        "sessionId": { "$ref": "#/definitions/uuid" }
+      }
+    },
+    "event": {
+      "allOf": [
+        { "not": { "$ref": "#/definitions/forbiddenFields" } },
+        {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": ["kind", "readiness"],
+              "properties": { "kind": { "const": "RENDERER_AVAILABLE" }, "readiness": { "enum": ["STARTING", "READY"] } }
+            },
+            { "$ref": "#/definitions/sessionEvent" },
+            { "type": "object", "required": ["kind"], "properties": { "kind": { "const": "RENDERER_ABANDONED" } } },
+            {
+              "type": "object",
+              "required": ["kind", "intent"],
+              "properties": {
+                "kind": { "const": "WORLD_INTERACTION" },
+                "intent": { "type": "object", "required": ["type"], "properties": { "type": { "type": "string" } } }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

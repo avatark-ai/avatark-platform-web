@@ -1,0 +1,74 @@
+{
+ "scenario": "abandonment is Platform expiry",
+ "description": "The renderer disappears (RENDERER_ABANDONED is a NO_OP: nothing is fabricated). The Visit closes only through the Platform presence sweep (M14-A5) after grace, dated at the last accepted presence.",
+ "steps": [
+  {
+   "renderer": {
+    "kind": "RENDERER_AVAILABLE",
+    "readiness": "READY"
+   },
+   "expectOp": "poll"
+  },
+  {
+   "platform": "ENTER_AND_REDEEM",
+   "as": "S1"
+  },
+  {
+   "renderer": {
+    "kind": "ALLOCATION_ACQUIRED"
+   },
+   "session": "S1",
+   "expectOp": "claim",
+   "expectState": "CLAIMED"
+  },
+  {
+   "renderer": {
+    "kind": "STREAM_JOINED"
+   },
+   "session": "S1",
+   "expectOp": "arrival",
+   "expectOutcome": "VISIT_OPENED",
+   "expectState": "JOINED"
+  },
+  {
+   "renderer": {
+    "kind": "RENDERER_ABANDONED"
+   },
+   "expectNoOp": "ABANDONMENT_IS_PLATFORM_EXPIRY"
+  },
+  {
+   "expectLifecycle": {
+    "visitOpen": true,
+    "visitCount": 1,
+    "events": [
+     "CONFIRMED_ARRIVAL/RUNTIME_CONFIRMED"
+    ]
+   }
+  },
+  {
+   "platform": "AGE_PAST_GRACE_AND_SWEEP",
+   "expectTimedOut": 1
+  },
+  {
+   "expectLifecycle": {
+    "visitOpen": false,
+    "visitCount": 1,
+    "basis": "PRESENCE_TIMEOUT",
+    "departureAtLastPresence": true,
+    "events": [
+     "CONFIRMED_ARRIVAL/RUNTIME_CONFIRMED",
+     "CONFIRMED_DEPARTURE/PLATFORM_PRESENCE_TIMEOUT"
+    ]
+   }
+  },
+  {
+   "renderer": {
+    "kind": "PRESENCE_TICK"
+   },
+   "session": "S1",
+   "expectOp": "presence",
+   "expectEndedByPlatform": true,
+   "expectState": "ENDED_BY_PLATFORM"
+  }
+ ]
+}

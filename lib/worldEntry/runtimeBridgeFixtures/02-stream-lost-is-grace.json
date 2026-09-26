@@ -1,0 +1,52 @@
+{
+ "scenario": "WebRTC loss is a disconnect, not a departure",
+ "description": "STREAM_LOST maps to DISCONNECT; the ingress answers GRACE_RUNNING and the Visit stays open with no departure event.",
+ "steps": [
+  {
+   "renderer": {
+    "kind": "RENDERER_AVAILABLE",
+    "readiness": "READY"
+   },
+   "expectOp": "poll"
+  },
+  {
+   "platform": "ENTER_AND_REDEEM",
+   "as": "S1"
+  },
+  {
+   "renderer": {
+    "kind": "ALLOCATION_ACQUIRED"
+   },
+   "session": "S1",
+   "expectOp": "claim",
+   "expectState": "CLAIMED"
+  },
+  {
+   "renderer": {
+    "kind": "STREAM_JOINED"
+   },
+   "session": "S1",
+   "expectOp": "arrival",
+   "expectOutcome": "VISIT_OPENED",
+   "expectState": "JOINED"
+  },
+  {
+   "renderer": {
+    "kind": "STREAM_LOST"
+   },
+   "session": "S1",
+   "expectOp": "disconnect",
+   "expectOutcome": "GRACE_RUNNING",
+   "expectState": "DROPPED"
+  },
+  {
+   "expectLifecycle": {
+    "visitOpen": true,
+    "visitCount": 1,
+    "events": [
+     "CONFIRMED_ARRIVAL/RUNTIME_CONFIRMED"
+    ]
+   }
+  }
+ ]
+}

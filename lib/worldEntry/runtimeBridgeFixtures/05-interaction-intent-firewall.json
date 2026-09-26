@@ -1,0 +1,80 @@
+{
+ "scenario": "InteractionIntent enter-world / leave-world is not a lifecycle path",
+ "description": "World-simulation interactions produce NO ingress op, in any session state, and change no lifecycle state.",
+ "steps": [
+  {
+   "renderer": {
+    "kind": "RENDERER_AVAILABLE",
+    "readiness": "READY"
+   },
+   "expectOp": "poll"
+  },
+  {
+   "platform": "ENTER_AND_REDEEM",
+   "as": "S1"
+  },
+  {
+   "renderer": {
+    "kind": "WORLD_INTERACTION",
+    "intent": {
+     "type": "enter-world",
+     "worldId": "living-forest"
+    }
+   },
+   "expectNoOp": "LIFECYCLE_INERT_WORLD_INTERACTION"
+  },
+  {
+   "expectLifecycle": {
+    "noContinuityRow": true,
+    "events": []
+   }
+  },
+  {
+   "renderer": {
+    "kind": "ALLOCATION_ACQUIRED"
+   },
+   "session": "S1",
+   "expectOp": "claim",
+   "expectState": "CLAIMED"
+  },
+  {
+   "renderer": {
+    "kind": "STREAM_JOINED"
+   },
+   "session": "S1",
+   "expectOp": "arrival",
+   "expectOutcome": "VISIT_OPENED",
+   "expectState": "JOINED"
+  },
+  {
+   "renderer": {
+    "kind": "WORLD_INTERACTION",
+    "intent": {
+     "type": "leave-world",
+     "worldId": "living-forest"
+    }
+   },
+   "expectNoOp": "LIFECYCLE_INERT_WORLD_INTERACTION"
+  },
+  {
+   "renderer": {
+    "kind": "WORLD_INTERACTION",
+    "intent": {
+     "type": "visit-location",
+     "worldId": "living-forest",
+     "locationId": "forest-clearing"
+    }
+   },
+   "expectNoOp": "LIFECYCLE_INERT_WORLD_INTERACTION"
+  },
+  {
+   "expectLifecycle": {
+    "visitOpen": true,
+    "visitCount": 1,
+    "events": [
+     "CONFIRMED_ARRIVAL/RUNTIME_CONFIRMED"
+    ]
+   }
+  }
+ ]
+}
