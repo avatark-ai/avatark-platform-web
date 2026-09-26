@@ -1,0 +1,74 @@
+{
+  "browser": {
+    "chromium": "151.0.7922.34",
+    "flow": [
+      {
+        "path": "/world-entry/stream/capability",
+        "origin": "PLATFORM",
+        "site": "same-origin",
+        "cookie": true,
+        "status": 201
+      },
+      {
+        "path": "/world-entry/stream/authorize",
+        "origin": "PLATFORM",
+        "site": "same-origin",
+        "cookie": true,
+        "status": 200
+      }
+    ],
+    "race": {
+      "race": [
+        200,
+        403
+      ],
+      "replay": 403
+    },
+    "noReferrerFetch": {
+      "result": "AUTHORIZED",
+      "seen": [
+        {
+          "path": "/world-entry/stream/capability",
+          "origin": "PLATFORM",
+          "status": 201
+        },
+        {
+          "path": "/world-entry/stream/authorize",
+          "origin": "PLATFORM",
+          "status": 200
+        }
+      ]
+    },
+    "originNullFormMutant": [
+      {
+        "path": "/world-entry/stream/capability",
+        "origin": "null",
+        "site": "same-origin",
+        "cookie": true,
+        "status": 403
+      }
+    ],
+    "attackerFetch": [
+      "BLOCKED",
+      "BLOCKED"
+    ],
+    "attackerForms": [
+      {
+        "path": "/world-entry/stream/authorize",
+        "origin": "ATTACKER",
+        "site": "cross-site",
+        "cookie": false,
+        "status": 403
+      },
+      {
+        "path": "/world-entry/stream/capability",
+        "origin": "ATTACKER",
+        "site": "cross-site",
+        "cookie": false,
+        "status": 403
+      }
+    ],
+    "plaintextsChecked": 6,
+    "plaintextHits": 0
+  }
+}

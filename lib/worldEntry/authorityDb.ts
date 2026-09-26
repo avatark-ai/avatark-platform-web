@@ -27,6 +27,8 @@ export type EntryAuthorityCode =
   | "TICK_REGRESSION" | "TIME_OUT_OF_BOUNDS" | "INVALID_TICK" | "PROVENANCE_INVALID" | "INVALID_READINESS"
   | "RECEIPT_IDENTITY_REQUIRED" | "RECEIPT_CONFLICT" | "EVENT_ID_CONFLICT"
   | "RUNTIME_CREDENTIAL_INVALID" | "RUNTIME_CREDENTIAL_REVOKED" | "RUNTIME_CREDENTIAL_EXPIRED" | "RUNTIME_INSTANCE_REVOKED"
+  | "STREAM_CAPABILITY_INVALID" | "STREAM_CAPABILITY_EXPIRED" | "STREAM_CAPABILITY_CONSUMED" | "STREAM_CAPABILITY_BINDING_MISMATCH"
+  | "STREAM_SESSION_NOT_IN_WORLD" | "STREAM_CAPABILITY_LIMIT"
   | "PERMISSION_DENIED" | "UNAVAILABLE"
 
 const KNOWN = new Set<string>([
@@ -37,6 +39,8 @@ const KNOWN = new Set<string>([
   "TICK_REGRESSION", "TIME_OUT_OF_BOUNDS", "INVALID_TICK", "PROVENANCE_INVALID", "INVALID_READINESS",
   "RECEIPT_IDENTITY_REQUIRED", "RECEIPT_CONFLICT", "EVENT_ID_CONFLICT",
   "RUNTIME_CREDENTIAL_INVALID", "RUNTIME_CREDENTIAL_REVOKED", "RUNTIME_CREDENTIAL_EXPIRED", "RUNTIME_INSTANCE_REVOKED",
+  "STREAM_CAPABILITY_INVALID", "STREAM_CAPABILITY_EXPIRED", "STREAM_CAPABILITY_CONSUMED", "STREAM_CAPABILITY_BINDING_MISMATCH",
+  "STREAM_SESSION_NOT_IN_WORLD", "STREAM_CAPABILITY_LIMIT",
 ])
 
 export const RUNTIME_AUTH_CODES: ReadonlySet<EntryAuthorityCode> = new Set([
@@ -266,5 +270,18 @@ export class PgEntryAuthorityDb implements EntryAuthorityDb {
   async sweep(limit: number) {
     const [r] = await this.call("SELECT world_presence_sweep($1) AS n", [limit])
     return Number(r.n)
+  }
+
+  // WORLDK-M14-B3 (043): stream connection capability. Not part of
+  // EntryAuthorityDb, so M14-A/B1/B2 implementers are unaffected.
+  async streamCapabilityIssue(viewSha256: Buffer, capabilitySha256: Buffer) {
+    const [r] = await this.call("SELECT * FROM world_stream_capability_issue($1, $2)", [viewSha256, capabilitySha256])
+    return { worldId: r.world_id as string, expiresAt: iso(r.expires_at) as string }
+  }
+
+  async streamCapabilityRedeem(capabilitySha256: Buffer, viewSha256: Buffer, worldId: string, authorizationSha256: Buffer) {
+    const [r] = await this.call("SELECT * FROM world_stream_capability_redeem($1, $2, $3, $4)", [capabilitySha256, viewSha256, worldId, authorizationSha256])
+    if (r?.outcome !== "AUTHORIZED") throw new EntryAuthorityError("UNAVAILABLE")
+    return { outcome: "AUTHORIZED" as const }
   }
 }

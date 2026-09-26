@@ -1,0 +1,135 @@
+{
+  "P1": {
+    "issuedKeys": [
+      "capability",
+      "expiresInSeconds",
+      "status",
+      "worldId"
+    ],
+    "authorizedKeys": [
+      "authorization",
+      "status"
+    ],
+    "ttlSeconds": 60
+  },
+  "N1": {
+    "WAITING": "STREAM_SESSION_NOT_IN_WORLD",
+    "CLAIMED_NOT_JOINED": "STREAM_SESSION_NOT_IN_WORLD",
+    "LEAVING": "STREAM_SESSION_NOT_IN_WORLD",
+    "LEFT": "STREAM_SESSION_NOT_IN_WORLD",
+    "ENDED_DISCONNECTED": "STREAM_SESSION_NOT_IN_WORLD",
+    "PRESENCE_EXPIRED_UNSWEPT": "STREAM_SESSION_NOT_IN_WORLD",
+    "UNKNOWN_SESSION": "SESSION_NOT_FOUND"
+  },
+  "N2": {
+    "issueArgs": "p_view_sha256 bytea, p_capability_sha256 bytea"
+  },
+  "N3": {
+    "foreignOrigin": 403,
+    "attackerOrigin": 403,
+    "nullOrigin": 403,
+    "httpDowngrade": 403,
+    "sameSiteNotSameOrigin": 403,
+    "absentOrigin": 403
+  },
+  "N4": {
+    "forgedWellFormed": "STREAM_CAPABILITY_INVALID",
+    "hashOfSessionCookie": "STREAM_CAPABILITY_INVALID"
+  },
+  "N5": {
+    "expired": "STREAM_CAPABILITY_EXPIRED"
+  },
+  "N6": {
+    "replay": "STREAM_CAPABILITY_CONSUMED"
+  },
+  "N7": {
+    "heldLock": "T2 blocked on Lock, then STREAM_CAPABILITY_CONSUMED",
+    "race": {
+      "attempts": 16,
+      "authorized": 1,
+      "consumed": 15
+    }
+  },
+  "N8": {
+    "wrongSubject": "STREAM_CAPABILITY_BINDING_MISMATCH",
+    "wrongWorld": "STREAM_CAPABILITY_BINDING_MISMATCH",
+    "noSession": "STREAM_CAPABILITY_BINDING_MISMATCH",
+    "wrongSessionSameSubject": "STREAM_CAPABILITY_BINDING_MISMATCH"
+  },
+  "N9": {
+    "leaveRequestedUse": "STREAM_SESSION_NOT_IN_WORLD",
+    "departedUse": "STREAM_SESSION_NOT_IN_WORLD",
+    "departedIssue": "STREAM_SESSION_NOT_IN_WORLD",
+    "presenceExpiredUse": "STREAM_SESSION_NOT_IN_WORLD",
+    "timedOutUse": "STREAM_SESSION_NOT_IN_WORLD",
+    "timedOutIssue": "STREAM_SESSION_NOT_IN_WORLD",
+    "disconnectedUse": "STREAM_SESSION_NOT_IN_WORLD",
+    "instanceRevokedUse": "STREAM_SESSION_NOT_IN_WORLD"
+  },
+  "N10": {
+    "redeemTicket": "TICKET_INVALID",
+    "sessionView": "SESSION_NOT_FOUND",
+    "requestLeave": "SESSION_NOT_FOUND",
+    "runtimePollAsSecret": "RUNTIME_CREDENTIAL_INVALID",
+    "runtimeArrivalAsSecret": "RUNTIME_CREDENTIAL_INVALID",
+    "runtimeDepartureAsSecret": "RUNTIME_CREDENTIAL_INVALID",
+    "ingressBearer": "401",
+    "leaveWithCapabilityAsCookie": "404"
+  },
+  "N11": {
+    "tablesDigested": 13,
+    "writesIn043": [
+      "world_stream_capabilities"
+    ]
+  },
+  "N12": {
+    "tableGrants": [],
+    "rls": {
+      "enabled": true,
+      "policies": 0
+    },
+    "matrix": {
+      "anon": {
+        "world_stream_capability_issue(bytea,bytea)": false,
+        "world_stream_capability_redeem(bytea,bytea,text,bytea)": false,
+        "world_m14b3_session_in_world(world_runtime_sessions)": false,
+        "tableSelect": false
+      },
+      "authenticated": {
+        "world_stream_capability_issue(bytea,bytea)": false,
+        "world_stream_capability_redeem(bytea,bytea,text,bytea)": false,
+        "world_m14b3_session_in_world(world_runtime_sessions)": false,
+        "tableSelect": false
+      },
+      "service_role": {
+        "world_stream_capability_issue(bytea,bytea)": false,
+        "world_stream_capability_redeem(bytea,bytea,text,bytea)": false,
+        "world_m14b3_session_in_world(world_runtime_sessions)": false,
+        "tableSelect": false
+      },
+      "public": {
+        "world_stream_capability_issue(bytea,bytea)": false,
+        "world_stream_capability_redeem(bytea,bytea,text,bytea)": false,
+        "world_m14b3_session_in_world(world_runtime_sessions)": false
+      },
+      "worldk_platform_entry_authority": {
+        "world_stream_capability_issue(bytea,bytea)": true,
+        "world_stream_capability_redeem(bytea,bytea,text,bytea)": true,
+        "world_m14b3_session_in_world(world_runtime_sessions)": false,
+        "tableSelect": false
+      },
+      "worldk_platform_entry_preview": {
+        "world_stream_capability_issue(bytea,bytea)": false,
+        "world_stream_capability_redeem(bytea,bytea,text,bytea)": false,
+        "world_m14b3_session_in_world(world_runtime_sessions)": false,
+        "tableSelect": false
+      }
+    }
+  },
+  "N13": {
+    "plaintextsChecked": 27,
+    "tablesScanned": 15,
+    "hits": 0,
+    "hashedRowsMatched": 19
+  }
+}

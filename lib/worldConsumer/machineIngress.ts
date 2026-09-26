@@ -33,7 +33,7 @@ export const MACHINE_KEY_ENV = 'WORLDK_PREVIEW_MACHINE_KEY'
 // base64url, >= 32 bytes of entropy (43 chars), bounded length.
 const KEY_FORMAT = /^[A-Za-z0-9_-]{43,128}$/
 const ALLOWED_PATH = /^\/api\/worlds\/[^/]+\/(?:public-projection|visitor-projection|entry)$/
-const SELF_AUTHENTICATING_PATH = /^(?:\/world-entry\/h\/[A-Za-z0-9_-]{43}|\/world-entry\/session|\/world-entry\/session\/leave|\/api\/runtime\/v1\/(?:poll|claim|arrival|presence|departure|disconnect)|\/api\/platform\/v1\/presence-sweep)$/
+const SELF_AUTHENTICATING_PATH = /^(?:\/world-entry\/h\/[A-Za-z0-9_-]{43}|\/world-entry\/session|\/world-entry\/session\/leave|\/world-entry\/stream(?:\/capability|\/authorize)?|\/api\/runtime\/v1\/(?:poll|claim|arrival|presence|departure|disconnect)|\/api\/platform\/v1\/presence-sweep)$/
 
 /** Normalises a Host header: lowercase, no port, no trailing dot. */
 export function normalizeHost(raw: string | null | undefined): string {

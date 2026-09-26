@@ -133,6 +133,9 @@ const MIGRATION_ORDER = [
   // WORLDK-M14-A4: read-only derived runtime liveness view. PREVIEW-
   // CERTIFICATION ONLY -- see PREVIEW_ONLY_MIGRATIONS below.
   '042_world_runtime_instance_liveness.sql',
+  // WORLDK-M14-B3: stream connection capability authority. PREVIEW-
+  // CERTIFICATION ONLY -- see PREVIEW_ONLY_MIGRATIONS below.
+  '043_world_stream_capability_authority.sql',
 ]
 
 // Migrations approved for exactly one project. The runner refuses to apply
@@ -144,6 +147,7 @@ const PREVIEW_ONLY_MIGRATIONS = {
   '040_world_entry_runtime_authority.sql': 'gxjdbfpyyrycvqzozyty', // avatark-platform-preview
   '041_world_presence_sweep_schedule.sql': 'gxjdbfpyyrycvqzozyty', // avatark-platform-preview
   '042_world_runtime_instance_liveness.sql': 'gxjdbfpyyrycvqzozyty', // avatark-platform-preview
+  '043_world_stream_capability_authority.sql': 'gxjdbfpyyrycvqzozyty', // avatark-platform-preview
 }
 
 function assertMigrationTarget(file, dbUrl) {

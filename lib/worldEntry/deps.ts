@@ -5,17 +5,18 @@
 // answers honestly UNAVAILABLE and nothing is allocated.
 import { MACHINE_INGRESS_HOST } from "../worldConsumer/machineIngress.ts"
 import { getWorldConsumerDeps } from "../worldConsumer/runtimeDeps.ts"
-import { ENTRY_AUTHORITY_DATABASE_URL_ENV, PgEntryAuthorityDb, type EntryAuthorityDb } from "./authorityDb.ts"
+import { ENTRY_AUTHORITY_DATABASE_URL_ENV, PgEntryAuthorityDb } from "./authorityDb.ts"
 import type { GatewayDeps } from "./gateway.ts"
 import type { WorldEntryDeps } from "./resolver.ts"
 import type { RuntimeIngressDeps } from "./runtimeIngress.ts"
+import type { StreamCapabilityDeps } from "./streamCapability.ts"
 
 /** The handoff gateway lives on the Platform-controlled Preview origin (D5). */
 export const HANDOFF_ORIGIN = `https://${MACHINE_INGRESS_HOST}`
 
-let db: EntryAuthorityDb | null | undefined
+let db: PgEntryAuthorityDb | null | undefined
 
-export function getEntryAuthorityDb(): EntryAuthorityDb | null {
+export function getEntryAuthorityDb(): PgEntryAuthorityDb | null {
   if (db !== undefined) return db
   const url = process.env[ENTRY_AUTHORITY_DATABASE_URL_ENV]
   try {
@@ -39,4 +40,8 @@ export function getGatewayDeps(): GatewayDeps {
 export function getRuntimeIngressDeps(): RuntimeIngressDeps {
   const c = getWorldConsumerDeps()
   return { db: getEntryAuthorityDb(), mode: c.mode, bindings: c.bindings, facts: c.facts }
+}
+
+export function getStreamCapabilityDeps(): StreamCapabilityDeps {
+  return { db: getEntryAuthorityDb() }
 }
