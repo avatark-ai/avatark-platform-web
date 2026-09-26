@@ -1,0 +1,46 @@
+[
+ {
+  "audit": {
+   "execute": {
+    "anon public.world_m14b5_route_key(uuid)": false,
+    "anon public.world_stream_signalling_route(bytea)": false,
+    "authenticated public.world_m14b5_route_key(uuid)": false,
+    "authenticated public.world_stream_signalling_route(bytea)": false,
+    "service_role public.world_m14b5_route_key(uuid)": false,
+    "service_role public.world_stream_signalling_route(bytea)": false,
+    "worldk_platform_entry_authority public.world_m14b5_route_key(uuid)": false,
+    "worldk_platform_entry_authority public.world_stream_signalling_route(bytea)": true,
+    "worldk_platform_entry_preview public.world_m14b5_route_key(uuid)": false,
+    "worldk_platform_entry_preview public.world_stream_signalling_route(bytea)": false
+   },
+   "newTables": 0,
+   "platformRoleStreamGrants": [
+    "world_runtime_stream_attach",
+    "world_stream_attachment_route",
+    "world_stream_capability_issue",
+    "world_stream_capability_redeem",
+    "world_stream_signalling_route"
+   ],
+   "publicExecute": [
+    {
+     "config": [
+      "search_path=pg_catalog, public"
+     ],
+     "fn": "world_m14b5_route_key",
+     "public": false,
+     "secdef": true,
+     "volatile": "i"
+    },
+    {
+     "config": [
+      "search_path=pg_catalog, public"
+     ],
+     "fn": "world_stream_signalling_route",
+     "public": false,
+     "secdef": true,
+     "volatile": "s"
+    }
+   ]
+  }
+ }
+]
