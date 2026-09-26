@@ -59,10 +59,13 @@ test("misconfiguration: absent or malformed configured key denies everything, ev
 test("E: valid key + any other path => 404", () => {
   const denied = [
     "/", "/login", "/signup", "/account", "/admin", "/dev/account", "/api/dev/account/x",
-    "/api/account/profile", "/api/admin/status", "/api/worlds/living-forest", "/api/worlds/living-forest/entry",
+    "/api/account/profile", "/api/admin/status", "/api/worlds/living-forest", "/api/worlds/living-forest/entry/",
     "/api/worlds/living-forest/public-projection/", "/api/worlds/living-forest/public-projection/x",
     "/api/worlds//public-projection", "/api/worlds/a/b/public-projection", "/_next/static/chunks/main.js",
     "/favicon.ico", "/robots.txt", "/api/worlds/living-forest/public-projectionX",
+    // WORLDK-M14-A: only the exact self-authenticating paths are exempt.
+    "/world-entry", "/world-entry/h", "/world-entry/h/short", `/world-entry/h/${"a".repeat(44)}`, "/world-entry/session/x",
+    "/api/runtime/v1", "/api/runtime/v1/register", "/api/runtime/v1/poll/", "/api/platform/v1/presence-sweep/x", "/enter/h/abc",
   ]
   for (const p of denied) assert.deepEqual(decide(p, KEY), { kind: "DENY", status: 404, code: "NOT_FOUND" }, p)
 })
@@ -113,4 +116,40 @@ test("G/H: proxy gates only the ingress host and keeps the pre-M12 matcher for e
   assert.ok(proxy.includes("has: [{ type: 'host', value: 'platform-preview\\\\.avatark\\\\.ai\\\\.?' }]"))
   const re = new RegExp("^platform-preview\\.avatark\\.ai\\.?$")
   assert.ok(re.test(MACHINE_INGRESS_HOST) && re.test(`${MACHINE_INGRESS_HOST}.`) && !re.test("next.avatark.ai"))
+})
+
+// ── WORLDK-M14-A ───────────────────────────────────────────────────
+
+test("M14-A: world entry (POST intent) is a WorldK machine path: key first, then allowed", () => {
+  const ENTRY = "/api/worlds/living-forest/entry"
+  assert.deepEqual(decide(ENTRY, KEY), { kind: "ALLOW" })
+  assert.deepEqual(decide(ENTRY, null), { kind: "DENY", status: 401, code: "MACHINE_UNAUTHORIZED" })
+  assert.deepEqual(decide(ENTRY, OTHER), { kind: "DENY", status: 401, code: "MACHINE_UNAUTHORIZED" })
+  const src = readFileSync(path.join(here, "../../app/api/worlds/[worldId]/entry/route.ts"), "utf8")
+  assert.deepEqual([...src.matchAll(/export async function (\w+)/g)].map((m) => m[1]), ["POST"])
+})
+
+test("M14-A: gateway, runtime ingress and sweeper are self-authenticating: no WorldK key needed or honoured", () => {
+  const paths = [
+    `/world-entry/h/${"A".repeat(43)}`, "/world-entry/session", "/world-entry/session/leave",
+    "/api/runtime/v1/poll", "/api/runtime/v1/claim", "/api/runtime/v1/arrival", "/api/runtime/v1/presence",
+    "/api/runtime/v1/departure", "/api/runtime/v1/disconnect", "/api/platform/v1/presence-sweep",
+  ]
+  for (const p of paths) {
+    for (const k of [null, KEY, OTHER]) assert.deepEqual(decide(p, k), { kind: "ALLOW_SELF_AUTHENTICATING" }, p)
+    // even with the gate misconfigured, these routes still authenticate their own callers
+    assert.deepEqual(decide(p, null, undefined), { kind: "ALLOW_SELF_AUTHENTICATING" }, p)
+  }
+  const proxy = readFileSync(path.join(here, "../../proxy.ts"), "utf8")
+  assert.match(proxy, /if \(decision\.kind === 'ALLOW_SELF_AUTHENTICATING'\) \{\n\s+return NextResponse\.next\(\{ request: \{ headers: forwarded\.headers \} \}\)/)
+})
+
+test("M14-A: every entry route answers only on the ingress host", () => {
+  for (const r of [
+    "app/api/worlds/[worldId]/entry/route.ts", "app/world-entry/h/[ticket]/route.ts", "app/world-entry/session/route.ts",
+    "app/world-entry/session/leave/route.ts", "app/api/runtime/v1/[op]/route.ts", "app/api/platform/v1/presence-sweep/route.ts",
+  ]) {
+    const src = readFileSync(path.join(here, "../..", r), "utf8")
+    assert.match(src, /if \(!isMachineIngressHost\(request\.headers\.get\('host'\)\)\) return new Response\(null, \{ status: 404 \}\)/, r)
+  }
 })

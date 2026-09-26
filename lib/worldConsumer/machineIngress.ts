@@ -4,8 +4,17 @@
 // WorldK Preview server, not a browsable Platform Preview website. On
 // that host (and only that host) every request is denied unless it
 //   1. carries the dedicated M12 machine credential (X-WorldK-Preview-Key),
-//   2. targets exactly one of the two WorldK consumer projection routes.
-// Method handling (GET only; POST -> 405) is left to the routes.
+//   2. targets exactly one of the WorldK consumer routes: the two
+//      projections (GET) or, since WORLDK-M14-A, world entry (POST).
+// Method handling is left to the routes.
+//
+// WORLDK-M14-A adds a second, SELF-AUTHENTICATING class that never carries
+// the WorldK key: the handoff gateway (authenticated by the single-use
+// EntryTicket / its HttpOnly session capability), the Runtime Ingress
+// (authenticated by the runtime's own per-instance credential, verified in
+// the database) and the presence-sweep trigger (its own key). Those routes
+// refuse unauthenticated callers themselves; the WorldK machine key grants
+// nothing on them.
 //
 // The machine credential authenticates the WorldK SERVER only. It never
 // carries, selects or overrides visitor identity: the visitor projection
@@ -23,7 +32,8 @@ export const MACHINE_KEY_ENV = 'WORLDK_PREVIEW_MACHINE_KEY'
 
 // base64url, >= 32 bytes of entropy (43 chars), bounded length.
 const KEY_FORMAT = /^[A-Za-z0-9_-]{43,128}$/
-const ALLOWED_PATH = /^\/api\/worlds\/[^/]+\/(?:public-projection|visitor-projection)$/
+const ALLOWED_PATH = /^\/api\/worlds\/[^/]+\/(?:public-projection|visitor-projection|entry)$/
+const SELF_AUTHENTICATING_PATH = /^(?:\/world-entry\/h\/[A-Za-z0-9_-]{43}|\/world-entry\/session|\/world-entry\/session\/leave|\/api\/runtime\/v1\/(?:poll|claim|arrival|presence|departure|disconnect)|\/api\/platform\/v1\/presence-sweep)$/
 
 /** Normalises a Host header: lowercase, no port, no trailing dot. */
 export function normalizeHost(raw: string | null | undefined): string {
@@ -54,6 +64,7 @@ export function machineKeyMatches(supplied: string | null | undefined, configure
 
 export type IngressDecision =
   | { kind: 'ALLOW' }
+  | { kind: 'ALLOW_SELF_AUTHENTICATING' }
   | { kind: 'DENY'; status: 401 | 404; code: 'MACHINE_UNAUTHORIZED' | 'NOT_FOUND' }
 
 /**
@@ -66,6 +77,8 @@ export function decideMachineIngress(input: {
   suppliedKey: string | null
   configuredKey: string | undefined
 }): IngressDecision {
+  // WORLDK-M14-A: these routes authenticate their own callers.
+  if (SELF_AUTHENTICATING_PATH.test(input.pathname)) return { kind: 'ALLOW_SELF_AUTHENTICATING' }
   if (!machineKeyMatches(input.suppliedKey, input.configuredKey)) {
     return { kind: 'DENY', status: 401, code: 'MACHINE_UNAUTHORIZED' }
   }

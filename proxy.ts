@@ -20,6 +20,11 @@ export async function proxy(request: NextRequest) {
     })
     if (decision.kind === 'DENY') return denialResponse(decision)
     const forwarded = new NextRequest(request, { headers: withoutMachineKey(request.headers) })
+    // WORLDK-M14-A: gateway / runtime ingress / sweeper authenticate their own
+    // callers and have no Supabase session on this origin to refresh.
+    if (decision.kind === 'ALLOW_SELF_AUTHENTICATING') {
+      return NextResponse.next({ request: { headers: forwarded.headers } })
+    }
     // public-projection must never read or refresh a session (see matcher).
     if (request.nextUrl.pathname.endsWith('/public-projection')) {
       return NextResponse.next({ request: { headers: forwarded.headers } })

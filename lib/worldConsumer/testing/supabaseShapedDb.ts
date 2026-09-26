@@ -36,10 +36,10 @@ export function urlFor(base: string, db: string, user?: string, password?: strin
 
 /**
  * Creates `db` (dropping any previous copy), bootstraps Supabase-shaped
- * roles/schemas, and applies 037 + 038's continuity revokes + 039 as the
- * non-superuser owner. Returns open superuser and owner clients.
+ * roles/schemas, and applies 037 + 038's continuity revokes + 039 (and, for
+ * WORLDK-M14-A suites, 040) as the non-superuser owner. Returns open superuser and owner clients.
  */
-export async function createSupabaseShapedDb(superuserUrl: string, db: string): Promise<{ su: pg.Client; owner: pg.Client }> {
+export async function createSupabaseShapedDb(superuserUrl: string, db: string, opts: { through040?: boolean } = {}): Promise<{ su: pg.Client; owner: pg.Client }> {
   assertLocalUrl(superuserUrl)
   const admin = new pg.Client({ connectionString: superuserUrl })
   await admin.connect()
@@ -81,5 +81,6 @@ export async function createSupabaseShapedDb(superuserUrl: string, db: string): 
   // A world-state table the lifecycle writer must never be able to touch.
   await owner.query("CREATE TABLE world_state_probe (world_id text PRIMARY KEY, tick integer NOT NULL); INSERT INTO world_state_probe VALUES ('living-forest', 6)")
   await owner.query(migrationSql("039_world_visitor_lifecycle_authority.sql"))
+  if (opts.through040) await owner.query(migrationSql("040_world_entry_runtime_authority.sql"))
   return { su, owner }
 }

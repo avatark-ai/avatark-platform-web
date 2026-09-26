@@ -124,6 +124,9 @@ const MIGRATION_ORDER = [
   // WORLDK-M13: durable visitor lifecycle authority. PREVIEW-CERTIFICATION
   // ONLY -- see PREVIEW_ONLY_MIGRATIONS below.
   '039_world_visitor_lifecycle_authority.sql',
+  // WORLDK-M14-A: world entry & runtime lifecycle authority. PREVIEW-
+  // CERTIFICATION ONLY -- see PREVIEW_ONLY_MIGRATIONS below.
+  '040_world_entry_runtime_authority.sql',
 ]
 
 // Migrations approved for exactly one project. The runner refuses to apply
@@ -132,6 +135,7 @@ const MIGRATION_ORDER = [
 // of order on another target.
 const PREVIEW_ONLY_MIGRATIONS = {
   '039_world_visitor_lifecycle_authority.sql': 'gxjdbfpyyrycvqzozyty', // avatark-platform-preview
+  '040_world_entry_runtime_authority.sql': 'gxjdbfpyyrycvqzozyty', // avatark-platform-preview
 }
 
 function assertMigrationTarget(file, dbUrl) {
