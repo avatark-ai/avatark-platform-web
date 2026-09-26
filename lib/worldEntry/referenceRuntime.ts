@@ -96,6 +96,11 @@ export class ReferenceRuntime {
     this.opts.readiness = r
   }
 
+  /** Whether a claimed session is accepted (ARRIVAL sent) automatically. */
+  setAutoJoin(on: boolean) {
+    this.opts.autoJoin = on
+  }
+
   /** Simulates a runtime that stops producing presence evidence (e.g. hung or dying). */
   suspendHeartbeats() {
     this.heartbeatsSuspended = true

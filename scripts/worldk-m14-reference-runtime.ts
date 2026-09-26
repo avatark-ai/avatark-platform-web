@@ -15,7 +15,9 @@
 //   --disconnect-after-join      send a DISCONNECT (stream dropped) for each joined session
 //   --stop-heartbeats-after-join stop presence evidence once a session has joined (runtime hang/crash)
 //   --exit-after-join            exit immediately after the first join, sending nothing further (crash)
-import { readFileSync, statSync } from "node:fs"
+//   --hold-join-until <file>     claim sessions but send no ARRIVAL until <file> exists (lets an
+//                                operator observe "redeemed + claimed, no visit" before the join)
+import { existsSync, readFileSync, statSync } from "node:fs"
 import path from "node:path"
 import { httpIngressTransport, ReferenceRuntime, type RuntimeEvent } from "../lib/worldEntry/referenceRuntime.ts"
 
@@ -76,7 +78,10 @@ async function main() {
   })
   process.stdout.write(`${new Date().toISOString()} reference runtime instance=${short(cred.instanceId)} credential=${short(cred.credentialId)} ingress=${cred.ingressBaseUrl}\n`)
   process.on("SIGINT", () => (stop = true))
+  const hold = f["hold-join-until"]
+  if (hold) rt.setAutoJoin(false)
   while (!stop && Date.now() < until) {
+    if (hold && existsSync(hold)) rt.setAutoJoin(true)
     try {
       await rt.step()
     } catch (err) {
