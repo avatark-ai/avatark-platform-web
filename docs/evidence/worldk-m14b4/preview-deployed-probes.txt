@@ -1,0 +1,14 @@
+attach_no_bearer 401 {"error":"RUNTIME_UNAUTHORIZED"}
+attach_malformed_bearer 401 {"error":"RUNTIME_UNAUTHORIZED"}
+attach_forged_credential_DB 401 {"error":"RUNTIME_UNAUTHORIZED"}
+attach_malformed_body 400 {"error":"INVALID_REQUEST"}
+attach_extra_field 400 {"error":"INVALID_REQUEST"}
+unknown_op 401 {"error":"MACHINE_UNAUTHORIZED"}
+poll_forged_credential 401 {"error":"RUNTIME_UNAUTHORIZED"}
+stub_relay_not_deployed 401 {"error":"MACHINE_UNAUTHORIZED"}
+b3_issue_forged_session_DB 403 {"status":"REFUSED"}
+b3_issue_null_origin 403 {"status":"REFUSED"}
+b3_stream_page_no_cookie 404 <meta name=
+session_page_no_cookie 404 <meta name=
+production_attach 404 <html data-dpl-id="dpl_FdYo7Sr2mq9322hgQkzqtvwa18k
+production_stream 404 <html data-dpl-id="dpl_FdYo7Sr2mq9322hgQkzqtvwa18k

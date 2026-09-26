@@ -1,0 +1,91 @@
+[
+ {
+  "audit": {
+   "definer": [
+    {
+     "config": [
+      "search_path=pg_catalog, public"
+     ],
+     "fn": "world_m14b3_session_in_world",
+     "secdef": true
+    },
+    {
+     "config": [
+      "search_path=pg_catalog, public"
+     ],
+     "fn": "world_runtime_stream_attach",
+     "secdef": true
+    },
+    {
+     "config": [
+      "search_path=pg_catalog, public"
+     ],
+     "fn": "world_stream_attachment_route",
+     "secdef": true
+    }
+   ],
+   "execute": {
+    "anon public.world_m14b3_session_in_world(public.world_runtime_sessions)": false,
+    "anon public.world_runtime_stream_attach(uuid,bytea,uuid,bytea)": false,
+    "anon public.world_stream_attachment_route(bytea,bytea)": false,
+    "anon public.world_stream_capability_issue(bytea,bytea)": false,
+    "anon public.world_stream_capability_redeem(bytea,bytea,text,bytea)": false,
+    "authenticated public.world_m14b3_session_in_world(public.world_runtime_sessions)": false,
+    "authenticated public.world_runtime_stream_attach(uuid,bytea,uuid,bytea)": false,
+    "authenticated public.world_stream_attachment_route(bytea,bytea)": false,
+    "authenticated public.world_stream_capability_issue(bytea,bytea)": false,
+    "authenticated public.world_stream_capability_redeem(bytea,bytea,text,bytea)": false,
+    "service_role public.world_m14b3_session_in_world(public.world_runtime_sessions)": false,
+    "service_role public.world_runtime_stream_attach(uuid,bytea,uuid,bytea)": false,
+    "service_role public.world_stream_attachment_route(bytea,bytea)": false,
+    "service_role public.world_stream_capability_issue(bytea,bytea)": false,
+    "service_role public.world_stream_capability_redeem(bytea,bytea,text,bytea)": false,
+    "worldk_platform_entry_authority public.world_m14b3_session_in_world(public.world_runtime_sessions)": false,
+    "worldk_platform_entry_authority public.world_runtime_stream_attach(uuid,bytea,uuid,bytea)": true,
+    "worldk_platform_entry_authority public.world_stream_attachment_route(bytea,bytea)": true,
+    "worldk_platform_entry_authority public.world_stream_capability_issue(bytea,bytea)": true,
+    "worldk_platform_entry_authority public.world_stream_capability_redeem(bytea,bytea,text,bytea)": true,
+    "worldk_platform_entry_preview public.world_m14b3_session_in_world(public.world_runtime_sessions)": false,
+    "worldk_platform_entry_preview public.world_runtime_stream_attach(uuid,bytea,uuid,bytea)": false,
+    "worldk_platform_entry_preview public.world_stream_attachment_route(bytea,bytea)": false,
+    "worldk_platform_entry_preview public.world_stream_capability_issue(bytea,bytea)": false,
+    "worldk_platform_entry_preview public.world_stream_capability_redeem(bytea,bytea,text,bytea)": false
+   },
+   "platformRoleGrants": [
+    "world_runtime_stream_attach",
+    "world_stream_attachment_route",
+    "world_stream_capability_issue",
+    "world_stream_capability_redeem"
+   ],
+   "policies": 0,
+   "predicateClaimedRule": true,
+   "publicExecute": [
+    {
+     "fn": "world_m14b3_session_in_world",
+     "public": false
+    },
+    {
+     "fn": "world_runtime_stream_attach",
+     "public": false
+    },
+    {
+     "fn": "world_stream_attachment_route",
+     "public": false
+    }
+   ],
+   "rows": 0,
+   "table": {
+    "owner": "postgres",
+    "rls": true
+   },
+   "tableGrants": [],
+   "tablePriv": {
+    "anon": false,
+    "authenticated": false,
+    "service_role": false,
+    "worldk_platform_entry_authority": false,
+    "worldk_platform_entry_preview": false
+   }
+  }
+ }
+]
