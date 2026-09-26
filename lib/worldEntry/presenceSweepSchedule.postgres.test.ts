@@ -38,7 +38,8 @@ import { scramVerifier } from "../../scripts/worldk-m14-runtime-registry.ts"
 const here = path.dirname(fileURLToPath(import.meta.url))
 const url = process.env.WORLD_CONSUMER_TEST_DATABASE_URL
 const cronDb = process.env.WORLD_CONSUMER_TEST_CRON_DATABASE
-const PLATFORM_PW = "m14a5-platform-credential-local-only"
+// Shared with entryAuthority.postgres.test.ts: the role is cluster-wide and the suites run in parallel.
+const PLATFORM_PW = "m14-platform-credential-local-only"
 const WORLD = "living-forest"
 const ORIGIN = "https://platform-preview.avatark.ai"
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
