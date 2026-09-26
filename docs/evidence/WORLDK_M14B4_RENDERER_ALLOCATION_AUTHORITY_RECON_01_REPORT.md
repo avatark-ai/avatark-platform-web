@@ -259,7 +259,7 @@
 2. **Attachment authority (D1):**
    - A Preview-only migration (044, number to be confirmed free at the time): `world_stream_attachments` holding the authorization hash (FK/lookup into the 043 row, **043 unchanged**), session, instance, attached_at and window.
    - One SECURITY DEFINER ingress function `world_runtime_stream_attach(credential, secret, session_id, authorization_sha256)`, under the existing Platform gate, with runtime credential verification and a single attach.
-3. A **Runtime Ingress op** `attach` (Platform route) plus the B2 SDK/reference-runtime handling. The bridge protocol change would be a **minor** version (1.1) adding `STREAM_ATTACH_REQUESTED → attach`, subject to Q4.
+3. A **Runtime Ingress op** `attach` (Platform route) plus the B2 SDK/reference-runtime handling. Whether the bridge protocol gains a new event for this is Q4. Note that B1 v1 §7 rejects unknown event *kinds* even at a newer MINOR, so a new event is not transparently compatible with v1.0 bridges.
 4. **Stub signalling relay:** the Preview stub hands the browser's authorization to the *allocated* reference runtime in-process or over ingress, with no media. The proof: only the allocated renderer can attach, exactly once, within the window.
 5. An explicit written contract: **allocation = a seat on a render-capable runtime instance; placement stays in `world_entry_resolve`; the browser never selects.**
 
@@ -282,7 +282,7 @@
      - Cost: Visits can open and count without the visitor ever seeing the world.
 2. **Q2 Attachment mechanism:** approve D1 (renderer-verified B3 authorization at ingress) vs D2 (signed token) vs D3.
 3. **Q3 Attach window:** how long AUTHORIZED stays attachable. Proposal: 60 s after `consumed_at`.
-4. **Q4 B1 evolution:** add `STREAM_ATTACH_REQUESTED` as bridge protocol **v1.1** (minor, additive; the B1 spec allows minor compatibility), or keep attach as an ingress call outside the bridge protocol.
+4. **Q4 B1 evolution:** B1 v1 §7 accepts newer MINOR versions but **still rejects unknown event kinds**. So adding `STREAM_ATTACH_REQUESTED` needs either a v2 MAJOR (RESYNC for old bridges) or a v1.1 whose receivers are all upgraded together. The alternative, *recommended* because it leaves frozen B1 untouched, is to keep attach as an ingress call made by the bridge host outside the RendererEvent vocabulary.
 5. **Q5 Granularity stance:** confirm B4 stays granularity-neutral (seat on an instance), with the *direction* B-3 (shared simulation + render workers) recorded but not frozen.
 6. **Q6 Capacity:** C1 only, or add C2 (advertised headroom, opaque integer) now.
 7. **Q7 Revoke semantics:** should `revoke_instance` also close ACTIVE seats immediately (explicit departure kind), or keep drain-by-timeout?
