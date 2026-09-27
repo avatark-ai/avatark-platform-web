@@ -3,7 +3,7 @@ import assert from "node:assert/strict"
 import { readdirSync } from "node:fs"
 import { fileURLToPath } from "node:url"
 import path from "node:path"
-import fixture from "../test/fixtures/r06-living-vrindavan-real-compiled-identity.json" with { type: "json" }
+import fixture from "../test/fixtures/r06-living-vrindavan-protocol-identity.json" with { type: "json" }
 import { artifactReferenceFromCanonical } from "./translation/artifactReferenceFromCanonical.ts"
 import { actionOpportunityFromCanonicalAction } from "./translation/actionOpportunityFromCanonical.ts"
 import { evidenceActorFromCanonicalEventOrigin } from "./translation/evidenceActorFromCanonical.ts"
@@ -15,17 +15,18 @@ function completeWindow(events: ObservedEvent[]): EvidenceWindow {
   return { completeness: "COMPLETE", events }
 }
 
-// R06 -- Cross-World Falsification, adapter side. Living Vrindavan is a
-// genuinely different domain from every fixture this package has consumed
-// before (Living Symphony). Unlike R05's own canonical-shaped fixtures, the
-// `digest` here is the REAL output of studiok-living-symphony-compiler's
-// unmodified compile() over a real second-domain fixture -- see
-// r06-living-vrindavan-real-compiled-identity.json's own note for the exact
-// reproduction command. This is the end-to-end chain R05/R05C left unproven:
-// second-domain source -> real compile() -> real digest -> this package's
-// unmodified R05 translation constructors -> the unmodified
-// deriveNonActionQualification() pure evaluator -> correct result.
-test("R06: real second-domain compiled artifact translates and qualifies via unmodified R05 code", () => {
+// R06 -- Cross-World protocol test, adapter side. Living Vrindavan vocabulary
+// is a different domain from every other fixture this package consumes
+// (Living Symphony). The fixture is NON-AUTHORITATIVE protocol test material
+// (see its _provenanceClass / _sourceAuthority): its digest is a well-formed
+// SHA-256 value, not the placeholder, but its source artifact exists only in
+// a quarantined non-authoritative compiler lineage, so it proves nothing about
+// authoritative compiler provenance. What these tests prove is the protocol:
+// a second-domain {fixtureId, digest} plus runtime-requirements document and
+// Action ids -> this package's unmodified R05 translation constructors -> the
+// unmodified deriveNonActionQualification() pure evaluator -> correct result,
+// with the digest carried through unchanged.
+test("R06: second-domain protocol fixture translates and qualifies via unmodified R05 code", () => {
   const artifactReference = artifactReferenceFromCanonical(
     { fixtureId: fixture.fixtureId, digest: fixture.digest },
     fixture.runtimeRequirementsDocument,
@@ -37,10 +38,10 @@ test("R06: real second-domain compiled artifact translates and qualifies via unm
     ruleId: "runtime-requirements/flute-signal-non-action",
     eventId: "action/grove-keeper-remains-with-herd",
   })
-  // The digest is the real compiler's output, not a fixture placeholder --
-  // structurally a genuine SHA-256 hex digest (R05/R05C's own fixtures all
-  // carried a literal "test-fixture-digest-not-canonical" placeholder; this
-  // one does not).
+  // The digest is a well-formed SHA-256 hex value, not the
+  // "test-fixture-digest-not-canonical" placeholder R05/R05C's own fixtures
+  // carry. It is protocol material only: carried unchanged, never verified
+  // against canonical bytes here (see the fixture's _sourceAuthority).
   assert.match(artifactReference.digest, /^[0-9a-f]{64}$/)
   assert.notEqual(artifactReference.digest, "test-fixture-digest-not-canonical")
 
@@ -53,8 +54,7 @@ test("R06: real second-domain compiled artifact translates and qualifies via unm
 
   // The grove-keeper never performs the qualifying action (moving toward the
   // sound source) within the window -- QUALIFIED, reproducing NC-IR-02C's
-  // certified DELIBERATE_NON_ACTION behavior against a real second-domain
-  // artifact for the first time.
+  // certified DELIBERATE_NON_ACTION behavior over second-domain vocabulary.
   const result = deriveNonActionQualification(opportunity, 10, completeWindow([]))
   assert.equal(result.status, "QUALIFIED")
   if (result.status === "QUALIFIED") {
@@ -63,7 +63,7 @@ test("R06: real second-domain compiled artifact translates and qualifies via unm
   }
 })
 
-test("R06: the grove-keeper moving toward the sound source disqualifies the opportunity (same real artifact)", () => {
+test("R06: the grove-keeper moving toward the sound source disqualifies the opportunity (same protocol fixture)", () => {
   const artifactReference = artifactReferenceFromCanonical(
     { fixtureId: fixture.fixtureId, digest: fixture.digest },
     fixture.runtimeRequirementsDocument,
@@ -90,10 +90,8 @@ test("R06: the grove-keeper moving toward the sound source disqualifies the oppo
 })
 
 // No new production translation code was required for this second-domain
-// proof: Entity/Occurrence/Consequence/WorldProcess/Trace all exist and
-// validate in the real compiled Living Vrindavan artifact (see the compiler
-// repo's LW_COMPILER_R06_CROSS_WORLD_FALSIFICATION.md), but this package's
-// existing pure-evaluator surface never consumes any of them directly --
+// proof: this package's existing pure-evaluator surface never consumes
+// Entity/Occurrence/Consequence/WorldProcess/Trace directly --
 // only the Action/NonAction/RuntimeRequirement path does, and that path is
 // unmodified R05 code. This test documents that finding as an assertion,
 // not just prose: every symbol this file imports from ./translation/ and
@@ -124,4 +122,31 @@ test("R06: R05's existing translation layer already sufficed for R06's own secon
   for (const file of preR06TranslationFiles) {
     assert.ok(actualFiles.includes(file), `${file} (present since before R06) must still exist`)
   }
+})
+
+// PLT-HYGIENE-08: the fixture's provenance claim must be no stronger than its
+// evidence. A reproducible digest is not authoritative provenance: the source
+// artifact exists only in a quarantined, non-authoritative compiler lineage.
+test("R06 hygiene: the fixture is classified as non-authoritative protocol material and makes no authoritative-provenance claim", () => {
+  assert.equal(fixture._provenanceClass, "PROTOCOL_TEST_FIXTURE_NON_AUTHORITATIVE_SOURCE")
+  assert.match(fixture._sourceAuthority, /quarantined/)
+  assert.match(fixture._sourceAuthority, /non-authoritative/)
+  assert.match(fixture._sourceAuthority, /not authoritative provenance/)
+
+  // No authority is claimed for the source bytes, and no quarantined commit is
+  // cited as the place they came from.
+  assert.doesNotMatch(fixture._fixtureNote, /\bREAL\b/)
+  assert.doesNotMatch(fixture._fixtureNote, /de68213|at compiler HEAD/)
+  assert.doesNotMatch(fixture._sourceAuthority, /de68213/)
+  assert.match(fixture._fixtureNote, /NON-AUTHORITATIVE/)
+
+  // The protocol contract is unchanged: the well-formed digest is carried
+  // through ArtifactReference exactly as given.
+  const artifactReference = artifactReferenceFromCanonical(
+    { fixtureId: fixture.fixtureId, digest: fixture.digest },
+    fixture.runtimeRequirementsDocument,
+    fixture.nonAction.id,
+  )
+  assert.equal(artifactReference.digest, "7108d56f55772a93a807afe748c2e2200d9463fe9dc0a88cf7248345bf6653a5")
+  assert.equal(artifactReference.sourceId, fixture.fixtureId)
 })

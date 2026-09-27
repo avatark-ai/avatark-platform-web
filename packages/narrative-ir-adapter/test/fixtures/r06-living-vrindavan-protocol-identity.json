@@ -1,0 +1,23 @@
+{
+  "_fixtureNote": "R06 -- Cross-World protocol fixture. NON-AUTHORITATIVE deterministic protocol test material: an excerpt (fixtureId, digest, and four documents) used only to exercise ArtifactReference digest transport and DELIBERATE_NON_ACTION qualification over second-domain (Living Vrindavan) vocabulary. The `digest` is a well-formed SHA-256 value, not the placeholder; the tests carry it unchanged and never verify it against canonical bytes. See _provenanceClass and _sourceAuthority: this fixture makes no claim that its source artifact was produced or published by the authoritative Living World compiler.",
+  "_provenanceClass": "PROTOCOL_TEST_FIXTURE_NON_AUTHORITATIVE_SOURCE",
+  "_sourceAuthority": "The source artifact this digest was computed over exists only in a quarantined, non-authoritative compiler lineage (local-only commits in the historical studiok-living-symphony-compiler checkout; Central Command Ruling 05-E). It is not present in, and cannot be reconstructed from, the authoritative published compiler (avatark-ai/studiok-living-world-compiler, branch main). The authoritative compiler's canonicalization does reproduce this digest from those bytes, but mathematical reproducibility is not authoritative provenance.",
+  "fixtureId": "r06-living-vrindavan-flute-across-yamuna",
+  "digest": "7108d56f55772a93a807afe748c2e2200d9463fe9dc0a88cf7248345bf6653a5",
+  "runtimeRequirementsDocument": {
+    "id": "runtime-requirements/flute-signal-non-action",
+    "requires": ["DELIBERATE_NON_ACTION"]
+  },
+  "nonAction": {
+    "id": "action/grove-keeper-remains-with-herd",
+    "kind": "NON_ACTION",
+    "verb": "REMAIN_WITH_HERD"
+  },
+  "qualifyingAction": {
+    "id": "action/grove-keeper-moves-toward-source",
+    "kind": "ACTION",
+    "verb": "MOVE_TOWARD_SOUND_SOURCE"
+  },
+  "subjectId": "entity/grove-keeper",
+  "contextId": "place/kadamba-grove"
+}
