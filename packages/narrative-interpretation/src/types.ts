@@ -52,15 +52,24 @@ export interface EvidenceProvenanceEntry {
     readonly name: string
     readonly version: string
   }
+  // ruleId/eventId are present for evidence that concerns a declared
+  // RuntimeRequirement (the ArtifactReference convention). World-history
+  // evidence (PLT-R3G3-10) concerns no RuntimeRequirement, so it carries only
+  // the verified artifact identity plus sourceDocumentKey -- never a
+  // fabricated ruleId/eventId.
   readonly sourceArtifact?: {
     readonly sourceId: string
     readonly digest: string
-    readonly ruleId: string
-    readonly eventId: string
+    readonly ruleId?: string
+    readonly eventId?: string
   }
   // STK-WO-009 Phase C (G10C-3): the source record's own irVersion, present
   // only for ADAPTED_REAL entries whose source actually carries one.
   readonly sourceIrVersion?: string
+  // PLT-R3G3-10: the canonical document key (document-map key) of the
+  // compiler document this evidence was taken from, for world-history
+  // evidence extracted from a verified artifact.
+  readonly sourceDocumentKey?: string
 }
 
 export interface InterpretationProvenance {

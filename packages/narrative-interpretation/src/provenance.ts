@@ -1,4 +1,10 @@
 import { ADAPTED_EVIDENCE_SOURCE_KIND, isAdaptedExpectedAbsenceEvidencePayload } from "./worldEvidence.ts"
+import {
+  OCCURRENCE_EVIDENCE_KIND,
+  WORLD_HISTORY_ENTRY_EVIDENCE_KIND,
+  isOccurrenceEvidencePayload,
+  isWorldHistoryEntryEvidencePayload,
+} from "./worldHistoryEvidence.ts"
 import type { EvidenceProvenanceEntry, EvidenceRequirementClassification, InterpretationProvenance, InterpreterIdentity, NarrativeEvidenceItem } from "./types.ts"
 
 // Real Lane-1 evidence CLASSES this package still does not connect to any
@@ -6,14 +12,15 @@ import type { EvidenceProvenanceEntry, EvidenceRequirementClassification, Interp
 // gate's completion report for the full per-class classification). Named
 // explicitly, never silently omitted, so a downstream consumer can tell
 // "not yet available" apart from "checked and found nothing."
+// PLT-R3G3-10 connected WORLD_HISTORY HistoryPool entries and Occurrence
+// (with its observations); PERSONAL_VISITOR_HISTORY pools stay unconnected.
 export const NOT_YET_INTEGRATED_EVIDENCE_CLASSES: readonly string[] = [
-  "OCCURRENCE_OBSERVATION",
   "CONSEQUENCE_PHYSICAL",
   "CONSEQUENCE_RELATIONAL",
   "CONSEQUENCE_LONGITUDINAL",
   "PLACE_MEMORY_CAUSAL_HISTORY",
   "TRACE",
-  "HISTORY_POOL",
+  "PERSONAL_VISITOR_HISTORY",
   "NARRATIVE_RESIDUE",
   "ENTITY",
   "PLACE",
@@ -33,13 +40,17 @@ export const NOT_YET_INTEGRATED_EVIDENCE_CLASSES: readonly string[] = [
 // provenance.test.ts).
 export const EVIDENCE_REQUIREMENT_CLASSIFICATION: Readonly<Record<string, EvidenceRequirementClassification>> = {
   PLACE_MEMORY_EXPECTED_PATTERN_STATE: "REQUIRED_FOR_CANDIDATE_MEANING",
-  OCCURRENCE_OBSERVATION: "DEFER_TO_LATER_PHASE",
+  // PLT-R3G3-10: connected world-history facts are context an interpretation
+  // may draw on; neither is required for a candidate, and no causal claim is
+  // made from either.
+  WORLD_HISTORY_ENTRY: "OPTIONAL_CONTEXT",
+  OCCURRENCE: "OPTIONAL_CONTEXT",
   CONSEQUENCE_PHYSICAL: "DEFER_TO_LATER_PHASE",
   CONSEQUENCE_RELATIONAL: "DEFER_TO_LATER_PHASE",
   CONSEQUENCE_LONGITUDINAL: "DEFER_TO_LATER_PHASE",
   PLACE_MEMORY_CAUSAL_HISTORY: "OPTIONAL_CONTEXT",
   TRACE: "DEFER_TO_LATER_PHASE",
-  HISTORY_POOL: "DEFER_TO_LATER_PHASE",
+  PERSONAL_VISITOR_HISTORY: "DEFER_TO_LATER_PHASE",
   NARRATIVE_RESIDUE: "NOT_RELEVANT_TO_INTERPRETATION",
   ENTITY: "DEFER_TO_LATER_PHASE",
   PLACE: "DEFER_TO_LATER_PHASE",
@@ -64,6 +75,28 @@ function buildEvidenceProvenanceEntry(item: NarrativeEvidenceItem): EvidenceProv
       adapterIdentity: item.payload.adapterIdentity,
       sourceArtifact: item.payload.artifactReference,
       sourceIrVersion: item.payload.irVersion,
+    }
+  }
+  if (item.sourceKind === WORLD_HISTORY_ENTRY_EVIDENCE_KIND && isWorldHistoryEntryEvidencePayload(item.payload)) {
+    return {
+      evidenceId: item.evidenceId,
+      sourceKind: item.sourceKind,
+      integration: "ADAPTED_REAL",
+      adapterIdentity: item.payload.adapterIdentity,
+      sourceArtifact: { sourceId: item.payload.source.fixtureId, digest: item.payload.source.digest },
+      sourceIrVersion: item.payload.poolIrVersion,
+      sourceDocumentKey: item.payload.poolKey,
+    }
+  }
+  if (item.sourceKind === OCCURRENCE_EVIDENCE_KIND && isOccurrenceEvidencePayload(item.payload)) {
+    return {
+      evidenceId: item.evidenceId,
+      sourceKind: item.sourceKind,
+      integration: "ADAPTED_REAL",
+      adapterIdentity: item.payload.adapterIdentity,
+      sourceArtifact: { sourceId: item.payload.source.fixtureId, digest: item.payload.source.digest },
+      sourceIrVersion: item.payload.irVersion,
+      sourceDocumentKey: item.payload.occurrenceKey,
     }
   }
   return {

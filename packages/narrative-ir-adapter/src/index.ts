@@ -45,3 +45,20 @@ export type {
   CompiledArtifactVerificationResult,
 } from "./compiledArtifactVerification.ts"
 export { SUPPORTED_CANONICALIZATION_VERSIONS, verifyCompiledArtifact } from "./compiledArtifactVerification.ts"
+
+export type {
+  CanonicalHistoryPool,
+  CanonicalHistoryPoolEntry,
+  CanonicalObservation,
+  CanonicalOccurrence,
+} from "./canonicalNarrativeIR.ts"
+export { CANONICAL_DOCUMENT_FAMILIES } from "./canonicalNarrativeIR.ts"
+export type {
+  VerifiedArtifactSource,
+  HistoryEntryReference,
+  WorldHistoryEntryFact,
+  OccurrenceFact,
+  WorldHistoryAdaptationRefusalReason,
+  WorldHistoryAdaptationResult,
+} from "./worldHistoryEvidence.ts"
+export { adaptVerifiedWorldHistory } from "./worldHistoryEvidence.ts"

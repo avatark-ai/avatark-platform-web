@@ -61,9 +61,10 @@ this package's current source authority.
   package's own `dependencyBoundary.test.ts` forbids importing. There is
   nothing in `@avatark/narrative-ir-adapter` to migrate for this pairing;
   see the `R05` completion report for the full scope-boundary finding.
-- **Entity, Occurrence/Observation, Consequence, CausalAttribution**: this
-  package consumes none of these canonical concepts directly today (confirmed
-  by source inspection); no migration was needed or performed for them.
+- **Entity, Occurrence/Observation, Consequence, CausalAttribution**: as of
+  `R05`, this package consumed none of these canonical concepts directly; no
+  migration was needed or performed for them. (`PLT-R3G3-10` later added
+  read-only adaptation of verified Occurrence documents; see below.)
 
 ## Compiled-artifact verification boundary (PLT-VERIFY-09)
 
@@ -81,3 +82,19 @@ The compiler remains the canonicalization authority: this package never
 serializes or re-canonicalizes an artifact, it only hashes the bytes it was
 given. VERIFIED proves the bytes match the claimed digest; it does not prove
 who issued that digest.
+
+## Verified world-history adaptation (PLT-R3G3-10)
+
+`adaptVerifiedWorldHistory({ artifact, canonicalBytes })`
+(`src/worldHistoryEvidence.ts`) first runs `verifyCompiledArtifact()`, then
+extracts facts ONLY from the verified canonical artifact:
+
+- WORLD_HISTORY HistoryPool entries, in their ordered, append-only positions,
+  each with its reference typed by canonical document family and marked
+  materialized or not in the same artifact (open references are kept, never
+  resolved by guessing). PERSONAL_VISITOR_HISTORY pools are never emitted.
+- Occurrence documents, with their authoritative fields copied verbatim.
+
+Consequence, general causalHistory, and every other class remain out of scope.
+An absent `entries`/`observations` is read as empty, per the compiler's
+canonical default-equivalence (an omitted optional array equals an empty one).

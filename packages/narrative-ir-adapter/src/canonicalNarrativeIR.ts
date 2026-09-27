@@ -87,3 +87,63 @@ export interface CanonicalVisitTransition {
   visitOrdinal?: number
   relationshipDepth?: number
 }
+
+// R3-G3 (PLT-R3G3-10). Canonical document families: the document-map key
+// prefixes of schemas/ir/v0/*.schema.json (tests/validate.mjs
+// PREFIX_TO_SCHEMA). Canonical document identity is the document-map key
+// (compiler R05A), and an internal IR document reference uses that key form
+// (compiler R05C), so a reference's prefix names its document family whether
+// or not the target is materialized in the same artifact.
+export const CANONICAL_DOCUMENT_FAMILIES: readonly string[] = [
+  "entity",
+  "place",
+  "place-memory",
+  "action",
+  "occurrence",
+  "world-process",
+  "consequence",
+  "trace",
+  "history-pool",
+  "visit-transition",
+  "world-response",
+  "runtime-requirements",
+  "narrative-residue",
+]
+
+// schemas/ir/v0/history-pool.schema.json -- {irVersion, id, poolKind,
+// authority, consumerId?, entries}. `entries` is ordered and append-only;
+// each entry is a bare id or {entryId, provenance?}. An entry is a reference,
+// not an embedded fact: an IR-prefixed entry names an IR document that may
+// live in another artifact, and a non-IR entry (e.g. declared/*) names an
+// external history fact. In canonical bytes an empty `entries` array is
+// omitted (compiler R02 default-equivalence: omitted == empty).
+export type CanonicalHistoryPoolEntry = string | { entryId: string; provenance?: "SYSTEM_OBSERVED" | "CONSUMER_DECLARED" }
+
+export interface CanonicalHistoryPool {
+  irVersion: string
+  id: string
+  poolKind: "WORLD_HISTORY" | "PERSONAL_VISITOR_HISTORY"
+  authority: string
+  consumerId?: string
+  entries?: readonly CanonicalHistoryPoolEntry[]
+}
+
+// schemas/ir/v0/occurrence.schema.json -- {irVersion, id, persistence,
+// sequenceIndex?, origin?, observations}. `observations` may legitimately be
+// empty (an unobserved occurrence is still an occurrence), and an empty array
+// is omitted in canonical bytes. An Observation never implies causation.
+export interface CanonicalObservation {
+  observerId: string
+  epistemicTier: string
+  focusTarget?: { targetId: string; targetKind: string }
+  duration?: number
+}
+
+export interface CanonicalOccurrence {
+  irVersion: string
+  id: string
+  persistence: { authority: string; lifetime: string }
+  sequenceIndex?: number
+  origin?: CanonicalEventOrigin
+  observations?: readonly CanonicalObservation[]
+}

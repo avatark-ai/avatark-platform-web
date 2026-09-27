@@ -94,7 +94,7 @@ test("T12: no fabricated evidence ids -- derivedFromEvidenceIds contains exactly
 test("T13: provenance is honest about which evidence classes remain unintegrated, and generic opaque evidence is classified NOT_YET_INTEGRATED, never fabricated as real", () => {
   const candidate = interpretNarrativeEvidence(validInput(), IDENTITY)
   assert.ok(candidate.provenance.notYetIntegrated.includes("TRACE"))
-  assert.ok(candidate.provenance.notYetIntegrated.includes("HISTORY_POOL"))
+  assert.ok(candidate.provenance.notYetIntegrated.includes("PERSONAL_VISITOR_HISTORY"))
   assert.equal(candidate.provenance.evidenceProvenance.length, 2)
   for (const entry of candidate.provenance.evidenceProvenance) {
     assert.equal(entry.integration, "NOT_YET_INTEGRATED")

@@ -47,3 +47,14 @@ export {
   isAdaptedExpectedAbsenceEvidencePayload,
 } from "./worldEvidence.ts"
 export type { AdaptedExpectedAbsenceEvidencePayload } from "./worldEvidence.ts"
+
+export {
+  WORLD_HISTORY_ENTRY_EVIDENCE_KIND,
+  OCCURRENCE_EVIDENCE_KIND,
+  worldHistoryEntryEvidenceId,
+  evidenceItemFromWorldHistoryEntryFact,
+  evidenceItemFromOccurrenceFact,
+  isWorldHistoryEntryEvidencePayload,
+  isOccurrenceEvidencePayload,
+} from "./worldHistoryEvidence.ts"
+export type { WorldHistoryEntryEvidencePayload, OccurrenceEvidencePayload } from "./worldHistoryEvidence.ts"
