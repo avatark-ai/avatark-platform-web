@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "renderer-session-snapshot.schema.json",
+  "title": "RendererSessionSnapshot v1.0 (WORLDK-M14-B6)",
+  "description": "Read-only renderer view of the world for one authenticated RuntimeSession. Authoritative Platform renderer projection over the deterministic Living Forest fixture fact source (not the final durable world). No visitor identity.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "contract", "worldId", "session", "visitor", "embodiment", "freshness"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "contract": { "const": "renderer-session-snapshot" },
+    "worldId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,63}$" },
+    "session": {
+      "type": "object", "additionalProperties": false, "required": ["sessionId", "reconnect"],
+      "properties": {
+        "sessionId": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" },
+        "reconnect": { "type": "boolean" }
+      }
+    },
+    "visitor": {
+      "type": "object", "additionalProperties": false, "required": ["arrivalKind", "arrivalPlaceId"],
+      "properties": {
+        "arrivalKind": { "enum": ["FIRST_VISIT", "RETURNING"] },
+        "arrivalPlaceId": { "type": "string", "minLength": 1, "maxLength": 128 }
+      }
+    },
+    "embodiment": {
+      "type": "object", "additionalProperties": false,
+      "required": ["worldVersion", "simulationTick", "season", "current", "reachable", "transitions"],
+      "properties": {
+        "worldVersion": { "type": "integer", "minimum": 0 },
+        "simulationTick": { "type": "integer", "minimum": 0 },
+        "season": { "type": "object", "additionalProperties": false, "required": ["id", "name"], "properties": { "id": { "type": "string" }, "name": { "type": "string" } } },
+        "current": { "$ref": "#/definitions/region" },
+        "reachable": { "type": "array", "items": { "$ref": "#/definitions/region" } },
+        "transitions": {
+          "type": "array",
+          "items": { "type": "object", "additionalProperties": false, "required": ["toLocationId", "affordance"], "properties": { "toLocationId": { "type": "string" }, "affordance": { "type": ["string", "null"] } } }
+        }
+      }
+    },
+    "freshness": {
+      "type": "object", "additionalProperties": false, "required": ["generatedAt", "validAsOf", "staleAfter", "source"],
+      "properties": {
+        "generatedAt": { "type": "string", "format": "date-time" },
+        "validAsOf": { "type": "string", "format": "date-time" },
+        "staleAfter": { "type": "string", "format": "date-time" },
+        "source": {
+          "type": "object", "additionalProperties": false, "required": ["worldTick", "worldVersion", "sourceRevision"],
+          "properties": { "worldTick": { "type": "integer", "minimum": 0 }, "worldVersion": { "type": "integer", "minimum": 0 }, "sourceRevision": { "type": "string", "minLength": 1 } }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "region": {
+      "type": "object", "additionalProperties": false,
+      "required": ["locationId", "name", "spatialNode", "environment", "entities", "encounters"],
+      "properties": {
+        "locationId": { "type": "string" },
+        "name": { "type": "string" },
+        "spatialNode": { "type": "object" },
+        "environment": { "type": "object" },
+        "entities": {
+          "type": "array",
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["entityId", "archetypeId", "locationId", "visible", "presentationArchetype", "activityHint", "animationSemantic", "audioSemantic", "movementSemantic", "movementTargetLocationId", "groupId"],
+            "properties": {
+              "entityId": { "type": "string" }, "archetypeId": { "type": "string" }, "locationId": { "type": "string" }, "visible": { "type": "boolean" },
+              "presentationArchetype": { "type": "string" }, "activityHint": { "type": "string" }, "animationSemantic": { "type": "string" },
+              "audioSemantic": { "type": ["string", "null"] }, "movementSemantic": { "type": ["string", "null"] },
+              "movementTargetLocationId": { "type": ["string", "null"] }, "groupId": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "encounters": {
+          "type": "array",
+          "items": { "type": "object", "additionalProperties": false, "required": ["ruleId", "locationId", "category", "interactionAffordance"], "properties": { "ruleId": { "type": "string" }, "locationId": { "type": "string" }, "category": { "type": "string" }, "interactionAffordance": { "type": "string" } } }
+        }
+      }
+    }
+  }
+}

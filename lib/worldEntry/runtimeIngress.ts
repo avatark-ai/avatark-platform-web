@@ -5,6 +5,10 @@
 // `attach` (WORLDK-M14-B4) is the allocated renderer's stream attachment: it
 // presents sha256(authorization) for a session bound to it. It is not a
 // lifecycle op (never arrival) and not part of the B1 RendererEvent vocabulary.
+//
+// `snapshot` (WORLDK-M14-B6) is the renderer's READ-ONLY RendererSessionSnapshot
+// for a session bound to it ({sessionId} only; the Platform derives world and
+// visitor context). Also outside the B1 op set; never a lifecycle op.
 //   Authorization: Bearer wkrt1.<credentialId>.<secret>
 //
 // The ONLY surface a runtime talks to. A runtime submits evidence; the
@@ -28,18 +32,44 @@ export const RUNTIME_OPS = ["poll", "claim", "arrival", "presence", "departure",
 export type RuntimeOp = (typeof RUNTIME_OPS)[number]
 /** B4: outside the B1 op set (which the SDK mirrors exactly); see the header. */
 export const ATTACH_OP = "attach"
+/** B6: outside the B1 op set as well. */
+export const SNAPSHOT_OP = "snapshot"
 
 /** The attach op's database call (044); kept off EntryAuthorityDb so existing implementers are unaffected. */
 export interface RuntimeAttachDb {
   runtimeStreamAttach(credentialId: string, secretSha256: Buffer, sessionId: string, authorizationSha256: Buffer): Promise<{ outcome: "ATTACHED"; sessionId: string }>
 }
 
+/** The minimum render context the Platform derives for a renderer's own session (046). */
+export interface RenderContext {
+  worldId: string
+  reconnect: boolean
+  arrivalKind: "FIRST_VISIT" | "RETURNING"
+  arrivalPlaceId: string
+}
+
+/**
+ * B6: builds the serialized RendererSessionSnapshot for an AUTHORIZED context.
+ * Injected at the composition root (the Next route) so this lifecycle-authority
+ * module never imports renderer/embodiment code (M14-A boundary). Returns null
+ * when no renderer projection exists for the context.
+ */
+export interface RendererSnapshotPort {
+  build(sessionId: string, ctx: RenderContext): Promise<{ json: string; etag: string } | null>
+}
+
+/** The snapshot op's database call (046); kept off EntryAuthorityDb as well. */
+export interface RuntimeSnapshotDb {
+  runtimeSessionRenderContext(credentialId: string, secretSha256: Buffer, sessionId: string): Promise<RenderContext>
+}
+
 export interface RuntimeIngressDeps {
-  db: (EntryAuthorityDb & Partial<RuntimeAttachDb>) | null
+  db: (EntryAuthorityDb & Partial<RuntimeAttachDb> & Partial<RuntimeSnapshotDb>) | null
   mode: WorldConsumerMode
   bindings?: readonly WorldBinding[]
   facts: WorldFactSource
   authenticator?: RuntimeAuthenticator
+  snapshots?: RendererSnapshotPort
 }
 
 const HEADERS = { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff" }
@@ -49,7 +79,7 @@ const STATUS: Partial<Record<string, number>> = {
   SESSION_NOT_BOUND: 403, WORLD_MISMATCH: 403, AUTHORITY_INVALID: 403, PERMISSION_DENIED: 403,
   RECEIPT_CONFLICT: 409, EVENT_ID_CONFLICT: 409, VISIT_ALREADY_OPEN: 409, VISIT_ID_REUSED: 409,
   STREAM_AUTHORIZATION_INVALID: 403, STREAM_AUTHORIZATION_BINDING_MISMATCH: 403, STREAM_ALREADY_ATTACHED: 409,
-  STREAM_ATTACH_WINDOW_EXPIRED: 409, STREAM_SESSION_NOT_ELIGIBLE: 409,
+  STREAM_ATTACH_WINDOW_EXPIRED: 409, STREAM_SESSION_NOT_ELIGIBLE: 409, SESSION_NOT_ELIGIBLE: 409,
   SESSION_ENDED: 409, SESSION_NOT_CLAIMED: 409, SESSION_NOT_JOINED: 409, ALLOCATION_RELEASED: 409,
   NO_OPEN_VISIT: 409, VISIT_CLOSED: 409, VISIT_MISMATCH: 409, TICK_REGRESSION: 409, INVALID_READINESS: 400, RECEIPT_IDENTITY_REQUIRED: 400,
 }
@@ -68,7 +98,7 @@ function isObj(v: unknown): v is Record<string, unknown> {
 }
 
 export async function handleRuntimeIngress(request: Request, op: string, deps: RuntimeIngressDeps): Promise<Response> {
-  if (!(RUNTIME_OPS as readonly string[]).includes(op) && op !== ATTACH_OP) return json({ error: "NOT_FOUND" }, 404)
+  if (!(RUNTIME_OPS as readonly string[]).includes(op) && op !== ATTACH_OP && op !== SNAPSHOT_OP) return json({ error: "NOT_FOUND" }, 404)
   const principal = (deps.authenticator ?? platformIssuedCredentialAuthenticator).principal(request.headers)
   if (!principal) return json({ error: "RUNTIME_UNAUTHORIZED" }, 401)
   if (!deps.db) return json({ error: "UNAVAILABLE" }, 503)
@@ -91,6 +121,18 @@ export async function handleRuntimeIngress(request: Request, op: string, deps: R
     if (!isUuid(body.sessionId)) return json({ error: "INVALID_REQUEST" }, 400)
     const sessionId = body.sessionId
     if (op === "claim") return json(await db.runtimeClaim(credentialId, secretSha256, sessionId), 200)
+    if (op === SNAPSHOT_OP) {
+      // The renderer names ONLY its session; nothing else is accepted.
+      if (Object.keys(body).length !== 1) return json({ error: "INVALID_REQUEST" }, 400)
+      if (!db.runtimeSessionRenderContext) return json({ error: "UNAVAILABLE" }, 503)
+      if (!deps.snapshots) return json({ error: "UNAVAILABLE" }, 503)
+      const ctx = await db.runtimeSessionRenderContext(credentialId, secretSha256, sessionId)
+      const out = await deps.snapshots.build(sessionId, ctx)
+      if (!out) return json({ error: "UNAVAILABLE" }, 503)
+      const headers = { ...HEADERS, ETag: out.etag }
+      if (request.headers.get("if-none-match") === out.etag) return new Response(null, { status: 304, headers: { "Cache-Control": HEADERS["Cache-Control"], ETag: out.etag } })
+      return new Response(out.json, { status: 200, headers })
+    }
     if (op === ATTACH_OP) {
       const h = body.authorizationSha256
       if (typeof h !== "string" || !/^[0-9a-f]{64}$/.test(h) || Object.keys(body).length !== 2) return json({ error: "INVALID_REQUEST" }, 400)

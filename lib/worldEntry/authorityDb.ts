@@ -30,6 +30,7 @@ export type EntryAuthorityCode =
   | "STREAM_CAPABILITY_INVALID" | "STREAM_CAPABILITY_EXPIRED" | "STREAM_CAPABILITY_CONSUMED" | "STREAM_CAPABILITY_BINDING_MISMATCH"
   | "STREAM_SESSION_NOT_IN_WORLD" | "STREAM_CAPABILITY_LIMIT"
   | "STREAM_AUTHORIZATION_INVALID" | "STREAM_AUTHORIZATION_BINDING_MISMATCH" | "STREAM_ALREADY_ATTACHED" | "STREAM_ATTACH_WINDOW_EXPIRED" | "STREAM_SESSION_NOT_ELIGIBLE"
+  | "SESSION_NOT_ELIGIBLE"
   | "PERMISSION_DENIED" | "UNAVAILABLE"
 
 const KNOWN = new Set<string>([
@@ -43,6 +44,7 @@ const KNOWN = new Set<string>([
   "STREAM_CAPABILITY_INVALID", "STREAM_CAPABILITY_EXPIRED", "STREAM_CAPABILITY_CONSUMED", "STREAM_CAPABILITY_BINDING_MISMATCH",
   "STREAM_SESSION_NOT_IN_WORLD", "STREAM_CAPABILITY_LIMIT",
   "STREAM_AUTHORIZATION_INVALID", "STREAM_AUTHORIZATION_BINDING_MISMATCH", "STREAM_ALREADY_ATTACHED", "STREAM_ATTACH_WINDOW_EXPIRED", "STREAM_SESSION_NOT_ELIGIBLE",
+  "SESSION_NOT_ELIGIBLE",
 ])
 
 export const RUNTIME_AUTH_CODES: ReadonlySet<EntryAuthorityCode> = new Set([
@@ -285,6 +287,12 @@ export class PgEntryAuthorityDb implements EntryAuthorityDb {
   async runtimeStreamAttach(credentialId: string, secretSha256: Buffer, sessionId: string, authorizationSha256: Buffer) {
     const [r] = await this.call("SELECT world_runtime_stream_attach($1, $2, $3, $4) AS r", [credentialId, secretSha256, sessionId, authorizationSha256])
     return r.r as { outcome: "ATTACHED"; sessionId: string }
+  }
+
+  // WORLDK-M14-B6 (046): read-only render context for the renderer's own session.
+  async runtimeSessionRenderContext(credentialId: string, secretSha256: Buffer, sessionId: string) {
+    const [r] = await this.call("SELECT * FROM world_runtime_session_render_context($1, $2, $3)", [credentialId, secretSha256, sessionId])
+    return { worldId: r.world_id as string, reconnect: r.reconnect === true, arrivalKind: r.arrival_kind as "FIRST_VISIT" | "RETURNING", arrivalPlaceId: r.arrival_place_id as string }
   }
 
   // WORLDK-M14-B5 (045): the signalling-facing route, keyed by the authorization alone.

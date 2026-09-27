@@ -1,0 +1,80 @@
+{
+  "ownSnapshot": {
+    "status": 200,
+    "bytes": 2953,
+    "visitor": {
+      "arrivalKind": "FIRST_VISIT",
+      "arrivalPlaceId": "forest-clearing"
+    },
+    "freshness": {
+      "generatedAt": "2026-09-23T17:00:00.000Z",
+      "validAsOf": "2026-09-23T17:00:00.000Z",
+      "staleAfter": "2026-09-23T17:01:00.000Z",
+      "source": {
+        "worldTick": 6,
+        "worldVersion": 1,
+        "sourceRevision": "fixture:living-forest-vertical-slice:5d69ae221f263009"
+      }
+    },
+    "currentLocation": "forest-clearing",
+    "reachable": [
+      "forest-stream",
+      "forest-pond"
+    ],
+    "entitiesAtCurrent": 2,
+    "deterministic": true,
+    "dbDigestEqual": true,
+    "factsDigestEqual": true,
+    "tickMatchesIngress": true
+  },
+  "binding": {
+    "wrongRenderer": "403 {\"error\":\"SESSION_NOT_BOUND\"}",
+    "unknownSession": "403 {\"error\":\"SESSION_NOT_BOUND\"}",
+    "crossWorldRenderer": "403 {\"error\":\"SESSION_NOT_BOUND\"}"
+  },
+  "noSelection": {
+    "statuses": {
+      "subjectId": 400,
+      "userId": 400,
+      "worldId": 400,
+      "placeId": 400,
+      "visitId": 400,
+      "sessionIds": 400,
+      "empty": 400,
+      "notUuid": 400
+    },
+    "signature": "p_credential_id uuid, p_secret_sha256 bytea, p_session_id uuid"
+  },
+  "eligibility": {
+    "leaveRequested": "SESSION_NOT_ELIGIBLE",
+    "departed": "SESSION_NOT_ELIGIBLE",
+    "superseded": "SESSION_NOT_ELIGIBLE",
+    "releasedAllocation": "SESSION_NOT_ELIGIBLE",
+    "presenceBeyondGrace": "SESSION_NOT_ELIGIBLE",
+    "ended": "SESSION_NOT_ELIGIBLE"
+  },
+  "credentials": {
+    "expiredCredential": 401,
+    "revokedCredential": 401,
+    "wrongSecret": 401,
+    "noBearer": 401,
+    "capabilityAsBearer": 401,
+    "authorizationAsBearer": 401,
+    "viewCookieAsBearer": 401,
+    "cookieHeaderOnly": 401,
+    "revokedInstance": 401
+  },
+  "privileges": {
+    "matrix": {
+      "anon": false,
+      "authenticated": false,
+      "service_role": false,
+      "worldk_platform_entry_authority": true,
+      "worldk_platform_entry_preview": false
+    },
+    "stable": true,
+    "securityDefiner": true,
+    "searchPathPinned": true,
+    "publicExecute": false
+  }
+}

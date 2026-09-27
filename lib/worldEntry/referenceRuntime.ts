@@ -59,7 +59,7 @@ export type RuntimeEvent =
   | { kind: "PRESENCE"; sessionId: string; outcome: string }
   | { kind: "DEPARTURE"; sessionId: string; outcome: string }
   | { kind: "DISCONNECT"; sessionId: string; outcome: string }
-  | { kind: "REFUSED"; op: RuntimeOp | "attach"; status: number; error: string }
+  | { kind: "REFUSED"; op: RuntimeOp | "attach" | "snapshot"; status: number; error: string }
 
 export interface ReferenceRuntimeOptions {
   readiness?: "STARTING" | "READY"
@@ -186,6 +186,20 @@ export class ReferenceRuntime {
       return null
     }
     return String(reply.body.outcome)
+  }
+
+  /**
+   * WORLDK-M14-B6: the RendererSessionSnapshot for one of this runtime's
+   * sessions (read-only). Returns the parsed body, or null when refused.
+   */
+  async readSnapshot(sessionId: string): Promise<Record<string, unknown> | null> {
+    const reply = await this.bridge.readSnapshot(sessionId)
+    if (!reply) return null
+    if (reply.status !== 200) {
+      this.opts.onEvent({ kind: "REFUSED", op: "snapshot", status: reply.status, error: String(reply.body.error) })
+      return null
+    }
+    return reply.body
   }
 
   /** The visitor joined this runtime session. */

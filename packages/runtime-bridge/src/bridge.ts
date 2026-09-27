@@ -31,7 +31,9 @@ export interface RuntimeBridgeTransport {
  * transport maps an op to its ingress path generically (/api/runtime/v1/<op>).
  */
 export const ATTACH_OP = "attach"
-export type IngressOp = RuntimeOp | typeof ATTACH_OP
+/** WORLDK-M14-B6: the read-only renderer session snapshot op (also not a RendererEvent). */
+export const SNAPSHOT_OP = "snapshot"
+export type IngressOp = RuntimeOp | typeof ATTACH_OP | typeof SNAPSHOT_OP
 
 const SHA256_HEX = /^[0-9a-f]{64}$/
 
@@ -129,6 +131,18 @@ export class RuntimeBridge {
     if ((state !== "CLAIMED" && state !== "JOINED") || !SHA256_HEX.test(authorizationSha256Hex)) return null
     const post = this.transport.post.bind(this.transport) as (op: IngressOp, body: Record<string, unknown>) => Promise<IngressReply>
     return post(ATTACH_OP, { sessionId, authorizationSha256: authorizationSha256Hex })
+  }
+
+  /**
+   * WORLDK-M14-B6: reads the RendererSessionSnapshot for a session this bridge
+   * has claimed (or joined). Read-only; never changes local state. Refused
+   * locally, without I/O, for any other session.
+   */
+  async readSnapshot(sessionId: string): Promise<IngressReply | null> {
+    const state = this.state(sessionId)
+    if (state !== "CLAIMED" && state !== "JOINED") return null
+    const post = this.transport.post.bind(this.transport) as (op: IngressOp, body: Record<string, unknown>) => Promise<IngressReply>
+    return post(SNAPSHOT_OP, { sessionId })
   }
 
   /** Handles an UNTRUSTED versioned message: parsed first, never throws on bad input. */
