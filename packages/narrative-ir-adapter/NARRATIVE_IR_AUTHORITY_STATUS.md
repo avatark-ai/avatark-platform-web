@@ -64,3 +64,20 @@ this package's current source authority.
 - **Entity, Occurrence/Observation, Consequence, CausalAttribution**: this
   package consumes none of these canonical concepts directly today (confirmed
   by source inspection); no migration was needed or performed for them.
+
+## Compiled-artifact verification boundary (PLT-VERIFY-09)
+
+`verifyCompiledArtifact({ artifact: CompiledArtifactIdentity, canonicalBytes })`
+(`src/compiledArtifactVerification.ts`) is this package's trust boundary for
+compiler artifacts. It accepts a claimed `{fixtureId, digest}` only when the
+compiler-emitted canonical bytes are supplied and hash to exactly that digest,
+under a canonicalization version it knows the digest rule for (currently only
+`0.1.0`: SHA-256 over the exact UTF-8 canonical bytes, per the compiler's
+published output contract). Unsupported versions, missing or malformed
+material, digest mismatches and fixtureId mismatches are deterministic
+`REFUSED` results.
+
+The compiler remains the canonicalization authority: this package never
+serializes or re-canonicalizes an artifact, it only hashes the bytes it was
+given. VERIFIED proves the bytes match the claimed digest; it does not prove
+who issued that digest.

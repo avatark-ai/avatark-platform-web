@@ -38,3 +38,10 @@ export {
   expectationReferenceFromCanonical,
 } from "./translation/expectationReferenceFromCanonical.ts"
 export { visitContextFromCanonical } from "./translation/visitContextFromCanonical.ts"
+
+export type {
+  CompiledArtifactVerificationInput,
+  CompiledArtifactRefusalReason,
+  CompiledArtifactVerificationResult,
+} from "./compiledArtifactVerification.ts"
+export { SUPPORTED_CANONICALIZATION_VERSIONS, verifyCompiledArtifact } from "./compiledArtifactVerification.ts"
