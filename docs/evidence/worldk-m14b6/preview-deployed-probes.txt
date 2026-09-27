@@ -1,0 +1,13 @@
+snapshot_no_bearer 401 {"error":"RUNTIME_UNAUTHORIZED"}
+snapshot_malformed_bearer 401 {"error":"RUNTIME_UNAUTHORIZED"}
+snapshot_forged_credential_DB 401 {"error":"RUNTIME_UNAUTHORIZED"}
+snapshot_extra_field 400 {"error":"INVALID_REQUEST"}
+snapshot_token_as_bearer 401 {"error":"RUNTIME_UNAUTHORIZED"}
+snapshot_cookie_only 401 {"error":"RUNTIME_UNAUTHORIZED"}
+snapshot_get 405 
+b4_attach_no_bearer 401 {"error":"RUNTIME_UNAUTHORIZED"}
+b5_route_no_key 401 {"error":"UNAUTHORIZED"}
+b5_media_forged 503  <meta name="viewport"
+b3_issue_forged 403 {"status":"REFUSED"}
+ingress_poll_unauth 401 {"error":"RUNTIME_UNAUTHORIZED"}
+production_snapshot 404  <html data-dpl-id="dpl_FdYo7Sr2mq9322hgQkzqtvwa18kW" lang="

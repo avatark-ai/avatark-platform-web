@@ -1,0 +1,24 @@
+[
+ {
+  "audit": {
+   "args": "p_credential_id uuid, p_secret_sha256 bytea, p_session_id uuid",
+   "execute": {
+    "anon": false,
+    "authenticated": false,
+    "service_role": false,
+    "worldk_platform_entry_authority": true,
+    "worldk_platform_entry_preview": false
+   },
+   "fn": {
+    "config": [
+     "search_path=pg_catalog, public"
+    ],
+    "owner": "postgres",
+    "public": false,
+    "secdef": true,
+    "volatile": "s"
+   },
+   "platformRoleGrantCount": 1
+  }
+ }
+]
