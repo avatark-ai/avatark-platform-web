@@ -62,3 +62,9 @@ export type {
   WorldHistoryAdaptationResult,
 } from "./worldHistoryEvidence.ts"
 export { adaptVerifiedWorldHistory } from "./worldHistoryEvidence.ts"
+export type {
+  CausalHistoryReferenceFamily,
+  PlaceCausalHistoryReferenceFact,
+  CausalHistoryAdaptationResult,
+} from "./causalHistoryEvidence.ts"
+export { adaptVerifiedCausalHistory } from "./causalHistoryEvidence.ts"

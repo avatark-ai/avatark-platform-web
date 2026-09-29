@@ -214,7 +214,7 @@ test("WB13: evidenceItemFromExpectedAbsenceFact fabricates no identifier or dige
 test("WB14: real evidence classes this phase did not connect remain explicitly listed as not-yet-integrated even when real evidence IS present in the same input", () => {
   const item = evidenceItemFromExpectedAbsenceFact(realExpectedAbsenceFact())
   const candidate = interpretNarrativeEvidence(inputWith(item), IDENTITY)
-  assert.ok(candidate.provenance.notYetIntegrated.includes("PLACE_MEMORY_CAUSAL_HISTORY"))
+  assert.ok(candidate.provenance.notYetIntegrated.includes("CAUSAL_ATTRIBUTION"))
   assert.ok(candidate.provenance.notYetIntegrated.includes("CONSEQUENCE_PHYSICAL"))
 })
 

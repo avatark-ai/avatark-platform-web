@@ -5,6 +5,7 @@ import {
   isOccurrenceEvidencePayload,
   isWorldHistoryEntryEvidencePayload,
 } from "./worldHistoryEvidence.ts"
+import { PLACE_CAUSAL_HISTORY_EVIDENCE_KIND, isPlaceCausalHistoryReferenceEvidencePayload } from "./causalHistoryEvidence.ts"
 import type { EvidenceProvenanceEntry, EvidenceRequirementClassification, InterpretationProvenance, InterpreterIdentity, NarrativeEvidenceItem } from "./types.ts"
 
 // Real Lane-1 evidence CLASSES this package still does not connect to any
@@ -14,11 +15,11 @@ import type { EvidenceProvenanceEntry, EvidenceRequirementClassification, Interp
 // "not yet available" apart from "checked and found nothing."
 // PLT-R3G3-10 connected WORLD_HISTORY HistoryPool entries and Occurrence
 // (with its observations); PERSONAL_VISITOR_HISTORY pools stay unconnected.
+// PLT-R3G3-11 connected PLACE_MEMORY_CAUSAL_HISTORY as reference evidence only.
 export const NOT_YET_INTEGRATED_EVIDENCE_CLASSES: readonly string[] = [
   "CONSEQUENCE_PHYSICAL",
   "CONSEQUENCE_RELATIONAL",
   "CONSEQUENCE_LONGITUDINAL",
-  "PLACE_MEMORY_CAUSAL_HISTORY",
   "TRACE",
   "PERSONAL_VISITOR_HISTORY",
   "NARRATIVE_RESIDUE",
@@ -48,6 +49,8 @@ export const EVIDENCE_REQUIREMENT_CLASSIFICATION: Readonly<Record<string, Eviden
   CONSEQUENCE_PHYSICAL: "DEFER_TO_LATER_PHASE",
   CONSEQUENCE_RELATIONAL: "DEFER_TO_LATER_PHASE",
   CONSEQUENCE_LONGITUDINAL: "DEFER_TO_LATER_PHASE",
+  // PLT-R3G3-11: connected as ordered reference evidence (Occurrence or
+  // Consequence references); still optional context, and never a causal claim.
   PLACE_MEMORY_CAUSAL_HISTORY: "OPTIONAL_CONTEXT",
   TRACE: "DEFER_TO_LATER_PHASE",
   PERSONAL_VISITOR_HISTORY: "DEFER_TO_LATER_PHASE",
@@ -97,6 +100,17 @@ function buildEvidenceProvenanceEntry(item: NarrativeEvidenceItem): EvidenceProv
       sourceArtifact: { sourceId: item.payload.source.fixtureId, digest: item.payload.source.digest },
       sourceIrVersion: item.payload.irVersion,
       sourceDocumentKey: item.payload.occurrenceKey,
+    }
+  }
+  if (item.sourceKind === PLACE_CAUSAL_HISTORY_EVIDENCE_KIND && isPlaceCausalHistoryReferenceEvidencePayload(item.payload)) {
+    return {
+      evidenceId: item.evidenceId,
+      sourceKind: item.sourceKind,
+      integration: "ADAPTED_REAL",
+      adapterIdentity: item.payload.adapterIdentity,
+      sourceArtifact: { sourceId: item.payload.source.fixtureId, digest: item.payload.source.digest },
+      sourceIrVersion: item.payload.placeMemoryIrVersion,
+      sourceDocumentKey: item.payload.placeMemoryKey,
     }
   }
   return {

@@ -58,3 +58,11 @@ export {
   isOccurrenceEvidencePayload,
 } from "./worldHistoryEvidence.ts"
 export type { WorldHistoryEntryEvidencePayload, OccurrenceEvidencePayload } from "./worldHistoryEvidence.ts"
+
+export {
+  PLACE_CAUSAL_HISTORY_EVIDENCE_KIND,
+  placeCausalHistoryEvidenceId,
+  evidenceItemFromPlaceCausalHistoryReferenceFact,
+  isPlaceCausalHistoryReferenceEvidencePayload,
+} from "./causalHistoryEvidence.ts"
+export type { PlaceCausalHistoryReferenceEvidencePayload } from "./causalHistoryEvidence.ts"
