@@ -68,3 +68,9 @@ export type {
   CausalHistoryAdaptationResult,
 } from "./causalHistoryEvidence.ts"
 export { adaptVerifiedCausalHistory } from "./causalHistoryEvidence.ts"
+export type {
+  OpaqueCanonicalObject,
+  PhysicalConsequenceFact,
+  PhysicalConsequenceAdaptationResult,
+} from "./physicalConsequenceEvidence.ts"
+export { adaptVerifiedPhysicalConsequences } from "./physicalConsequenceEvidence.ts"

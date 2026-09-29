@@ -6,6 +6,7 @@ import {
   isWorldHistoryEntryEvidencePayload,
 } from "./worldHistoryEvidence.ts"
 import { PLACE_CAUSAL_HISTORY_EVIDENCE_KIND, isPlaceCausalHistoryReferenceEvidencePayload } from "./causalHistoryEvidence.ts"
+import { PHYSICAL_CONSEQUENCE_EVIDENCE_KIND, isPhysicalConsequenceEvidencePayload } from "./physicalConsequenceEvidence.ts"
 import type { EvidenceProvenanceEntry, EvidenceRequirementClassification, InterpretationProvenance, InterpreterIdentity, NarrativeEvidenceItem } from "./types.ts"
 
 // Real Lane-1 evidence CLASSES this package still does not connect to any
@@ -16,8 +17,9 @@ import type { EvidenceProvenanceEntry, EvidenceRequirementClassification, Interp
 // PLT-R3G3-10 connected WORLD_HISTORY HistoryPool entries and Occurrence
 // (with its observations); PERSONAL_VISITOR_HISTORY pools stay unconnected.
 // PLT-R3G3-11 connected PLACE_MEMORY_CAUSAL_HISTORY as reference evidence only.
+// PLT-R3G3-12 connected CONSEQUENCE_PHYSICAL; RELATIONAL and LONGITUDINAL
+// Consequences and CAUSAL_ATTRIBUTION stay unconnected.
 export const NOT_YET_INTEGRATED_EVIDENCE_CLASSES: readonly string[] = [
-  "CONSEQUENCE_PHYSICAL",
   "CONSEQUENCE_RELATIONAL",
   "CONSEQUENCE_LONGITUDINAL",
   "TRACE",
@@ -46,7 +48,10 @@ export const EVIDENCE_REQUIREMENT_CLASSIFICATION: Readonly<Record<string, Eviden
   // made from either.
   WORLD_HISTORY_ENTRY: "OPTIONAL_CONTEXT",
   OCCURRENCE: "OPTIONAL_CONTEXT",
-  CONSEQUENCE_PHYSICAL: "DEFER_TO_LATER_PHASE",
+  // PLT-R3G3-12: a verified PhysicalConsequence is a world fact an
+  // interpretation may draw on; its causalAttribution is carried opaquely and
+  // no causal claim is made from it.
+  CONSEQUENCE_PHYSICAL: "OPTIONAL_CONTEXT",
   CONSEQUENCE_RELATIONAL: "DEFER_TO_LATER_PHASE",
   CONSEQUENCE_LONGITUDINAL: "DEFER_TO_LATER_PHASE",
   // PLT-R3G3-11: connected as ordered reference evidence (Occurrence or
@@ -111,6 +116,17 @@ function buildEvidenceProvenanceEntry(item: NarrativeEvidenceItem): EvidenceProv
       sourceArtifact: { sourceId: item.payload.source.fixtureId, digest: item.payload.source.digest },
       sourceIrVersion: item.payload.placeMemoryIrVersion,
       sourceDocumentKey: item.payload.placeMemoryKey,
+    }
+  }
+  if (item.sourceKind === PHYSICAL_CONSEQUENCE_EVIDENCE_KIND && isPhysicalConsequenceEvidencePayload(item.payload)) {
+    return {
+      evidenceId: item.evidenceId,
+      sourceKind: item.sourceKind,
+      integration: "ADAPTED_REAL",
+      adapterIdentity: item.payload.adapterIdentity,
+      sourceArtifact: { sourceId: item.payload.source.fixtureId, digest: item.payload.source.digest },
+      sourceIrVersion: item.payload.irVersion,
+      sourceDocumentKey: item.payload.consequenceKey,
     }
   }
   return {

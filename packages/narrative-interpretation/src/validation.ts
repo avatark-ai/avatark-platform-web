@@ -15,6 +15,7 @@ import {
   isWorldHistoryEntryEvidencePayload,
 } from "./worldHistoryEvidence.ts"
 import { PLACE_CAUSAL_HISTORY_EVIDENCE_KIND, isPlaceCausalHistoryReferenceEvidencePayload } from "./causalHistoryEvidence.ts"
+import { PHYSICAL_CONSEQUENCE_EVIDENCE_KIND, isPhysicalConsequenceEvidencePayload } from "./physicalConsequenceEvidence.ts"
 import type { InterpreterIdentity, NarrativeEvidenceItem, NarrativeInterpretationInput } from "./types.ts"
 
 export const SUPPORTED_INPUT_SCHEMA_VERSIONS: readonly string[] = ["1"]
@@ -55,6 +56,9 @@ function validateEvidenceItem(item: unknown, index: number): NarrativeEvidenceIt
   }
   if (record.sourceKind === PLACE_CAUSAL_HISTORY_EVIDENCE_KIND && !isPlaceCausalHistoryReferenceEvidencePayload(record.payload)) {
     throw new MalformedAdaptedEvidenceError(record.sourceKind, "payload does not match the adapted PlaceMemory.causalHistory reference shape (missing/invalid adapterIdentity, source, placeMemoryKey, placeId, placeMemoryIrVersion, position, targetRef, referenceFamily, or targetMaterialized)")
+  }
+  if (record.sourceKind === PHYSICAL_CONSEQUENCE_EVIDENCE_KIND && !isPhysicalConsequenceEvidencePayload(record.payload)) {
+    throw new MalformedAdaptedEvidenceError(record.sourceKind, "payload does not match the adapted PhysicalConsequence shape (missing/invalid adapterIdentity, source, consequenceKey, irVersion, register PHYSICAL, triggerId, causalAttribution, evidenceTiming, persistence, or worldStateDelta)")
   }
   if (record.sourceKind === ADAPTED_EVIDENCE_SOURCE_KIND && !isAdaptedExpectedAbsenceEvidencePayload(record.payload)) {
     throw new MalformedAdaptedEvidenceError(record.sourceKind, "payload does not match the adapted PlaceMemory.expectedPatternState shape (missing/invalid adapterIdentity, expectationId, subjectId, property, origin, evidenceStateIds, logicalTick, disconfirmationCount, or artifactReference)")

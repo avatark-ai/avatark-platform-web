@@ -98,10 +98,12 @@ test("CH5: a Consequence reference is not Consequence evidence, and Consequence/
   for (const field of ["register", "causalAttribution", "CONSUMER_CAUSED", "worldStateDelta", "triggerId", "evidenceTiming", "persistence", "personalHistoryEntryId", "relationshipChainId"]) {
     assert.ok(!json.includes(field), `reference evidence must not carry ${field}`)
   }
-  for (const kind of ["CONSEQUENCE_PHYSICAL", "CONSEQUENCE_RELATIONAL", "CONSEQUENCE_LONGITUDINAL", "CAUSAL_ATTRIBUTION", "PERSONAL_VISITOR_HISTORY", "NARRATIVE_RESIDUE"]) {
+  for (const kind of ["CONSEQUENCE_RELATIONAL", "CONSEQUENCE_LONGITUDINAL", "CAUSAL_ATTRIBUTION", "PERSONAL_VISITOR_HISTORY", "NARRATIVE_RESIDUE"]) {
     const item = { evidenceId: "x-1", sourceKind: kind, payload: payloadOf(consequenceRef) }
     assert.throws(() => interpretNarrativeEvidence({ schemaVersion: "1", evidence: [item] }, IDENTITY), UnsupportedEvidenceKindError, kind)
   }
+  const relabeled = { evidenceId: "x-1", sourceKind: "CONSEQUENCE_PHYSICAL", payload: payloadOf(consequenceRef) }
+  assert.throws(() => interpretNarrativeEvidence({ schemaVersion: "1", evidence: [relabeled] }, IDENTITY), MalformedAdaptedEvidenceError)
 })
 
 test("CH6: malformed causal-history reference payloads are refused, never reinterpreted", () => {
@@ -135,7 +137,7 @@ test("CH8: only PLACE_MEMORY_CAUSAL_HISTORY moved, as optional context; causal e
   assert.equal(NOT_YET_INTEGRATED_EVIDENCE_CLASSES.includes(PLACE_CAUSAL_HISTORY_EVIDENCE_KIND), false)
   assert.equal(EVIDENCE_REQUIREMENT_CLASSIFICATION.CAUSAL_ATTRIBUTION, "REQUIRED_FOR_CAUSAL_EXPLAINABILITY")
   const candidate = interpretNarrativeEvidence({ schemaVersion: "1", evidence: causalHistoryEvidence(LOCAL_DUP) }, IDENTITY)
-  for (const stillOpen of ["CAUSAL_ATTRIBUTION", "CONSEQUENCE_PHYSICAL", "CONSEQUENCE_RELATIONAL", "CONSEQUENCE_LONGITUDINAL", "PERSONAL_VISITOR_HISTORY", "NARRATIVE_RESIDUE"]) {
+  for (const stillOpen of ["CAUSAL_ATTRIBUTION", "CONSEQUENCE_RELATIONAL", "CONSEQUENCE_LONGITUDINAL", "PERSONAL_VISITOR_HISTORY", "NARRATIVE_RESIDUE"]) {
     assert.ok(candidate.provenance.notYetIntegrated.includes(stillOpen), stillOpen)
   }
 })

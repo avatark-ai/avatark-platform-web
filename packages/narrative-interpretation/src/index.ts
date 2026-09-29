@@ -66,3 +66,10 @@ export {
   isPlaceCausalHistoryReferenceEvidencePayload,
 } from "./causalHistoryEvidence.ts"
 export type { PlaceCausalHistoryReferenceEvidencePayload } from "./causalHistoryEvidence.ts"
+
+export {
+  PHYSICAL_CONSEQUENCE_EVIDENCE_KIND,
+  evidenceItemFromPhysicalConsequenceFact,
+  isPhysicalConsequenceEvidencePayload,
+} from "./physicalConsequenceEvidence.ts"
+export type { PhysicalConsequenceEvidencePayload } from "./physicalConsequenceEvidence.ts"

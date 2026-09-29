@@ -215,7 +215,7 @@ test("WB14: real evidence classes this phase did not connect remain explicitly l
   const item = evidenceItemFromExpectedAbsenceFact(realExpectedAbsenceFact())
   const candidate = interpretNarrativeEvidence(inputWith(item), IDENTITY)
   assert.ok(candidate.provenance.notYetIntegrated.includes("CAUSAL_ATTRIBUTION"))
-  assert.ok(candidate.provenance.notYetIntegrated.includes("CONSEQUENCE_PHYSICAL"))
+  assert.ok(candidate.provenance.notYetIntegrated.includes("CONSEQUENCE_RELATIONAL"))
 })
 
 // Read-only invariant, specific to this file: the real fixture on disk is
