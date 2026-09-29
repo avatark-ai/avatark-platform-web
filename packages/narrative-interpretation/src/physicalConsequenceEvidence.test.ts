@@ -53,7 +53,7 @@ test("PE2: provenance retains the verified source artifact and the Consequence k
   const candidate = interpret(physicalEvidence(ATTR))
   assert.equal(candidate.provenance.evidenceProvenance.length, 2)
   for (const entry of candidate.provenance.evidenceProvenance) {
-    assert.deepEqual(entry.sourceArtifact, { sourceId: ATTR.artifact.fixtureId, digest: ATTR.artifact.digest })
+    assert.deepEqual(entry.sourceArtifact, { sourceId: ATTR.artifact.fixtureId, digest: ATTR.artifact.digest, canonicalizationVersion: "0.1.0" })
     assert.equal(entry.sourceIrVersion, "0.3.0")
     assert.ok(entry.sourceDocumentKey?.startsWith("consequence/test-"))
     assert.equal(entry.sourceDocumentKey, entry.evidenceId)

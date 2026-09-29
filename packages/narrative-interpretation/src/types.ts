@@ -62,6 +62,13 @@ export interface EvidenceProvenanceEntry {
     readonly digest: string
     readonly ruleId?: string
     readonly eventId?: string
+    // PLT-R3G5-02A: present only for evidence adapted from a verified compiler
+    // artifact, copied from that evidence's own verified source (canonical
+    // bytes -> verifyCompiledArtifact() -> VerifiedArtifactSource). Absent for
+    // the legacy ArtifactReference path and for any non-compiler source; never
+    // defaulted. Carrying it is data only -- it does not by itself make an
+    // entry verification-backed.
+    readonly canonicalizationVersion?: string
   }
   // STK-WO-009 Phase C (G10C-3): the source record's own irVersion, present
   // only for ADAPTED_REAL entries whose source actually carries one.

@@ -59,7 +59,7 @@ test("CH2: provenance retains the verified source artifact and the PlaceMemory k
   const candidate = interpretNarrativeEvidence({ schemaVersion: "1", evidence: causalHistoryEvidence(OPEN_REFS) }, IDENTITY)
   assert.equal(candidate.provenance.evidenceProvenance.length, 2)
   for (const entry of candidate.provenance.evidenceProvenance) {
-    assert.deepEqual(entry.sourceArtifact, { sourceId: OPEN_REFS.artifact.fixtureId, digest: OPEN_REFS.artifact.digest })
+    assert.deepEqual(entry.sourceArtifact, { sourceId: OPEN_REFS.artifact.fixtureId, digest: OPEN_REFS.artifact.digest, canonicalizationVersion: "0.1.0" })
     assert.equal(entry.sourceIrVersion, "0.3.0")
     assert.equal(entry.sourceDocumentKey, "place-memory/open-shore")
     assert.ok(!("ruleId" in entry) && !("eventId" in entry))

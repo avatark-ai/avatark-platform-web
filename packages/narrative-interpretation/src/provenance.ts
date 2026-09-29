@@ -7,6 +7,7 @@ import {
 } from "./worldHistoryEvidence.ts"
 import { PLACE_CAUSAL_HISTORY_EVIDENCE_KIND, isPlaceCausalHistoryReferenceEvidencePayload } from "./causalHistoryEvidence.ts"
 import { PHYSICAL_CONSEQUENCE_EVIDENCE_KIND, isPhysicalConsequenceEvidencePayload } from "./physicalConsequenceEvidence.ts"
+import type { VerifiedArtifactSource } from "@avatark/narrative-ir-adapter"
 import type { EvidenceProvenanceEntry, EvidenceRequirementClassification, InterpretationProvenance, InterpreterIdentity, NarrativeEvidenceItem } from "./types.ts"
 
 // Real Lane-1 evidence CLASSES this package still does not connect to any
@@ -74,6 +75,13 @@ export const EVIDENCE_REQUIREMENT_CLASSIFICATION: Readonly<Record<string, Eviden
   WORLD_TIME_INTERVAL: "DEFER_TO_LATER_PHASE",
 }
 
+// PLT-R3G5-02A: the compiler artifact identity of evidence adapted from a
+// verified artifact -- sourceId, digest and canonicalizationVersion, all
+// copied from that evidence's own verified source, never from a constant.
+function verifiedSourceArtifact(source: VerifiedArtifactSource): NonNullable<EvidenceProvenanceEntry["sourceArtifact"]> {
+  return { sourceId: source.fixtureId, digest: source.digest, canonicalizationVersion: source.canonicalizationVersion }
+}
+
 function buildEvidenceProvenanceEntry(item: NarrativeEvidenceItem): EvidenceProvenanceEntry {
   if (item.sourceKind === ADAPTED_EVIDENCE_SOURCE_KIND && isAdaptedExpectedAbsenceEvidencePayload(item.payload)) {
     return {
@@ -81,7 +89,14 @@ function buildEvidenceProvenanceEntry(item: NarrativeEvidenceItem): EvidenceProv
       sourceKind: item.sourceKind,
       integration: "ADAPTED_REAL",
       adapterIdentity: item.payload.adapterIdentity,
-      sourceArtifact: item.payload.artifactReference,
+      // Exactly the four ArtifactReference fields: the legacy path never
+      // carries a canonicalizationVersion, even if the caller's object has one.
+      sourceArtifact: {
+        sourceId: item.payload.artifactReference.sourceId,
+        digest: item.payload.artifactReference.digest,
+        ruleId: item.payload.artifactReference.ruleId,
+        eventId: item.payload.artifactReference.eventId,
+      },
       sourceIrVersion: item.payload.irVersion,
     }
   }
@@ -91,7 +106,7 @@ function buildEvidenceProvenanceEntry(item: NarrativeEvidenceItem): EvidenceProv
       sourceKind: item.sourceKind,
       integration: "ADAPTED_REAL",
       adapterIdentity: item.payload.adapterIdentity,
-      sourceArtifact: { sourceId: item.payload.source.fixtureId, digest: item.payload.source.digest },
+      sourceArtifact: verifiedSourceArtifact(item.payload.source),
       sourceIrVersion: item.payload.poolIrVersion,
       sourceDocumentKey: item.payload.poolKey,
     }
@@ -102,7 +117,7 @@ function buildEvidenceProvenanceEntry(item: NarrativeEvidenceItem): EvidenceProv
       sourceKind: item.sourceKind,
       integration: "ADAPTED_REAL",
       adapterIdentity: item.payload.adapterIdentity,
-      sourceArtifact: { sourceId: item.payload.source.fixtureId, digest: item.payload.source.digest },
+      sourceArtifact: verifiedSourceArtifact(item.payload.source),
       sourceIrVersion: item.payload.irVersion,
       sourceDocumentKey: item.payload.occurrenceKey,
     }
@@ -113,7 +128,7 @@ function buildEvidenceProvenanceEntry(item: NarrativeEvidenceItem): EvidenceProv
       sourceKind: item.sourceKind,
       integration: "ADAPTED_REAL",
       adapterIdentity: item.payload.adapterIdentity,
-      sourceArtifact: { sourceId: item.payload.source.fixtureId, digest: item.payload.source.digest },
+      sourceArtifact: verifiedSourceArtifact(item.payload.source),
       sourceIrVersion: item.payload.placeMemoryIrVersion,
       sourceDocumentKey: item.payload.placeMemoryKey,
     }
@@ -124,7 +139,7 @@ function buildEvidenceProvenanceEntry(item: NarrativeEvidenceItem): EvidenceProv
       sourceKind: item.sourceKind,
       integration: "ADAPTED_REAL",
       adapterIdentity: item.payload.adapterIdentity,
-      sourceArtifact: { sourceId: item.payload.source.fixtureId, digest: item.payload.source.digest },
+      sourceArtifact: verifiedSourceArtifact(item.payload.source),
       sourceIrVersion: item.payload.irVersion,
       sourceDocumentKey: item.payload.consequenceKey,
     }

@@ -61,7 +61,7 @@ test("WH1: verified world history and occurrences become WorldEvidence that Narr
 test("WH2: provenance retains the verified source artifact and the compiler document key, with no fabricated ruleId/eventId", () => {
   const candidate = interpretNarrativeEvidence({ schemaVersion: "1", evidence: worldEvidence(TIMELINE) }, IDENTITY)
   for (const entry of candidate.provenance.evidenceProvenance) {
-    assert.deepEqual(entry.sourceArtifact, { sourceId: TIMELINE.artifact.fixtureId, digest: TIMELINE.artifact.digest })
+    assert.deepEqual(entry.sourceArtifact, { sourceId: TIMELINE.artifact.fixtureId, digest: TIMELINE.artifact.digest, canonicalizationVersion: "0.1.0" })
     assert.equal(entry.sourceIrVersion, "0.3.0")
     assert.ok(entry.sourceDocumentKey === "history-pool/world-history-first-light-water-timeline" || entry.sourceDocumentKey?.startsWith("occurrence/"))
   }
