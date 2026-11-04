@@ -8,7 +8,8 @@ const run = (script: string, env: Record<string, string>) => {
   const r = spawnSync('sh', [script], { env: childEnv, encoding: 'utf8' })
   return { code: r.status, out: r.stdout + r.stderr }
 }
-const B = 'integration/avk-unification-02'
+const B = 'integration/avk-founder-living-worlds-02'
+const U02 = 'integration/avk-unification-02' // AVK-FLW-02A: no longer approved on this commit line
 const ISOLATED = {
   VERCEL_ENV: 'preview',
   VERCEL_GIT_COMMIT_REF: B,
@@ -26,12 +27,16 @@ test('ignore step: production builds, approved preview builds, everything else s
   assert.equal(run(s, { VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: `${B}-copy` }).code, 0)
   assert.equal(run(s, { VERCEL_ENV: 'development', VERCEL_GIT_COMMIT_REF: B }).code, 0)
   assert.equal(run(s, {}).code, 0)
+  assert.equal(run(s, { VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: U02 }).code, 0)
+  assert.equal(run(s, { VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: 'integration/avk-founder-living-worlds-02a' }).code, 0)
 })
 
 test('assert: isolated approved preview passes; production is a no-op', () => {
   assert.equal(run('scripts/assert-preview-isolation.sh', ISOLATED).code, 0)
   assert.equal(run('scripts/assert-preview-isolation.sh', { VERCEL_ENV: 'production' }).code, 0)
   assert.equal(run('scripts/assert-preview-isolation.sh', { ...ISOLATED, NEXT_PUBLIC_INSTITUTIONAL_SIGNIN_ENABLED: 'false' }).code, 0)
+  // the old U-02 ref with otherwise-perfect placeholders still fails closed on this commit line
+  assert.equal(run('scripts/assert-preview-isolation.sh', { ...ISOLATED, VERCEL_GIT_COMMIT_REF: U02 }).code, 1)
 })
 
 test('assert: every isolation failure exits 1 before install, and never prints values', () => {
