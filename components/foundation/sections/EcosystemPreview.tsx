@@ -1,17 +1,24 @@
 import Link from 'next/link'
 import { resolveEcosystemProduct } from '@/lib/content/ecosystemGroups'
 import { SectionContainer } from '@/components/foundation/Container'
+import { APPROVED_COPY } from '@/lib/content/institutionalCopy'
 
 // Home's teaser for the Ecosystem, not the Ecosystem itself -- the full
 // 4x2 grid with per-product purpose copy now lives only on /ecosystem
 // (app/ecosystem/page.tsx). This just names the products, reusing the
 // same resolver so the list can't drift from the real registry, then
-// hands off to the dedicated page. CinemaK stays folded into StreamK, as
-// on the Ecosystem page itself -- no ninth chip.
-const PRODUCT_IDS = ['echo', 'prometheusk', 'gamek', 'arenak', 'streamk', 'studiok', 'atlas', 'setpointk'] as const
+// hands off to the dedicated page.
+//
+// AVK-UNIFICATION-02: CinemaK gets its own chip (AVK-FR-061, registry
+// displayName); StudioK leaves the consumer chips (OD-11; it builds the
+// ecosystem rather than being a stop in it). WorldK (AVK-FR-055) is appended
+// as a static, unlinked chip: it has no product-registry entry yet, and
+// registry changes are deferred to their own Platform-contract gate (OD-12).
+const PRODUCT_IDS = ['echo', 'prometheusk', 'gamek', 'arenak', 'streamk', 'cinemak', 'atlas', 'setpointk'] as const
+const STATIC_CHIPS = [{ id: 'worldk', name: APPROVED_COPY['AVK-FR-055'] }] as const
 
 export function EcosystemPreview() {
-  const products = PRODUCT_IDS.map(resolveEcosystemProduct)
+  const products = [...PRODUCT_IDS.map(resolveEcosystemProduct), ...STATIC_CHIPS]
 
   return (
     <section className="border-b" style={{ borderColor: 'var(--paper-line)' }}>

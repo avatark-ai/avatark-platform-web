@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import type { CanonContent } from '@/lib/content/foundation'
 import { SectionContainer } from '@/components/foundation/Container'
+import { APPROVED_COPY } from '@/lib/content/institutionalCopy'
 
 // Home's teaser for the Canon, not the Canon itself -- the full tabs/
 // accordion experience and its own intro paragraph now live only on
@@ -27,6 +28,11 @@ export function CanonPreview({ content }: { content: CanonContent }) {
             </li>
           ))}
         </ul>
+
+        {/* AVK-FR-083-A (controlled amendment of AVK-FR-083, Canon spelling). */}
+        <p className="mx-auto mt-6 max-w-xl text-sm leading-6" style={{ color: 'var(--ink-dim)' }}>
+          {APPROVED_COPY['AVK-FR-083-A']}
+        </p>
 
         <Link
           href="/canon"

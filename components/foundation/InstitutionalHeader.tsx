@@ -12,6 +12,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ENTER_ECHO_HREF, SIGN_IN_HREF } from '@/lib/content/links'
 import { RippleLink } from '@avatark/motion'
+import { INSTITUTIONAL_SIGNIN_ENABLED } from '@/lib/content/flags'
+import { APPROVED_COPY } from '@/lib/content/institutionalCopy'
 
 const LINK_CLASS =
   'rounded-sm text-sm font-medium tracking-tight transition-colors duration-200 hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
@@ -20,7 +22,11 @@ const FOCUS_STYLE = { outlineColor: 'var(--gold)' } as const
 // Foundation and Canon are now dedicated pages, not homepage anchors --
 // one flat nav array, same treatment for every item, exact-match active
 // state (no more anchor-vs-route branching).
+//
+// AVK-UNIFICATION-02: "Living Worlds" (AVK-FR-003) is an in-page anchor to the
+// homepage band, never a WorldK link; it is never marked aria-current.
 const NAV_ITEMS = [
+  { label: APPROVED_COPY['AVK-FR-003'], href: '/#living-worlds' },
   { label: 'Foundation', href: '/foundation' },
   { label: 'Canon', href: '/canon' },
   { label: 'Ecosystem', href: '/ecosystem' },
@@ -72,9 +78,11 @@ export function InstitutionalHeader() {
           </nav>
 
           <div className="hidden items-center gap-4 lg:flex">
-            <Link href={SIGN_IN_HREF} className={LINK_CLASS} style={{ color: 'var(--paper)', ...FOCUS_STYLE }}>
-              Sign In
-            </Link>
+            {INSTITUTIONAL_SIGNIN_ENABLED && (
+              <Link href={SIGN_IN_HREF} className={LINK_CLASS} style={{ color: 'var(--paper)', ...FOCUS_STYLE }}>
+                Sign In
+              </Link>
+            )}
             <RippleLink
               href={ENTER_ECHO_HREF}
               className="rounded-md px-4 py-2 text-sm font-semibold transition hover:opacity-90 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
@@ -121,14 +129,16 @@ export function InstitutionalHeader() {
             )
           })}
 
-          <Link
-            href={SIGN_IN_HREF}
-            onClick={() => setMobileOpen(false)}
-            className={`py-2 ${LINK_CLASS}`}
-            style={{ color: 'var(--paper)', ...FOCUS_STYLE }}
-          >
-            Sign In
-          </Link>
+          {INSTITUTIONAL_SIGNIN_ENABLED && (
+            <Link
+              href={SIGN_IN_HREF}
+              onClick={() => setMobileOpen(false)}
+              className={`py-2 ${LINK_CLASS}`}
+              style={{ color: 'var(--paper)', ...FOCUS_STYLE }}
+            >
+              Sign In
+            </Link>
+          )}
           <RippleLink
             href={ENTER_ECHO_HREF}
             onClick={() => setMobileOpen(false)}

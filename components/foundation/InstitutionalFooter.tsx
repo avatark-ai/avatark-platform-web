@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { getProductById } from '@avatark/product-registry'
 import { resolveEcosystemProduct } from '@/lib/content/ecosystemGroups'
 import { DepartureLink } from '@avatark/motion'
+import { INSTITUTIONAL_SIGNIN_ENABLED } from '@/lib/content/flags'
 
 const LINK_CLASS =
   'rounded-sm text-sm transition-colors hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
@@ -92,7 +93,11 @@ export function InstitutionalFooter() {
 
   const companyLinks: FooterLink[] = [
     { label: 'Contact', href: supportEmail ? `mailto:${supportEmail}` : null, external: true },
-    { label: 'Privacy', href: '/account?tab=privacy' },
+    // AVK-UNIFICATION-02 (ODR-4): this Privacy link opens the signed-in
+    // account tab, so it is only a link while institutional Sign In is on.
+    // While off, the label stays as plain text (same treatment as Terms/Trust)
+    // rather than leading into sign-in; it is not a public legal notice.
+    { label: 'Privacy', href: INSTITUTIONAL_SIGNIN_ENABLED ? '/account?tab=privacy' : null },
     // No Terms or Trust page exists yet -- same "never a dead link"
     // discipline used elsewhere: plain text rather than a fabricated route.
     { label: 'Terms', href: null },
