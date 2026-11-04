@@ -95,6 +95,8 @@ But memory needs somewhere to live. A record can be stored and still be forgotte
 
 That is why AvatarK is building Persistent Living Worlds: places designed to keep their own time, where stories, ecological relationships, research and visitor experiences are intended to continue between visits — so that a person who returns may find that the world has remembered, and has changed.
 
+Living Forest is the first Persistent Living World AvatarK is developing through WorldK, bringing together forest landscapes, ecological discovery and stories inspired by the Ramayana epic tradition.
+
 I want to be precise about where this stands. Living Forest is in development, and no Living World is open to visitors yet. What exists today are illustrations, the first stories, and early versions of how a visitor might arrive and return, tested privately. Much of what I have described — a living ecology, a research center within the forest, a world that changes while no one is visiting — is still being designed. I describe it here because it explains why we are building, not because it is finished.
 
 A Living World is not meant to be a simulation of life, any more than an Echo is meant to be a simulation of a person. It is another way of keeping what a life has learned: by giving it a place, so that someone else can enter, notice what has changed, and carry something forward.

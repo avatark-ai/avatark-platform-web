@@ -59,9 +59,16 @@ test('the fixture slots into the Founder Letter at its registered insertion poin
   // Local-only composition proof: what a later, authorized gate would publish.
   const raw = readFileSync(path.join(root, 'content', 'foundation', 'founder-letter.md'), 'utf-8')
   const fl405 = 'That is why AvatarK is building Persistent Living Worlds:'
-  const at = raw.indexOf('\n\n', raw.indexOf(fl405))
+  // AVK-FLW-02A: on release, CC-1/CC-2 take the place of the interim introduction AVK-FLW-FL-406-I-ALT
+  // (register: supersededBy on release), so the letter never introduces Living Forest twice.
+  const interim = 'Living Forest is the first Persistent Living World AvatarK is developing through WorldK,'
+  const iStart = raw.indexOf(interim)
+  assert.ok(iStart > raw.indexOf(fl405), 'interim sentence follows FL-405')
+  const withoutInterim = raw.slice(0, iStart - 2) + raw.slice(raw.indexOf('\n\n', iStart))
+  const at = withoutInterim.indexOf('\n\n', withoutInterim.indexOf(fl405))
   const cc = WORLDK_CONDITIONAL_COPY.filter((e) => e.id.startsWith('AVK-FLW-FL-406-CC'))
-  const composed = raw.slice(0, at) + cc.map((e) => '\n\n' + e.text).join('') + raw.slice(at)
+  const composed = withoutInterim.slice(0, at) + cc.map((e) => '\n\n' + e.text).join('') + withoutInterim.slice(at)
+  assert.ok(!composed.includes(interim))
   const future = parseFoundationContent(composed).sections.find((s) => s.heading === 'Future')!
   const i = future.paragraphs.findIndex((p) => p.startsWith(fl405))
   assert.equal(future.paragraphs[i + 1], cc[0].text)

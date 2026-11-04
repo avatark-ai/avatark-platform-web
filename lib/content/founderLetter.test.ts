@@ -39,6 +39,9 @@ const APPROVED: Record<string, string> = {
   'AVK-FLW-FL-403': '5c79ec9e062b907085590975eb2a10b44b189c9e87afc6c8215f0b33d71c9fd9',
   'AVK-FLW-FL-404': '97720c0414746259a2b88811530449bc86e4293cd0e3023b4da9588af2e1f9a6',
   'AVK-FLW-FL-405': 'a36c104aec52736f4d297d82e0246b848691eb52cc2efdc64c984067cf37cf1a',
+  // AVK-FLW-02A interim introduction, owner-approved ALT wording; retired when FL-406-CC-1/2 are released
+  // (_claude_reports/AVK_FLW_02A_FINAL/tools/approved-editorial-register.v02a-final.json).
+  'AVK-FLW-FL-406-I-ALT': '3745520ec87501d75f2b32b2b64bca41224e5e54ca611f4ab65d6c95ac4cce5a',
   'AVK-FLW-FL-407': '5e2f30c5c9a307740f414d29529adf4edfde846432e8a34d4819f6b09ae8435c',
   'AVK-FLW-FL-408': '70de0bef09794535ee07a2683c41602f45a850afabf38c6ec9216f7bd6a54866',
 }
@@ -58,17 +61,18 @@ test('Chapter 3 keeps every existing paragraph and ends with FL-301-ALT', () => 
 test('Chapter 4 inserts "Why Living Worlds?" between the inheritance paragraph and the closing', () => {
   const future = section('Future')
   const p = future.paragraphs
-  assert.equal(p.length, 17 + 6)
+  assert.equal(p.length, 17 + 7)
   assert.deepEqual(future.subheadings, [{ beforeParagraph: 15, text: 'Why Living Worlds?', id: 'why-living-worlds' }])
   assert.equal(sha(future.subheadings?.[0].text ?? ''), APPROVED['AVK-FLW-FL-401'])
   assert.ok(p[14].startsWith('A life becomes an experience the moment it is lived with attention.'))
-  const inserted = p.slice(15, 21).map((x) => shaToId.get(sha(x)))
+  const inserted = p.slice(15, 22).map((x) => shaToId.get(sha(x)))
   assert.deepEqual(inserted, [
-    'AVK-FLW-FL-402', 'AVK-FLW-FL-403', 'AVK-FLW-FL-404', 'AVK-FLW-FL-405', 'AVK-FLW-FL-407', 'AVK-FLW-FL-408',
+    'AVK-FLW-FL-402', 'AVK-FLW-FL-403', 'AVK-FLW-FL-404', 'AVK-FLW-FL-405', 'AVK-FLW-FL-406-I-ALT', 'AVK-FLW-FL-407',
+    'AVK-FLW-FL-408',
   ])
-  assert.ok(p[21].startsWith('That is the journey AvatarK invites you to begin'))
-  assert.equal(p[22], 'And to leave an Echo worth carrying forward.')
-  assert.deepEqual(future.pullQuotes, [22])
+  assert.ok(p[22].startsWith('That is the journey AvatarK invites you to begin'))
+  assert.equal(p[23], 'And to leave an Echo worth carrying forward.')
+  assert.deepEqual(future.pullQuotes, [23])
 })
 
 test('Chapter 4 minus the approved insertion equals the base chapter', () => {
@@ -84,6 +88,8 @@ test('the public letter withholds WorldK-canon-conditional wording and omitted r
   ]) {
     assert.ok(!raw.includes(bad), bad)
   }
+  // AVK-FLW-02A: the not-adopted FL-406-I wording ("…the Ramayana tradition.") must not appear
+  assert.ok(!raw.includes('stories inspired by the Ramayana tradition.'))
 })
 
 test('the four chapters keep their structure', () => {
@@ -91,4 +97,12 @@ test('the four chapters keep their structure', () => {
   assert.equal(letter.intro.length, 9)
   assert.equal(section('Question').paragraphs.length, 6)
   assert.deepEqual(section('Question').pullQuotes, [5])
+})
+
+test('the FL-406-I-ALT interim introduction names no WorldK-canon-conditional term', () => {
+  const p = section('Future').paragraphs.find((x) => shaToId.get(sha(x)) === 'AVK-FLW-FL-406-I-ALT')
+  assert.ok(p)
+  for (const bad of ['Mahabharata', 'Research Center', 'Forest Intelligence', 'VANAM', 'enter', 'visit', 'open']) {
+    assert.ok(!p.includes(bad), bad)
+  }
 })
