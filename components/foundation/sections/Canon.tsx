@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { CanonContent } from '@/lib/content/foundation'
 import { SectionContainer } from '@/components/foundation/Container'
 import { RevealOnView } from '@avatark/motion'
+import { LIVING_WORLDS_COPY as L } from '@/lib/content/livingWorldsCopy'
 import { FourAxesGeometry, FOUR_AXES_ENTRY_SETTLE_MS } from '@/components/foundation/geometry/FourAxesGeometry'
 
 // Desktop: tabs, one axis visible at a time, above a shared geometry
@@ -141,6 +142,12 @@ export function Canon({ content }: { content: CanonContent }) {
             )
           })}
         </div>
+
+        {/* AVK-FOUNDER-LIVING-WORLDS-02 (AVK-FLW-CN-02 = AVK-FR-083-A): Platform framing
+            below the Four Axes; the axis definitions above are unchanged. */}
+        <p className="mx-auto mt-8 max-w-2xl text-center text-sm leading-6" style={{ color: 'var(--ink-dim)' }}>
+          {L['AVK-FLW-CN-02']}
+        </p>
       </SectionContainer>
     </section>
   )

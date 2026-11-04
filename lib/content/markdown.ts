@@ -18,6 +18,19 @@ export interface ContentSection {
   // which paragraph index is "the quote". The marker is stripped from the
   // paragraph text itself; the source sentence is unchanged.
   pullQuotes: number[]
+  // AVK-FOUNDER-LIVING-WORLDS-02: "### Sub-heading" blocks inside a section.
+  // They are not paragraphs -- each one is recorded with the index of the
+  // paragraph it precedes (so `paragraphs` and `pullQuotes` keep their
+  // meaning) and a stable anchor id slugged from the heading text. Always
+  // set by the parser; optional in the type so existing callers that build
+  // fallback sections by hand (e.g. echoLanding.ts) are unaffected.
+  subheadings?: ContentSubheading[]
+}
+
+export interface ContentSubheading {
+  beforeParagraph: number
+  text: string
+  id: string
 }
 
 export interface ParsedContent {
@@ -26,26 +39,49 @@ export interface ParsedContent {
   sections: ContentSection[]
 }
 
-function splitParagraphs(block: string): { paragraphs: string[]; pullQuotes: number[] } {
+export function slugifyHeading(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+function splitParagraphs(block: string): {
+  paragraphs: string[]
+  pullQuotes: number[]
+  subheadings: ContentSubheading[]
+} {
   const raw = block
     .split(/\n{2,}/)
     .map((p) => p.trim())
     .filter(Boolean)
 
+  const paragraphs: string[] = []
   const pullQuotes: number[] = []
-  const paragraphs = raw.map((p, index) => {
+  const subheadings: ContentSubheading[] = []
+  for (const p of raw) {
+    if (p.startsWith('### ')) {
+      const text = p.slice(4).replace(/\s+/g, ' ').trim()
+      subheadings.push({ beforeParagraph: paragraphs.length, text, id: slugifyHeading(text) })
+      continue
+    }
     const isPullQuote = p.startsWith('> ')
-    if (isPullQuote) pullQuotes.push(index)
+    if (isPullQuote) pullQuotes.push(paragraphs.length)
     const text = isPullQuote ? p.slice(2) : p
-    return text.replace(/\s+/g, ' ').trim()
-  })
+    paragraphs.push(text.replace(/\s+/g, ' ').trim())
+  }
 
-  return { paragraphs, pullQuotes }
+  return { paragraphs, pullQuotes, subheadings }
 }
 
 function parseFieldsAndParagraphs(
   block: string,
-): { fields: Record<string, string>; paragraphs: string[]; pullQuotes: number[] } {
+): {
+  fields: Record<string, string>
+  paragraphs: string[]
+  pullQuotes: number[]
+  subheadings: ContentSubheading[]
+} {
   const fields: Record<string, string> = {}
   const lines = block.split('\n')
   let index = 0
@@ -61,8 +97,8 @@ function parseFieldsAndParagraphs(
     index += 1
   }
   const rest = lines.slice(index).join('\n')
-  const { paragraphs, pullQuotes } = splitParagraphs(rest)
-  return { fields, paragraphs, pullQuotes }
+  const { paragraphs, pullQuotes, subheadings } = splitParagraphs(rest)
+  return { fields, paragraphs, pullQuotes, subheadings }
 }
 
 export function parseFoundationContent(raw: string): ParsedContent {
@@ -86,8 +122,8 @@ export function parseFoundationContent(raw: string): ParsedContent {
     const newlineIndex = part.indexOf('\n')
     const heading = (newlineIndex === -1 ? part : part.slice(0, newlineIndex)).trim()
     const rest = newlineIndex === -1 ? '' : part.slice(newlineIndex + 1)
-    const { fields, paragraphs, pullQuotes } = parseFieldsAndParagraphs(rest)
-    return { heading, fields, paragraphs, pullQuotes }
+    const { fields, paragraphs, pullQuotes, subheadings } = parseFieldsAndParagraphs(rest)
+    return { heading, fields, paragraphs, pullQuotes, subheadings }
   })
 
   return { meta, intro, sections }

@@ -1,13 +1,14 @@
 // Typed accessors over content/foundation/*.md -- pages and section
 // components read through these, never the raw parser, so the file layout
 // (frontmatter + "## Heading" sections) stays an implementation detail.
-import { readFoundationContent } from './markdown.ts'
+import { readFoundationContent, type ContentSubheading } from './markdown.ts'
 
 export interface FounderChapter {
   id: string
   navLabel: string
   paragraphs: string[]
   pullQuoteIndexes: number[]
+  subheadings: ContentSubheading[]
 }
 
 export interface FounderLetter {
@@ -42,6 +43,7 @@ export function getFounderLetter(): FounderLetter {
       navLabel: FOUNDER_CHAPTER_NAV_LABELS[section.heading] ?? section.heading,
       paragraphs: section.paragraphs,
       pullQuoteIndexes: section.pullQuotes,
+      subheadings: section.subheadings ?? [],
     })),
   }
 }

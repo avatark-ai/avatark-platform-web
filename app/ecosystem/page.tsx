@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { InstitutionalLayout } from '@/components/foundation/InstitutionalLayout'
 import { EditorialContainer } from '@/components/foundation/Container'
 import { PlatformArchitecture } from '@/components/ecosystem/PlatformArchitecture'
+import { EcosystemLivingWorlds } from '@/components/ecosystem/EcosystemLivingWorlds'
 
 export const metadata: Metadata = {
   title: 'The AvatarK Ecosystem',
@@ -31,6 +32,9 @@ export default function EcosystemPage() {
       </section>
 
       <PlatformArchitecture />
+
+      {/* AVK-FOUNDER-LIVING-WORLDS-02: static editorial section, not registry-driven (OD-12). */}
+      <EcosystemLivingWorlds />
 
       <section className="border-t" style={{ background: 'var(--midnight)', color: 'var(--paper)' }}>
         <EditorialContainer className="text-center">

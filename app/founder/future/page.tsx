@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Fragment } from 'react'
 import Link from 'next/link'
 import { FounderPageLayout } from '@/components/foundation/founder/FounderPageLayout'
 import { FounderChapterHeader } from '@/components/foundation/founder/FounderChapterHeader'
@@ -23,24 +24,40 @@ export default function FounderFuturePage() {
     <FounderPageLayout>
       <FounderChapterHeader chapterId="future" title={chapter.navLabel} />
       <div className="mt-6 flex flex-col gap-5 text-lg leading-8" style={{ color: 'var(--ink)' }}>
-        {chapter.paragraphs.map((paragraph, index) =>
-          chapter.pullQuoteIndexes.includes(index) ? (
-            <FounderPullQuote key={index}>{paragraph}</FounderPullQuote>
-          ) : (
-            <div key={index}>
-              <p>{paragraph}</p>
-              {paragraph.startsWith('From this architecture grew an ecosystem') && (
-                <Link
-                  href="/ecosystem"
-                  className="mt-3 inline-block rounded-sm text-base font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                  style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+        {chapter.paragraphs.map((paragraph, index) => (
+          <Fragment key={index}>
+            {chapter.subheadings
+              .filter((subheading) => subheading.beforeParagraph === index)
+              .map((subheading) => (
+                // AVK-FOUNDER-LIVING-WORLDS-02 (AVK-FLW-FL-401): in-chapter
+                // sub-heading, anchored so /foundation can link to it.
+                <h2
+                  key={subheading.id}
+                  id={subheading.id}
+                  className="mt-6 scroll-mt-6 text-2xl font-semibold tracking-tight"
+                  style={{ color: 'var(--ink)' }}
                 >
-                  Explore the Ecosystem →
-                </Link>
-              )}
-            </div>
-          ),
-        )}
+                  {subheading.text}
+                </h2>
+              ))}
+            {chapter.pullQuoteIndexes.includes(index) ? (
+              <FounderPullQuote>{paragraph}</FounderPullQuote>
+            ) : (
+              <div>
+                <p>{paragraph}</p>
+                {paragraph.startsWith('From this architecture grew an ecosystem') && (
+                  <Link
+                    href="/ecosystem"
+                    className="mt-3 inline-block rounded-sm text-base font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                    style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+                  >
+                    Explore the Ecosystem →
+                  </Link>
+                )}
+              </div>
+            )}
+          </Fragment>
+        ))}
       </div>
 
       <FounderChapterNav chapterId="future" />

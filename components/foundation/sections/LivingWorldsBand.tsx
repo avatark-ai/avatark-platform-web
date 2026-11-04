@@ -1,4 +1,6 @@
+import Link from 'next/link'
 import { APPROVED_COPY as C } from '@/lib/content/institutionalCopy'
+import { LIVING_WORLDS_COPY as L } from '@/lib/content/livingWorldsCopy'
 import { SectionContainer } from '@/components/foundation/Container'
 
 // AVK-UNIFICATION-02 (AVK-FR-020..027): Living Worlds discovery band.
@@ -44,6 +46,19 @@ export function LivingWorldsBand() {
         </p>
         <p className="mx-auto mt-1 max-w-xl text-sm leading-6" style={{ color: 'var(--ink-dim)' }}>
           {C['AVK-FR-027']}
+        </p>
+
+        {/* AVK-FOUNDER-LIVING-WORLDS-02 (AVK-FLW-HM-01): internal link to the
+            /foundation explanation. Placed after FR-027 so the owner-reviewed
+            U-02D band order is unchanged. Never a WorldK or entry link. */}
+        <p className="mt-6">
+          <Link
+            href="/foundation#living-worlds"
+            className="inline-block rounded-sm text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+          >
+            {L['AVK-FLW-HM-01']}
+          </Link>
         </p>
       </SectionContainer>
     </section>

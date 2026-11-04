@@ -6,6 +6,7 @@ import { FragmentedVsLongitudinal } from '@/components/foundation/architecture/F
 import { ArchitectureOfBecomingFlow } from '@/components/foundation/architecture/ArchitectureOfBecomingFlow'
 import { RevealOnView, RippleLink } from '@avatark/motion'
 import { getArchitectureContent } from '@/lib/content/foundation'
+import { FoundationLivingWorlds } from '@/components/foundation/sections/FoundationLivingWorlds'
 
 export const metadata: Metadata = {
   title: 'Foundation — Why AvatarK Exists',
@@ -119,16 +120,22 @@ export default function FoundationPage() {
           <div className="mt-8">
             <ArchitectureOfBecomingFlow />
           </div>
-
-          <RippleLink
-            href="/canon"
-            className="mt-8 inline-block rounded-md px-6 py-3 text-sm font-semibold transition hover:opacity-90 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{ background: 'var(--ink)', color: 'var(--paper)', outlineColor: 'var(--gold)' }}
-          >
-            Continue to Canon →
-          </RippleLink>
         </EditorialContainer>
       </section>
+
+      {/* AVK-FOUNDER-LIVING-WORLDS-02: new final section; the existing
+          "Continue to Canon →" link moves below it, text and href unchanged. */}
+      <FoundationLivingWorlds />
+
+      <div className="mx-auto w-full max-w-[var(--editorial-width)] px-6 pb-14 text-center sm:pb-16">
+        <RippleLink
+          href="/canon"
+          className="inline-block rounded-md px-6 py-3 text-sm font-semibold transition hover:opacity-90 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          style={{ background: 'var(--ink)', color: 'var(--paper)', outlineColor: 'var(--gold)' }}
+        >
+          Continue to Canon →
+        </RippleLink>
+      </div>
     </InstitutionalLayout>
   )
 }

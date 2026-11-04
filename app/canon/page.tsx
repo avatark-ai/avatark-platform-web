@@ -6,6 +6,7 @@ import { LivingSpiral } from '@/components/foundation/sections/LivingSpiral'
 import { CanonPageLayout } from '@/components/foundation/canon/CanonPageLayout'
 import { CanonGateway } from '@/components/foundation/canon/CanonGateway'
 import { getCanonContent } from '@/lib/content/foundation'
+import { LIVING_WORLDS_COPY as L } from '@/lib/content/livingWorldsCopy'
 
 export const metadata: Metadata = {
   title: 'The Canon — AvatarK Architecture',
@@ -21,6 +22,10 @@ export default function CanonPage() {
         <section style={{ background: 'var(--midnight)', color: 'var(--paper)' }}>
           <EditorialContainer className="text-center">
             <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">The architecture becomes many experiences.</h2>
+            {/* AVK-FOUNDER-LIVING-WORLDS-02 (AVK-FLW-CN-01): Platform framing, not ported Canon text. */}
+            <p className="mx-auto mt-4 max-w-xl text-base leading-7" style={{ color: 'var(--paper)' }}>
+              {L['AVK-FLW-CN-01']}
+            </p>
             <Link
               href="/ecosystem"
               className="mt-6 inline-block rounded-md px-6 py-3 text-sm font-semibold transition hover:opacity-90 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
