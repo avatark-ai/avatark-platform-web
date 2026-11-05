@@ -9,6 +9,7 @@
 // integrationStatus/nextProductIds set -- no component code changes.
 import { getProductById, PRODUCT_REGISTRY, type AvatarKProduct, type IntegrationStatus, type JourneyRole, type ProductStatus } from '@avatark/product-registry'
 import { resolveProductUrl } from './registry.ts'
+import { scopeIProductHref } from '../release/productDestinations.ts'
 import type { PlatformStatus } from '@/components/ecosystem/StatusBadge'
 
 export interface PlatformNode {
@@ -71,7 +72,8 @@ function toPlatformNode(product: AvatarKProduct): PlatformNode {
   return {
     id: product.id,
     name: product.displayName,
-    href: resolveProductUrl(product),
+    // AVK-PROD-03B X-1: Scope I keeps only audited VERIFIED_PUBLIC destinations clickable.
+    href: scopeIProductHref(product.id, resolveProductUrl(product)),
     purpose: product.tagline ?? product.description,
     status: product.integrationStatus ? INTEGRATION_LABELS[product.integrationStatus] : 'VISION',
     maturityLabel: MATURITY_LABELS[product.status],

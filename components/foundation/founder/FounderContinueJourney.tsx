@@ -3,6 +3,7 @@ import { listPractices } from '@/lib/content/echo'
 import { practiceDetailHref } from '@/lib/echo/links'
 import { DISCOVER_ECHO_HREF } from '@/lib/content/links'
 import { PROD_SCOPE_I_COPY as P } from '@/lib/content/prodScopeICopy'
+import { isInstitutionalScope } from '@/lib/release/scope'
 
 // RC4: replaces the Founder Letter's single "Enter Echo" button ending with
 // a small, lightweight set of equally-weighted next actions -- the letter
@@ -10,8 +11,12 @@ import { PROD_SCOPE_I_COPY as P } from '@/lib/content/prodScopeICopy'
 // exist. "Read the First Practice" only appears when a real practice
 // exists to link to (today, exactly one seed practice) -- never a
 // fabricated destination.
+//
+// AVK-PROD-03B CD-2: the practice detail route belongs to the Echo application, which is excluded
+// from the institutional release, so Scope I renders no practice action (no replacement copy).
+// The practice content and the Scope II behaviour are unchanged.
 export function FounderContinueJourney() {
-  const firstPractice = listPractices()[0]
+  const firstPractice = isInstitutionalScope() ? undefined : listPractices()[0]
   const actions = [
     { label: 'Explore the Canon', href: '/canon' },
     { label: 'Explore the Ecosystem', href: '/ecosystem' },

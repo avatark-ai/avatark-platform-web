@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// AVK-PROD-03A (C7): runtime route / security matrix against a running `next start` (T3, T3b, T3c,
+// AVK-PROD-03A (C7) / AVK-PROD-03B (CD-2, X-1): runtime route / security matrix against a running `next start` (T3, T3b, T3c,
 // T4, T5 and header/robots checks). Read-only HTTP; prints a summary and writes JSON evidence.
 //
 //   node scripts/route-matrix.mjs <baseUrl> <full|secondary> [evidence.json]
@@ -12,6 +12,7 @@ import http from 'node:http'
 import { INSTITUTIONAL_URLS } from '../lib/release/scope.ts'
 import { EXCLUDED_ROUTE_LIST } from '../lib/release/routeInventory.ts'
 import { SECURITY_HEADERS } from '../lib/release/securityHeaders.ts'
+import { SCOPE_I_CLICKABLE_PRODUCT_URLS } from '../lib/release/productDestinations.ts'
 
 const [base, mode = 'full', out] = process.argv.slice(2)
 if (!base) { console.error('usage: route-matrix.mjs <baseUrl> <full|secondary> [out.json]'); process.exit(2) }
@@ -64,12 +65,19 @@ if (mode === 'full') {
     const bad = links.filter(isExcludedHref)
     check('T5', `${p} no links to excluded routes`, bad.length === 0, JSON.stringify(bad))
     for (const h of links) if (/^https?:/.test(h)) externalHrefs.add(h)
+    // X-1: every rendered external href is an audited VERIFIED_PUBLIC product URL (exact match)
+    const approved = new Set(SCOPE_I_CLICKABLE_PRODUCT_URLS.values())
+    const unapproved = links.filter((h) => /^https?:/.test(h) && !approved.has(h))
+    check('X-1', `${p} external hrefs only to VERIFIED_PUBLIC destinations`, unapproved.length === 0, JSON.stringify(unapproved))
+    // CD-2: no practice route anywhere in the document (anchors, RSC payload, prefetch hints)
+    check('CD-2', `${p} no /practice/ reference in HTML or RSC payload`, !/\/practice\//.test(r.text), (r.text.match(/.{0,60}\/practice\/.{0,60}/) || [''])[0])
+    check('X-1', `${p} no studiok.dt4m.ai href`, !links.some((h) => h.includes('studiok.dt4m.ai')))
     for (const m of ['POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']) {
       const x = await req(p, { method: m })
       check('T1c', `${m} ${p} 405`, x.status === 405 && x.headers.get('allow') === 'GET, HEAD', `status ${x.status}`)
     }
   }
-  results.push({ id: 'T5', name: 'external hrefs rendered on institutional pages (X-1 pending, unchanged by 03A)', ok: true, detail: [...externalHrefs].sort() })
+  results.push({ id: 'T5', name: 'external hrefs rendered on institutional pages (X-1 ruled in 03B)', ok: true, detail: [...externalHrefs].sort() })
   // T3b: all 59 excluded patterns, GET/HEAD/POST -> 404 from the proxy denial
   for (const r0 of EXCLUDED_ROUTE_LIST) {
     for (const m of ['GET', 'HEAD', 'POST']) {

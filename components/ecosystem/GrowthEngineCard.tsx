@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { DepartureLink } from '@avatark/motion'
 import { StatusBadge, type PlatformStatus } from './StatusBadge'
+import { isInstitutionalScope } from '@/lib/release/scope'
 
 // One of the three equal Growth Engine cards (PrometheusK, GameK, AtlasK).
 // `href` and `nextProducts` are always resolved by the caller from
@@ -139,6 +140,11 @@ export function GrowthEngineCard({
               {ctaLabel} →
             </Link>
           )
+        ) : isInstitutionalScope() ? (
+          // AVK-PROD-03B X-1: in Scope I a withheld destination is not "in development" -- adding
+          // that wording would be an unapproved status claim -- so the card shows no action at all
+          // (same treatment as ExpressionLayer's LayerCard). The product stays as plain text above.
+          null
         ) : (
           <span className="text-sm font-semibold" style={{ color: 'var(--ink-dim)' }}>
             {ctaLabel} (in development)

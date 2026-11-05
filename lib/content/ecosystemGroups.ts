@@ -4,6 +4,7 @@
 // homepage section, and footer so all three never diverge.
 import { getProductById } from '@avatark/product-registry'
 import { resolveProductUrl } from '../products/registry.ts'
+import { scopeIProductHref } from '../release/productDestinations.ts'
 import { getEcosystemGroupsContent } from './foundation.ts'
 
 export interface EcosystemProductRef {
@@ -48,8 +49,9 @@ export function resolveEcosystemProduct(id: string): EcosystemProductRef {
     // The institutional page only describes purpose and relationship; the
     // destination product itself owns auth, invitation gating, and
     // availability -- so every product with a known domain gets a real
-    // link regardless of visibility/status.
-    href: resolveProductUrl(product),
+    // link regardless of visibility/status. AVK-PROD-03B X-1: in Scope I only audited
+    // VERIFIED_PUBLIC destinations stay clickable; every other product renders as plain text.
+    href: scopeIProductHref(product.id, resolveProductUrl(product)),
     isEcho: false,
     purpose: product.tagline ?? product.description,
   }
