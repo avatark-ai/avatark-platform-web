@@ -6,7 +6,7 @@
 # (the project's '*'-scope rows hold Production values).
 # Prints only per-condition ok / mismatch / unset / set. Never prints values.
 if [ "$VERCEL_ENV" = "production" ]; then echo 'AVK-U02 assert: production, no-op'; exit 0; fi
-P=https://preview-placeholder.invalid; K=preview-placeholder-not-a-key; B=integration/avk-founder-living-worlds-02; F=0
+P=https://preview-placeholder.invalid; K=preview-placeholder-not-a-key; B=integration/avk-unification-03; F=0
 # eq NAME VALUE ISSET EXPECTED
 eq() { if [ -z "$3" ]; then s=unset; F=1; elif [ "$2" = "$4" ]; then s=ok; else s=mismatch; F=1; fi; echo "AVK-U02 assert: $1=$s"; }
 # absent NAME ISSET  (must be unset)
