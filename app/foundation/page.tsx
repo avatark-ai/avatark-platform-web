@@ -7,6 +7,7 @@ import { ArchitectureOfBecomingFlow } from '@/components/foundation/architecture
 import { RevealOnView, RippleLink } from '@avatark/motion'
 import { getArchitectureContent } from '@/lib/content/foundation'
 import { FoundationLivingWorlds } from '@/components/foundation/sections/FoundationLivingWorlds'
+import { FoundationMethod } from '@/components/foundation/sections/FoundationMethod'
 
 export const metadata: Metadata = {
   title: 'Foundation — Why AvatarK Exists',
@@ -122,6 +123,9 @@ export default function FoundationPage() {
           </div>
         </EditorialContainer>
       </section>
+
+      {/* AVK-FOUNDER-SCIENCE-02 (AVK-FS-FM-*): method section, before Living Worlds. */}
+      <FoundationMethod />
 
       {/* AVK-FOUNDER-LIVING-WORLDS-02: new final section; the existing
           "Continue to Canon →" link moves below it, text and href unchanged. */}
