@@ -4,6 +4,8 @@ import { InstitutionalLayout } from '@/components/foundation/InstitutionalLayout
 import { EditorialContainer } from '@/components/foundation/Container'
 import { PlatformArchitecture } from '@/components/ecosystem/PlatformArchitecture'
 import { EcosystemLivingWorlds } from '@/components/ecosystem/EcosystemLivingWorlds'
+import { EcosystemOverview } from '@/components/ecosystem/EcosystemOverview'
+import { UNIFICATION_COPY as U } from '@/lib/content/unificationCopy'
 
 export const metadata: Metadata = {
   title: 'The AvatarK Ecosystem',
@@ -21,8 +23,12 @@ export default function EcosystemPage() {
     <InstitutionalLayout>
       <section className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
         <div className="mx-auto flex w-full max-w-[var(--editorial-width)] flex-col items-center gap-3 px-6 py-7 text-center sm:py-8">
+          {/* AVK-UNIFICATION-03D: the former h1 becomes the eyebrow; the owner-approved h1 is EV-01-R. */}
+          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-dim)' }}>
+            {U['AVK-U03-EV-02']}
+          </p>
           <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl md:text-6xl">
-            The AvatarK Ecosystem
+            {U['AVK-U03-EV-01-R']}
           </h1>
           <div className="h-px w-16" style={{ background: 'var(--gold)' }} aria-hidden="true" />
           <p className="text-lg tracking-wide sm:text-xl" style={{ color: 'var(--ink-dim)' }}>
@@ -30,6 +36,10 @@ export default function EcosystemPage() {
           </p>
         </div>
       </section>
+
+      {/* AVK-UNIFICATION-03D Level 1. Level 2 (RelationshipArchitecture, ECOSYSTEM-V3 §4) is WITHHELD: its
+          heading and explanatory intro (AVK-U03-EV-40/41) are PENDING owner approval. */}
+      <EcosystemOverview />
 
       <PlatformArchitecture />
 

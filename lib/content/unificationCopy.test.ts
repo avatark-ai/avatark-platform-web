@@ -10,6 +10,7 @@ import { FOUNDER_SCIENCE_COPY } from './founderScienceCopy.ts'
 import { parseFoundationContent } from './markdown.ts'
 
 // U-03C PENDING strings (u03c-living-worlds-register.json): must never be in the module or on a page.
+// AVK-U03-LW-M1/M2 left this set in U-03D (owner-approved, now in the module and pinned above).
 const PENDING_SHA256 = new Set([
   '325f16a6c8ed38d13e944bb4df40aebc7d74cef582f843356b8558ead38231e0', // AVK-U03-LW-02
   'afc8e6b1e187402982baf8cc65ebdd6233049e6b44eb7134c748f4c2a7aaa4c6', // AVK-U03-LW-11
@@ -23,8 +24,6 @@ const PENDING_SHA256 = new Set([
   '5e4cf78c18ee9a9e2bc93551d921416f132718173724805dc47cca3dc8065576', // AVK-U03-LW-34
   '1afb30fc34b9c3049df5c53deb5aac2aacf98835d1e00200442d59eea7adaf70', // AVK-U03-LW-36
   'd32aaab6f16a64bd28a02ab98b3e39b719f81cd4e9c5766faa1b22c698913367', // AVK-U03-LW-38
-  'e3517f165feb32bbc4688d304ecfe4d430db927372cff46466daf5d2219118bf', // AVK-U03-LW-M1
-  'e834521ac0d7c0e3ff2bf5fb53a58170e871df07d8dca21f193fc119dd5d5c04', // AVK-U03-LW-M2
   '052d128f3b854453787bf129c24a1148da08da55f504b5c6ff14ed7cbe9985ed', // AVK-U03-LW-41
 ])
 
@@ -37,6 +36,18 @@ const SUPERSEDED_SHA256 = new Set([
   'a02ae99f124c11bad157f8a92bd4af2a7282ac3e2c758dd7d43582b08b5c5e70', // AVK-U03-LW-19 -> AVK-U03-LW-19-R
   'a6f1cdc9e1ef3fcdbb1c18877aa8840f4956d304526e4dc720da4882ab443f4e', // AVK-U03-LW-21 -> AVK-U03-LW-21-R
   '28c28718dab20673a8fbfd63d744fc0373a7786d73cf677dd569487b1fdae072', // AVK-U03-LW-23 -> AVK-U03-LW-23-R
+])
+
+// U-03D: superseded (EV-01 Title Case, EV-20 "Creation") and pending Ecosystem strings -- never in the module.
+const U03D_EXCLUDED_SHA256 = new Set([
+  '781c94fffbb8e01c23d16ccc0c69c2bb362a4fd4d7bf454322d3f080e328f48a', // AVK-U03-EV-01 SUPERSEDED
+  '6d0a88373d20612e1079406f030d37344dea876647172c1e60c8a2acbef56788', // AVK-U03-EV-20 SUPERSEDED
+  'fc680252f15fa1178c98a2c82767212ade574fb74e73f58157f24c348616b72d', // AVK-U03-EV-11 PENDING
+  '6fe4cfca0da816910f5753a61b94ead6be0b1fe36ddcdc987caaf3cf50dbfea1', // AVK-U03-EV-21 PENDING
+  'e2061636a9113ab4a27c1fe19fc5a39d7f2fbaeeec3d52b9fc51b3e1081f5cc9', // AVK-U03-EV-31 PENDING
+  '9dc2794174d38524a2d1408e52d76d27815cf0594bcae70726c7ee9e54e0f500', // AVK-U03-EV-40 PENDING
+  'cf5640ca9afe7d994834c9d9c1d96f9f4b1c2912675df159c173659b5de0d82b', // AVK-U03-EV-41 PENDING
+  '17b6bed77270cc0a124bbbeb2048c42e933eb59a1270156d992cf1a924b362a6', // AVK-U03-EV-42 PENDING
 ])
 
 const sha = (s: string) => createHash('sha256').update(s, 'utf8').digest('hex')
@@ -86,6 +97,14 @@ const REGISTER_SHA256: Record<string, string> = {
   'AVK-U03-LW-19-R': 'b10b5bd3eaa6bad218c39cfdd117ddb0ab2953e01a2952fcf39e8840dbfc4f35',
   'AVK-U03-LW-21-R': '9ad73245b689cf4c97ff86696d2efd0fc116b63d8d6a978b77a37f65f71e0b6c',
   'AVK-U03-LW-23-R': '1647880d5100682d2dedf4107a89956c4a35fcd8997261c94efc1dd5f9741366',
+  // U-03D (/living-worlds metadata; /ecosystem masthead + Level 1 groups), owner-approved and rendered
+  'AVK-U03-LW-M1': 'e3517f165feb32bbc4688d304ecfe4d430db927372cff46466daf5d2219118bf',
+  'AVK-U03-LW-M2': 'e834521ac0d7c0e3ff2bf5fb53a58170e871df07d8dca21f193fc119dd5d5c04',
+  'AVK-U03-EV-01-R': '97eb25c525c692db817a0bd98e3a753be5fe9543d798ee30e37ae9677688f48a',
+  'AVK-U03-EV-02': '2662d97d3ce66889060e7838317c1a39c5e330987d84b33f3f75707a081d166e',
+  'AVK-U03-EV-10': '7bbfe2b5c6976cfaf1d0a687e10564a0dfcd28ea90289e8f5258dd4751c2a945',
+  'AVK-U03-EV-20-R': 'a88c972fa2c32acb10ceb890786a3248d4d8dd5fba957b5f7183655a6f0a764f',
+  'AVK-U03-EV-30': 'e63ec4b827e634bdc22d711363aee8746b465c81190f3227e3077fb781e94c52',
 }
 
 // Rendered from content/foundation/architecture.md (single source, unchanged).
@@ -149,7 +168,7 @@ test('U-03 copy does not duplicate or alter Founder Science wording', () => {
 
 test('U-03C: no PENDING string is in the generated module', () => {
   for (const v of Object.values(UNIFICATION_COPY)) assert.ok(!PENDING_SHA256.has(sha(v)), v)
-  for (const id of ['AVK-U03-LW-02', 'AVK-U03-LW-11', 'AVK-U03-LW-31', 'AVK-U03-LW-34', 'AVK-U03-LW-M1']) assert.ok(!(id in UNIFICATION_COPY), id)
+  for (const id of ['AVK-U03-LW-02', 'AVK-U03-LW-11', 'AVK-U03-LW-31', 'AVK-U03-LW-34', 'AVK-U03-LW-41']) assert.ok(!(id in UNIFICATION_COPY), id)
 })
 
 test('U-03C-1: superseded principle drafts are not in the module; replacements are', () => {
@@ -158,4 +177,11 @@ test('U-03C-1: superseded principle drafts are not in the module; replacements a
     UNIFICATION_COPY['AVK-U03-LW-11-R'],
     'These six principles guide the environments we are designing. They describe what we are working toward, not features available to visitors today.',
   )
+})
+
+test('U-03D: superseded and pending Ecosystem strings are not in the module', () => {
+  for (const v of Object.values(UNIFICATION_COPY)) assert.ok(!U03D_EXCLUDED_SHA256.has(sha(v)), v)
+  assert.equal(UNIFICATION_COPY['AVK-U03-EV-01-R'], 'One architecture. Many experiences.')
+  assert.equal(UNIFICATION_COPY['AVK-U03-EV-20-R'], 'Making')
+  assert.equal(UNIFICATION_COPY['AVK-U03-LW-M1'], 'Living Worlds — AvatarK')
 })

@@ -15,10 +15,10 @@ import { UNIFICATION_COPY as U } from '@/lib/content/unificationCopy'
 // Section 3 "What makes a world living?" (six principles) was withheld in U-03C and is completed in
 // U-03C-1 with the owner-approved intro and bodies (AVK-U03-LW-11-R, LW-13-R..LW-23-R).
 //
-// Title: the approved owner-directed h1 (AVK-U03-LW-01). The proposed title/description
-// (AVK-U03-LW-M1/M2) are PENDING; the site default description applies. No OG image (M-01 not cleared).
+// Metadata: AVK-U03-LW-M1 / LW-M2, owner-approved in AVK-UNIFICATION-03D. No OG image (M-01 not cleared).
 export const metadata: Metadata = {
-  title: U['AVK-U03-LW-01'],
+  title: U['AVK-U03-LW-M1'],
+  description: U['AVK-U03-LW-M2'],
 }
 
 export default function LivingWorldsPage() {

@@ -1,13 +1,13 @@
-// AVK-UNIFICATION-03B/03C/03C-1: approved homepage, navigation and /living-worlds copy (AVK-U03-* IDs only).
-// Generated verbatim by _claude_reports/AVK_UNIFICATION_03C_1/tools/build-u03c1-copy.mjs from
+// AVK-UNIFICATION-03B/03C/03C-1/03D: approved homepage, navigation, /living-worlds and /ecosystem copy
+// (AVK-U03-* IDs only). Generated verbatim by _claude_reports/AVK_UNIFICATION_03D/tools/build-u03d-copy.mjs from
 // _claude_reports/AVK_UNIFICATION_03B/tools/approved-u03b-register.json (sha256 1274f493cae0bcdd8d45680191e7792e0715dc870a78f5c6e2f75394f07f7179) and
-// _claude_reports/AVK_UNIFICATION_03C_1/tools/u03c1-living-worlds-register.json (sha256 401a631b267b67cd7cf01304003e868964b774fe2f7fa9de3f6c3bdd837166fb).
+// _claude_reports/AVK_UNIFICATION_03D/tools/u03d-register.json (sha256 48a57a5f0ae22326ee05d8841068686bd0a905976867fee1f41ac72d58911bc7).
 // Do not edit a string here without a register amendment: unificationCopy.test.ts pins every value.
 // PENDING and SUPERSEDED strings are never written here.
 //
 // Not in this module: AVK-U03-WY-02..05 (rendered from content/foundation/architecture.md, single
-// source); reused approved AVK-FR-* (institutionalCopy.ts) and AVK-FLW-* (livingWorldsCopy.ts) IDs,
-// imported from their existing modules.
+// source); AVK-U03-LW-15-R-H/-L (derived at render time from AVK-FLW-LW-15-R); reused approved
+// AVK-FR-* (institutionalCopy.ts) and AVK-FLW-* (livingWorldsCopy.ts) IDs, imported from their modules.
 
 export const UNIFICATION_COPY = {
   "AVK-U03-HN-01": "Foundation",
@@ -49,7 +49,14 @@ export const UNIFICATION_COPY = {
   "AVK-U03-LW-32": "Future concept",
   "AVK-U03-LW-33": "Living Vrindavan",
   "AVK-U03-LW-35": "Living Sea",
-  "AVK-U03-LW-37": "Living Forge"
+  "AVK-U03-LW-37": "Living Forge",
+  "AVK-U03-LW-M1": "Living Worlds — AvatarK",
+  "AVK-U03-LW-M2": "Worlds that remember. Stories that continue. AvatarK introduces Persistent Living Worlds, beginning with Living Forest, in development.",
+  "AVK-U03-EV-01-R": "One architecture. Many experiences.",
+  "AVK-U03-EV-02": "The AvatarK Ecosystem",
+  "AVK-U03-EV-10": "Experiences",
+  "AVK-U03-EV-20-R": "Making",
+  "AVK-U03-EV-30": "Knowledge and Intelligence"
 } as const
 
 export type UnificationCopyId = keyof typeof UNIFICATION_COPY
@@ -94,5 +101,12 @@ export const UNIFICATION_COPY_SHA256: Record<UnificationCopyId, string> = {
   "AVK-U03-LW-32": "865f5e3dea4ef0e5092add51db28178946b7144f7f89204d6ac0a8804fd5baaf",
   "AVK-U03-LW-33": "699fa378b171132eb34c0ef93f0186f041abc5b33b9e9b87689158e057926274",
   "AVK-U03-LW-35": "77715bc697fc8fb7214cfa31f56b82fc68d4eb6f9f58d275f4f66d665625476b",
-  "AVK-U03-LW-37": "67cf8b64b105068f24cae23584b0b01942ccc146ce9bcc5abf0b6df82c5bdf67"
+  "AVK-U03-LW-37": "67cf8b64b105068f24cae23584b0b01942ccc146ce9bcc5abf0b6df82c5bdf67",
+  "AVK-U03-LW-M1": "e3517f165feb32bbc4688d304ecfe4d430db927372cff46466daf5d2219118bf",
+  "AVK-U03-LW-M2": "e834521ac0d7c0e3ff2bf5fb53a58170e871df07d8dca21f193fc119dd5d5c04",
+  "AVK-U03-EV-01-R": "97eb25c525c692db817a0bd98e3a753be5fe9543d798ee30e37ae9677688f48a",
+  "AVK-U03-EV-02": "2662d97d3ce66889060e7838317c1a39c5e330987d84b33f3f75707a081d166e",
+  "AVK-U03-EV-10": "7bbfe2b5c6976cfaf1d0a687e10564a0dfcd28ea90289e8f5258dd4751c2a945",
+  "AVK-U03-EV-20-R": "a88c972fa2c32acb10ceb890786a3248d4d8dd5fba957b5f7183655a6f0a764f",
+  "AVK-U03-EV-30": "e63ec4b827e634bdc22d711363aee8746b465c81190f3227e3077fb781e94c52"
 }
