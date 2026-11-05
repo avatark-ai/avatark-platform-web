@@ -1,14 +1,12 @@
 import type { Metadata } from 'next'
 import { InstitutionalLayout } from '@/components/foundation/InstitutionalLayout'
 import { Hero } from '@/components/foundation/sections/Hero'
-import { Gap } from '@/components/foundation/sections/Gap'
-import { EchoIntro } from '@/components/foundation/sections/EchoIntro'
+import { WhyAvatarK } from '@/components/foundation/sections/Gap'
+import { FeaturedExperiences } from '@/components/foundation/sections/FeaturedExperiences'
 import { CanonPreview } from '@/components/foundation/sections/CanonPreview'
-import { LivingWorldsBand } from '@/components/foundation/sections/LivingWorldsBand'
 import { PillarsBand } from '@/components/foundation/sections/PillarsBand'
 import { EcosystemPreview } from '@/components/foundation/sections/EcosystemPreview'
 import { Question } from '@/components/foundation/sections/Question'
-import { FinalCta } from '@/components/foundation/sections/FinalCta'
 import { getCanonContent } from '@/lib/content/foundation'
 import { resolveSite } from '@/lib/sites/resolveSite'
 import { EchoLanding } from '@/components/echo/landing/EchoLanding'
@@ -39,15 +37,15 @@ export default async function Home() {
 
   return (
     <InstitutionalLayout>
+      {/* AVK-UNIFICATION-03B (SITE-ARCHITECTURE-V3 §4): owner-directed order. EchoIntro,
+          LivingWorldsBand and FinalCta leave this render only; their files stay one gate (D-U03-12). */}
       <Hero />
-      <Gap />
-      <EchoIntro />
-      <LivingWorldsBand />
+      <FeaturedExperiences />
+      <WhyAvatarK />
       <CanonPreview content={canonContent} />
       <PillarsBand />
       <EcosystemPreview />
       <Question />
-      <FinalCta />
     </InstitutionalLayout>
   )
 }

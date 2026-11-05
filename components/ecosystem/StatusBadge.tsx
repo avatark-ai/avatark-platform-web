@@ -10,7 +10,7 @@
 // ~1.98:1 contrast (checked against the actual rendered background), well
 // under WCAG AA's 4.5:1 for this size -- --ink clears that comfortably while
 // still reading as the most prominent tier.
-const STATUS_STYLE = {
+export const STATUS_STYLE = {
   LIVE: { color: 'var(--ink)', borderColor: 'var(--ink)' },
   PREVIEW: { color: 'var(--ink)', borderColor: 'var(--ink)' },
   'COMING ONLINE': { color: 'var(--ink-dim)', borderColor: 'var(--ink-dim)' },

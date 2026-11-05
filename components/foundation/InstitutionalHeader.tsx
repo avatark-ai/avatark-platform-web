@@ -7,31 +7,27 @@
 // (/, /foundation, /canon and its sub-routes, /founder and its sub-routes,
 // /ecosystem, /roadmap) -- EchoShell.isInstitutionalOnlyPath() self-excludes
 // there so the two shells never stack.
-import { useState } from 'react'
+//
+// AVK-UNIFICATION-03B (HEADER-AND-MOBILE-NAV-V3): order Foundation · Living Worlds · Canon ·
+// Ecosystem · Founder, then the Explore disclosure, which replaces the gold "Enter Echo →" button
+// (D-U03-04; Echo stays reachable as Explore → Explore Echo -> /start). Sign In stays separately
+// gated by INSTITUTIONAL_SIGNIN_ENABLED (off unless 'true') and is never inside Explore. New
+// behaviour (did not exist before U-03B): the mobile drawer closes on Escape and returns focus to the
+// toggle, and moves focus to its first link on open.
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ENTER_ECHO_HREF, SIGN_IN_HREF } from '@/lib/content/links'
-import { RippleLink } from '@avatark/motion'
 import { INSTITUTIONAL_SIGNIN_ENABLED } from '@/lib/content/flags'
-import { APPROVED_COPY } from '@/lib/content/institutionalCopy'
+import { ExploreMenu } from '@/components/foundation/ExploreMenu'
+import { EXPLORE_LABEL, exploreItems, primaryNavItems } from '@/components/foundation/institutionalNav'
 
 const LINK_CLASS =
   'rounded-sm text-sm font-medium tracking-tight transition-colors duration-200 hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
 const FOCUS_STYLE = { outlineColor: 'var(--gold)' } as const
 
-// Foundation and Canon are now dedicated pages, not homepage anchors --
-// one flat nav array, same treatment for every item, exact-match active
-// state (no more anchor-vs-route branching).
-//
-// AVK-UNIFICATION-02: "Living Worlds" (AVK-FR-003) is an in-page anchor to the
-// homepage band, never a WorldK link; it is never marked aria-current.
-const NAV_ITEMS = [
-  { label: APPROVED_COPY['AVK-FR-003'], href: '/#living-worlds' },
-  { label: 'Foundation', href: '/foundation' },
-  { label: 'Canon', href: '/canon' },
-  { label: 'Ecosystem', href: '/ecosystem' },
-  { label: 'Founder', href: '/founder' },
-] as const
+const NAV_ITEMS = primaryNavItems()
+const EXPLORE_ITEMS = exploreItems(ENTER_ECHO_HREF)
 
 function isNavItemActive(pathname: string, href: string): boolean {
   return pathname === href
@@ -40,12 +36,27 @@ function isNavItemActive(pathname: string, href: string): boolean {
 export function InstitutionalHeader() {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const toggleRef = useRef<HTMLButtonElement>(null)
+  const drawerRef = useRef<HTMLElement>(null)
 
   const [lastPathname, setLastPathname] = useState(pathname)
   if (pathname !== lastPathname) {
     setLastPathname(pathname)
     setMobileOpen(false)
   }
+
+  useEffect(() => {
+    if (!mobileOpen) return
+    drawerRef.current?.querySelector<HTMLAnchorElement>('a')?.focus()
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setMobileOpen(false)
+        toggleRef.current?.focus()
+      }
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [mobileOpen])
 
   return (
     <header style={{ borderBottom: '1px solid var(--surface-line)', background: 'var(--midnight)' }}>
@@ -68,7 +79,7 @@ export function InstitutionalHeader() {
                   key={item.label}
                   href={item.href}
                   aria-current={active ? 'page' : undefined}
-                  className={LINK_CLASS}
+                  className={`whitespace-nowrap ${LINK_CLASS}`}
                   style={{ color: active ? 'var(--gold)' : 'var(--paper)', ...FOCUS_STYLE }}
                 >
                   {item.label}
@@ -83,18 +94,13 @@ export function InstitutionalHeader() {
                 Sign In
               </Link>
             )}
-            <RippleLink
-              href={ENTER_ECHO_HREF}
-              className="rounded-md px-4 py-2 text-sm font-semibold transition hover:opacity-90 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-              style={{ background: 'var(--gold)', color: 'var(--midnight)', ...FOCUS_STYLE }}
-            >
-              Enter Echo →
-            </RippleLink>
+            <ExploreMenu label={EXPLORE_LABEL} items={EXPLORE_ITEMS} pathname={pathname} />
           </div>
 
           <button
+            ref={toggleRef}
             type="button"
-            className="rounded-sm lg:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-sm lg:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
             aria-expanded={mobileOpen}
             aria-controls="mobile-nav"
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
@@ -108,45 +114,67 @@ export function InstitutionalHeader() {
 
       {mobileOpen && (
         <nav
+          ref={drawerRef}
           id="mobile-nav"
           aria-label="Primary"
           className="motion-emerge-instant flex flex-col gap-1 border-t px-6 py-4 lg:hidden"
           style={{ borderColor: 'var(--surface-line)' }}
         >
-          {NAV_ITEMS.map((item) => {
-            const active = isNavItemActive(pathname, item.href)
-            return (
-              <Link
-                key={item.label}
-                href={item.href}
-                onClick={() => setMobileOpen(false)}
-                aria-current={active ? 'page' : undefined}
-                className={`py-2 ${LINK_CLASS}`}
-                style={{ color: active ? 'var(--gold)' : 'var(--paper)', ...FOCUS_STYLE }}
-              >
-                {item.label}
-              </Link>
-            )
-          })}
+          <ul className="flex flex-col gap-1">
+            {NAV_ITEMS.map((item) => {
+              const active = isNavItemActive(pathname, item.href)
+              return (
+                <li key={item.label}>
+                  <Link
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    aria-current={active ? 'page' : undefined}
+                    className={`block py-3 ${LINK_CLASS}`}
+                    style={{ color: active ? 'var(--gold)' : 'var(--paper)', ...FOCUS_STYLE }}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+
+          <p
+            id="mobile-explore-label"
+            className="mt-3 text-xs font-semibold uppercase tracking-wider"
+            style={{ color: 'var(--text-dim)' }}
+          >
+            {EXPLORE_LABEL}
+          </p>
+          <ul aria-labelledby="mobile-explore-label" className="flex flex-col gap-1 pl-3">
+            {EXPLORE_ITEMS.map((item) => {
+              const active = isNavItemActive(pathname, item.href)
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    aria-current={active ? 'page' : undefined}
+                    className={`block py-3 ${LINK_CLASS}`}
+                    style={{ color: active ? 'var(--gold)' : 'var(--paper)', ...FOCUS_STYLE }}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
 
           {INSTITUTIONAL_SIGNIN_ENABLED && (
             <Link
               href={SIGN_IN_HREF}
               onClick={() => setMobileOpen(false)}
-              className={`py-2 ${LINK_CLASS}`}
+              className={`py-3 ${LINK_CLASS}`}
               style={{ color: 'var(--paper)', ...FOCUS_STYLE }}
             >
               Sign In
             </Link>
           )}
-          <RippleLink
-            href={ENTER_ECHO_HREF}
-            onClick={() => setMobileOpen(false)}
-            className="mt-2 rounded-md px-4 py-2 text-center text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{ background: 'var(--gold)', color: 'var(--midnight)', ...FOCUS_STYLE }}
-          >
-            Enter Echo →
-          </RippleLink>
         </nav>
       )}
     </header>
