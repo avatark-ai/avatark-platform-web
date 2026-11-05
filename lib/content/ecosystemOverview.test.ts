@@ -36,3 +36,20 @@ test('Level 1 component adds no links (no new external product links)', () => {
   const src = readFileSync(path.join(process.cwd(), 'components', 'ecosystem', 'EcosystemOverview.tsx'), 'utf-8').replace(/\/\/.*$/gm, '')
   assert.ok(!/<a\b|<Link\b|href=|DepartureLink/.test(src))
 })
+
+test('U-03D-1: each group carries its owner-approved description', () => {
+  assert.deepEqual(ECOSYSTEM_OVERVIEW_GROUPS.map((g) => g.descriptionId), ['AVK-U03-EV-11', 'AVK-U03-EV-21', 'AVK-U03-EV-31'])
+  assert.equal(UNIFICATION_COPY['AVK-U03-EV-21'], 'Where worlds, stories and experiences are made.')
+})
+
+test('U-03D-1 Level 2 is conceptual: no links, no product-to-pillar mapping, approved labels only', () => {
+  const src = readFileSync(path.join(process.cwd(), 'components', 'ecosystem', 'RelationshipArchitecture.tsx'), 'utf-8')
+  const code = src.replace(/^\s*\/\/.*$/gm, '')
+  assert.ok(!/<a\b|<Link\b|href=|DepartureLink/.test(code))
+  assert.ok(/U\['AVK-U03-EV-40'\]/.test(code) && /U\['AVK-U03-EV-41'\]/.test(code) && /U\['AVK-U03-EV-42'\]/.test(code))
+  assert.ok(/C\['AVK-FR-030'\]/.test(code) && /PILLARS\.map/.test(code))
+  // No string literals rendered as copy besides the decorative arrow (all text comes from copy modules/registry).
+  const literals = [...code.matchAll(/(?<!=)>\s*([^<>{}\s()][^<>{}]*?)\s*</g)].map((m) => m[1]).filter((t) => t !== '↓') // JSX text only, not `=>`
+  assert.deepEqual(literals, [])
+  assert.ok(!/AVK-FLW-EC-09|Creation/.test(code))
+})

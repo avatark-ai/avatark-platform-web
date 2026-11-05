@@ -1,7 +1,7 @@
-// AVK-UNIFICATION-03B/03C/03C-1/03D: approved homepage, navigation, /living-worlds and /ecosystem copy
-// (AVK-U03-* IDs only). Generated verbatim by _claude_reports/AVK_UNIFICATION_03D/tools/build-u03d-copy.mjs from
+// AVK-UNIFICATION-03B/03C/03C-1/03D/03D-1: approved homepage, navigation, /living-worlds and /ecosystem copy
+// (AVK-U03-* IDs only). Generated verbatim by _claude_reports/AVK_UNIFICATION_03D_1/tools/build-u03d1-copy.mjs from
 // _claude_reports/AVK_UNIFICATION_03B/tools/approved-u03b-register.json (sha256 1274f493cae0bcdd8d45680191e7792e0715dc870a78f5c6e2f75394f07f7179) and
-// _claude_reports/AVK_UNIFICATION_03D/tools/u03d-register.json (sha256 48a57a5f0ae22326ee05d8841068686bd0a905976867fee1f41ac72d58911bc7).
+// _claude_reports/AVK_UNIFICATION_03D_1/tools/u03d1-register.json (sha256 3a08ae4f8d6058232fa8cb07b416558eca9c41ca00b90f0a54ac47581cc80ed7).
 // Do not edit a string here without a register amendment: unificationCopy.test.ts pins every value.
 // PENDING and SUPERSEDED strings are never written here.
 //
@@ -56,7 +56,13 @@ export const UNIFICATION_COPY = {
   "AVK-U03-EV-02": "The AvatarK Ecosystem",
   "AVK-U03-EV-10": "Experiences",
   "AVK-U03-EV-20-R": "Making",
-  "AVK-U03-EV-30": "Knowledge and Intelligence"
+  "AVK-U03-EV-30": "Knowledge and Intelligence",
+  "AVK-U03-EV-11": "Where people take part: learning from lives, practising, playing, gathering, watching and, in time, visiting Living Worlds.",
+  "AVK-U03-EV-21": "Where worlds, stories and experiences are made.",
+  "AVK-U03-EV-31": "Where understanding is gathered, connected and measured.",
+  "AVK-U03-EV-40": "How the parts relate",
+  "AVK-U03-EV-41": "AvatarK Holdings works across four pillars. The AvatarK Platform is the shared foundation each product is built on.",
+  "AVK-U03-EV-42": "These groupings explain how the products relate. They do not change what each product is or who is responsible for it."
 } as const
 
 export type UnificationCopyId = keyof typeof UNIFICATION_COPY
@@ -108,5 +114,11 @@ export const UNIFICATION_COPY_SHA256: Record<UnificationCopyId, string> = {
   "AVK-U03-EV-02": "2662d97d3ce66889060e7838317c1a39c5e330987d84b33f3f75707a081d166e",
   "AVK-U03-EV-10": "7bbfe2b5c6976cfaf1d0a687e10564a0dfcd28ea90289e8f5258dd4751c2a945",
   "AVK-U03-EV-20-R": "a88c972fa2c32acb10ceb890786a3248d4d8dd5fba957b5f7183655a6f0a764f",
-  "AVK-U03-EV-30": "e63ec4b827e634bdc22d711363aee8746b465c81190f3227e3077fb781e94c52"
+  "AVK-U03-EV-30": "e63ec4b827e634bdc22d711363aee8746b465c81190f3227e3077fb781e94c52",
+  "AVK-U03-EV-11": "fc680252f15fa1178c98a2c82767212ade574fb74e73f58157f24c348616b72d",
+  "AVK-U03-EV-21": "6fe4cfca0da816910f5753a61b94ead6be0b1fe36ddcdc987caaf3cf50dbfea1",
+  "AVK-U03-EV-31": "e2061636a9113ab4a27c1fe19fc5a39d7f2fbaeeec3d52b9fc51b3e1081f5cc9",
+  "AVK-U03-EV-40": "9dc2794174d38524a2d1408e52d76d27815cf0594bcae70726c7ee9e54e0f500",
+  "AVK-U03-EV-41": "cf5640ca9afe7d994834c9d9c1d96f9f4b1c2912675df159c173659b5de0d82b",
+  "AVK-U03-EV-42": "17b6bed77270cc0a124bbbeb2048c42e933eb59a1270156d992cf1a924b362a6"
 }

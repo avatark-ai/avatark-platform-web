@@ -11,7 +11,7 @@ import { LIVING_WORLDS_COPY as L } from '@/lib/content/livingWorldsCopy'
 // Intelligence. Product chips are plain text, the same treatment as the homepage EcosystemPreview chips, so
 // this section adds no links at all (no new external product links without release authorization; each
 // product's existing link stays in the architecture section below). Each group is labelled by its own h2
-// because no section heading is approved yet. Explanatory only: see lib/content/ecosystemOverview.ts.
+// because Level 1 has no section heading of its own. Explanatory only: see lib/content/ecosystemOverview.ts.
 export function EcosystemOverview() {
   return (
     <section id="ecosystem-overview" className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
@@ -31,6 +31,9 @@ export function EcosystemOverview() {
                 <h2 id={headingId} className="text-xl font-semibold tracking-tight">
                   {U[g.labelId]}
                 </h2>
+                <p className="mt-2 text-sm leading-6" style={{ color: 'var(--ink-dim)' }}>
+                  {U[g.descriptionId]}
+                </p>
                 <ul className="mt-4 flex flex-wrap gap-2">
                   {products.map((p) => (
                     <li key={p.id} className="rounded-full border px-3 py-1 text-sm font-medium" style={{ borderColor: 'var(--paper-line)', color: 'var(--ink)' }}>

@@ -5,6 +5,7 @@ import { EditorialContainer } from '@/components/foundation/Container'
 import { PlatformArchitecture } from '@/components/ecosystem/PlatformArchitecture'
 import { EcosystemLivingWorlds } from '@/components/ecosystem/EcosystemLivingWorlds'
 import { EcosystemOverview } from '@/components/ecosystem/EcosystemOverview'
+import { RelationshipArchitecture } from '@/components/ecosystem/RelationshipArchitecture'
 import { UNIFICATION_COPY as U } from '@/lib/content/unificationCopy'
 
 export const metadata: Metadata = {
@@ -37,14 +38,16 @@ export default function EcosystemPage() {
         </div>
       </section>
 
-      {/* AVK-UNIFICATION-03D Level 1. Level 2 (RelationshipArchitecture, ECOSYSTEM-V3 §4) is WITHHELD: its
-          heading and explanatory intro (AVK-U03-EV-40/41) are PENDING owner approval. */}
+      {/* AVK-UNIFICATION-03D/03D-1 Level 1 (visitor explanation). Level 2 follows the existing sections. */}
       <EcosystemOverview />
 
       <PlatformArchitecture />
 
       {/* AVK-FOUNDER-LIVING-WORLDS-02: static editorial section, not registry-driven (OD-12). */}
       <EcosystemLivingWorlds />
+
+      {/* AVK-UNIFICATION-03D-1 Level 2: conceptual relationship view (not ownership, not deployment). */}
+      <RelationshipArchitecture />
 
       <section className="border-t" style={{ background: 'var(--midnight)', color: 'var(--paper)' }}>
         <EditorialContainer className="text-center">

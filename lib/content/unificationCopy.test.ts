@@ -39,15 +39,11 @@ const SUPERSEDED_SHA256 = new Set([
 ])
 
 // U-03D: superseded (EV-01 Title Case, EV-20 "Creation") and pending Ecosystem strings -- never in the module.
+// EV-11/21/31/40/41/42 left this set in U-03D-1 (owner-approved, pinned above); EV-43 added (pending).
 const U03D_EXCLUDED_SHA256 = new Set([
+  'a5a21054d454940352072d73e0f45ef990641eeb672435e4383a34fa7e083cbd', // AVK-U03-EV-43 PENDING (U-03D-1)
   '781c94fffbb8e01c23d16ccc0c69c2bb362a4fd4d7bf454322d3f080e328f48a', // AVK-U03-EV-01 SUPERSEDED
   '6d0a88373d20612e1079406f030d37344dea876647172c1e60c8a2acbef56788', // AVK-U03-EV-20 SUPERSEDED
-  'fc680252f15fa1178c98a2c82767212ade574fb74e73f58157f24c348616b72d', // AVK-U03-EV-11 PENDING
-  '6fe4cfca0da816910f5753a61b94ead6be0b1fe36ddcdc987caaf3cf50dbfea1', // AVK-U03-EV-21 PENDING
-  'e2061636a9113ab4a27c1fe19fc5a39d7f2fbaeeec3d52b9fc51b3e1081f5cc9', // AVK-U03-EV-31 PENDING
-  '9dc2794174d38524a2d1408e52d76d27815cf0594bcae70726c7ee9e54e0f500', // AVK-U03-EV-40 PENDING
-  'cf5640ca9afe7d994834c9d9c1d96f9f4b1c2912675df159c173659b5de0d82b', // AVK-U03-EV-41 PENDING
-  '17b6bed77270cc0a124bbbeb2048c42e933eb59a1270156d992cf1a924b362a6', // AVK-U03-EV-42 PENDING
 ])
 
 const sha = (s: string) => createHash('sha256').update(s, 'utf8').digest('hex')
@@ -105,6 +101,13 @@ const REGISTER_SHA256: Record<string, string> = {
   'AVK-U03-EV-10': '7bbfe2b5c6976cfaf1d0a687e10564a0dfcd28ea90289e8f5258dd4751c2a945',
   'AVK-U03-EV-20-R': 'a88c972fa2c32acb10ceb890786a3248d4d8dd5fba957b5f7183655a6f0a764f',
   'AVK-U03-EV-30': 'e63ec4b827e634bdc22d711363aee8746b465c81190f3227e3077fb781e94c52',
+  // U-03D-1 (/ecosystem Level 1 descriptions + Level 2), owner-approved and rendered
+  'AVK-U03-EV-11': 'fc680252f15fa1178c98a2c82767212ade574fb74e73f58157f24c348616b72d',
+  'AVK-U03-EV-21': '6fe4cfca0da816910f5753a61b94ead6be0b1fe36ddcdc987caaf3cf50dbfea1',
+  'AVK-U03-EV-31': 'e2061636a9113ab4a27c1fe19fc5a39d7f2fbaeeec3d52b9fc51b3e1081f5cc9',
+  'AVK-U03-EV-40': '9dc2794174d38524a2d1408e52d76d27815cf0594bcae70726c7ee9e54e0f500',
+  'AVK-U03-EV-41': 'cf5640ca9afe7d994834c9d9c1d96f9f4b1c2912675df159c173659b5de0d82b',
+  'AVK-U03-EV-42': '17b6bed77270cc0a124bbbeb2048c42e933eb59a1270156d992cf1a924b362a6',
 }
 
 // Rendered from content/foundation/architecture.md (single source, unchanged).
