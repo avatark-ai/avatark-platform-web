@@ -1,11 +1,13 @@
-// AVK-UNIFICATION-03B: approved homepage + navigation copy (AVK-U03-* IDs only).
-// Generated verbatim by _claude_reports/AVK_UNIFICATION_03B/tools/build-u03b-copy.mjs from
-// _claude_reports/AVK_UNIFICATION_03B/tools/approved-u03b-register.json (sha256 1274f493cae0bcdd8d45680191e7792e0715dc870a78f5c6e2f75394f07f7179).
+// AVK-UNIFICATION-03B/03C: approved homepage, navigation and /living-worlds copy (AVK-U03-* IDs only).
+// Generated verbatim by _claude_reports/AVK_UNIFICATION_03C/tools/build-u03c-copy.mjs from
+// _claude_reports/AVK_UNIFICATION_03B/tools/approved-u03b-register.json (sha256 1274f493cae0bcdd8d45680191e7792e0715dc870a78f5c6e2f75394f07f7179) and
+// _claude_reports/AVK_UNIFICATION_03C/tools/u03c-living-worlds-register.json (sha256 964e4ce24168a604b6a99f39aaeb5e8e53cf89b7669509630d5b669993a77b6e).
 // Do not edit a string here without a register amendment: unificationCopy.test.ts pins every value.
+// PENDING strings (not owner-approved) are never written here.
 //
 // Not in this module: AVK-U03-WY-02..05 (rendered from content/foundation/architecture.md, single
-// source); reused approved IDs AVK-FR-003/021/026 (institutionalCopy.ts) and AVK-FLW-ST-01/EC-05
-// (livingWorldsCopy.ts), imported from their existing modules.
+// source); reused approved AVK-FR-* (institutionalCopy.ts) and AVK-FLW-* (livingWorldsCopy.ts) IDs,
+// imported from their existing modules.
 
 export const UNIFICATION_COPY = {
   "AVK-U03-HN-01": "Foundation",
@@ -27,7 +29,13 @@ export const UNIFICATION_COPY = {
   "AVK-U03-FX-12": "A person’s wisdom becoming useful to another life.",
   "AVK-U03-FX-20": "What a world remembers and how it changes.",
   "AVK-U03-WY-01": "Why AvatarK exists",
-  "AVK-U03-WY-06": "Read the Foundation →"
+  "AVK-U03-WY-06": "Read the Foundation →",
+  "AVK-U03-LW-01": "Worlds that remember. Stories that continue.",
+  "AVK-U03-LW-30": "Future Living Worlds",
+  "AVK-U03-LW-32": "Future concept",
+  "AVK-U03-LW-33": "Living Vrindavan",
+  "AVK-U03-LW-35": "Living Sea",
+  "AVK-U03-LW-37": "Living Forge"
 } as const
 
 export type UnificationCopyId = keyof typeof UNIFICATION_COPY
@@ -52,5 +60,11 @@ export const UNIFICATION_COPY_SHA256: Record<UnificationCopyId, string> = {
   "AVK-U03-FX-12": "8995abce4173447dc98778c25a1921919a0ef9a879e01a8bf6bafd33dfbd16fc",
   "AVK-U03-FX-20": "76a87880ae71fff102cfd9507bb09893b2dd4b24f54c38cd259967a3683bbe5e",
   "AVK-U03-WY-01": "24d437a56613392ad3ddfbf9ccff9a42586c6a4ad690278017e6ce41ab5b4563",
-  "AVK-U03-WY-06": "27a2640f1d4a8051cda1e1d5020beaae578e276e5e83b8ad5b496b1075fbb326"
+  "AVK-U03-WY-06": "27a2640f1d4a8051cda1e1d5020beaae578e276e5e83b8ad5b496b1075fbb326",
+  "AVK-U03-LW-01": "b619c11d482ff38d9b88aea4f406f4033055e747138805e69235d901c2d4f17a",
+  "AVK-U03-LW-30": "d0e4ee0843deccd8e3c8561220f31ea054275757c15f52e3261d74ab811f6143",
+  "AVK-U03-LW-32": "865f5e3dea4ef0e5092add51db28178946b7144f7f89204d6ac0a8804fd5baaf",
+  "AVK-U03-LW-33": "699fa378b171132eb34c0ef93f0186f041abc5b33b9e9b87689158e057926274",
+  "AVK-U03-LW-35": "77715bc697fc8fb7214cfa31f56b82fc68d4eb6f9f58d275f4f66d665625476b",
+  "AVK-U03-LW-37": "67cf8b64b105068f24cae23584b0b01942ccc146ce9bcc5abf0b6df82c5bdf67"
 }

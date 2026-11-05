@@ -1,6 +1,7 @@
 import { RevealOnView } from '@avatark/motion'
 import { SectionContainer } from '@/components/foundation/Container'
 import { ExperienceCard } from '@/components/foundation/sections/ExperienceCard'
+import { TypographicWell } from '@/components/foundation/TypographicWell'
 import { UNIFICATION_COPY as U } from '@/lib/content/unificationCopy'
 import { APPROVED_COPY as C } from '@/lib/content/institutionalCopy'
 import { LIVING_WORLDS_COPY as L } from '@/lib/content/livingWorldsCopy'
@@ -36,17 +37,11 @@ function EchoMotif() {
 // name (AVK-FR-021) in small caps. 4:5 on mobile (max 280px), 16:9 from lg.
 function WorldWell() {
   return (
-    <div
-      aria-hidden="true"
-      data-testid="living-worlds-fallback-well"
-      className="relative flex aspect-[4/5] max-h-[280px] w-full items-end justify-center border-b pb-6 lg:aspect-video lg:max-h-none"
-      style={{ borderColor: 'var(--paper-line)', background: 'var(--paper)' }}
-    >
-      <div className="absolute inset-x-8 top-1/2 h-px" style={{ background: 'var(--paper-line)' }} />
-      <span className="text-xs font-semibold uppercase tracking-[0.3em]" style={{ color: 'var(--ink-dim)' }}>
-        {C['AVK-FR-021']}
-      </span>
-    </div>
+    <TypographicWell
+      label={C['AVK-FR-021']}
+      testId="living-worlds-fallback-well"
+      className="aspect-[4/5] max-h-[280px] lg:aspect-video lg:max-h-none"
+    />
   )
 }
 

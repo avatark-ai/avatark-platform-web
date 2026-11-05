@@ -9,6 +9,25 @@ import { LIVING_WORLDS_COPY } from './livingWorldsCopy.ts'
 import { FOUNDER_SCIENCE_COPY } from './founderScienceCopy.ts'
 import { parseFoundationContent } from './markdown.ts'
 
+// U-03C PENDING strings (u03c-living-worlds-register.json): must never be in the module or on a page.
+const PENDING_SHA256 = new Set([
+  '325f16a6c8ed38d13e944bb4df40aebc7d74cef582f843356b8558ead38231e0', // AVK-U03-LW-02
+  'afc8e6b1e187402982baf8cc65ebdd6233049e6b44eb7134c748f4c2a7aaa4c6', // AVK-U03-LW-11
+  '7aa31487d8c0f99c52bc9284addf804d0b02b3859be6b08a0f7ff786905c6fa5', // AVK-U03-LW-13
+  'b2ea668e3fa116c47c8f445e3e380a38d676b5e26bec587e08ec88878695815a', // AVK-U03-LW-15
+  'fd214cf4f709010c5e7251168d52f5c0e4fa837082efcf59b5e5b4de0e16e280', // AVK-U03-LW-17
+  'a02ae99f124c11bad157f8a92bd4af2a7282ac3e2c758dd7d43582b08b5c5e70', // AVK-U03-LW-19
+  'a6f1cdc9e1ef3fcdbb1c18877aa8840f4956d304526e4dc720da4882ab443f4e', // AVK-U03-LW-21
+  '28c28718dab20673a8fbfd63d744fc0373a7786d73cf677dd569487b1fdae072', // AVK-U03-LW-23
+  '5d43b2c56041f134875e477032a48d880fd0ea3a4458e90c7ba4567490e2bd40', // AVK-U03-LW-31
+  '5e4cf78c18ee9a9e2bc93551d921416f132718173724805dc47cca3dc8065576', // AVK-U03-LW-34
+  '1afb30fc34b9c3049df5c53deb5aac2aacf98835d1e00200442d59eea7adaf70', // AVK-U03-LW-36
+  'd32aaab6f16a64bd28a02ab98b3e39b719f81cd4e9c5766faa1b22c698913367', // AVK-U03-LW-38
+  'e3517f165feb32bbc4688d304ecfe4d430db927372cff46466daf5d2219118bf', // AVK-U03-LW-M1
+  'e834521ac0d7c0e3ff2bf5fb53a58170e871df07d8dca21f193fc119dd5d5c04', // AVK-U03-LW-M2
+  '052d128f3b854453787bf129c24a1148da08da55f504b5c6ff14ed7cbe9985ed', // AVK-U03-LW-41
+])
+
 const sha = (s: string) => createHash('sha256').update(s, 'utf8').digest('hex')
 
 // AVK-UNIFICATION-03B approved-u03b-register.json sha256 values (== U-03A register), pinned here
@@ -34,6 +53,13 @@ const REGISTER_SHA256: Record<string, string> = {
   'AVK-U03-FX-20': '76a87880ae71fff102cfd9507bb09893b2dd4b24f54c38cd259967a3683bbe5e',
   'AVK-U03-WY-01': '24d437a56613392ad3ddfbf9ccff9a42586c6a4ad690278017e6ce41ab5b4563',
   'AVK-U03-WY-06': '27a2640f1d4a8051cda1e1d5020beaae578e276e5e83b8ad5b496b1075fbb326',
+  // U-03C (/living-worlds), approved and rendered
+  'AVK-U03-LW-01': 'b619c11d482ff38d9b88aea4f406f4033055e747138805e69235d901c2d4f17a',
+  'AVK-U03-LW-30': 'd0e4ee0843deccd8e3c8561220f31ea054275757c15f52e3261d74ab811f6143',
+  'AVK-U03-LW-32': '865f5e3dea4ef0e5092add51db28178946b7144f7f89204d6ac0a8804fd5baaf',
+  'AVK-U03-LW-33': '699fa378b171132eb34c0ef93f0186f041abc5b33b9e9b87689158e057926274',
+  'AVK-U03-LW-35': '77715bc697fc8fb7214cfa31f56b82fc68d4eb6f9f58d275f4f66d665625476b',
+  'AVK-U03-LW-37': '67cf8b64b105068f24cae23584b0b01942ccc146ce9bcc5abf0b6df82c5bdf67',
 }
 
 // Rendered from content/foundation/architecture.md (single source, unchanged).
@@ -93,4 +119,9 @@ test('U-03 copy does not duplicate or alter Founder Science wording', () => {
   assert.ok(!u03.includes('From Questions to Worlds' as never))
   assert.ok(!u03.join('\n').includes('Mahabharata'))
   assert.ok(!u03.join('\n').includes('Research Center'))
+})
+
+test('U-03C: no PENDING string is in the generated module', () => {
+  for (const v of Object.values(UNIFICATION_COPY)) assert.ok(!PENDING_SHA256.has(sha(v)), v)
+  for (const id of ['AVK-U03-LW-02', 'AVK-U03-LW-11', 'AVK-U03-LW-31', 'AVK-U03-LW-34', 'AVK-U03-LW-M1']) assert.ok(!(id in UNIFICATION_COPY), id)
 })

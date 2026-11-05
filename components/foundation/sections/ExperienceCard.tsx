@@ -4,23 +4,27 @@ import type { PlatformStatus } from '@/components/ecosystem/StatusBadge'
 
 // AVK-UNIFICATION-03B (FEATURED-EXPERIENCES-SPEC §2): one shared layout and interaction contract for
 // the homepage experiences, with distinct visual identities per variant. The card itself is not a
-// link: the single action is the only tab stop. U-03C adds a 'concept' variant (no href).
-type Variant = 'echo' | 'world'
+// link: the single action is the only tab stop. U-03C 'concept' variant (future worlds): no action, no
+// hover affordance, not focusable (WORLD-GALLERY-CONTRACT §3).
+type Variant = 'echo' | 'world' | 'concept'
 
 const SURFACE: Record<Variant, { background: string; color: string; dim: string; border: string; hover: string }> = {
   // Echo: intimate, reflective, geometric -- EchoIntro's midnight tokens leave the homepage with it.
   echo: { background: 'var(--midnight)', color: 'var(--paper)', dim: 'var(--text-dim)', border: 'var(--surface-line)', hover: 'hover:border-[var(--gold)]' },
   // Living Worlds: expansive, environmental -- the surface the Living Worlds band used.
   world: { background: 'var(--surface-card)', color: 'var(--ink)', dim: 'var(--ink-dim)', border: 'var(--paper-line)', hover: 'hover:border-[var(--ink)]' },
+  // Future concept: muted, and deliberately no hover change (nothing to click).
+  concept: { background: 'var(--surface-card)', color: 'var(--ink)', dim: 'var(--ink-dim)', border: 'var(--paper-line)', hover: '' },
 }
 
-const ACTION: Record<Variant, React.CSSProperties> = {
+const ACTION: Record<Exclude<Variant, 'concept'>, React.CSSProperties> = {
   echo: { background: 'var(--gold)', color: 'var(--midnight)', outlineColor: 'var(--paper)' },
   world: { background: 'var(--ink)', color: 'var(--paper)', outlineColor: 'var(--gold)' },
 }
 
 export function ExperienceCard({
   id,
+  titleId,
   variant,
   title,
   description,
@@ -31,23 +35,24 @@ export function ExperienceCard({
   media,
 }: {
   id?: string
+  titleId?: string
   variant: Variant
   title: string
-  description: string
-  supporting: string
+  description?: string
+  supporting?: string
   status?: { text: string; tier: PlatformStatus }
   honesty?: string
   action?: { label: string; href: string } | null
   media: React.ReactNode
 }) {
   const s = SURFACE[variant]
-  const headingId = `experience-${variant}-title`
+  const headingId = titleId ?? `experience-${variant}-title`
   return (
     <article
       id={id}
       aria-labelledby={headingId}
       data-experience={variant}
-      className={`flex scroll-mt-4 flex-col overflow-hidden rounded-2xl border transition-colors duration-200 lg:min-h-[22rem] ${s.hover}`}
+      className={`flex h-full scroll-mt-4 flex-col overflow-hidden rounded-2xl border ${variant === 'concept' ? '' : 'transition-colors duration-200 lg:min-h-[22rem]'} ${s.hover}`}
       style={{ background: s.background, color: s.color, borderColor: s.border }}
     >
       {media}
@@ -58,16 +63,18 @@ export function ExperienceCard({
           </h3>
           {status && <StatusPill text={status.text} tier={status.tier} />}
         </div>
-        <p className="text-lg leading-8">{description}</p>
-        <p className="text-base leading-7" style={{ color: s.dim }}>
-          {supporting}
-        </p>
+        {description && <p className="text-lg leading-8">{description}</p>}
+        {supporting && (
+          <p className="text-base leading-7" style={{ color: s.dim }}>
+            {supporting}
+          </p>
+        )}
         {honesty && (
           <p className="text-sm leading-6" style={{ color: s.dim }}>
             {honesty}
           </p>
         )}
-        {action && (
+        {action && variant !== 'concept' && (
           <div className="mt-auto pt-2">
             <Link
               href={action.href}

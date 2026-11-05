@@ -6,7 +6,8 @@
 // homepage anchor /#living-worlds, which resolves to the Living Worlds experience card. U-03C sets
 // this to true in the same commit that adds app/living-worlds/page.tsx (livingWorldsRoute.test.ts
 // fails if the constant and the route file disagree), and may then remove the constant.
-export const LIVING_WORLDS_ROUTE_ENABLED: boolean = false
+// AVK-UNIFICATION-03C: app/living-worlds/page.tsx exists; enabled in the same commit.
+export const LIVING_WORLDS_ROUTE_ENABLED: boolean = true
 
 export const LIVING_WORLDS_HREF = '/living-worlds'
 export const LIVING_WORLDS_LEGACY_ANCHOR = '/#living-worlds'

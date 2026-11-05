@@ -29,6 +29,7 @@ function isInstitutionalOnlyPath(pathname: string): boolean {
     pathname === "/canon" ||
     pathname.startsWith("/canon/") ||
     pathname === "/ecosystem" ||
+    pathname === "/living-worlds" ||
     pathname === "/roadmap"
   );
 }

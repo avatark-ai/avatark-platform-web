@@ -5,7 +5,7 @@
 // EchoHeader.tsx). That one keeps running, unchanged, on /start, /journey,
 // /account, /enter, etc. This one only renders on the institutional pages
 // (/, /foundation, /canon and its sub-routes, /founder and its sub-routes,
-// /ecosystem, /roadmap) -- EchoShell.isInstitutionalOnlyPath() self-excludes
+// /ecosystem, /living-worlds, /roadmap) -- EchoShell.isInstitutionalOnlyPath() self-excludes
 // there so the two shells never stack.
 //
 // AVK-UNIFICATION-03B (HEADER-AND-MOBILE-NAV-V3): order Foundation · Living Worlds · Canon ·

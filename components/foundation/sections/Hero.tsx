@@ -30,7 +30,7 @@ export function Hero() {
           >
             {U['AVK-U03-HH-04']}
           </HeroJumpLink>
-          {/* Withheld (not rendered) until U-03C ships /living-worlds -- see livingWorldsRoute.ts. */}
+          {/* Rendered only while the /living-worlds route is enabled (livingWorldsRoute.ts; on since U-03C). */}
           {LIVING_WORLDS_ROUTE_ENABLED && (
             <Link
               href={LIVING_WORLDS_HREF}
