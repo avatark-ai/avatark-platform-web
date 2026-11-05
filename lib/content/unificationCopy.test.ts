@@ -28,6 +28,17 @@ const PENDING_SHA256 = new Set([
   '052d128f3b854453787bf129c24a1148da08da55f504b5c6ff14ed7cbe9985ed', // AVK-U03-LW-41
 ])
 
+// U-03C-1 SUPERSEDED U-03A drafts (replaced by the owner-approved *-R strings): never in the module.
+const SUPERSEDED_SHA256 = new Set([
+  'afc8e6b1e187402982baf8cc65ebdd6233049e6b44eb7134c748f4c2a7aaa4c6', // AVK-U03-LW-11 -> AVK-U03-LW-11-R
+  '7aa31487d8c0f99c52bc9284addf804d0b02b3859be6b08a0f7ff786905c6fa5', // AVK-U03-LW-13 -> AVK-U03-LW-13-R
+  'b2ea668e3fa116c47c8f445e3e380a38d676b5e26bec587e08ec88878695815a', // AVK-U03-LW-15 -> AVK-U03-LW-15-R
+  'fd214cf4f709010c5e7251168d52f5c0e4fa837082efcf59b5e5b4de0e16e280', // AVK-U03-LW-17 -> AVK-U03-LW-17-R
+  'a02ae99f124c11bad157f8a92bd4af2a7282ac3e2c758dd7d43582b08b5c5e70', // AVK-U03-LW-19 -> AVK-U03-LW-19-R
+  'a6f1cdc9e1ef3fcdbb1c18877aa8840f4956d304526e4dc720da4882ab443f4e', // AVK-U03-LW-21 -> AVK-U03-LW-21-R
+  '28c28718dab20673a8fbfd63d744fc0373a7786d73cf677dd569487b1fdae072', // AVK-U03-LW-23 -> AVK-U03-LW-23-R
+])
+
 const sha = (s: string) => createHash('sha256').update(s, 'utf8').digest('hex')
 
 // AVK-UNIFICATION-03B approved-u03b-register.json sha256 values (== U-03A register), pinned here
@@ -60,6 +71,21 @@ const REGISTER_SHA256: Record<string, string> = {
   'AVK-U03-LW-33': '699fa378b171132eb34c0ef93f0186f041abc5b33b9e9b87689158e057926274',
   'AVK-U03-LW-35': '77715bc697fc8fb7214cfa31f56b82fc68d4eb6f9f58d275f4f66d665625476b',
   'AVK-U03-LW-37': '67cf8b64b105068f24cae23584b0b01942ccc146ce9bcc5abf0b6df82c5bdf67',
+  // U-03C-1 (six principles), owner-approved and rendered
+  'AVK-U03-LW-10': 'd7c868a6bd2ef46382710b7b53199453b70ffa1627625c67693555cd7d573eda',
+  'AVK-U03-LW-11-R': 'eaed790ec82f100da775c783e52da8c129a08f5af16614048e463177fd998858',
+  'AVK-U03-LW-12': 'e9463dccf0541a9778589691543fd69249759d5de6a97cd57d6420c3e5d92baa',
+  'AVK-U03-LW-14': 'c3963aedaac6c83c04cf8fb997b479c61e66b3caeecfadd2f2d4bd5b0aef1778',
+  'AVK-U03-LW-16': 'c0bf75bd78bf9572596720d596bd5a20a5b9145cde0fe50dec1e783cb184d69b',
+  'AVK-U03-LW-18': '6b0143d03864993fdf6922b8be1c69b93b24babb9989edd7533f9eeb680148e0',
+  'AVK-U03-LW-20': '80fc402133201fbe0e4e9962a9570e741856aa8b0c033f1a20a9bcb06c68e809',
+  'AVK-U03-LW-22': '73e0212c508603969fe923391867f3ae4fd4ba655b8b2818ae67f9107ee224aa',
+  'AVK-U03-LW-13-R': '680dc4ae1fca1718a2645c215c582d8af56729b2b250b0f5ad1fa6783fbe6539',
+  'AVK-U03-LW-15-R': '059ac30763fdce94e161ada37bd80a05a5f6bd682a0345909711e71063778e17',
+  'AVK-U03-LW-17-R': '2a0f1b81aa2da9f73f32ac5164842a3225ad14a462faf85ab9699d406429bf67',
+  'AVK-U03-LW-19-R': 'b10b5bd3eaa6bad218c39cfdd117ddb0ab2953e01a2952fcf39e8840dbfc4f35',
+  'AVK-U03-LW-21-R': '9ad73245b689cf4c97ff86696d2efd0fc116b63d8d6a978b77a37f65f71e0b6c',
+  'AVK-U03-LW-23-R': '1647880d5100682d2dedf4107a89956c4a35fcd8997261c94efc1dd5f9741366',
 }
 
 // Rendered from content/foundation/architecture.md (single source, unchanged).
@@ -124,4 +150,12 @@ test('U-03 copy does not duplicate or alter Founder Science wording', () => {
 test('U-03C: no PENDING string is in the generated module', () => {
   for (const v of Object.values(UNIFICATION_COPY)) assert.ok(!PENDING_SHA256.has(sha(v)), v)
   for (const id of ['AVK-U03-LW-02', 'AVK-U03-LW-11', 'AVK-U03-LW-31', 'AVK-U03-LW-34', 'AVK-U03-LW-M1']) assert.ok(!(id in UNIFICATION_COPY), id)
+})
+
+test('U-03C-1: superseded principle drafts are not in the module; replacements are', () => {
+  for (const v of Object.values(UNIFICATION_COPY)) assert.ok(!SUPERSEDED_SHA256.has(sha(v)), v)
+  assert.equal(
+    UNIFICATION_COPY['AVK-U03-LW-11-R'],
+    'These six principles guide the environments we are designing. They describe what we are working toward, not features available to visitors today.',
+  )
 })

@@ -1,9 +1,9 @@
-// AVK-UNIFICATION-03B/03C: approved homepage, navigation and /living-worlds copy (AVK-U03-* IDs only).
-// Generated verbatim by _claude_reports/AVK_UNIFICATION_03C/tools/build-u03c-copy.mjs from
+// AVK-UNIFICATION-03B/03C/03C-1: approved homepage, navigation and /living-worlds copy (AVK-U03-* IDs only).
+// Generated verbatim by _claude_reports/AVK_UNIFICATION_03C_1/tools/build-u03c1-copy.mjs from
 // _claude_reports/AVK_UNIFICATION_03B/tools/approved-u03b-register.json (sha256 1274f493cae0bcdd8d45680191e7792e0715dc870a78f5c6e2f75394f07f7179) and
-// _claude_reports/AVK_UNIFICATION_03C/tools/u03c-living-worlds-register.json (sha256 964e4ce24168a604b6a99f39aaeb5e8e53cf89b7669509630d5b669993a77b6e).
+// _claude_reports/AVK_UNIFICATION_03C_1/tools/u03c1-living-worlds-register.json (sha256 401a631b267b67cd7cf01304003e868964b774fe2f7fa9de3f6c3bdd837166fb).
 // Do not edit a string here without a register amendment: unificationCopy.test.ts pins every value.
-// PENDING strings (not owner-approved) are never written here.
+// PENDING and SUPERSEDED strings are never written here.
 //
 // Not in this module: AVK-U03-WY-02..05 (rendered from content/foundation/architecture.md, single
 // source); reused approved AVK-FR-* (institutionalCopy.ts) and AVK-FLW-* (livingWorldsCopy.ts) IDs,
@@ -31,6 +31,20 @@ export const UNIFICATION_COPY = {
   "AVK-U03-WY-01": "Why AvatarK exists",
   "AVK-U03-WY-06": "Read the Foundation →",
   "AVK-U03-LW-01": "Worlds that remember. Stories that continue.",
+  "AVK-U03-LW-10": "What makes a world living?",
+  "AVK-U03-LW-11-R": "These six principles guide the environments we are designing. They describe what we are working toward, not features available to visitors today.",
+  "AVK-U03-LW-12": "Place",
+  "AVK-U03-LW-14": "Memory",
+  "AVK-U03-LW-16": "Change",
+  "AVK-U03-LW-18": "Return",
+  "AVK-U03-LW-20": "Discovery",
+  "AVK-U03-LW-22": "Participation",
+  "AVK-U03-LW-13-R": "A world begins with a landscape: its terrain, waterways, habitats and the relationships among them.",
+  "AVK-U03-LW-15-R": "Places can carry traces of stories, observations and changes that give them meaning over time.",
+  "AVK-U03-LW-17-R": "Seasons, water, vegetation and living organisms can shape how an environment evolves.",
+  "AVK-U03-LW-19-R": "A visitor may come back to discover what has changed and continue an earlier exploration.",
+  "AVK-U03-LW-21-R": "Paths, questions and encounters invite visitors to investigate the world from different perspectives.",
+  "AVK-U03-LW-23-R": "Visitors may eventually contribute observations, choices and discoveries within clearly defined boundaries.",
   "AVK-U03-LW-30": "Future Living Worlds",
   "AVK-U03-LW-32": "Future concept",
   "AVK-U03-LW-33": "Living Vrindavan",
@@ -62,6 +76,20 @@ export const UNIFICATION_COPY_SHA256: Record<UnificationCopyId, string> = {
   "AVK-U03-WY-01": "24d437a56613392ad3ddfbf9ccff9a42586c6a4ad690278017e6ce41ab5b4563",
   "AVK-U03-WY-06": "27a2640f1d4a8051cda1e1d5020beaae578e276e5e83b8ad5b496b1075fbb326",
   "AVK-U03-LW-01": "b619c11d482ff38d9b88aea4f406f4033055e747138805e69235d901c2d4f17a",
+  "AVK-U03-LW-10": "d7c868a6bd2ef46382710b7b53199453b70ffa1627625c67693555cd7d573eda",
+  "AVK-U03-LW-11-R": "eaed790ec82f100da775c783e52da8c129a08f5af16614048e463177fd998858",
+  "AVK-U03-LW-12": "e9463dccf0541a9778589691543fd69249759d5de6a97cd57d6420c3e5d92baa",
+  "AVK-U03-LW-14": "c3963aedaac6c83c04cf8fb997b479c61e66b3caeecfadd2f2d4bd5b0aef1778",
+  "AVK-U03-LW-16": "c0bf75bd78bf9572596720d596bd5a20a5b9145cde0fe50dec1e783cb184d69b",
+  "AVK-U03-LW-18": "6b0143d03864993fdf6922b8be1c69b93b24babb9989edd7533f9eeb680148e0",
+  "AVK-U03-LW-20": "80fc402133201fbe0e4e9962a9570e741856aa8b0c033f1a20a9bcb06c68e809",
+  "AVK-U03-LW-22": "73e0212c508603969fe923391867f3ae4fd4ba655b8b2818ae67f9107ee224aa",
+  "AVK-U03-LW-13-R": "680dc4ae1fca1718a2645c215c582d8af56729b2b250b0f5ad1fa6783fbe6539",
+  "AVK-U03-LW-15-R": "059ac30763fdce94e161ada37bd80a05a5f6bd682a0345909711e71063778e17",
+  "AVK-U03-LW-17-R": "2a0f1b81aa2da9f73f32ac5164842a3225ad14a462faf85ab9699d406429bf67",
+  "AVK-U03-LW-19-R": "b10b5bd3eaa6bad218c39cfdd117ddb0ab2953e01a2952fcf39e8840dbfc4f35",
+  "AVK-U03-LW-21-R": "9ad73245b689cf4c97ff86696d2efd0fc116b63d8d6a978b77a37f65f71e0b6c",
+  "AVK-U03-LW-23-R": "1647880d5100682d2dedf4107a89956c4a35fcd8997261c94efc1dd5f9741366",
   "AVK-U03-LW-30": "d0e4ee0843deccd8e3c8561220f31ea054275757c15f52e3261d74ab811f6143",
   "AVK-U03-LW-32": "865f5e3dea4ef0e5092add51db28178946b7144f7f89204d6ac0a8804fd5baaf",
   "AVK-U03-LW-33": "699fa378b171132eb34c0ef93f0186f041abc5b33b9e9b87689158e057926274",
