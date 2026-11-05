@@ -5,6 +5,7 @@ import { Canon } from '@/components/foundation/sections/Canon'
 import { LivingSpiral } from '@/components/foundation/sections/LivingSpiral'
 import { CanonPageLayout } from '@/components/foundation/canon/CanonPageLayout'
 import { CanonGateway } from '@/components/foundation/canon/CanonGateway'
+import { CanonContemporaryReading } from '@/components/foundation/canon/CanonContemporaryReading'
 import { getCanonContent } from '@/lib/content/foundation'
 import { LIVING_WORLDS_COPY as L } from '@/lib/content/livingWorldsCopy'
 
@@ -50,6 +51,8 @@ export default function CanonPage() {
       </div>
 
       <Canon content={canonContent} />
+      {/* AVK-FOUNDER-SCIENCE-02 (AVK-FS-CI-*): directly after AVK-FLW-CN-02, before the Living Spiral. */}
+      <CanonContemporaryReading content={canonContent} />
       <LivingSpiral />
       <CanonGateway />
     </CanonPageLayout>
