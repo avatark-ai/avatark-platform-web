@@ -17,7 +17,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ENTER_ECHO_HREF, SIGN_IN_HREF } from '@/lib/content/links'
+import { DISCOVER_ECHO_HREF, SIGN_IN_HREF } from '@/lib/content/links'
 import { INSTITUTIONAL_SIGNIN_ENABLED } from '@/lib/content/flags'
 import { ExploreMenu } from '@/components/foundation/ExploreMenu'
 import { EXPLORE_LABEL, exploreItems, primaryNavItems } from '@/components/foundation/institutionalNav'
@@ -27,7 +27,7 @@ const LINK_CLASS =
 const FOCUS_STYLE = { outlineColor: 'var(--gold)' } as const
 
 const NAV_ITEMS = primaryNavItems()
-const EXPLORE_ITEMS = exploreItems(ENTER_ECHO_HREF)
+const EXPLORE_ITEMS = exploreItems(DISCOVER_ECHO_HREF)
 
 function isNavItemActive(pathname: string, href: string): boolean {
   return pathname === href

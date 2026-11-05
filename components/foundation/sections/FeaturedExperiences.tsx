@@ -5,7 +5,8 @@ import { TypographicWell } from '@/components/foundation/TypographicWell'
 import { UNIFICATION_COPY as U } from '@/lib/content/unificationCopy'
 import { APPROVED_COPY as C } from '@/lib/content/institutionalCopy'
 import { LIVING_WORLDS_COPY as L } from '@/lib/content/livingWorldsCopy'
-import { ENTER_ECHO_HREF } from '@/lib/content/links'
+import { DISCOVER_ECHO_HREF } from '@/lib/content/links'
+import { PROD_SCOPE_I_COPY as P } from '@/lib/content/prodScopeICopy'
 import { LIVING_WORLDS_HREF, LIVING_WORLDS_ROUTE_ENABLED } from '@/lib/content/livingWorldsRoute'
 
 // AVK-UNIFICATION-03B (FEATURED-EXPERIENCES-SPEC): two equally prominent experiences replace the
@@ -69,7 +70,7 @@ export function FeaturedExperiences() {
             title={U['AVK-U03-FX-10']}
             description={U['AVK-U03-FX-11']}
             supporting={U['AVK-U03-FX-12']}
-            action={{ label: U['AVK-U03-HN-07'], href: ENTER_ECHO_HREF }}
+            action={{ label: P['AVK-PROD-CD1-01'], href: DISCOVER_ECHO_HREF }}
             media={<EchoMotif />}
           />
           <ExperienceCard

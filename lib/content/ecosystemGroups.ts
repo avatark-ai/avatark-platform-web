@@ -5,7 +5,6 @@
 import { getProductById } from '@avatark/product-registry'
 import { resolveProductUrl } from '../products/registry.ts'
 import { getEcosystemGroupsContent } from './foundation.ts'
-import { ENTER_ECHO_HREF } from './links.ts'
 
 export interface EcosystemProductRef {
   id: string
@@ -28,13 +27,13 @@ export interface EcosystemGroup {
 // special-case Echo and rendered it as the raw lowercase id.
 export function resolveEcosystemProduct(id: string): EcosystemProductRef {
   if (id === 'echo') {
-    // Echo has no registry entry (unbuilt) -- its ecosystem entry point is
-    // the same real destination every "Enter Echo" CTA site-wide already
-    // uses, not a fabricated separate one.
+    // Echo has no registry entry (unbuilt). AVK-PROD-03A CD-1: the Echo application is excluded
+    // from the institutional release, so Echo carries no executable link here (the footer renders
+    // it as plain text).
     return {
       id: 'echo',
       name: 'Echo',
-      href: ENTER_ECHO_HREF,
+      href: null,
       isEcho: true,
       purpose: 'A person’s wisdom becoming useful to another life.',
     }

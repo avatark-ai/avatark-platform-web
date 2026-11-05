@@ -1,7 +1,6 @@
-import Link from 'next/link'
 import { SectionContainer } from '@/components/foundation/Container'
 import { RevealOnView } from '@avatark/motion'
-import { ENTER_ECHO_HREF } from '@/lib/content/links'
+import { PROD_SCOPE_I_COPY as P } from '@/lib/content/prodScopeICopy'
 import { getGrowthEngines, getJourneyTransitions, getPlatformNode, distinctMaturityLabel } from '@/lib/products/platformGraph'
 import { PlatformDiagram } from './PlatformDiagram'
 import { GrowthEngineCard } from './GrowthEngineCard'
@@ -75,13 +74,11 @@ export function PlatformArchitecture() {
             <PlatformDiagram />
           </div>
 
-          <Link
-            href={ENTER_ECHO_HREF}
-            className="mt-5 inline-block rounded-md px-6 py-3 text-sm font-semibold transition hover:opacity-90 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{ background: 'var(--ink)', color: 'var(--paper)', outlineColor: 'var(--gold)' }}
-          >
-            Enter Echo
-          </Link>
+          {/* AVK-PROD-03A CD-1B: static development status in place of the executable Echo entry
+              (Scope I excludes the Echo application). Not a link. */}
+          <p className="mt-5 text-sm font-semibold" style={{ color: 'var(--ink-dim)' }}>
+            {P['AVK-PROD-CD1B-01']}
+          </p>
         </SectionContainer>
       </section>
 

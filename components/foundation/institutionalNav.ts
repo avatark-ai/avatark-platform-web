@@ -3,6 +3,7 @@
 // modules; no item may target WorldK, /enter or an external host (navigation.test.ts).
 import { APPROVED_COPY as C } from '../../lib/content/institutionalCopy.ts'
 import { UNIFICATION_COPY as U } from '../../lib/content/unificationCopy.ts'
+import { PROD_SCOPE_I_COPY as P } from '../../lib/content/prodScopeICopy.ts'
 import { LIVING_WORLDS_HREF, LIVING_WORLDS_ROUTE_ENABLED, livingWorldsNavHref } from '../../lib/content/livingWorldsRoute.ts'
 
 export type NavItem = { label: string; href: string }
@@ -19,12 +20,13 @@ export function primaryNavItems(livingWorldsEnabled: boolean = LIVING_WORLDS_ROU
   ]
 }
 
-// echoHref is passed in by the header as lib/content/links.ts ENTER_ECHO_HREF (the existing Echo
-// entry, /start). links.ts imports the product registry and cannot load under node --test, so it is
-// a parameter here rather than an import.
+// echoHref is passed in by the header as lib/content/links.ts DISCOVER_ECHO_HREF (/ecosystem in the
+// institutional release, AVK-PROD-03A CD-1). links.ts imports the product registry and cannot load
+// under node --test, so it is a parameter here rather than an import.
+// AVK-PROD-03A CD-1: "Discover Echo" (AVK-PROD-CD1-01) supersedes AVK-U03-HN-07 here in Scope I.
 export function exploreItems(echoHref: string, livingWorldsEnabled: boolean = LIVING_WORLDS_ROUTE_ENABLED): NavItem[] {
   return [
-    { label: U['AVK-U03-HN-07'], href: echoHref },
+    { label: P['AVK-PROD-CD1-01'], href: echoHref },
     // Withheld (not rendered, not redirected) until /living-worlds exists.
     ...(livingWorldsEnabled ? [{ label: U['AVK-U03-HN-08'], href: LIVING_WORLDS_HREF }] : []),
     { label: U['AVK-U03-HN-09'], href: '/ecosystem' },

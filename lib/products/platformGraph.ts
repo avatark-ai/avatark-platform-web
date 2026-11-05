@@ -9,7 +9,6 @@
 // integrationStatus/nextProductIds set -- no component code changes.
 import { getProductById, PRODUCT_REGISTRY, type AvatarKProduct, type IntegrationStatus, type JourneyRole, type ProductStatus } from '@avatark/product-registry'
 import { resolveProductUrl } from './registry.ts'
-import { ENTER_ECHO_HREF } from '../content/links.ts'
 import type { PlatformStatus } from '@/components/ecosystem/StatusBadge'
 
 export interface PlatformNode {
@@ -55,10 +54,12 @@ const MATURITY_LABELS: Record<ProductStatus, string> = {
 const ECHO_NODE: PlatformNode = {
   id: 'echo',
   name: 'Echo',
-  href: ENTER_ECHO_HREF,
+  // AVK-PROD-03A CD-1/CD-1B: no executable href (the Echo application is excluded in Scope I) and
+  // the former LIVE status is "In development" (AVK-PROD-CD1B-01 "Echo · In development").
+  href: null,
   purpose: 'A person’s wisdom becoming useful to another life.',
-  status: 'LIVE',
-  maturityLabel: 'Live',
+  status: 'IN DEVELOPMENT',
+  maturityLabel: 'In development',
   experiences: [],
   // The three Growth Engines, in the same order getGrowthEngines() returns
   // them -- Echo's fan-out is the one edge in this graph that can't be read

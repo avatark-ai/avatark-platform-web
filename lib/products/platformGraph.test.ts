@@ -6,7 +6,10 @@ test('getPlatformNode resolves the synthetic Echo node', () => {
   const echo = getPlatformNode('echo')
   assert.equal(echo?.id, 'echo')
   assert.equal(echo?.name, 'Echo')
-  assert.ok(echo?.href)
+  // AVK-PROD-03A CD-1/CD-1B: no executable Echo href in Scope I; LIVE -> In development
+  assert.equal(echo?.href, null)
+  assert.equal(echo?.status, 'IN DEVELOPMENT')
+  assert.equal(echo?.maturityLabel, 'In development')
 })
 
 test('getPlatformNode resolves a real registry product', () => {

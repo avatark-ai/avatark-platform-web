@@ -12,6 +12,11 @@ import { resolveProductUrl } from '../products/registry.ts'
 // fabricated Echo destination or a dead link.
 export const ENTER_ECHO_HREF = '/start'
 
+// AVK-PROD-03A Commit B (CD-1): in the institutional release (Scope I) the Echo application is
+// excluded, so institutional "Discover Echo" calls to action lead to the existing /ecosystem page,
+// which explains Echo's place in the architecture. No new route.
+export const DISCOVER_ECHO_HREF = '/ecosystem'
+
 export const SIGN_IN_HREF = '/auth/sign-in'
 export const INVITATION_HREF = '/enter'
 
