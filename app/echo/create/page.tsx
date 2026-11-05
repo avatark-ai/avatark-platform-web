@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import type { Metadata } from "next";
 import { EchoCreationFlow } from "@/components/echo/onboarding/EchoCreationFlow";
 import { pickPracticeForIntention } from "@/lib/content/echo";
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 const THEMES = ["Change", "Leadership", "Work", "Family", "Health", "Creation"] as const;
 
 export default function EchoCreatePage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   const themePracticeMap = Object.fromEntries(
     THEMES.map((theme) => [theme, pickPracticeForIntention(theme.toLowerCase())?.slug ?? ""])
   ) as Record<(typeof THEMES)[number], string>;

@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAdminContext } from '@/lib/admin/authz'
 import { createAdminClient, isAdminClientConfigured } from '@/lib/supabase/admin'
 import { recordAuditEvent } from '@/lib/admin/audit'
+import { blockExcludedRoute } from '@/lib/release/guards'
 
 export async function POST(request: NextRequest) {
+  const blocked = blockExcludedRoute() // AVK-PROD-03A L2: excluded in the institutional scope
+  if (blocked) return blocked
   const ctx = await getAdminContext()
   if (!ctx) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 

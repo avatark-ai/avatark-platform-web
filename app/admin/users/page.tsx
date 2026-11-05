@@ -1,4 +1,5 @@
 'use client'
+import { guardExcludedSegment } from '@/lib/release/guards'
 import { useState } from 'react'
 
 interface SearchMatch {
@@ -23,6 +24,7 @@ interface UserDetail {
 }
 
 export default function AdminUsersPage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle')
   const [error, setError] = useState<string | null>(null)

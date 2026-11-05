@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getEchoBySlug, getPracticeBySlug, listPractices } from "@/lib/content/echo";
@@ -6,6 +7,7 @@ import { isPracticeHandoffAvailable } from "@/lib/onboarding/practiceHandoff";
 import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
 
 export function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   return params.then(({ id }) => {
     const practice = getPracticeBySlug(id);
     return { title: practice ? `${practice.title} — Echo` : "Practice — Echo" };
@@ -19,6 +21,7 @@ export default async function PracticeDetailPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   const { id } = await params;
   const practice = getPracticeBySlug(id);
   if (!practice) notFound();

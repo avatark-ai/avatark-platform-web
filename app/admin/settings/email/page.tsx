@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import { computeEmailDiagnostics } from '@/lib/admin/emailDiagnostics'
 
 function Row({ label, value }: { label: string; value: string }) {
@@ -10,6 +11,7 @@ function Row({ label, value }: { label: string; value: string }) {
 }
 
 export default function AdminEmailDiagnosticsPage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   const d = computeEmailDiagnostics(process.env)
 
   return (

@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import Link from "next/link";
 import type { Metadata } from "next";
 import { IntegrationSimulatorView } from "@/components/dev/IntegrationSimulatorView";
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
 // request of any kind; everything is computed client-side from
 // lib/integrations/simulate.ts. Not linked from any nav.
 export default function IntegrationSimulatorPage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-8 px-6 py-12" style={{ background: "var(--midnight)", color: "var(--paper)" }}>
       <div className="flex flex-col gap-2">

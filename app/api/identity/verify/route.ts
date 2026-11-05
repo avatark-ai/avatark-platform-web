@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { loadIdentityExtras } from '@/lib/identity/claims'
+import { blockExcludedRoute } from '@/lib/release/guards'
 
 // Cross-product session verification: a product holding an access token
 // issued by *this* Supabase project can POST it here to get back verified
@@ -16,6 +17,8 @@ import { loadIdentityExtras } from '@/lib/identity/claims'
 // follow-up trust mechanism; that's an explicit next decision, not solved
 // by this endpoint's existence.
 export async function POST(request: NextRequest) {
+  const blocked = blockExcludedRoute() // AVK-PROD-03A L2: excluded in the institutional scope
+  if (blocked) return blocked
   const body = await request.json().catch(() => null)
   const accessToken = body?.accessToken
   if (!accessToken || typeof accessToken !== 'string') {

@@ -1,8 +1,10 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import { createAdminClient, isAdminClientConfigured } from '@/lib/supabase/admin'
 import { getUserEmailMap } from '@/lib/admin/userDirectory'
 import { AdminUnavailable } from '../Unavailable'
 
 export default async function AdminRolesPage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   if (!isAdminClientConfigured()) return <AdminUnavailable />
 
   const admin = createAdminClient()!

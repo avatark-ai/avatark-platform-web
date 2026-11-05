@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import Link from "next/link";
 import type { Metadata } from "next";
 import { createJourneyManifest } from "@avatark/journey";
@@ -17,6 +18,7 @@ export const metadata: Metadata = {
 // manifest (an invitation-sourced journey, signed in, currently at the
 // practice intro) -- for a live, interactive one, see the simulator.
 export default function IntegrationDashboardPage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   const exampleManifest = createJourneyManifest({
     journeyId: "example-journey",
     source: "invitation",

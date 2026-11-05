@@ -4,6 +4,9 @@ import { notFound } from 'next/navigation'
 import { CanonPageLayout } from '@/components/foundation/canon/CanonPageLayout'
 import { CANON_PLATES, getAdjacentPlates, getCanonPlate } from '@/lib/content/canonPlates'
 
+// AVK-PROD-03A (C2): only the generated plate slugs exist; any other slug is a build-level 404.
+export const dynamicParams = false
+
 export function generateStaticParams() {
   return CANON_PLATES.map((plate) => ({ slug: plate.slug }))
 }

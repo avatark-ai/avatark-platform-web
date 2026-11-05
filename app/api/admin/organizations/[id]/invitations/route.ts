@@ -2,12 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAdminContext } from '@/lib/admin/authz'
 import { createAdminClient, isAdminClientConfigured } from '@/lib/supabase/admin'
 import { recordAuditEvent } from '@/lib/admin/audit'
+import { blockExcludedRoute } from '@/lib/release/guards'
 
 // Creates a pending invitation row only. There is no self-serve accept
 // flow yet (see docs/IDENTITY_ACCOUNT_ADMIN_HANDOFF.md's known gaps) --
 // deliberately not sending an email or generating an accept link that
 // would point at a route that doesn't exist.
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const blocked = blockExcludedRoute() // AVK-PROD-03A L2: excluded in the institutional scope
+  if (blocked) return blocked
   const ctx = await getAdminContext()
   if (!ctx) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 

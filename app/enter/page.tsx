@@ -1,4 +1,5 @@
 "use client";
+import { guardExcludedSegment } from '@/lib/release/guards'
 
 import { Suspense, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -129,6 +130,7 @@ function EnterInvitationForm() {
 }
 
 export default function EnterInvitationPage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   return (
     <Suspense fallback={null}>
       <EnterInvitationForm />

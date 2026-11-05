@@ -7,6 +7,7 @@ import { isIntentionId } from '@/lib/onboarding/intentions'
 import { ONBOARDING_STATE_COOKIE } from '@/lib/onboarding/stateCookie'
 import { echoInvitationResolver } from '@/lib/invitations/echoResolver'
 import { invitationMatchesWitness } from '@/lib/invitations/destination'
+import { blockExcludedRoute } from '@/lib/release/guards'
 
 // RC5 -- the sole place this repo generates the onboarding state/nonce
 // and sets the cookie /continue later reads to verify a completion
@@ -17,6 +18,8 @@ import { invitationMatchesWitness } from '@/lib/invitations/destination'
 const STATE_COOKIE_MAX_AGE_SECONDS = 20 * 60 // covers a slower magic-link sign-in round trip; the receipt itself expires sooner (10 min)
 
 export async function GET(request: NextRequest) {
+  const blocked = blockExcludedRoute() // AVK-PROD-03A L2: excluded in the institutional scope
+  if (blocked) return blocked
   const { searchParams, origin } = new URL(request.url)
   const witness = searchParams.get('witness')
   const intentionParam = searchParams.get('intention')

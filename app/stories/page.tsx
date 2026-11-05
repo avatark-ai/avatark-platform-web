@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import type { Metadata } from "next";
 import Link from "next/link";
 import { listPractices, listStories } from "@/lib/content/echo";
@@ -35,6 +36,7 @@ export default async function StoriesPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   const params = await searchParams;
   const view = resolveView(params.view);
 

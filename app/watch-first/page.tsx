@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import Link from "next/link";
 import type { Metadata } from "next";
 import { listPractices, listStories } from "@/lib/content/echo";
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default function WatchFirstPage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   const featured = listStories()[0] ?? null;
   const practice = listPractices()[0] ?? null;
 

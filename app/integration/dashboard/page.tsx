@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import type { Metadata } from "next";
 import { createJourneyManifest, JOURNEY_STEP_ORDER } from "@avatark/journey";
 import { isPracticeHandoffAvailable } from "@/lib/onboarding/practiceHandoff";
@@ -33,6 +34,7 @@ export const metadata: Metadata = {
 // never implies Arena/Stream (both untouched by this journey yet) are
 // what's blocking.
 export default function IntegrationDashboardPage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   const manifest = createJourneyManifest({
     journeyId: "example-journey",
     source: "invitation",

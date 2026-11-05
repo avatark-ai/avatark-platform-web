@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import Link from 'next/link'
 import { createAdminClient, isAdminClientConfigured } from '@/lib/supabase/admin'
 import { AdminUnavailable } from '../Unavailable'
@@ -8,6 +9,7 @@ export default async function AdminOrganizationsPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   const search = await searchParams
   const q = typeof search.q === 'string' ? search.q.trim() : ''
 

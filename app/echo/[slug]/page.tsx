@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
@@ -13,6 +14,7 @@ import { Tabs, type TabDefinition } from "@/components/echo/shared/Tabs";
 import { EchoPageShell, ECHO_READING_WIDTH_CLASS } from "@/components/echo/shell/EchoPageShell";
 
 export function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   return params.then(({ slug }) => {
     const echo = getEchoBySlug(slug);
     return { title: echo ? `${echo.name} — Echo` : "Echo" };
@@ -20,6 +22,7 @@ export function generateMetadata({ params }: { params: Promise<{ slug: string }>
 }
 
 export default async function EchoDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   const { slug } = await params;
   const echo = getEchoBySlug(slug);
   if (!echo) notFound();

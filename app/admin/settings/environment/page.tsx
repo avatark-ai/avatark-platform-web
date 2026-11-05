@@ -1,6 +1,8 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import { computeEnvironmentHealth } from '@/lib/admin/environment'
 
 export default function AdminEnvironmentHealthPage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   const rows = computeEnvironmentHealth(process.env)
 
   return (

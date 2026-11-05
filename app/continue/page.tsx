@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import { Suspense } from 'react'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
@@ -16,6 +17,7 @@ export default async function ContinuePage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   const search = await searchParams
   const intention = typeof search.intention === 'string' ? search.intention : null
   const witness = typeof search.witness === 'string' ? search.witness : null

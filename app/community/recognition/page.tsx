@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import type { Metadata } from "next";
 import { START_HERE_HREF } from "@/lib/echo/links";
 import { CommunityEmptyState, CommunitySectionShell } from "@/components/echo/community/CommunitySectionShell";
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default function RecognitionPage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   return (
     <CommunitySectionShell
       title="Recognition"

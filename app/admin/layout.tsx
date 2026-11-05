@@ -2,8 +2,11 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getAdminContext } from '@/lib/admin/authz'
 import { AdminNav } from './AdminNav'
+import { guardExcludedSegment } from '@/lib/release/guards'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  // AVK-PROD-03A (C3, L2): excluded in the institutional scope -- 404 before any Supabase call.
+  guardExcludedSegment()
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 

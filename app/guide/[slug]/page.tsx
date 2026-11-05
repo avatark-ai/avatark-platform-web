@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { echoCategoryEyebrow, getGuide } from "@/lib/onboarding/guide";
@@ -11,6 +12,7 @@ export default async function GuidePage({
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   const { slug } = await params;
   const guide = getGuide(slug);
   if (!guide) notFound();

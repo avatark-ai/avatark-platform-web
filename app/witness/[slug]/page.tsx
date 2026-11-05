@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import OrbReveal from "@/components/OrbReveal";
@@ -16,6 +17,7 @@ export default async function WitnessPage({
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   const { slug } = await params;
   const practice = getPracticeBySlug(slug);
   if (!practice) notFound();

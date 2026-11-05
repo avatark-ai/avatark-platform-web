@@ -1,4 +1,6 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 export default function AdminSupportPage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   return (
     <div className="max-w-lg space-y-3 text-sm">
       <p>Platform-level support: <a className="underline" href="mailto:support@avatark.ai">support@avatark.ai</a></p>

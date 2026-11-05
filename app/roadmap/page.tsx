@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import type { Metadata } from 'next'
 import { InstitutionalLayout } from '@/components/foundation/InstitutionalLayout'
 import { EditorialContainer } from '@/components/foundation/Container'
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 }
 
 export default function RoadmapPage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   const roadmap = getRoadmapContent()
   const entries = getEcosystemStatusEntries()
 

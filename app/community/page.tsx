@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import type { Metadata } from "next";
 import Link from "next/link";
 import { arenakHref } from "@/lib/echo/links";
@@ -30,6 +31,7 @@ const HOW_COMMUNITIES_BEGIN = [
 ] as const;
 
 export default function CommunityPage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   const arenak = arenakHref();
 
   return (

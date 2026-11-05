@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import Link from 'next/link'
 
 const PANELS = [
@@ -8,6 +9,7 @@ const PANELS = [
 ]
 
 export default function AdminSettingsPage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       {PANELS.map((panel) => (

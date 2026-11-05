@@ -1,4 +1,5 @@
 'use client'
+import { guardExcludedSegment } from '@/lib/release/guards'
 import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -264,6 +265,7 @@ function AccountClientGate() {
 }
 
 export default function AccountPage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   if (!ACCOUNT_MOUNT_ENABLED) {
     return (
       <EchoPageShell layout="plain">

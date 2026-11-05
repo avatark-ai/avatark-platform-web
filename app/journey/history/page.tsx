@@ -1,4 +1,5 @@
 'use client'
+import { guardExcludedSegment } from '@/lib/release/guards'
 
 import Link from 'next/link'
 import { useJourneySession } from '@/lib/journey/session'
@@ -72,6 +73,7 @@ export function HistoryView({ context }: { context: JourneyContext }) {
 }
 
 export default function JourneyHistoryPage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   const { context } = useJourneySession()
   return <HistoryView context={context} />
 }

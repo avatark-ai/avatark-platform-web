@@ -1,4 +1,5 @@
 'use client'
+import { guardExcludedSegment } from '@/lib/release/guards'
 import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -134,6 +135,7 @@ function SignInForm() {
 }
 
 export default function SignInPage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   return (
     <Suspense fallback={null}>
       <SignInForm />

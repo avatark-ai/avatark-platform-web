@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { blockExcludedRoute } from '@/lib/release/guards'
 
 export async function GET() {
+  const blocked = blockExcludedRoute() // AVK-PROD-03A L2: excluded in the institutional scope
+  if (blocked) return blocked
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Not signed in' }, { status: 401 })
@@ -17,6 +20,8 @@ export async function GET() {
 }
 
 export async function PATCH(req: NextRequest) {
+  const blocked = blockExcludedRoute() // AVK-PROD-03A L2: excluded in the institutional scope
+  if (blocked) return blocked
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Not signed in' }, { status: 401 })

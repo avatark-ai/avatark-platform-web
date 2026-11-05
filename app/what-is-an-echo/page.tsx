@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CREATE_MY_ECHO_HREF, DISCOVER_HREF, START_HERE_HREF } from "@/lib/echo/links";
@@ -36,6 +37,7 @@ const STAGES = [
 ] as const;
 
 export default function WhatIsAnEchoPage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   return (
     <EchoPageShell layout="plain">
       <div className={`flex flex-col gap-10 sm:gap-12 ${ECHO_READING_WIDTH_CLASS.editorial}`}>

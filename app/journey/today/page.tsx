@@ -1,4 +1,5 @@
 'use client'
+import { guardExcludedSegment } from '@/lib/release/guards'
 
 import { Suspense, useEffect } from 'react'
 import Link from 'next/link'
@@ -125,6 +126,7 @@ function TodayContent() {
 }
 
 export default function JourneyTodayPage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   return (
     <Suspense fallback={<p className="text-sm" style={{ color: 'var(--text-dim)' }}>Loading…</p>}>
       <TodayContent />

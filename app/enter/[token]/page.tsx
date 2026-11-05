@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import Link from "next/link";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
@@ -65,6 +66,7 @@ export default async function EnterInvitationTokenPage({
   params: Promise<{ token: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   const { token: rawToken } = await params;
   const search = await searchParams;
   const intention = typeof search.intention === "string" ? search.intention : null;

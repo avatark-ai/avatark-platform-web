@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { safeReturnPath, classifyCallbackFailure } from '@avatark/auth'
+import { blockExcludedRoute } from '@/lib/release/guards'
 
 function signInFailureRedirect(origin: string, returnPath: string, reason: string) {
   const url = new URL('/auth/sign-in', origin)
@@ -12,6 +13,8 @@ function signInFailureRedirect(origin: string, returnPath: string, reason: strin
 }
 
 export async function GET(request: NextRequest) {
+  const blocked = blockExcludedRoute() // AVK-PROD-03A L2: excluded in the institutional scope
+  if (blocked) return blocked
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
   const returnPath = safeReturnPath(searchParams.get('return'), '/account')

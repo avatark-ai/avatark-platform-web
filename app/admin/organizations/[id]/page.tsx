@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createAdminClient, isAdminClientConfigured } from '@/lib/supabase/admin'
@@ -36,6 +37,7 @@ export default async function AdminOrganizationDetailPage({
   params: Promise<{ id: string }>
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   const { id: orgId } = await params
   const search = await searchParams
   const roleFilter = typeof search.role === 'string' ? search.role : ''

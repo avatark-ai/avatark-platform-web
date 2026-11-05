@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import { PLATFORM_PRODUCTS, SUBSCRIPTION_MODEL_NOTE } from '@/lib/products/registry'
 import { createAdminClient, isAdminClientConfigured } from '@/lib/supabase/admin'
 import { checkProductHealth, type ProductHealth } from '@/lib/products/health'
@@ -26,6 +27,7 @@ function HealthBadge({ health }: { health: ProductHealth }) {
 }
 
 export default async function AdminProductsPage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   const [accessSummaries, healthResults] = await Promise.all([
     getAccessSummaries(),
     Promise.all(PLATFORM_PRODUCTS.map((p) => checkProductHealth(p.url))),

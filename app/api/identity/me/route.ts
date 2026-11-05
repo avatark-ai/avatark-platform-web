@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server'
 import { supabaseIdentityProvider } from '@/lib/identity/supabaseIdentityProvider'
+import { blockExcludedRoute } from '@/lib/release/guards'
 
 // Server-verified read of the current session's identity claims. Backs
 // lib/identity/useIdentity.ts for client components in this repo; a
 // same-origin convenience, not a cross-product endpoint (see
 // /api/identity/verify for the token-based cross-product path).
 export async function GET() {
+  const blocked = blockExcludedRoute() // AVK-PROD-03A L2: excluded in the institutional scope
+  if (blocked) return blocked
   const claims = await supabaseIdentityProvider.getUser()
   if (!claims) return NextResponse.json({ error: 'Not signed in' }, { status: 401 })
   return NextResponse.json(claims)

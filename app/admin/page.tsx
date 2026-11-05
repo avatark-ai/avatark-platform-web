@@ -1,3 +1,4 @@
+import { guardExcludedSegment } from '@/lib/release/guards'
 import Link from 'next/link'
 import { createAdminClient, isAdminClientConfigured } from '@/lib/supabase/admin'
 import { getUserEmailMap } from '@/lib/admin/userDirectory'
@@ -71,6 +72,7 @@ function StatCard({ label, value, detail }: { label: string; value: string; deta
 }
 
 export default async function AdminDashboardPage() {
+  guardExcludedSegment() // AVK-PROD-03A L2: excluded page code never runs in the institutional scope
   const [userTotal, orgTotal, supabaseHealth, recentAudit] = await Promise.all([
     getUserTotal(),
     getOrganizationTotal(),
