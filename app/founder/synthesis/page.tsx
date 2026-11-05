@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Fragment } from 'react'
 import { FounderPageLayout } from '@/components/foundation/founder/FounderPageLayout'
 import { FounderChapterHeader } from '@/components/foundation/founder/FounderChapterHeader'
 import { FounderChapterNav } from '@/components/foundation/founder/FounderChapterNav'
@@ -21,13 +22,29 @@ export default function FounderSynthesisPage() {
     <FounderPageLayout>
       <FounderChapterHeader chapterId="synthesis" title={chapter.navLabel} />
       <div className="mt-6 flex flex-col gap-5 text-lg leading-8" style={{ color: 'var(--ink)' }}>
-        {chapter.paragraphs.map((paragraph, index) =>
-          chapter.pullQuoteIndexes.includes(index) ? (
-            <FounderPullQuote key={index}>{paragraph}</FounderPullQuote>
-          ) : (
-            <p key={index}>{paragraph}</p>
-          ),
-        )}
+        {chapter.paragraphs.map((paragraph, index) => (
+          <Fragment key={index}>
+            {chapter.subheadings
+              .filter((subheading) => subheading.beforeParagraph === index)
+              .map((subheading) => (
+                // AVK-FOUNDER-SCIENCE-02 (AVK-FS-FL-311): in-chapter sub-heading,
+                // same treatment as /founder/future's "Why Living Worlds?".
+                <h2
+                  key={subheading.id}
+                  id={subheading.id}
+                  className="mt-6 scroll-mt-6 text-2xl font-semibold tracking-tight"
+                  style={{ color: 'var(--ink)' }}
+                >
+                  {subheading.text}
+                </h2>
+              ))}
+            {chapter.pullQuoteIndexes.includes(index) ? (
+              <FounderPullQuote>{paragraph}</FounderPullQuote>
+            ) : (
+              <p>{paragraph}</p>
+            )}
+          </Fragment>
+        ))}
       </div>
       <FounderGeometry />
 

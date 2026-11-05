@@ -51,6 +51,16 @@ The Indian traditions illuminated the vertical journey of becoming. Prometheus b
 
 Looking back, I realized that my own life had followed this same pattern: BITS Pilani gave me the question; Indian philosophy gave me a framework for inner development; Western engineering taught me how to design and build systems; and Prometheus gave those systems a purpose beyond themselves.
 
+### From Questions to Systems
+
+Before I go further, I want to be clear about the part these traditions play in this work. They gave me questions worth asking — about attention, judgment, duty and what we owe to one another. They did not give me answers I can assume are true for every person, and I do not treat them as evidence.
+
+Engineering taught me a different discipline. A system is designed against requirements, built, measured and corrected. A setpoint is useful only when the system can sense where it actually is, not where it hopes to be. After more than thirty years of building systems, I have learned that a good idea is where the work begins, not where it ends.
+
+So AvatarK keeps these things apart. Philosophy and story shape the questions we ask and the experiences we imagine. Whether any of it actually helps a person change is a separate question: one that has to be studied carefully, measured honestly and, where the evidence does not support us, answered by changing what we build.
+
+That is how a question that began at BITS Pilani became a set of systems — not by proving the traditions right, but by learning how to test what they inspired.
+
 The traditions I returned to rarely teach in the abstract. Their lessons unfold in places — forests, rivers, hermitages — and those places are remembered alongside the people who passed through them.
 
 ## Future

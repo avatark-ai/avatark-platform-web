@@ -50,12 +50,34 @@ const shaToId = new Map(Object.entries(APPROVED).map(([id, h]) => [h, id]))
 // Base (cc54874) chapter paragraphs, as parsed, pinned by SHA-256 of JSON.stringify(paragraphs).
 const BASE_SYNTHESIS_SHA = '0bbe2d185dc64d643b88d8f9b77ec8bd3866d93b160bcd7fa802c8e34435e7a2'
 
-test('Chapter 3 keeps every existing paragraph and ends with FL-301-ALT', () => {
-  const p = section('Synthesis').paragraphs
-  assert.equal(p.length, 7)
-  assert.equal(shaToId.get(sha(p[6])), 'AVK-FLW-FL-301-ALT')
+// AVK-FOUNDER-SCIENCE-02: owner-approved Chapter 3 block (D-03), pinned to the
+// _claude_reports/AVK_FOUNDER_SCIENCE_02/tools/approved-fs02-register.json `sha` values.
+const FS_CH3: Record<string, string> = {
+  'AVK-FS-FL-311': 'a13f3a500a5b78d23442be9f691208ec3a9e6364ae8ad728662e1ca4808f87ef',
+  'AVK-FS-FL-312': '627ee2472627e4b9df5e396556ebdff6cca3d76eeb826137d26b0aa8a5324f39',
+  'AVK-FS-FL-313': 'dc2f8d55c00814f2dc9656af101a869b4030f92ee8d58d7a733edb419bbb1c48',
+  'AVK-FS-FL-314': '27120d1714eac623ee9377d264f2be35297fff9ccd087ecc0dade3ccc3228469',
+  'AVK-FS-FL-315': 'a48b8de6814d6b7a59fb8e3263b9e2c28b6a5689060174fbe2426e3696ec4b1f',
+}
+
+test('Chapter 3 keeps every existing paragraph, adds the FS-02 block, and still ends with FL-301-ALT', () => {
+  const s = section('Synthesis')
+  const p = s.paragraphs
+  assert.equal(p.length, 6 + 4 + 1)
   assert.equal(sha(JSON.stringify(p.slice(0, 6))), BASE_SYNTHESIS_SHA)
-  assert.deepEqual(section('Synthesis').subheadings, [])
+  assert.deepEqual(
+    p.slice(6, 10).map((x) => sha(x)),
+    ['AVK-FS-FL-312', 'AVK-FS-FL-313', 'AVK-FS-FL-314', 'AVK-FS-FL-315'].map((id) => FS_CH3[id]),
+  )
+  assert.equal(shaToId.get(sha(p[10])), 'AVK-FLW-FL-301-ALT')
+  assert.deepEqual(s.subheadings, [{ beforeParagraph: 6, text: 'From Questions to Systems', id: 'from-questions-to-systems' }])
+  assert.equal(sha(s.subheadings?.[0].text ?? ''), FS_CH3['AVK-FS-FL-311'])
+})
+
+test('raw Chapter 3 equals the FS-01A simulation and raw Chapter 4 is byte-identical to 34361b1', () => {
+  const [, , ch3, ch4] = rawChapters(raw)
+  assert.equal(sha(ch3), '02ffb8ba49a7a131219e10ecbc48c972f05be12752d42b87779585b1f66c5003')
+  assert.equal(sha(ch4), '7613a7ec1406aed1cf0ef41c7800c64e6a4b6d46ac22a315fb9f6ddad241cb43')
 })
 
 test('Chapter 4 inserts "Why Living Worlds?" between the inheritance paragraph and the closing', () => {

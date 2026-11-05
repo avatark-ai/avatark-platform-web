@@ -7,6 +7,8 @@ import { FounderChapterNav } from '@/components/foundation/founder/FounderChapte
 import { FounderPullQuote } from '@/components/foundation/founder/FounderPullQuote'
 import { FounderPortrait } from '@/components/foundation/founder/FounderPortrait'
 import { FounderContinueJourney } from '@/components/foundation/founder/FounderContinueJourney'
+import { FounderTimeline } from '@/components/foundation/founder/FounderTimeline'
+import { FounderEchoLivingWorlds } from '@/components/foundation/founder/FounderEchoLivingWorlds'
 import { getFounderLetter } from '@/lib/content/foundation'
 
 export const metadata: Metadata = {
@@ -63,6 +65,10 @@ export default function FounderFuturePage() {
       <FounderChapterNav chapterId="future" />
 
       <FounderPortrait name={letter.author} role={letter.role} credentials={letter.credentials} />
+
+      {/* AVK-FOUNDER-SCIENCE-02: timeline and closing transition, outside the letter. */}
+      <FounderTimeline />
+      <FounderEchoLivingWorlds />
 
       <FounderContinueJourney />
     </FounderPageLayout>
