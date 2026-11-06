@@ -38,7 +38,7 @@ export default async function SacredGeometryPlatePage({ params }: { params: Prom
           / {plate.title}
         </p>
 
-        <p className="mt-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="mt-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           Plate {plate.numeral}
         </p>
         <h1 className="mt-2 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">{plate.title}</h1>
@@ -59,7 +59,7 @@ export default async function SacredGeometryPlatePage({ params }: { params: Prom
           <div className="mt-10 flex flex-col gap-8">
             {plate.axiom && (
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+                <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
                   Axiom
                 </p>
                 <p className="mt-2 text-lg leading-8" style={{ color: 'var(--ink)' }}>
@@ -69,7 +69,7 @@ export default async function SacredGeometryPlatePage({ params }: { params: Prom
             )}
             {plate.invariant && (
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+                <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
                   Invariant
                 </p>
                 <p className="mt-2 text-lg leading-8" style={{ color: 'var(--ink)' }}>
@@ -101,8 +101,8 @@ export default async function SacredGeometryPlatePage({ params }: { params: Prom
           {previous ? (
             <Link
               href={`/canon/sacred-geometry/${previous.slug}`}
-              className="group flex flex-col rounded-sm text-sm transition-colors duration-200 hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-              style={{ color: 'var(--ink-dim)', outlineColor: 'var(--gold)' }}
+              className="group flex flex-col rounded-sm text-sm transition-colors duration-200 hover:text-[var(--gold-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{ color: 'var(--ink-dim)', outlineColor: 'var(--focus-ring)' }}
             >
               <span aria-hidden="true" className="inline-block transition-transform duration-200 group-hover:-translate-x-1 group-focus-visible:-translate-x-1">
                 ← Plate {previous.numeral}
@@ -117,8 +117,8 @@ export default async function SacredGeometryPlatePage({ params }: { params: Prom
           {next && (
             <Link
               href={`/canon/sacred-geometry/${next.slug}`}
-              className="group flex flex-col rounded-sm text-right text-sm transition-colors duration-200 hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-              style={{ color: 'var(--ink-dim)', outlineColor: 'var(--gold)' }}
+              className="group flex flex-col rounded-sm text-right text-sm transition-colors duration-200 hover:text-[var(--gold-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{ color: 'var(--ink-dim)', outlineColor: 'var(--focus-ring)' }}
             >
               <span aria-hidden="true" className="inline-block transition-transform duration-200 group-hover:translate-x-1 group-focus-visible:translate-x-1">
                 Plate {next.numeral} →

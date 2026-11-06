@@ -23,7 +23,7 @@ export function CanonGateway() {
             key={card.id}
             href={card.institutionalHref as string}
             className="rounded-lg border p-4 transition hover:-translate-y-1 hover:border-[var(--gold)] hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 active:translate-y-0 active:shadow-sm"
-            style={{ borderColor: 'var(--paper-line)', background: 'var(--surface-card)', outlineColor: 'var(--gold)' }}
+            style={{ borderColor: 'var(--paper-line)', background: 'var(--surface-card)', outlineColor: 'var(--focus-ring)' }}
           >
             <p className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>
               {card.label}
@@ -36,7 +36,7 @@ export function CanonGateway() {
       </RevealOnView>
 
       <div className="mt-10 border-t pt-8" style={{ borderColor: 'var(--paper-line)' }}>
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           Coming Next
         </p>
         <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-3">

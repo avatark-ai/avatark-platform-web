@@ -7,7 +7,7 @@ import { isInstitutionalScope } from '@/lib/release/scope'
 
 const LINK_CLASS =
   'rounded-sm text-sm transition-colors hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
-const FOCUS_STYLE = { outlineColor: 'var(--gold)' } as const
+const FOCUS_STYLE = { outlineColor: 'var(--focus-ring)' } as const
 
 interface FooterLink {
   label: string
@@ -109,7 +109,7 @@ export function InstitutionalFooter() {
   ]
 
   return (
-    <footer style={{ borderTop: '1px solid var(--surface-line)', background: 'var(--midnight)' }}>
+    <footer className="avk-dark-surface" style={{ borderTop: '1px solid var(--surface-line)', background: 'var(--midnight)' }}>
       <div className="mx-auto max-w-[var(--shell-width)] px-6 py-8">
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
           <FooterColumn title="Ecosystem" links={ecosystemLinks} />

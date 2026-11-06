@@ -49,7 +49,7 @@ export default function EcosystemPage() {
       {/* AVK-UNIFICATION-03D-1 Level 2: conceptual relationship view (not ownership, not deployment). */}
       <RelationshipArchitecture />
 
-      <section className="border-t" style={{ background: 'var(--midnight)', color: 'var(--paper)' }}>
+      <section className="avk-dark-surface border-t" style={{ background: 'var(--midnight)', color: 'var(--paper)' }}>
         <EditorialContainer className="text-center">
           <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Every product traces back to one person.</h2>
           <Link

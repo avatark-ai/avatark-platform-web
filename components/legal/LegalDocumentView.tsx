@@ -22,7 +22,7 @@ function Block({ block }: { block: LegalBlock }) {
       <a
         href={`mailto:${block.address}`}
         className="underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-        style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+        style={{ color: 'var(--ink)', outlineColor: 'var(--focus-ring)' }}
       >
         {block.address}
       </a>

@@ -28,7 +28,7 @@ function subscribeHash(cb: () => void) {
   window.addEventListener('hashchange', cb)
   return () => window.removeEventListener('hashchange', cb)
 }
-const FOCUS = { outlineColor: 'var(--gold)' } as const
+const FOCUS = { outlineColor: 'var(--focus-ring)' } as const
 
 export function PrinciplesPanel({ items, label }: { items: readonly PrincipleItem[]; label: string }) {
   const desktop = useSyncExternalStore(subscribeMedia, () => window.matchMedia(DESKTOP).matches, () => null)

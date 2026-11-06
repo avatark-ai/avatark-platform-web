@@ -28,7 +28,7 @@ function TargetLink({ name, href }: { name: string; href: string | null }) {
   const linkProps = {
     href,
     className: 'link-underline-draw rounded-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
-    style: { color: 'var(--ink)', outlineColor: 'var(--gold)' },
+    style: { color: 'var(--ink)', outlineColor: 'var(--focus-ring)' },
   }
   return external ? <DepartureLink {...linkProps}>{name}</DepartureLink> : <Link {...linkProps}>{name}</Link>
 }
@@ -44,7 +44,7 @@ export function ContinueYourJourney() {
           <Link
             href={echo.href}
             className="link-underline-draw rounded-sm text-lg font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+            style={{ color: 'var(--ink)', outlineColor: 'var(--focus-ring)' }}
           >
             Start with Echo →
           </Link>

@@ -43,7 +43,7 @@ export function Canon({ content }: { content: CanonContent }) {
   return (
     <section id="four-axes">
       <SectionContainer>
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           {content.subtitle}
         </p>
 
@@ -70,7 +70,7 @@ export function Canon({ content }: { content: CanonContent }) {
                     id={`canon-tab-${axis.id}`}
                     onClick={() => setOpenIndex(index)}
                     className="flex-1 rounded-t-sm px-4 py-3 text-sm font-semibold transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                    style={{ color: selected ? 'var(--ink)' : 'var(--ink-dim)', outlineColor: 'var(--gold)' }}
+                    style={{ color: selected ? 'var(--ink)' : 'var(--ink-dim)', outlineColor: 'var(--focus-ring)' }}
                   >
                     {axis.label}
                     <span className="ml-2 text-xs font-normal" style={{ color: 'var(--ink-dim)' }}>
@@ -122,7 +122,7 @@ export function Canon({ content }: { content: CanonContent }) {
                   aria-controls={`canon-accordion-${axis.id}`}
                   onClick={() => setOpenIndex(expanded ? null : index)}
                   className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                  style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+                  style={{ color: 'var(--ink)', outlineColor: 'var(--focus-ring)' }}
                 >
                   <span>
                     {axis.label} <span className="font-normal" style={{ color: 'var(--ink-dim)' }}>{axis.figure}</span>

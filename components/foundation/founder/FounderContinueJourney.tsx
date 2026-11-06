@@ -27,7 +27,7 @@ export function FounderContinueJourney() {
 
   return (
     <nav aria-label="Continue the journey" className="mt-10 border-t pt-8" style={{ borderColor: 'var(--paper-line)' }}>
-      <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+      <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
         Continue the Journey
       </p>
       <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -35,8 +35,8 @@ export function FounderContinueJourney() {
           <li key={action.label}>
             <Link
               href={action.href}
-              className="link-underline-draw inline-block rounded-sm text-sm font-semibold transition-colors duration-200 hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-              style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+              className="link-underline-draw inline-block rounded-sm text-sm font-semibold transition-colors duration-200 hover:text-[var(--gold-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{ color: 'var(--ink)', outlineColor: 'var(--focus-ring)' }}
             >
               {action.label} →
             </Link>

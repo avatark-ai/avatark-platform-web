@@ -10,7 +10,7 @@ export function LivingWorldsIntro() {
     <section
       id="living-worlds-intro"
       aria-labelledby="living-worlds-title"
-      className="relative overflow-hidden"
+      className="avk-dark-surface relative overflow-hidden"
       style={{ background: 'var(--midnight)', color: 'var(--paper)' }}
     >
       <div aria-hidden="true" className="absolute inset-x-0 bottom-16 h-px opacity-40" style={{ background: 'var(--gold)' }} />

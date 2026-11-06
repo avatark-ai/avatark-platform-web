@@ -20,7 +20,7 @@ export default function CanonPage() {
   return (
     <CanonPageLayout
       afterContent={
-        <section style={{ background: 'var(--midnight)', color: 'var(--paper)' }}>
+        <section className="avk-dark-surface" style={{ background: 'var(--midnight)', color: 'var(--paper)' }}>
           <EditorialContainer className="text-center">
             <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">The architecture becomes many experiences.</h2>
             {/* AVK-FOUNDER-LIVING-WORLDS-02 (AVK-FLW-CN-01): Platform framing, not ported Canon text. */}
@@ -39,7 +39,7 @@ export default function CanonPage() {
       }
     >
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           Canon
         </p>
         <h1 className="mt-2 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">{canonContent.title}</h1>

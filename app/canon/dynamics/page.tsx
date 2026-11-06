@@ -19,7 +19,7 @@ export default function DynamicsPage() {
         <p className="text-xs font-medium" style={{ color: 'var(--ink-dim)' }}>
           Canon / Dynamics
         </p>
-        <p className="mt-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="mt-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           Framework
         </p>
         <h1 className="mt-2 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">{title}</h1>
@@ -31,7 +31,7 @@ export default function DynamicsPage() {
       </div>
 
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           {dominanceDistributions.heading}
         </p>
         <p className="mt-2 max-w-2xl text-sm leading-6" style={{ color: 'var(--ink-dim)' }}>
@@ -44,7 +44,7 @@ export default function DynamicsPage() {
       </div>
 
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           {canonicalConstraint.heading}
         </p>
         <CanonFormula>{canonicalConstraint.formula}</CanonFormula>
@@ -54,7 +54,7 @@ export default function DynamicsPage() {
       </div>
 
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           {stabilityAxes.heading}
         </p>
         <p className="mt-2 max-w-2xl text-sm leading-6" style={{ color: 'var(--ink-dim)' }}>
@@ -67,7 +67,7 @@ export default function DynamicsPage() {
       </div>
 
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           {regimes.heading}
         </p>
         <p className="mt-2 max-w-2xl text-sm leading-6" style={{ color: 'var(--ink-dim)' }}>
@@ -77,7 +77,7 @@ export default function DynamicsPage() {
       </div>
 
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           {transitions.heading}
         </p>
         <p className="mt-2 max-w-2xl text-sm leading-6" style={{ color: 'var(--ink-dim)' }}>
@@ -105,7 +105,7 @@ export default function DynamicsPage() {
       </div>
 
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           {imbalance.heading}
         </p>
         <p className="mt-2 max-w-2xl text-sm leading-6" style={{ color: 'var(--ink-dim)' }}>
@@ -118,7 +118,7 @@ export default function DynamicsPage() {
       </div>
 
       <div className="border-t pt-8" style={{ borderColor: 'var(--paper-line)' }}>
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           {closing.heading}
         </p>
         <p className="mt-2 max-w-2xl text-base leading-7" style={{ color: 'var(--ink)' }}>

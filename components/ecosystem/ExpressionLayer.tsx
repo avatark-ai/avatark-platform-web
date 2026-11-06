@@ -75,7 +75,7 @@ function LayerCard({ node }: { node: PlatformNode }) {
           <DepartureLink
             href={node.href}
             className="link-underline-draw rounded-sm text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+            style={{ color: 'var(--ink)', outlineColor: 'var(--focus-ring)' }}
           >
             Open {node.name} →
           </DepartureLink>
@@ -83,7 +83,7 @@ function LayerCard({ node }: { node: PlatformNode }) {
           <Link
             href={node.href}
             className="link-underline-draw rounded-sm text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+            style={{ color: 'var(--ink)', outlineColor: 'var(--focus-ring)' }}
           >
             Open {node.name} →
           </Link>

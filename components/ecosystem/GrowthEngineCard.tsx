@@ -56,7 +56,7 @@ export function GrowthEngineCard({
       style={{ borderColor: 'var(--paper-line)', background: 'var(--surface-card)' }}
     >
       <div className="flex items-start justify-between gap-3">
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           {descriptor}
         </p>
         <StatusBadge status={status} />
@@ -127,7 +127,7 @@ export function GrowthEngineCard({
             <DepartureLink
               href={href}
               className="link-underline-draw rounded-sm text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-              style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+              style={{ color: 'var(--ink)', outlineColor: 'var(--focus-ring)' }}
             >
               {ctaLabel} →
             </DepartureLink>
@@ -135,7 +135,7 @@ export function GrowthEngineCard({
             <Link
               href={href}
               className="link-underline-draw rounded-sm text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-              style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+              style={{ color: 'var(--ink)', outlineColor: 'var(--focus-ring)' }}
             >
               {ctaLabel} →
             </Link>

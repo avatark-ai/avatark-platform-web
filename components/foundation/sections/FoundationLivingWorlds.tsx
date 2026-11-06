@@ -104,7 +104,7 @@ export function FoundationLivingWorlds() {
           <Link
             href={FOUNDER_WHY_LIVING_WORLDS_HREF}
             className="inline-block rounded-sm text-base font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+            style={{ color: 'var(--ink)', outlineColor: 'var(--focus-ring)' }}
           >
             {L['AVK-FLW-FD-08']}
           </Link>

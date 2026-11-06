@@ -86,8 +86,11 @@ export function CanonRail() {
                 key={item.id}
                 href={item.institutionalHref ?? '#'}
                 aria-current={active ? 'page' : undefined}
-                className="shrink-0 rounded-sm text-sm font-medium transition-colors duration-200 hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                style={{ color: active ? 'var(--gold)' : 'var(--ink-dim)', outlineColor: 'var(--gold)' }}
+                // AVK-PROD-A11Y-01B (A11Y-06, D-3): active = ink + semibold + a 2px bronze bar (left at lg,
+                // beneath below lg). Every link carries the same transparent border, so the active state
+                // causes no layout shift. Square corners keep the bar a straight rule.
+                className={`shrink-0 rounded-none border-b-2 text-sm transition-colors duration-200 hover:text-[var(--gold-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 lg:-ml-3 lg:border-b-0 lg:border-l-2 lg:pl-2.5 ${active ? 'font-semibold' : 'font-medium'}`}
+                style={{ color: active ? 'var(--ink)' : 'var(--ink-dim)', borderColor: active ? 'var(--gold-ink)' : 'transparent', outlineColor: 'var(--focus-ring)' }}
               >
                 {item.label}
               </Link>
@@ -99,20 +102,22 @@ export function CanonRail() {
       <div className="min-w-0">
         <p
           className="text-xs font-semibold uppercase tracking-wider lg:mb-3"
-          style={{ color: 'var(--ink-dim)', opacity: 0.75 }}
+          style={{ color: 'var(--ink-dim)' }}
         >
           More in the Canon
         </p>
         <ul
           aria-label="Upcoming Canon chapters"
-          className="flex min-w-0 flex-row flex-nowrap gap-x-5 overflow-x-auto pt-3 lg:flex-col lg:items-start lg:gap-y-2.5 lg:overflow-visible lg:pt-0"
+          // AVK-PROD-A11Y-01B (A11Y-07, D-4a): wraps below lg instead of scrolling horizontally, so no
+          // keyboard-inaccessible scroll region exists.
+          className="flex min-w-0 flex-row flex-wrap gap-x-5 gap-y-2 pt-3 lg:flex-col lg:items-start lg:gap-y-2.5 lg:pt-0"
         >
           {CANON_FUTURE_ITEMS.map((item) => (
-            <li key={item.id} className="flex shrink-0 items-center gap-1.5 text-sm" style={{ color: 'var(--ink-dim)', opacity: 0.6 }}>
+            <li key={item.id} className="flex shrink-0 items-center gap-1.5 text-sm" style={{ color: 'var(--ink-muted)' }}>
               <span>{item.label}</span>
               <span
                 className="rounded-full border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
-                style={{ borderColor: 'var(--paper-line)', color: 'var(--gold)' }}
+                style={{ borderColor: 'var(--gold)', color: 'var(--gold-ink)' }}
               >
                 Growing
               </span>

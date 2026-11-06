@@ -18,7 +18,7 @@ export default function OperatorsPage() {
         <p className="text-xs font-medium" style={{ color: 'var(--ink-dim)' }}>
           Canon / Operators
         </p>
-        <p className="mt-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="mt-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           Framework
         </p>
         <h1 className="mt-2 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">{title}</h1>
@@ -45,7 +45,7 @@ export default function OperatorsPage() {
             <p className="mt-2 text-sm leading-6" style={{ color: 'var(--ink-dim)' }}>
               {operator.body}
             </p>
-            <p className="mt-3 text-sm leading-6" style={{ color: 'var(--gold)' }}>
+            <p className="mt-3 text-sm leading-6" style={{ color: 'var(--gold-ink)' }}>
               {operator.constraintNote}
             </p>
           </div>
@@ -53,7 +53,7 @@ export default function OperatorsPage() {
       </RevealOnView>
 
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           {canonicalConstraint.heading}
         </p>
         <CanonFormula>{canonicalConstraint.formula}</CanonFormula>

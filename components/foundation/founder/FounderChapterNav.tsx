@@ -25,8 +25,8 @@ export function FounderChapterNav({ chapterId }: { chapterId: string }) {
       {previous ? (
         <Link
           href={previous.href}
-          className="group flex flex-col rounded-sm text-sm transition-colors duration-200 hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-          style={{ color: 'var(--ink-dim)', outlineColor: 'var(--gold)' }}
+          className="group flex flex-col rounded-sm text-sm transition-colors duration-200 hover:text-[var(--gold-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          style={{ color: 'var(--ink-dim)', outlineColor: 'var(--focus-ring)' }}
         >
           <span aria-hidden="true" className="inline-block transition-transform duration-200 group-hover:-translate-x-1 group-focus-visible:-translate-x-1">
             ← Previous
@@ -41,8 +41,8 @@ export function FounderChapterNav({ chapterId }: { chapterId: string }) {
       {next && (
         <Link
           href={next.href}
-          className="group flex flex-col rounded-sm text-right text-sm transition-colors duration-200 hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-          style={{ color: 'var(--ink-dim)', outlineColor: 'var(--gold)' }}
+          className="group flex flex-col rounded-sm text-right text-sm transition-colors duration-200 hover:text-[var(--gold-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          style={{ color: 'var(--ink-dim)', outlineColor: 'var(--focus-ring)' }}
         >
           <span aria-hidden="true" className="inline-block transition-transform duration-200 group-hover:translate-x-1 group-focus-visible:translate-x-1">
             Next →

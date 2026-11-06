@@ -51,7 +51,7 @@ export default function FounderFuturePage() {
                   <Link
                     href="/ecosystem"
                     className="mt-3 inline-block rounded-sm text-base font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                    style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+                    style={{ color: 'var(--ink)', outlineColor: 'var(--focus-ring)' }}
                   >
                     Explore the Ecosystem →
                   </Link>

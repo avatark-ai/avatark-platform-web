@@ -10,7 +10,7 @@ export function FounderChapterHeader({ chapterId, title }: { chapterId: string; 
 
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+      <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
         Founder Letter{chapter && ` · Chapter ${chapter.order} of ${FOUNDER_CHAPTER_COUNT}`}
       </p>
       <h1 className="mt-2 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">{title}</h1>

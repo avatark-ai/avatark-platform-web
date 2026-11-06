@@ -17,7 +17,7 @@ export default function AlignmentPage() {
         <p className="text-xs font-medium" style={{ color: 'var(--ink-dim)' }}>
           {eyebrow}
         </p>
-        <p className="mt-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="mt-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           Framework / Alignment
         </p>
         <h1 className="mt-2 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">{title}</h1>
@@ -29,7 +29,7 @@ export default function AlignmentPage() {
       </div>
 
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           {canonicalRole.heading}
         </p>
         <p className="mt-2 max-w-2xl text-base leading-7" style={{ color: 'var(--ink)' }}>
@@ -38,14 +38,14 @@ export default function AlignmentPage() {
       </div>
 
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           {measures.heading}
         </p>
         <CanonPairGrid items={measures.items} />
       </div>
 
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           {loop.heading}
         </p>
         <div className="mt-3 flex flex-wrap items-start gap-x-2 gap-y-4">
@@ -73,14 +73,14 @@ export default function AlignmentPage() {
       </div>
 
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           {misalignmentSignals.heading}
         </p>
         <CanonPairGrid items={misalignmentSignals.items} />
       </div>
 
       <div className="border-t pt-8" style={{ borderColor: 'var(--paper-line)' }}>
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           {summary.heading}
         </p>
         <p className="mt-2 max-w-2xl text-base leading-7" style={{ color: 'var(--ink)' }}>

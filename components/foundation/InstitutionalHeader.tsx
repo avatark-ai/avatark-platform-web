@@ -24,7 +24,7 @@ import { EXPLORE_LABEL, exploreItems, primaryNavItems } from '@/components/found
 
 const LINK_CLASS =
   'rounded-sm text-sm font-medium tracking-tight transition-colors duration-200 hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
-const FOCUS_STYLE = { outlineColor: 'var(--gold)' } as const
+const FOCUS_STYLE = { outlineColor: 'var(--focus-ring)' } as const
 
 const NAV_ITEMS = primaryNavItems()
 const EXPLORE_ITEMS = exploreItems(DISCOVER_ECHO_HREF)
@@ -59,7 +59,7 @@ export function InstitutionalHeader() {
   }, [mobileOpen])
 
   return (
-    <header style={{ borderBottom: '1px solid var(--surface-line)', background: 'var(--midnight)' }}>
+    <header className="avk-dark-surface" style={{ borderBottom: '1px solid var(--surface-line)', background: 'var(--midnight)' }}>
       <div className="relative mx-auto max-w-[var(--shell-width)] px-6">
         <div className="flex items-center justify-between py-4">
           <Link

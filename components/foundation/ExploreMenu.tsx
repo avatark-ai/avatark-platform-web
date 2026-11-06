@@ -12,7 +12,7 @@ import Link from 'next/link'
 
 export type ExploreItem = { label: string; href: string }
 
-const FOCUS_STYLE = { outlineColor: 'var(--gold)' } as const
+const FOCUS_STYLE = { outlineColor: 'var(--focus-ring)' } as const
 
 export function ExploreMenu({ label, items, pathname }: { label: string; items: readonly ExploreItem[]; pathname: string }) {
   const [open, setOpen] = useState(false)
@@ -83,7 +83,7 @@ export function ExploreMenu({ label, items, pathname }: { label: string; items: 
         id={panelId}
         hidden={!open}
         data-testid="explore-panel"
-        className="motion-emerge-instant absolute right-0 top-full z-50 mt-2 w-60 rounded-md border py-2 shadow-lg"
+        className="avk-dark-surface motion-emerge-instant absolute right-0 top-full z-50 mt-2 w-60 rounded-md border py-2 shadow-lg"
         style={{ borderColor: 'var(--surface-line)', background: 'var(--midnight)' }}
       >
         <ul>

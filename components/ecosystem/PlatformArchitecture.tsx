@@ -65,7 +65,7 @@ export function PlatformArchitecture() {
           this page explains one part of what it already shows. */}
       <section className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
         <SectionContainer className="text-center">
-          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
             Architecture
           </p>
           <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">AvatarK → Echo</h2>
@@ -85,7 +85,7 @@ export function PlatformArchitecture() {
       {/* Growth Engines -- choose a path out of Echo. */}
       <section className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
         <SectionContainer>
-          <p className="text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+          <p className="text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
             Growth Engines
           </p>
 
@@ -118,7 +118,7 @@ export function PlatformArchitecture() {
       {/* Expression Layer */}
       <section className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
         <SectionContainer>
-          <p className="text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+          <p className="text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
             Expression Layer
           </p>
           <div className="mt-5">

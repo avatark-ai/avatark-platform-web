@@ -16,7 +16,7 @@ export default function SacredGeometryPage() {
         <p className="text-xs font-medium" style={{ color: 'var(--ink-dim)' }}>
           Canon / Sacred Geometry
         </p>
-        <p className="mt-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+        <p className="mt-3 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           Sacred Geometry
         </p>
         <h1 className="mt-2 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">Plates I–XII</h1>
@@ -32,7 +32,7 @@ export default function SacredGeometryPage() {
             key={plate.slug}
             href={`/canon/sacred-geometry/${plate.slug}`}
             className="group flex flex-col overflow-hidden rounded-lg border transition hover:-translate-y-1 hover:border-[var(--gold)] hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 active:translate-y-0 active:shadow-sm"
-            style={{ borderColor: 'var(--paper-line)', background: 'var(--surface-card)', outlineColor: 'var(--gold)' }}
+            style={{ borderColor: 'var(--paper-line)', background: 'var(--surface-card)', outlineColor: 'var(--focus-ring)' }}
           >
             <div className="aspect-[4/3] w-full overflow-hidden" style={{ background: 'var(--midnight)' }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -44,7 +44,7 @@ export default function SacredGeometryPage() {
               />
             </div>
             <div className="flex flex-1 flex-col p-4">
-              <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+              <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
                 Plate {plate.numeral}
               </p>
               <p className="mt-1 text-base font-semibold" style={{ color: 'var(--ink)' }}>

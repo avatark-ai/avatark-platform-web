@@ -48,7 +48,7 @@ export function CanonContemporaryReading({ content }: { content: CanonContent })
             <Link
               href="/foundation#method"
               className="inline-block rounded-sm text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-              style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+              style={{ color: 'var(--ink)', outlineColor: 'var(--focus-ring)' }}
             >
               {S['AVK-FS-CI-51']}
             </Link>

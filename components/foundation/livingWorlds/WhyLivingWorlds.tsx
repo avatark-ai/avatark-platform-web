@@ -13,7 +13,7 @@ export const WHY_LIVING_WORLDS_LINKS = [
 
 export function WhyLivingWorlds() {
   return (
-    <section id="why-living-worlds" aria-labelledby="why-living-worlds-heading" style={{ background: 'var(--midnight)', color: 'var(--paper)' }}>
+    <section id="why-living-worlds" aria-labelledby="why-living-worlds-heading" className="avk-dark-surface" style={{ background: 'var(--midnight)', color: 'var(--paper)' }}>
       <SectionContainer className="flex flex-col items-center gap-6 text-center">
         <h2 id="why-living-worlds-heading" className="text-3xl font-semibold tracking-tight sm:text-4xl">
           {L['AVK-FLW-FD-02']}
@@ -27,7 +27,7 @@ export function WhyLivingWorlds() {
               <Link
                 href={l.href}
                 className="inline-block rounded-sm py-2 text-sm font-semibold underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                style={{ color: 'var(--paper)', outlineColor: 'var(--gold)' }}
+                style={{ color: 'var(--paper)', outlineColor: 'var(--focus-ring)' }}
               >
                 {L[l.id]}
               </Link>

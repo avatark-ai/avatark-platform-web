@@ -42,7 +42,7 @@ export default function FoundationPage() {
     <InstitutionalLayout>
       <section className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
         <div className="mx-auto flex w-full max-w-[var(--editorial-width)] flex-col items-center gap-6 px-6 py-14 text-center sm:py-16">
-          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
             Foundation
           </p>
           <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
@@ -75,7 +75,7 @@ export default function FoundationPage() {
                 className="rounded-lg border p-5"
                 style={{ borderColor: 'var(--paper-line)', background: 'var(--surface-card)' }}
               >
-                <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+                <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
                   {card.label}
                 </h3>
                 <p className="mt-3 text-sm leading-6" style={{ color: 'var(--ink-dim)' }}>
@@ -135,7 +135,7 @@ export default function FoundationPage() {
         <RippleLink
           href="/canon"
           className="inline-block rounded-md px-6 py-3 text-sm font-semibold transition hover:opacity-90 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-          style={{ background: 'var(--ink)', color: 'var(--paper)', outlineColor: 'var(--gold)' }}
+          style={{ background: 'var(--ink)', color: 'var(--paper)', outlineColor: 'var(--focus-ring)' }}
         >
           Continue to Canon →
         </RippleLink>

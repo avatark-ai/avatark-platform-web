@@ -26,7 +26,7 @@ export function Hero() {
           <HeroJumpLink
             targetId="experiences"
             className="w-full rounded-md px-6 py-3 text-sm font-semibold transition hover:opacity-90 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:w-auto"
-            style={{ background: 'var(--ink)', color: 'var(--paper)', outlineColor: 'var(--gold)' }}
+            style={{ background: 'var(--ink)', color: 'var(--paper)', outlineColor: 'var(--focus-ring)' }}
           >
             {U['AVK-U03-HH-04']}
           </HeroJumpLink>
@@ -35,7 +35,7 @@ export function Hero() {
             <Link
               href={LIVING_WORLDS_HREF}
               className="rounded-sm px-2 py-1 text-sm font-medium underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-              style={{ color: 'var(--ink)', outlineColor: 'var(--gold)' }}
+              style={{ color: 'var(--ink)', outlineColor: 'var(--focus-ring)' }}
             >
               {U['AVK-U03-HN-08']}
             </Link>

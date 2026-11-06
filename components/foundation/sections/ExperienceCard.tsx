@@ -19,7 +19,7 @@ const SURFACE: Record<Variant, { background: string; color: string; dim: string;
 
 const ACTION: Record<Exclude<Variant, 'concept'>, React.CSSProperties> = {
   echo: { background: 'var(--gold)', color: 'var(--midnight)', outlineColor: 'var(--paper)' },
-  world: { background: 'var(--ink)', color: 'var(--paper)', outlineColor: 'var(--gold)' },
+  world: { background: 'var(--ink)', color: 'var(--paper)', outlineColor: 'var(--focus-ring)' },
 }
 
 export function ExperienceCard({

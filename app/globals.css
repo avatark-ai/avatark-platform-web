@@ -38,6 +38,16 @@
   --ink-dim: #57534a;
   --paper-line: #ded6c4;
   --surface-card: #fbf9f4;
+  /* AVK-PROD-A11Y-01B (owner-approved D-1, D-2, D-5): accessibility tokens for light surfaces.
+     --gold-ink: same hue as --gold (41 deg), darkened. Gold-family TEXT on paper/card/silver
+     (5.02 / 5.33 / 4.52:1). Never use it as text on midnight (3.52:1).
+     --ink-muted: secondary "not yet published" text on paper (5.04:1).
+     --focus-ring: every institutional focus outline. Bronze by default (>= 3:1 on paper, card,
+     silver and midnight); .avk-dark-surface restores gold (9.50:1) on midnight wrappers.
+     --gold itself is unchanged. */
+  --gold-ink: #816323;
+  --ink-muted: #6b675e;
+  --focus-ring: var(--gold-ink);
   /* Structural/diagram surface -- the fifth institutional token, distinct
      from Paper's warm cream. Used for sections that are geometry/structure
      rather than editorial reading (e.g. the Living Spiral diagram). */
@@ -50,6 +60,11 @@
   --shell-width: 1240px;
   --content-width: 1160px;
   --editorial-width: 760px;
+}
+
+/* AVK-PROD-A11Y-01B (D-5): midnight wrappers keep the gold focus ring. */
+.avk-dark-surface {
+  --focus-ring: var(--gold);
 }
 
 @theme inline {
