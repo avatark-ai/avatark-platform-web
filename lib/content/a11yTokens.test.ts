@@ -124,6 +124,19 @@ test('A11Y-06: active rail and Founder links use ink, semibold and a bronze bar 
   }
 })
 
+test('A11Y-09: Canon Four Axes tabs can wrap (no clipped tab row), keep full words and spaced names', () => {
+  const s = readFileSync(join(root, 'components/foundation/sections/Canon.tsx'), 'utf8')
+  const tablist = s.slice(s.indexOf('role="tablist"'), s.indexOf('role="tabpanel"'))
+  assert.match(tablist, /className="flex-auto rounded-t-sm px-4 py-3/, 'content-based tab sizing')
+  assert.ok(!/className="flex-1 rounded-t-sm/.test(tablist), 'equal-share flex-1 tabs removed')
+  assert.match(tablist, /<span className="inline-flex flex-wrap items-baseline justify-center gap-x-2">/)
+  assert.match(tablist, /<span>\{axis\.label\}<\/span>\{' '\}/, 'space between label and figure (accessible name)')
+  assert.ok(!/ml-2 text-xs/.test(tablist), 'figure no longer relies on an inline margin')
+  assert.ok(!/overflow-x-auto|whitespace-nowrap|flex-nowrap|min-w-max|overflow-wrap:\s*anywhere|break-all/.test(tablist), 'no scrolling, nowrap or mid-word breaking')
+  for (const attr of ['role="tab"', 'aria-selected={selected}', 'aria-controls={`canon-panel-${axis.id}`}', 'id={`canon-tab-${axis.id}`}']) assert.ok(tablist.includes(attr), attr)
+  assert.match(s, /className="mt-6 flex flex-col gap-2 sm:hidden"/, 'mobile accordion unchanged')
+})
+
 test('D-5: every live midnight wrapper with focusable content keeps the gold ring', () => {
   const wrappers: [string, RegExp][] = [
     ['components/foundation/InstitutionalHeader.tsx', /<header className="avk-dark-surface"/],

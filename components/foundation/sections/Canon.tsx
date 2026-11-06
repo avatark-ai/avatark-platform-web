@@ -69,12 +69,17 @@ export function Canon({ content }: { content: CanonContent }) {
                     aria-controls={`canon-panel-${axis.id}`}
                     id={`canon-tab-${axis.id}`}
                     onClick={() => setOpenIndex(index)}
-                    className="flex-1 rounded-t-sm px-4 py-3 text-sm font-semibold transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                    className="flex-auto rounded-t-sm px-4 py-3 text-sm font-semibold transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                     style={{ color: selected ? 'var(--ink)' : 'var(--ink-dim)', outlineColor: 'var(--focus-ring)' }}
                   >
-                    {axis.label}
-                    <span className="ml-2 text-xs font-normal" style={{ color: 'var(--ink-dim)' }}>
-                      {axis.figure}
+                    {/* AVK-PROD-A11Y-09B (WCAG 1.4.10): label and figure may wrap onto two lines when space is
+                        short; flex-auto keeps one line whenever the row fits; the space keeps the accessible
+                        name "Awareness Adiyogi". Words are never split. */}
+                    <span className="inline-flex flex-wrap items-baseline justify-center gap-x-2">
+                      <span>{axis.label}</span>{' '}
+                      <span className="text-xs font-normal" style={{ color: 'var(--ink-dim)' }}>
+                        {axis.figure}
+                      </span>
                     </span>
                   </button>
                 )
