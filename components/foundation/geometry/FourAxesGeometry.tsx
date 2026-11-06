@@ -94,7 +94,10 @@ export function FourAxesGeometry({ axes, activeIndex }: { axes: CanonAxis[]; act
 
   return (
     <svg
-      viewBox="0 0 400 260"
+      // AVK-PROD-A11Y-10 (OD-10, option 10-A): 24 user units of side margin, so the outer labels
+      // ("Responsibility" ends near x=401) never meet the SVG edge, including under WCAG 1.4.12
+      // letter spacing (about +17 units). Geometry positions and labels are unchanged.
+      viewBox="-24 0 448 260"
       className="h-auto w-full"
       role="img"
       aria-label={`The four axes: ${nodes.map((node) => `${node.label} (${node.figure})`).join(', ')}`}
@@ -167,7 +170,8 @@ export function FourAxesGeometry({ axes, activeIndex }: { axes: CanonAxis[]; act
               y={node.labelAnchor === 'middle' ? node.y - 22 : node.y - 6}
               textAnchor={node.labelAnchor}
               className="text-[18px] font-semibold"
-              fill={active ? 'var(--gold)' : 'var(--ink)'}
+              // AVK-PROD-A11Y-13 (OD-13): active label --gold-ink, 5.02:1 on paper (WCAG 1.4.3 at any size).
+              fill={active ? 'var(--gold-ink)' : 'var(--ink)'}
               style={{ transition: 'fill 200ms var(--motion-ease-settle)' }}
             >
               {node.label}

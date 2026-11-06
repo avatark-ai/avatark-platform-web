@@ -28,6 +28,15 @@ export function Canon({ content }: { content: CanonContent }) {
   const activeIndex = openIndex ?? 0
 
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
+  // AVK-PROD-A11Y-12 (OD-12, option 12-A): APG tabs with automatic activation, the same pattern as
+  // PrinciplesPanel. Arrows wrap; Home/End jump; focus moves with the selection (roving tabindex).
+  // Every panel is already in the DOM, so selecting on arrow adds no loading or latency.
+  function selectTab(i: number) {
+    const n = content.axes.length
+    const next = (i + n) % n
+    setOpenIndex(next)
+    tabRefs.current[next]?.focus()
+  }
   const [indicator, setIndicator] = useState<{ left: number; width: number } | null>(null)
 
   useEffect(() => {
@@ -54,7 +63,18 @@ export function Canon({ content }: { content: CanonContent }) {
         {/* Desktop: tabs */}
         <div className="mt-8 hidden sm:block">
           <div className="relative border-b" style={{ borderColor: 'var(--paper-line)' }}>
-            <div role="tablist" aria-label="The Four Axes" className="flex">
+            <div
+              role="tablist"
+              aria-label="The Four Axes"
+              className="flex"
+              onKeyDown={(event) => {
+                const map: Record<string, number> = { ArrowRight: activeIndex + 1, ArrowLeft: activeIndex - 1, Home: 0, End: content.axes.length - 1 }
+                if (event.key in map) {
+                  event.preventDefault()
+                  selectTab(map[event.key])
+                }
+              }}
+            >
               {content.axes.map((axis, index) => {
                 const selected = index === activeIndex
                 return (
@@ -68,6 +88,7 @@ export function Canon({ content }: { content: CanonContent }) {
                     aria-selected={selected}
                     aria-controls={`canon-panel-${axis.id}`}
                     id={`canon-tab-${axis.id}`}
+                    tabIndex={selected ? 0 : -1}
                     onClick={() => setOpenIndex(index)}
                     className="flex-auto rounded-t-sm px-4 py-3 text-sm font-semibold transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                     style={{ color: selected ? 'var(--ink)' : 'var(--ink-dim)', outlineColor: 'var(--focus-ring)' }}
@@ -85,12 +106,18 @@ export function Canon({ content }: { content: CanonContent }) {
                 )
               })}
             </div>
+            {/* AVK-PROD-A11Y-11 (OD-11, option 11-A): 3px --gold-ink bar, 5.02:1 on paper (WCAG 1.4.11).
+                OD-15: in forced-colors mode the authored background would be replaced by Canvas and the bar
+                would vanish, so it opts out of forced adjustment and uses the system CanvasText colour
+                (Highlight was tested and rejected: Chromium draws the forced focus outline in Highlight, so
+                selection and focus would share a colour). The colour lives in the class list, not the inline
+                style, so the forced-colors variant can override it. */}
             {indicator && (
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute bottom-[-1px] left-0 block h-[2px] w-px"
+                data-canon-indicator=""
+                className="pointer-events-none absolute bottom-[-1px] left-0 block h-[3px] w-px bg-[var(--gold-ink)] forced-colors:bg-[color:CanvasText] forced-colors:forced-color-adjust-none"
                 style={{
-                  background: 'var(--gold)',
                   transform: `translateX(${indicator.left}px) scaleX(${indicator.width})`,
                   transformOrigin: 'left',
                   transition: 'transform 250ms var(--motion-ease-settle)',
@@ -106,8 +133,11 @@ export function Canon({ content }: { content: CanonContent }) {
                 id={`canon-panel-${axis.id}`}
                 aria-labelledby={`canon-tab-${axis.id}`}
                 hidden={index !== activeIndex}
-                className="motion-emerge-instant px-1 py-6 text-base leading-7"
-                style={{ color: 'var(--ink-dim)' }}
+                // AVK-PROD-A11Y-12 (OD-12b): the panel has no focusable content, so it is a Tab stop
+                // itself (APG). Hidden panels are display:none and cannot take focus.
+                tabIndex={0}
+                className="motion-emerge-instant rounded-sm px-1 py-6 text-base leading-7 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                style={{ color: 'var(--ink-dim)', outlineColor: 'var(--focus-ring)' }}
               >
                 {axis.body}
               </div>

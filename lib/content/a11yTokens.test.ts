@@ -74,7 +74,9 @@ test('A11Y-08: no institutional focus outline is hard-coded gold; all use --focu
   assert.deepEqual(offenders, [])
   // AVK-VISUAL-01B: 35 -> 36. The Echo card CTA moved from a paper ring (midnight card) to --focus-ring
   // (light card body); no other focus declaration changed.
-  assert.equal(ringDecls, 36)
+  // AVK-PROD-A11Y-10-12B (OD-12b): 36 -> 37. The Canon Four Axes tabpanel is now a focus stop with the
+  // standard ring; no other focus declaration changed.
+  assert.equal(ringDecls, 37)
 })
 
 // Gold text that remains is allowed only where it renders on midnight or is decorative (aria-hidden).
@@ -151,4 +153,67 @@ test('D-5: every live midnight wrapper with focusable content keeps the gold rin
     // visualRefinement.test.ts), so it leaves this list.
   ]
   for (const [f, re] of wrappers) assert.match(readFileSync(join(root, f), 'utf8'), re, f)
+})
+
+// AVK-PROD-A11Y-10-12B: owner decisions OD-10..OD-15 (static guards; rendered clipping, contrast,
+// key sequences and forced colours are verified by the browser harnesses in the gate report).
+const canonSrc = () => readFileSync(join(root, 'components/foundation/sections/Canon.tsx'), 'utf8')
+const geometrySrc = () => readFileSync(join(root, 'components/foundation/geometry/FourAxesGeometry.tsx'), 'utf8')
+
+test('A11Y-10 (OD-10): FourAxesGeometry viewBox has a 24-unit side margin; role and name kept', () => {
+  const s = geometrySrc()
+  assert.match(s, /viewBox="-24 0 448 260"/)
+  assert.ok(!/viewBox="0 0 400 260"/.test(s), 'old clipping viewBox removed')
+  assert.ok(!/overflow:\s*'?visible|overflow-visible/.test(s), 'option 10-B (overflow visible) not used')
+  assert.match(s, /role="img"/)
+  assert.match(s, /aria-label=\{`The four axes: \$\{nodes\.map\(\(node\) => `\$\{node\.label\} \(\$\{node\.figure\}\)`\)\.join\(', '\)\}`\}/)
+  assert.ok(!/textLength/.test(s), 'labels are not compressed')
+})
+
+test('A11Y-13 (OD-13): active geometry label uses --gold-ink (>= 4.5:1 on paper), inactive stays ink', () => {
+  const s = geometrySrc()
+  assert.match(s, /fill=\{active \? 'var\(--gold-ink\)' : 'var\(--ink\)'\}/)
+  assert.ok(!/fill=\{active \? 'var\(--gold\)' : 'var\(--ink\)'\}/.test(s))
+  assert.ok(ratio(token('--gold-ink'), SURFACES.paper) >= 4.5)
+})
+
+test('A11Y-11 (OD-11) + OD-15: Canon indicator is a 3px --gold-ink bar with a forced-colors CanvasText fallback', () => {
+  const s = canonSrc()
+  const span = s.slice(s.indexOf('data-canon-indicator'), s.indexOf('/>', s.indexOf('data-canon-indicator')))
+  assert.match(span, /h-\[3px\]/)
+  assert.ok(!/h-\[2px\]/.test(span), 'old 2px bar removed')
+  assert.match(span, /bg-\[var\(--gold-ink\)\]/)
+  assert.ok(!/var\(--gold\)/.test(span), 'no --gold on the indicator')
+  assert.ok(!/background:/.test(span), 'colour not inline, so the forced-colors variant can override it')
+  assert.match(span, /forced-colors:bg-\[color:CanvasText\] forced-colors:forced-color-adjust-none/)
+  assert.match(span, /transform: `translateX\(\$\{indicator\.left\}px\) scaleX\(\$\{indicator\.width\}\)`/, 'measurement-driven positioning kept')
+  assert.ok(ratio(token('--gold-ink'), SURFACES.paper) >= 3)
+  // Weights unchanged (option 11-B not implemented): every tab is font-semibold.
+  assert.match(s, /className="flex-auto rounded-t-sm px-4 py-3 text-sm font-semibold /)
+  assert.ok(!/font-medium/.test(s.slice(s.indexOf('role="tablist"'), s.indexOf('role="tabpanel"'))))
+})
+
+test('A11Y-12 (OD-12, OD-12b): Canon tabs: arrows/Home/End with wrap, roving tabindex, focusable panel', () => {
+  const s = canonSrc()
+  assert.match(s, /const map: Record<string, number> = \{ ArrowRight: activeIndex \+ 1, ArrowLeft: activeIndex - 1, Home: 0, End: content\.axes\.length - 1 \}/)
+  assert.match(s, /event\.preventDefault\(\)\s*\n\s*selectTab\(map\[event\.key\]\)/)
+  assert.match(s, /const next = \(i \+ n\) % n\s*\n\s*setOpenIndex\(next\)\s*\n\s*tabRefs\.current\[next\]\?\.focus\(\)/, 'wrap, select and focus')
+  assert.match(s, /tabIndex=\{selected \? 0 : -1\}/)
+  assert.match(s, /onClick=\{\(\) => setOpenIndex\(index\)\}/, 'Enter/Space (native button click) still selects')
+  const panel = s.slice(s.indexOf('role="tabpanel"'), s.indexOf('{axis.body}', s.indexOf('role="tabpanel"')))
+  assert.match(panel, /hidden=\{index !== activeIndex\}/)
+  assert.match(panel, /tabIndex=\{0\}/)
+  assert.match(panel, /focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2/)
+  assert.match(panel, /outlineColor: 'var\(--focus-ring\)'/)
+  assert.match(s, /className="mt-6 flex flex-col gap-2 sm:hidden"/, 'mobile accordion kept')
+  assert.match(s, /aria-expanded=\{expanded\}/)
+})
+
+test('A11Y-14 (OD-14): PrinciplesPanel selected tab border is --gold-ink; keyboard pattern unchanged', () => {
+  const s = readFileSync(join(root, 'components/foundation/livingWorlds/PrinciplesPanel.tsx'), 'utf8')
+  assert.match(s, /borderColor: isSelected \? 'var\(--gold-ink\)' : 'var\(--paper-line\)'/)
+  assert.ok(!/borderColor: isSelected \? 'var\(--gold\)'/.test(s))
+  assert.match(s, /\{ ArrowDown: index \+ 1, ArrowUp: index - 1, Home: 0, End: items\.length - 1 \}/)
+  assert.match(s, /tabIndex=\{isSelected \? 0 : -1\}/)
+  assert.match(s, /className="min-h-11 border-l-2 px-4 py-2 text-left text-base font-semibold /, 'tab dimensions unchanged')
 })

@@ -122,7 +122,7 @@ export function PrinciplesPanel({ items, label }: { items: readonly PrincipleIte
                 tabIndex={isSelected ? 0 : -1}
                 onClick={() => setSelectedKey(p.key)}
                 className="min-h-11 border-l-2 px-4 py-2 text-left text-base font-semibold transition-colors duration-200 hover:text-[var(--ink)] focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2"
-                style={{ color: isSelected ? 'var(--ink)' : 'var(--ink-dim)', borderColor: isSelected ? 'var(--gold)' : 'var(--paper-line)', ...FOCUS }}
+                style={{ color: isSelected ? 'var(--ink)' : 'var(--ink-dim)', borderColor: isSelected ? 'var(--gold-ink)' : 'var(--paper-line)', ...FOCUS }}
               >
                 {p.name}
               </button>
