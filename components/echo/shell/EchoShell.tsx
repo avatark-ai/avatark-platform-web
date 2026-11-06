@@ -30,7 +30,11 @@ function isInstitutionalOnlyPath(pathname: string): boolean {
     pathname.startsWith("/canon/") ||
     pathname === "/ecosystem" ||
     pathname === "/living-worlds" ||
-    pathname === "/roadmap"
+    pathname === "/roadmap" ||
+    // AVK-PROD-03C-02a: approval-gated institutional legal pages.
+    pathname === "/privacy" ||
+    pathname === "/terms" ||
+    pathname === "/contact"
   );
 }
 

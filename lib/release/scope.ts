@@ -5,6 +5,7 @@
 // code change through its own owner gate.
 //
 // Pure module (no next/* imports) so it loads under `node --test` and inside proxy.ts alike.
+import { APPROVED_LEGAL_PATHS } from './legalGate.ts'
 
 export type ReleaseScope = 'institutional' | 'platform'
 
@@ -58,7 +59,9 @@ export const INSTITUTIONAL_URLS: readonly string[] = [
 export const FRAMEWORK_PATHS = ['/favicon.ico', '/robots.txt'] as const
 const STATIC_ASSET_PREFIX = '/_next/static/'
 
-const ALLOWED = new Set<string>([...INSTITUTIONAL_URLS, ...FRAMEWORK_PATHS])
+// AVK-PROD-03C-02a: a legal route (/privacy, /terms, /contact) joins the allowlist only once its
+// document passes lib/release/legalGate.ts. Until then the proxy denies it with 404 like any unknown path.
+const ALLOWED = new Set<string>([...INSTITUTIONAL_URLS, ...APPROVED_LEGAL_PATHS, ...FRAMEWORK_PATHS])
 const ALLOWED_METHODS = new Set(['GET', 'HEAD'])
 
 export type RequestDecision =

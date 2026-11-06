@@ -33,7 +33,7 @@ test('T2: class sizes are frozen at 14 allow / 59 exclude / 4 framework', () => 
 
 test('T2: every source route is classified and every classified route exists', () => {
   const r = routes()
-  assert.equal(r.length, 75)
+  assert.equal(r.length, 78) // 75 + /privacy, /terms, /contact (AVK-PROD-03C-02a, LEGAL class)
   assert.deepEqual(checkInventory(r), [])
   assert.deepEqual(checkInventory([...r, '/new-unreviewed-route']), ['UNCLASSIFIED route: /new-unreviewed-route'])
 })
@@ -42,5 +42,7 @@ test('T2: allow class equals the 13 fixed pages plus the plate pattern', () => {
   assert.deepEqual([...ALLOW_ROUTES].filter((r) => !r.includes('[')).sort(), [...INSTITUTIONAL_PAGES].sort())
   assert.equal(classifyRoute('/roadmap'), 'EXCLUDE')
   assert.equal(classifyRoute('/robots.txt'), 'FRAMEWORK')
-  assert.equal(classifyRoute('/privacy'), null, 'legal pages are not classified until approved (03C)')
+  // AVK-PROD-03C-02a: legal pages are their own approval-gated class, never ALLOW.
+  for (const p of ['/privacy', '/terms', '/contact']) assert.equal(classifyRoute(p), 'LEGAL', p)
+  assert.ok(!(ALLOW_ROUTES as readonly string[]).includes('/privacy'))
 })

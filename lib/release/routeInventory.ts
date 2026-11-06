@@ -3,6 +3,9 @@
 // `next build` and fails the build on any unclassified or missing route, so no new route can ship
 // in the institutional release without an explicit decision.
 // Source: AVK-PROD-02R / PROD-03 frozen inventory (14 allow + 59 exclude + framework).
+// AVK-PROD-03C-02a adds a fourth class, LEGAL. These routes exist in source but are served only when their
+// document passes lib/release/legalGate.ts. ALLOW stays the frozen 14.
+import { LEGAL_ROUTE_PATHS } from './legalGate.ts'
 
 export const ALLOW_ROUTES = [
   '/',
@@ -50,10 +53,14 @@ export const FRAMEWORK_ROUTES = ['/_global-error', '/_not-found', '/favicon.ico'
 
 export const EXCLUDED_ROUTE_LIST: readonly string[] = Object.values(EXCLUDE_ROUTES).flat()
 
-export type RouteClass = 'ALLOW' | 'EXCLUDE' | 'FRAMEWORK'
+/** Approval-gated legal pages (AVK-PROD-03C-02a): 404 unless counsel-approved (see legalGate.ts). */
+export const LEGAL_ROUTES: readonly string[] = LEGAL_ROUTE_PATHS
+
+export type RouteClass = 'ALLOW' | 'LEGAL' | 'EXCLUDE' | 'FRAMEWORK'
 
 export function classifyRoute(route: string): RouteClass | null {
   if ((ALLOW_ROUTES as readonly string[]).includes(route)) return 'ALLOW'
+  if (LEGAL_ROUTES.includes(route)) return 'LEGAL'
   if (EXCLUDED_ROUTE_LIST.includes(route)) return 'EXCLUDE'
   if ((FRAMEWORK_ROUTES as readonly string[]).includes(route)) return 'FRAMEWORK'
   return null

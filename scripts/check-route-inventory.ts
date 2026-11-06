@@ -3,7 +3,10 @@
 // Optional argument: a built .next directory, to check the emitted app-path-routes-manifest.json too.
 import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs'
 import { join, relative, sep } from 'node:path'
-import { ALLOW_ROUTES, EXCLUDED_ROUTE_LIST, FRAMEWORK_ROUTES, classifyRoute } from '../lib/release/routeInventory.ts'
+import { createHash } from 'node:crypto'
+import { ALLOW_ROUTES, EXCLUDED_ROUTE_LIST, FRAMEWORK_ROUTES, LEGAL_ROUTES, classifyRoute } from '../lib/release/routeInventory.ts'
+import { LEGAL_DOCUMENTS, LEGAL_DOCUMENT_KEYS } from '../lib/content/legalCopy.ts'
+import { canonicalLegalBody } from '../lib/release/legalGate.ts'
 
 const ROUTE_FILE = /^(page\.(tsx|ts|jsx|js|mdx)|route\.(ts|js)|robots\.(ts|js|txt)|sitemap\.(ts|js|xml)|manifest\.(ts|js|json)|favicon\.ico|(icon|apple-icon|opengraph-image|twitter-image)\.[a-z]+)$/
 
@@ -33,8 +36,23 @@ export function checkInventory(routes: string[]): string[] {
   const problems: string[] = []
   const seen = new Set(routes)
   for (const r of routes) if (!classifyRoute(r)) problems.push(`UNCLASSIFIED route: ${r}`)
-  const expected = [...ALLOW_ROUTES, ...EXCLUDED_ROUTE_LIST, '/favicon.ico', '/robots.txt']
+  const expected = [...ALLOW_ROUTES, ...LEGAL_ROUTES, ...EXCLUDED_ROUTE_LIST, '/favicon.ico', '/robots.txt']
   for (const r of expected) if (!seen.has(r)) problems.push(`classified route missing from source: ${r}`)
+  return problems
+}
+
+/**
+ * AVK-PROD-03C-02a: every legal document that carries text or a hash must hash to its recorded sha256.
+ * A NOT_PROVIDED document with no text and no hash is consistent, and is refused at runtime by legalGate.ts.
+ */
+export function checkLegalIntegrity(docs = LEGAL_DOCUMENT_KEYS.map((k) => LEGAL_DOCUMENTS[k])): string[] {
+  const problems: string[] = []
+  for (const d of docs) {
+    const empty = d.contentStatus === 'NOT_PROVIDED' && d.title === null && d.sections.length === 0 && d.sha256 === null && d.approvalRef === null
+    if (empty) continue
+    const actual = createHash('sha256').update(canonicalLegalBody(d)).digest('hex')
+    if (d.sha256 !== actual) problems.push(`LEGAL ${d.id}: sha256 ${d.sha256} does not match content ${actual}`)
+  }
   return problems
 }
 
@@ -42,7 +60,7 @@ const isMain = process.argv[1] && import.meta.url === new URL(`file://${process.
 if (isMain) {
   const appDir = join(process.cwd(), 'app')
   const routes = [...new Set(walk(appDir).map((f) => routeFromFile(appDir, f)))].sort()
-  const problems = checkInventory(routes)
+  const problems = [...checkInventory(routes), ...checkLegalIntegrity()]
   const nextDir = process.argv[2]
   if (nextDir) {
     const mf = join(nextDir, 'app-path-routes-manifest.json')
@@ -50,9 +68,9 @@ if (isMain) {
     else {
       const built = [...new Set(Object.values(JSON.parse(readFileSync(mf, 'utf8')) as Record<string, string>))].sort()
       for (const r of built) if (!classifyRoute(r)) problems.push(`UNCLASSIFIED built route: ${r}`)
-      const counts = { ALLOW: 0, EXCLUDE: 0, FRAMEWORK: 0 } as Record<string, number>
+      const counts = { ALLOW: 0, LEGAL: 0, EXCLUDE: 0, FRAMEWORK: 0 } as Record<string, number>
       for (const r of built) { const c = classifyRoute(r); if (c) counts[c]++ }
-      console.log(`route inventory (built): ${built.length} routes = ${counts.ALLOW} allow + ${counts.EXCLUDE} exclude + ${counts.FRAMEWORK} framework`)
+      console.log(`route inventory (built): ${built.length} routes = ${counts.ALLOW} allow + ${counts.LEGAL} legal + ${counts.EXCLUDE} exclude + ${counts.FRAMEWORK} framework`)
     }
   }
   console.log(`route inventory (source): ${routes.length} route files classified; framework list ${FRAMEWORK_ROUTES.length}`)

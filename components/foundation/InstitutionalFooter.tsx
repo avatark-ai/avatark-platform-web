@@ -3,6 +3,7 @@ import { getProductById } from '@avatark/product-registry'
 import { resolveEcosystemProduct } from '@/lib/content/ecosystemGroups'
 import { DepartureLink } from '@avatark/motion'
 import { INSTITUTIONAL_SIGNIN_ENABLED } from '@/lib/content/flags'
+import { isInstitutionalScope } from '@/lib/release/scope'
 
 const LINK_CLASS =
   'rounded-sm text-sm transition-colors hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
@@ -97,8 +98,11 @@ export function InstitutionalFooter() {
     // account tab, so it is only a link while institutional Sign In is on.
     // While off, the label stays as plain text (same treatment as Terms/Trust)
     // rather than leading into sign-in; it is not a public legal notice.
-    { label: 'Privacy', href: INSTITUTIONAL_SIGNIN_ENABLED ? '/account?tab=privacy' : null },
-    // No Terms or Trust page exists yet -- same "never a dead link"
+    // AVK-PROD-03C-02a: in Scope I it is plain text whatever the env flag says, because /account
+    // is excluded there. Privacy, Terms and Trust stay plain text until a separately authorized gate
+    // activates the counsel-approved /privacy and /terms pages (lib/release/legalGate.ts).
+    { label: 'Privacy', href: INSTITUTIONAL_SIGNIN_ENABLED && !isInstitutionalScope() ? '/account?tab=privacy' : null },
+    // No approved Terms or Trust page exists yet -- same "never a dead link"
     // discipline used elsewhere: plain text rather than a fabricated route.
     { label: 'Terms', href: null },
     { label: 'Trust', href: null },

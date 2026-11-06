@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// AVK-PROD-03A (C7) / AVK-PROD-03B (CD-2, X-1): runtime route / security matrix against a running `next start` (T3, T3b, T3c,
+// AVK-PROD-03A (C7) / AVK-PROD-03B (CD-2, X-1) / AVK-PROD-03C-02a (L-G legal gate): runtime route / security matrix against a running `next start` (T3, T3b, T3c,
 // T4, T5 and header/robots checks). Read-only HTTP; prints a summary and writes JSON evidence.
 //
 //   node scripts/route-matrix.mjs <baseUrl> <full|secondary> [evidence.json]
@@ -13,6 +13,7 @@ import { INSTITUTIONAL_URLS } from '../lib/release/scope.ts'
 import { EXCLUDED_ROUTE_LIST } from '../lib/release/routeInventory.ts'
 import { SECURITY_HEADERS } from '../lib/release/securityHeaders.ts'
 import { SCOPE_I_CLICKABLE_PRODUCT_URLS } from '../lib/release/productDestinations.ts'
+import { APPROVED_LEGAL_PATHS, LEGAL_ROUTE_PATHS } from '../lib/release/legalGate.ts'
 
 const [base, mode = 'full', out] = process.argv.slice(2)
 if (!base) { console.error('usage: route-matrix.mjs <baseUrl> <full|secondary> [out.json]'); process.exit(2) }
@@ -72,6 +73,9 @@ if (mode === 'full') {
     // CD-2: no practice route anywhere in the document (anchors, RSC payload, prefetch hints)
     check('CD-2', `${p} no /practice/ reference in HTML or RSC payload`, !/\/practice\//.test(r.text), (r.text.match(/.{0,60}\/practice\/.{0,60}/) || [''])[0])
     check('X-1', `${p} no studiok.dt4m.ai href`, !links.some((h) => h.includes('studiok.dt4m.ai')))
+    // L-G: no rendered link to an unapproved legal route (footer Privacy/Terms/Trust stay plain text)
+    const legalLinks = links.filter((h) => LEGAL_ROUTE_PATHS.some((l) => !APPROVED_LEGAL_PATHS.includes(l) && (h === l || h.startsWith(l + '?') || h.startsWith(l + '#') || h.startsWith(l + '/'))))
+    check('L-G', `${p} no link to an unapproved legal route`, legalLinks.length === 0, JSON.stringify(legalLinks))
     for (const m of ['POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']) {
       const x = await req(p, { method: m })
       check('T1c', `${m} ${p} 405`, x.status === 405 && x.headers.get('allow') === 'GET, HEAD', `status ${x.status}`)
@@ -84,6 +88,21 @@ if (mode === 'full') {
       const r = await req(concrete(r0), { method: m, body: m === 'POST' ? '{}' : undefined })
       const denial = r.headers.get('x-robots-tag') === 'noindex, nofollow' && (m === 'HEAD' || r.text === 'Not Found')
       check('T3b', `${m} ${r0} 404 (proxy denial)`, r.status === 404 && denial && r.headers.get('set-cookie') === null, `status ${r.status}`)
+    }
+  }
+  // L-G: unapproved legal routes are denied by the proxy (L1), like any unknown path
+  for (const p of LEGAL_ROUTE_PATHS.filter((l) => !APPROVED_LEGAL_PATHS.includes(l))) {
+    // Trailing slash: Next.js answers 308 to the slash-less path before the proxy runs (same for every
+    // path, e.g. /x/ and /admin/); the redirect target is the canonical path, which is denied below.
+    const slash = await req(`${p}/`)
+    check('L-G', `GET ${p}/ 308 to ${p} (framework normalisation, no content)`, slash.status === 308 && slash.headers.get('location') === p && slash.headers.get('set-cookie') === null, `status ${slash.status} location ${slash.headers.get('location')}`)
+    for (const v of [p, p.toUpperCase(), `${p}?v=1`]) {
+      for (const m of ['GET', 'HEAD', 'POST']) {
+        const r = await req(v, { method: m, body: m === 'POST' ? '{}' : undefined })
+        const denial = r.headers.get('x-robots-tag') === 'noindex, nofollow' && (m === 'HEAD' || r.text === 'Not Found')
+        const hdrs = SECURITY_HEADERS.every((h) => r.headers.get(h.key) === h.value)
+        check('L-G', `${m} ${v} 404 (unapproved legal route, proxy denial)`, r.status === 404 && denial && hdrs && r.headers.get('set-cookie') === null, `status ${r.status}`)
+      }
     }
   }
   // unknown paths and slugs
@@ -117,6 +136,14 @@ if (mode === 'full') {
     }
   }
   for (const p of ['/', '/ecosystem']) check('T3c', `GET ${p} still 200 without proxy`, (await req(p)).status === 200)
+  // L-G L2: without the proxy, each unapproved legal page still returns 404 through its own page gate
+  for (const p of LEGAL_ROUTE_PATHS.filter((l) => !APPROVED_LEGAL_PATHS.includes(l))) {
+    for (const m of ['GET', 'HEAD']) {
+      const r = await req(p, { method: m })
+      check('L-G', `${m} ${p} 404 without proxy (page gate)`, r.status === 404 && r.headers.get('set-cookie') === null && !/location/i.test([...r.headers.keys()].join(',')), `status ${r.status}`)
+      if (m === 'GET') check('L-G', `GET ${p} without proxy renders no legal document`, !/legal-title|Version \d|Effective/.test(r.text))
+    }
+  }
 }
 const summary = { mode, base, checks: results.length, failures, at: new Date().toISOString() }
 console.log(JSON.stringify(summary))
