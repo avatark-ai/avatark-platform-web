@@ -1,13 +1,15 @@
 import { SectionContainer } from '@/components/foundation/Container'
 import { StatusPill } from '@/components/foundation/StatusPill'
-import { TypographicWell } from '@/components/foundation/TypographicWell'
+import { LivingForestGeometry } from '@/components/foundation/geometry/LivingForestGeometry'
 import { APPROVED_COPY as C } from '@/lib/content/institutionalCopy'
 import { LIVING_WORLDS_COPY as L } from '@/lib/content/livingWorldsCopy'
 
 // AVK-UNIFICATION-03C §2: the first world. Every string is reused approved copy. The "Discover Living
 // Forest — Opening soon" pill is the same inert <span> as the former homepage band (and /ecosystem):
 // no href, no handler, no role -- it only becomes a link through a separate Stage A authorization gate
-// (WORLDK-HANDOFF-01). No VANAM imagery (WorldK-only rights): a typographic well until M-01 is cleared.
+// (WORLDK-HANDOFF-01). No VANAM imagery (WorldK-only rights) until M-01 is cleared.
+// AVK-VISUAL-01B (OD-V4): the empty typographic well becomes a code-drawn geometry panel (4:3, max
+// 420px from lg) that keeps the approved "Living Forest" small-caps label. Decorative, aria-hidden.
 export function LivingForestFeature() {
   return (
     <section
@@ -17,11 +19,17 @@ export function LivingForestFeature() {
       style={{ borderColor: 'var(--paper-line)', background: 'var(--surface-card)' }}
     >
       <SectionContainer className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2">
-        <TypographicWell
-          label={C['AVK-FR-021']}
-          testId="living-forest-fallback-well"
-          className="aspect-[4/5] max-h-[280px] rounded-2xl border lg:order-2 lg:max-h-[520px]"
-        />
+        <div
+          aria-hidden="true"
+          data-testid="living-forest-geometry-panel"
+          className="relative flex aspect-[4/3] w-full items-end justify-center rounded-2xl border pb-6 lg:order-2 lg:max-h-[420px]"
+          style={{ borderColor: 'var(--paper-line)', background: 'var(--paper)' }}
+        >
+          <LivingForestGeometry className="absolute inset-x-8 top-8 bottom-14 h-[calc(100%-5.5rem)] w-[calc(100%-4rem)]" />
+          <span className="relative text-xs font-semibold uppercase tracking-[0.3em]" style={{ color: 'var(--ink-dim)' }}>
+            {C['AVK-FR-021']}
+          </span>
+        </div>
         <div className="lg:order-1">
           <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-dim)' }}>
             {C['AVK-FR-020']}

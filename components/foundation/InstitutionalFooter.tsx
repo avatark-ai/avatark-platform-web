@@ -4,9 +4,17 @@ import { resolveEcosystemProduct } from '@/lib/content/ecosystemGroups'
 import { DepartureLink } from '@avatark/motion'
 import { INSTITUTIONAL_SIGNIN_ENABLED } from '@/lib/content/flags'
 import { isInstitutionalScope } from '@/lib/release/scope'
+import { primaryNavItems } from '@/components/foundation/institutionalNav'
+import { APPROVED_COPY as C } from '@/lib/content/institutionalCopy'
+import { UNIFICATION_COPY as U } from '@/lib/content/unificationCopy'
+import { LIVING_WORLDS_COPY as L } from '@/lib/content/livingWorldsCopy'
+import { VISUAL_COPY as V } from '@/lib/content/visualCopy'
+import { LIVING_WORLDS_HREF, LIVING_WORLDS_ROUTE_ENABLED } from '@/lib/content/livingWorldsRoute'
 
+// AVK-VISUAL-01B: links also underline on hover and keyboard focus, so they never differ from the
+// plain-text entries by colour alone.
 const LINK_CLASS =
-  'rounded-sm text-sm transition-colors hover:text-[var(--gold)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
+  'rounded-sm text-sm underline-offset-4 transition-colors hover:text-[var(--gold)] hover:underline focus-visible:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
 const FOCUS_STYLE = { outlineColor: 'var(--focus-ring)' } as const
 
 interface FooterLink {
@@ -18,15 +26,30 @@ interface FooterLink {
   // A genuine departure to a sibling AvatarK product on its own domain --
   // gets the DepartureLink treatment (see docs/motion-transition-contract.md).
   departure?: boolean
+  // AVK-VISUAL-01B (OD-V8): approved readiness status shown after the entry (plain text, not linked).
+  status?: string
 }
 
-function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) {
+function FooterStatus({ text }: { text: string }) {
+  return (
+    <span
+      className="ml-2 inline-block whitespace-nowrap rounded-full border px-2 text-[0.6875rem] font-semibold leading-5"
+      style={{ borderColor: 'var(--surface-line)', color: 'var(--text-dim)' }}
+    >
+      {text}
+    </span>
+  )
+}
+
+// AVK-VISUAL-01B: each group is a heading plus a list labelled by it, inside the one footer <nav>.
+function FooterColumn({ id, title, links }: { id: string; title: string; links: FooterLink[] }) {
+  const headingId = `footer-group-${id}`
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
+      <h2 id={headingId} className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold)' }}>
         {title}
-      </p>
-      <ul className="mt-3 flex flex-col gap-2">
+      </h2>
+      <ul aria-labelledby={headingId} className="mt-3 flex flex-col gap-2">
         {links.map((link) =>
           link.href ? (
             <li key={link.label}>
@@ -43,12 +66,14 @@ function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) 
                   {link.label}
                 </Link>
               )}
+              {link.status && <FooterStatus text={link.status} />}
             </li>
           ) : (
             <li key={link.label}>
               <span className="text-sm" style={{ color: 'var(--text-dim)' }}>
                 {link.label}
               </span>
+              {link.status && <FooterStatus text={link.status} />}
             </li>
           ),
         )}
@@ -76,10 +101,14 @@ export function InstitutionalFooter() {
   const avatark = getProductById('avatark')
   const supportEmail = avatark?.supportEmail ?? null
 
-  // Foundation/Canon/Founder/Enter Echo/Sign In already live in the header
-  // nav (InstitutionalHeader.tsx) -- this footer stays a closing strip, not
-  // a second navigation surface, so it only carries what the header
-  // doesn't: the full sibling-product list, and footer-only company links.
+  // AVK-VISUAL-01B (OD-V5): four groups -- Institutional, Ecosystem, Living Worlds, Company / Legal --
+  // in this DOM and visual order. Institutional reuses the header's primary items (same labels and
+  // targets) minus Living Worlds, which has its own group, so no destination is listed twice.
+  const institutionalLinks: FooterLink[] = primaryNavItems()
+    .filter((item) => item.label !== C['AVK-FR-003'])
+    .map((item) => ({ label: item.label, href: item.href }))
+
+  // Unchanged product list and resolver: X-1 decides which entries are links (scopeIProductHref).
   const ecosystemLinks: FooterLink[] = [
     ecosystemFooterLink('echo'),
     ecosystemFooterLink('prometheusk'),
@@ -90,6 +119,14 @@ export function InstitutionalFooter() {
     ecosystemFooterLink('setpointk'),
     ecosystemFooterLink('atlas'),
     ecosystemFooterLink('studiok'),
+  ]
+
+  // AVK-VISUAL-01B (OD-V7/V8): internal Living Worlds routes only. WorldK is plain text with its approved
+  // readiness status: no worldk.ai href, no registry entry, no /enter, no Stage A authorization.
+  const livingWorldsLinks: FooterLink[] = [
+    { label: U['AVK-U03-HN-08'], href: LIVING_WORLDS_ROUTE_ENABLED ? LIVING_WORLDS_HREF : null },
+    { label: C['AVK-FR-021'], href: LIVING_WORLDS_ROUTE_ENABLED ? `${LIVING_WORLDS_HREF}#living-forest` : null, status: L['AVK-FLW-ST-01'] },
+    { label: C['AVK-FR-055'], href: null, status: L['AVK-FLW-ST-01'] },
   ]
 
   const companyLinks: FooterLink[] = [
@@ -110,11 +147,13 @@ export function InstitutionalFooter() {
 
   return (
     <footer className="avk-dark-surface" style={{ borderTop: '1px solid var(--surface-line)', background: 'var(--midnight)' }}>
-      <div className="mx-auto max-w-[var(--shell-width)] px-6 py-8">
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
-          <FooterColumn title="Ecosystem" links={ecosystemLinks} />
-          <FooterColumn title="Company" links={companyLinks} />
-        </div>
+      <div className="mx-auto max-w-[var(--shell-width)] px-6 pt-12 pb-8">
+        <nav aria-label="Footer" className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-[1fr_1.15fr_1.15fr_1fr] lg:gap-8">
+          <FooterColumn id="institutional" title={V['AVK-VIS-FT-01']} links={institutionalLinks} />
+          <FooterColumn id="ecosystem" title={U['AVK-U03-HN-04']} links={ecosystemLinks} />
+          <FooterColumn id="living-worlds" title={C['AVK-FR-003']} links={livingWorldsLinks} />
+          <FooterColumn id="company" title={V['AVK-VIS-FT-02']} links={companyLinks} />
+        </nav>
 
         <div className="mt-6 border-t pt-4 text-xs" style={{ borderColor: 'var(--surface-line)', color: 'var(--text-dim)' }}>
           © {new Date().getFullYear()} AvatarK

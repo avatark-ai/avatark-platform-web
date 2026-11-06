@@ -9,8 +9,10 @@ import type { PlatformStatus } from '@/components/ecosystem/StatusBadge'
 type Variant = 'echo' | 'world' | 'concept'
 
 const SURFACE: Record<Variant, { background: string; color: string; dim: string; border: string; hover: string }> = {
-  // Echo: intimate, reflective, geometric -- EchoIntro's midnight tokens leave the homepage with it.
-  echo: { background: 'var(--midnight)', color: 'var(--paper)', dim: 'var(--text-dim)', border: 'var(--surface-line)', hover: 'hover:border-[var(--gold)]' },
+  // Echo: intimate, reflective, geometric. AVK-VISUAL-01B (OD-V1, A1): the midnight identity lives in
+  // Echo's media panel (FeaturedExperiences EchoMotif); the body shares the light card surface so both
+  // experiences align. The gold hover border stays Echo's.
+  echo: { background: 'var(--surface-card)', color: 'var(--ink)', dim: 'var(--ink-dim)', border: 'var(--paper-line)', hover: 'hover:border-[var(--gold)]' },
   // Living Worlds: expansive, environmental -- the surface the Living Worlds band used.
   world: { background: 'var(--surface-card)', color: 'var(--ink)', dim: 'var(--ink-dim)', border: 'var(--paper-line)', hover: 'hover:border-[var(--ink)]' },
   // Future concept: muted, and deliberately no hover change (nothing to click).
@@ -18,7 +20,8 @@ const SURFACE: Record<Variant, { background: string; color: string; dim: string;
 }
 
 const ACTION: Record<Exclude<Variant, 'concept'>, React.CSSProperties> = {
-  echo: { background: 'var(--gold)', color: 'var(--midnight)', outlineColor: 'var(--paper)' },
+  // AVK-VISUAL-01B: the gold CTA is unchanged; its focus ring follows the light card (--focus-ring).
+  echo: { background: 'var(--gold)', color: 'var(--midnight)', outlineColor: 'var(--focus-ring)' },
   world: { background: 'var(--ink)', color: 'var(--paper)', outlineColor: 'var(--focus-ring)' },
 }
 

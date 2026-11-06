@@ -72,7 +72,9 @@ test('A11Y-08: no institutional focus outline is hard-coded gold; all use --focu
     ringDecls += (s.match(/outlineColor:\s*'var\(--focus-ring\)'/g) ?? []).length
   }
   assert.deepEqual(offenders, [])
-  assert.equal(ringDecls, 35)
+  // AVK-VISUAL-01B: 35 -> 36. The Echo card CTA moved from a paper ring (midnight card) to --focus-ring
+  // (light card body); no other focus declaration changed.
+  assert.equal(ringDecls, 36)
 })
 
 // Gold text that remains is allowed only where it renders on midnight or is decorative (aria-hidden).
@@ -145,7 +147,8 @@ test('D-5: every live midnight wrapper with focusable content keeps the gold rin
     ['app/canon/page.tsx', /<section className="avk-dark-surface" style=\{\{ background: 'var\(--midnight\)'/],
     ['app/ecosystem/page.tsx', /<section className="avk-dark-surface border-t"/],
     ['components/foundation/livingWorlds/LivingWorldsIntro.tsx', /className="avk-dark-surface relative overflow-hidden"/],
-    ['components/foundation/livingWorlds/WhyLivingWorlds.tsx', /className="avk-dark-surface"/],
+    // AVK-VISUAL-01B (OD-V3): WhyLivingWorlds is no longer a midnight wrapper (paper surface; see
+    // visualRefinement.test.ts), so it leaves this list.
   ]
   for (const [f, re] of wrappers) assert.match(readFileSync(join(root, f), 'utf8'), re, f)
 })

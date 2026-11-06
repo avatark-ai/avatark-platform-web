@@ -17,13 +17,23 @@ import { LIVING_WORLDS_HREF, LIVING_WORLDS_ROUTE_ENABLED } from '@/lib/content/l
 // No raster media: Echo uses existing code-drawn geometry; Living Worlds a typographic well (M-01
 // not cleared). Nothing here links to WorldK, /enter or an external host.
 
+// AVK-VISUAL-01B (OD-V1, A1): both experience cards share one media-panel height -- 160px below lg,
+// 16:9 from lg -- so headings, copy and actions align across the pair.
+const EXPERIENCE_MEDIA_CLASS = 'h-40 lg:aspect-video lg:h-auto'
+
 // Same shapes as the existing GeometryOfBecoming illustration (components/echo/journey), reused
-// rather than drawn anew (MEDIA-CLEARANCE M-03). Decorative here, so aria-hidden.
+// rather than drawn anew (MEDIA-CLEARANCE M-03). Decorative here, so aria-hidden. AVK-VISUAL-01B: the
+// motif now sits in Echo's midnight media panel, larger and at full strength.
 function EchoMotif() {
   return (
-    <div className="flex justify-center px-6 pt-8 sm:px-8" aria-hidden="true">
-      <svg viewBox="0 0 320 200" className="h-auto w-full max-w-[120px]" focusable="false">
-        <g fill="none" stroke="var(--gold)" strokeLinejoin="round" opacity="0.85">
+    <div
+      className={`flex w-full items-center justify-center border-b px-6 ${EXPERIENCE_MEDIA_CLASS}`}
+      style={{ background: 'var(--midnight)', borderColor: 'var(--paper-line)' }}
+      aria-hidden="true"
+      data-testid="echo-media-panel"
+    >
+      <svg viewBox="0 0 320 200" className="h-auto w-full max-w-[160px] lg:max-w-[200px]" focusable="false">
+        <g fill="none" stroke="var(--gold)" strokeLinejoin="round" opacity="1">
           <rect x="130" y="70" width="60" height="60" strokeWidth="1.25" transform="rotate(45 160 100)" opacity="0.9" />
           <rect x="105" y="45" width="110" height="110" strokeWidth="1" transform="rotate(15 160 100)" opacity="0.6" />
           <circle cx="160" cy="100" r="82" strokeWidth="0.75" opacity="0.35" />
@@ -35,13 +45,13 @@ function EchoMotif() {
 }
 
 // Fallback image well until a cleared Chitrakoot still exists: hairline horizon + the approved world
-// name (AVK-FR-021) in small caps. 4:5 on mobile (max 280px), 16:9 from lg.
+// name (AVK-FR-021) in small caps. AVK-VISUAL-01B: same panel height as Echo's (160px below lg, 16:9 from lg).
 function WorldWell() {
   return (
     <TypographicWell
       label={C['AVK-FR-021']}
       testId="living-worlds-fallback-well"
-      className="aspect-[4/5] max-h-[280px] lg:aspect-video lg:max-h-none"
+      className={EXPERIENCE_MEDIA_CLASS}
     />
   )
 }
