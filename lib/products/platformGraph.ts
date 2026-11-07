@@ -10,6 +10,7 @@
 import { getProductById, PRODUCT_REGISTRY, type AvatarKProduct, type IntegrationStatus, type JourneyRole, type ProductStatus } from '@avatark/product-registry'
 import { resolveProductUrl } from './registry.ts'
 import { scopeIProductHref } from '../release/productDestinations.ts'
+import { isInstitutionalScope } from '../release/scope.ts'
 import type { PlatformStatus } from '@/components/ecosystem/StatusBadge'
 
 export interface PlatformNode {
@@ -68,15 +69,23 @@ const ECHO_NODE: PlatformNode = {
   nextIds: ['prometheusk', 'gamek', 'atlas'],
 }
 
+// AVK-RELEASE-01A-GO-C1 (OD-C0-6): in the institutional release (Scope I) GameK is presented as
+// "IN DEVELOPMENT" instead of LIVE/BETA, because gamek.ai is behind an access-code wall. Presentation only:
+// the shared product registry (status 'beta', integrationStatus 'live') is unchanged and Scope II keeps it.
+const SCOPE_I_STATUS_OVERRIDES: Readonly<Record<string, { status: PlatformStatus; maturityLabel: string }>> = {
+  gamek: { status: 'IN DEVELOPMENT', maturityLabel: 'In development' },
+}
+
 function toPlatformNode(product: AvatarKProduct): PlatformNode {
+  const override = isInstitutionalScope() ? SCOPE_I_STATUS_OVERRIDES[product.id] : undefined
   return {
     id: product.id,
     name: product.displayName,
     // AVK-PROD-03B X-1: Scope I keeps only audited VERIFIED_PUBLIC destinations clickable.
     href: scopeIProductHref(product.id, resolveProductUrl(product)),
     purpose: product.tagline ?? product.description,
-    status: product.integrationStatus ? INTEGRATION_LABELS[product.integrationStatus] : 'VISION',
-    maturityLabel: MATURITY_LABELS[product.status],
+    status: override?.status ?? (product.integrationStatus ? INTEGRATION_LABELS[product.integrationStatus] : 'VISION'),
+    maturityLabel: override?.maturityLabel ?? MATURITY_LABELS[product.status],
     experiences: product.experiences ?? [],
     nextIds: product.nextProductIds ?? [],
   }

@@ -1,6 +1,7 @@
 import { SectionContainer } from '@/components/foundation/Container'
 import { RevealOnView } from '@avatark/motion'
 import { PROD_SCOPE_I_COPY as P } from '@/lib/content/prodScopeICopy'
+import { isInstitutionalScope } from '@/lib/release/scope'
 import { ECOSYSTEM_WORLDK_COPY as E } from '@/lib/content/ecosystemWorldkCopy'
 import { getGrowthEngines, getJourneyTransitions, getPlatformNode, distinctMaturityLabel } from '@/lib/products/platformGraph'
 import { PlatformDiagram } from './PlatformDiagram'
@@ -108,7 +109,7 @@ export function PlatformArchitecture() {
                   descriptor={copy.descriptor}
                   status={engine.status}
                   maturityLabel={distinctMaturityLabel(engine)}
-                  description={copy.description}
+                  description={engine.id === 'gamek' && isInstitutionalScope() ? P['AVK-PROD-GK-01'] : copy.description}
                   features={engine.experiences.length > 0 ? engine.experiences.map((e) => e.name) : copy.fallbackFeatures}
                   featuresLabel={copy.featuresLabel}
                   ctaLabel={copy.ctaLabel}

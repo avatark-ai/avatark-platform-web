@@ -1,6 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { getPlatformNode, getGrowthEngines, getExpressionLayer, getConvergenceLayer, getJourneyTransitions, distinctMaturityLabel } from './platformGraph.ts'
+import { getProductById } from '@avatark/product-registry'
 
 test('getPlatformNode resolves the synthetic Echo node', () => {
   const echo = getPlatformNode('echo')
@@ -43,10 +44,18 @@ test('distinctMaturityLabel hides the maturity label when it repeats the integra
 })
 
 test('distinctMaturityLabel surfaces the maturity label when it diverges from the integration-status badge', () => {
+  assert.equal(distinctMaturityLabel({ ...getPlatformNode('prometheusk')!, status: 'LIVE', maturityLabel: 'Beta' }), 'Beta')
+})
+
+test('AVK-RELEASE-01A-GO-C1: Scope I presents GameK as IN DEVELOPMENT, no LIVE/BETA; registry unchanged', () => {
   const gamek = getPlatformNode('gamek')
-  assert.equal(gamek?.status, 'LIVE')
-  assert.equal(gamek?.maturityLabel, 'Beta')
-  assert.equal(distinctMaturityLabel(gamek!), 'Beta')
+  assert.equal(gamek?.status, 'IN DEVELOPMENT')
+  assert.equal(gamek?.maturityLabel, 'In development')
+  assert.equal(distinctMaturityLabel(gamek!), null, 'no second maturity badge')
+  assert.equal(gamek?.href, null, 'still plain text (X-1)')
+  const registry = getProductById('gamek')
+  assert.equal(registry?.status, 'beta')
+  assert.equal(registry?.integrationStatus, 'live')
 })
 
 test('GameK carries its learning experiences', () => {
