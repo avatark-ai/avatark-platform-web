@@ -39,9 +39,9 @@ const SUPERSEDED_SHA256 = new Set([
 ])
 
 // U-03D: superseded (EV-01 Title Case, EV-20 "Creation") and pending Ecosystem strings -- never in the module.
-// EV-11/21/31/40/41/42 left this set in U-03D-1 (owner-approved, pinned above); EV-43 added (pending).
+// EV-11/21/31/40/41/42 left this set in U-03D-1 (owner-approved, pinned above). EV-43 was added as pending in
+// U-03D-1 and left it in AVK-ECOSYSTEM-WORLDK-02 (owner-approved, OD-EW-3; pinned above).
 const U03D_EXCLUDED_SHA256 = new Set([
-  'a5a21054d454940352072d73e0f45ef990641eeb672435e4383a34fa7e083cbd', // AVK-U03-EV-43 PENDING (U-03D-1)
   '781c94fffbb8e01c23d16ccc0c69c2bb362a4fd4d7bf454322d3f080e328f48a', // AVK-U03-EV-01 SUPERSEDED
   '6d0a88373d20612e1079406f030d37344dea876647172c1e60c8a2acbef56788', // AVK-U03-EV-20 SUPERSEDED
 ])
@@ -108,6 +108,8 @@ const REGISTER_SHA256: Record<string, string> = {
   'AVK-U03-EV-40': '9dc2794174d38524a2d1408e52d76d27815cf0594bcae70726c7ee9e54e0f500',
   'AVK-U03-EV-41': 'cf5640ca9afe7d994834c9d9c1d96f9f4b1c2912675df159c173659b5de0d82b',
   'AVK-U03-EV-42': '17b6bed77270cc0a124bbbeb2048c42e933eb59a1270156d992cf1a924b362a6',
+  // AVK-ECOSYSTEM-WORLDK-02 (OD-EW-3, 2026-11-07): Level 2 Platform tier label, owner-approved and rendered
+  'AVK-U03-EV-43': 'a5a21054d454940352072d73e0f45ef990641eeb672435e4383a34fa7e083cbd',
 }
 
 // Rendered from content/foundation/architecture.md (single source, unchanged).

@@ -1,7 +1,7 @@
-// AVK-UNIFICATION-03B/03C/03C-1/03D/03D-1: approved homepage, navigation, /living-worlds and /ecosystem copy
-// (AVK-U03-* IDs only). Generated verbatim by _claude_reports/AVK_UNIFICATION_03D_1/tools/build-u03d1-copy.mjs from
+// AVK-UNIFICATION-03B/03C/03C-1/03D/03D-1 + AVK-ECOSYSTEM-WORLDK-02: approved homepage, navigation, /living-worlds and
+// /ecosystem copy (AVK-U03-* IDs only). Generated verbatim by _claude_reports/AVK_ECOSYSTEM_WORLDK_02/tools/build-ew02-copy.mjs from
 // _claude_reports/AVK_UNIFICATION_03B/tools/approved-u03b-register.json (sha256 1274f493cae0bcdd8d45680191e7792e0715dc870a78f5c6e2f75394f07f7179) and
-// _claude_reports/AVK_UNIFICATION_03D_1/tools/u03d1-register.json (sha256 3a08ae4f8d6058232fa8cb07b416558eca9c41ca00b90f0a54ac47581cc80ed7).
+// _claude_reports/AVK_ECOSYSTEM_WORLDK_02/tools/ew02-u03-register.json (sha256 ced075895ad45a91d4fe0722988f26118f76940513c4a5665dbcd505bd1e47b7).
 // Do not edit a string here without a register amendment: unificationCopy.test.ts pins every value.
 // PENDING and SUPERSEDED strings are never written here.
 //
@@ -62,7 +62,8 @@ export const UNIFICATION_COPY = {
   "AVK-U03-EV-31": "Where understanding is gathered, connected and measured.",
   "AVK-U03-EV-40": "How the parts relate",
   "AVK-U03-EV-41": "AvatarK Holdings works across four pillars. The AvatarK Platform is the shared foundation each product is built on.",
-  "AVK-U03-EV-42": "These groupings explain how the products relate. They do not change what each product is or who is responsible for it."
+  "AVK-U03-EV-42": "These groupings explain how the products relate. They do not change what each product is or who is responsible for it.",
+  "AVK-U03-EV-43": "AvatarK Platform"
 } as const
 
 export type UnificationCopyId = keyof typeof UNIFICATION_COPY
@@ -120,5 +121,6 @@ export const UNIFICATION_COPY_SHA256: Record<UnificationCopyId, string> = {
   "AVK-U03-EV-31": "e2061636a9113ab4a27c1fe19fc5a39d7f2fbaeeec3d52b9fc51b3e1081f5cc9",
   "AVK-U03-EV-40": "9dc2794174d38524a2d1408e52d76d27815cf0594bcae70726c7ee9e54e0f500",
   "AVK-U03-EV-41": "cf5640ca9afe7d994834c9d9c1d96f9f4b1c2912675df159c173659b5de0d82b",
-  "AVK-U03-EV-42": "17b6bed77270cc0a124bbbeb2048c42e933eb59a1270156d992cf1a924b362a6"
+  "AVK-U03-EV-42": "17b6bed77270cc0a124bbbeb2048c42e933eb59a1270156d992cf1a924b362a6",
+  "AVK-U03-EV-43": "a5a21054d454940352072d73e0f45ef990641eeb672435e4383a34fa7e083cbd"
 }
