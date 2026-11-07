@@ -1,6 +1,7 @@
 import { SectionContainer } from '@/components/foundation/Container'
 import { RevealOnView } from '@avatark/motion'
 import { PROD_SCOPE_I_COPY as P } from '@/lib/content/prodScopeICopy'
+import { ECOSYSTEM_WORLDK_COPY as E } from '@/lib/content/ecosystemWorldkCopy'
 import { getGrowthEngines, getJourneyTransitions, getPlatformNode, distinctMaturityLabel } from '@/lib/products/platformGraph'
 import { PlatformDiagram } from './PlatformDiagram'
 import { GrowthEngineCard } from './GrowthEngineCard'
@@ -61,14 +62,18 @@ function getCreatorIntelligenceNodes() {
 export function PlatformArchitecture() {
   return (
     <>
-      {/* Architecture Diagram -- the visual centerpiece; everything else on
-          this page explains one part of what it already shows. */}
+      {/* AVK-ECOSYSTEM-WORLDK-02 (OD-EW-7): the journey diagram, geometry unchanged, now framed as one
+          possible path of growth (EW-06 heading, EW-07 visible caption, EW-08 accessible name) rather than
+          the page's architecture -- the architecture is "How the parts relate", above. */}
       <section className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
         <SectionContainer className="text-center">
           <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
             Architecture
           </p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">AvatarK → Echo</h2>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">{E['AVK-EW-06']}</h2>
+          <p data-testid="journey-caption" className="mx-auto mt-3 max-w-xl text-sm leading-6" style={{ color: 'var(--ink-dim)' }}>
+            {E['AVK-EW-07']}
+          </p>
 
           <div className="mt-5">
             <PlatformDiagram />
@@ -85,9 +90,10 @@ export function PlatformArchitecture() {
       {/* Growth Engines -- choose a path out of Echo. */}
       <section className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
         <SectionContainer>
-          <p className="text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
+          {/* AVK-ECOSYSTEM-WORLDK-02: h2 (was <p>) so the engine cards are not outlined under the journey heading. */}
+          <h2 className="text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
             Growth Engines
-          </p>
+          </h2>
 
           <RevealOnView className="motion-emerge-stagger mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {getGrowthEngines().map((engine) => {
@@ -118,9 +124,10 @@ export function PlatformArchitecture() {
       {/* Expression Layer */}
       <section className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
         <SectionContainer>
-          <p className="text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
+          {/* AVK-ECOSYSTEM-WORLDK-02: h2 (was <p>), same reason. */}
+          <h2 className="text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
             Expression Layer
-          </p>
+          </h2>
           <div className="mt-5">
             <ExpressionLayer />
           </div>

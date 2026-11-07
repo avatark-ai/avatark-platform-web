@@ -7,9 +7,9 @@ import { EXPLORE_LABEL, exploreItems, primaryNavItems } from './institutionalNav
 const UNSAFE = /worldk|\/enter|\/worlds\/|^https?:/i
 const linksSource = readFileSync(path.join(process.cwd(), 'lib', 'content', 'links.ts'), 'utf-8')
 
-test('ENTER_ECHO_HREF is unchanged (/start); AVK-PROD-03A Scope I passes DISCOVER_ECHO_HREF (/ecosystem) to Discover Echo', () => {
+test('ENTER_ECHO_HREF is unchanged (/start); Discover Echo -> DISCOVER_ECHO_HREF (/ecosystem#echo, AVK-ECOSYSTEM-WORLDK-02 OD-EW-6)', () => {
   assert.match(linksSource, /export const ENTER_ECHO_HREF = '\/start'/)
-  assert.match(linksSource, /export const DISCOVER_ECHO_HREF = '\/ecosystem'/)
+  assert.match(linksSource, /export const DISCOVER_ECHO_HREF = '\/ecosystem#echo'/)
 })
 
 test('primary nav: owner order and hrefs (route disabled -> legacy anchor)', () => {

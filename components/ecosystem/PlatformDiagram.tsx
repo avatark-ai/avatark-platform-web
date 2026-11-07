@@ -1,5 +1,6 @@
 import { RevealOnView, type Point } from '@avatark/motion'
 import { ConnectionLine } from './ConnectionLine'
+import { ECOSYSTEM_WORLDK_COPY as E } from '@/lib/content/ecosystemWorldkCopy'
 
 // The one-page mental model for the whole ecosystem: AvatarK (institutional
 // home) -> Echo (consumer entry) -> three equal Growth Engines -> ArenaK ->
@@ -144,8 +145,9 @@ function renderDiagram(positions: Record<string, Point>, radius: number) {
   )
 }
 
-const DIAGRAM_ARIA_LABEL =
-  'AvatarK, the institutional home, leads to Echo, the consumer entry point. Echo opens into three equal Growth Engines: PrometheusK for practice, GameK for exploration, and Atlas for knowledge. All three converge into ArenaK, the community layer, which flows into StreamK, the media layer, and then CinemaK, the long-form storytelling layer.'
+// AVK-ECOSYSTEM-WORLDK-02 (OD-EW-7): accessible name = approved AVK-EW-08 (a path, not an ownership chart).
+// Nodes, edges, positions and motion above are unchanged.
+const DIAGRAM_ARIA_LABEL = E['AVK-EW-08']
 
 export function PlatformDiagram() {
   return (

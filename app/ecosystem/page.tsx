@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { InstitutionalLayout } from '@/components/foundation/InstitutionalLayout'
 import { EditorialContainer } from '@/components/foundation/Container'
 import { PlatformArchitecture } from '@/components/ecosystem/PlatformArchitecture'
-import { EcosystemLivingWorlds } from '@/components/ecosystem/EcosystemLivingWorlds'
+import { ExperienceSystems } from '@/components/ecosystem/ExperienceSystems'
 import { EcosystemOverview } from '@/components/ecosystem/EcosystemOverview'
 import { RelationshipArchitecture } from '@/components/ecosystem/RelationshipArchitecture'
 import { UNIFICATION_COPY as U } from '@/lib/content/unificationCopy'
@@ -13,12 +13,11 @@ export const metadata: Metadata = {
   description: 'One platform. Multiple ways to grow. One continuous journey.',
 }
 
-// The platform architecture, presented: AvatarK -> Echo -> three equal
-// Growth Engines (PrometheusK/GameK/Atlas) -> the Expression Layer
-// (ArenaK -> StreamK -> CinemaK). Presentation only -- content lives in
-// PlatformArchitecture and its components/ecosystem/* children; this page
-// only supplies the masthead and the closing Founder continuity link,
-// matching the rest of the institutional site's per-page structure.
+// AVK-ECOSYSTEM-WORLDK-02 (OD-EW-1, architecture first): Level 1 overview -> "How the parts relate"
+// (Holdings -> four pillars -> AvatarK Platform -> Echo and WorldK as peer experience systems -> products)
+// -> Echo and WorldK panels -> one possible journey (PlatformArchitecture: diagram, Growth Engines,
+// Expression Layer, services, Continue Your Journey) -> Founder link. Presentation only -- content lives in
+// components/ecosystem/*. EcosystemLivingWorlds is no longer rendered (file kept one gate, as D-U03-12).
 export default function EcosystemPage() {
   return (
     <InstitutionalLayout>
@@ -38,16 +37,16 @@ export default function EcosystemPage() {
         </div>
       </section>
 
-      {/* AVK-UNIFICATION-03D/03D-1 Level 1 (visitor explanation). Level 2 follows the existing sections. */}
+      {/* AVK-UNIFICATION-03D/03D-1 Level 1 (visitor explanation). */}
       <EcosystemOverview />
 
-      <PlatformArchitecture />
-
-      {/* AVK-FOUNDER-LIVING-WORLDS-02: static editorial section, not registry-driven (OD-12). */}
-      <EcosystemLivingWorlds />
-
-      {/* AVK-UNIFICATION-03D-1 Level 2: conceptual relationship view (not ownership, not deployment). */}
+      {/* Level 2, promoted (OD-EW-1): conceptual relationship view (not ownership, not deployment). */}
       <RelationshipArchitecture />
+
+      {/* Echo (#echo, OD-EW-6) and WorldK (#worldk) as equal peers; static WorldK, not registry-driven (OD-12). */}
+      <ExperienceSystems />
+
+      <PlatformArchitecture />
 
       <section className="avk-dark-surface border-t" style={{ background: 'var(--midnight)', color: 'var(--paper)' }}>
         <EditorialContainer className="text-center">

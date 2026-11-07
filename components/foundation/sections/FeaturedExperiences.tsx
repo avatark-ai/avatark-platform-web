@@ -24,7 +24,8 @@ const EXPERIENCE_MEDIA_CLASS = 'h-40 lg:aspect-video lg:h-auto'
 // Same shapes as the existing GeometryOfBecoming illustration (components/echo/journey), reused
 // rather than drawn anew (MEDIA-CLEARANCE M-03). Decorative here, so aria-hidden. AVK-VISUAL-01B: the
 // motif now sits in Echo's midnight media panel, larger and at full strength.
-function EchoMotif() {
+// AVK-ECOSYSTEM-WORLDK-02 (OD-EW-8): exported for reuse by /ecosystem ExperienceSystems; unchanged here.
+export function EchoMotif() {
   return (
     <div
       className={`flex w-full items-center justify-center border-b px-6 ${EXPERIENCE_MEDIA_CLASS}`}
@@ -46,7 +47,7 @@ function EchoMotif() {
 
 // Fallback image well until a cleared Chitrakoot still exists: hairline horizon + the approved world
 // name (AVK-FR-021) in small caps. AVK-VISUAL-01B: same panel height as Echo's (160px below lg, 16:9 from lg).
-function WorldWell() {
+export function WorldWell() {
   return (
     <TypographicWell
       label={C['AVK-FR-021']}
