@@ -36,6 +36,7 @@ export function ExperienceCard({
   honesty,
   action,
   media,
+  footer,
 }: {
   id?: string
   titleId?: string
@@ -47,6 +48,9 @@ export function ExperienceCard({
   honesty?: string
   action?: { label: string; href: string } | null
   media: React.ReactNode
+  // AVK-ECOSYSTEM-WORLDK-02R: optional non-interactive content rendered inside the card body, below the
+  // action. Absent everywhere except the /ecosystem WorldK panel, so every other card renders exactly as before.
+  footer?: React.ReactNode
 }) {
   const s = SURFACE[variant]
   const headingId = titleId ?? `experience-${variant}-title`
@@ -88,6 +92,7 @@ export function ExperienceCard({
             </Link>
           </div>
         )}
+        {footer}
       </div>
     </article>
   )

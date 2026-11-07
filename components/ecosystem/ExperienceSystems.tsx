@@ -57,21 +57,24 @@ export function ExperienceSystems() {
             honesty={L['AVK-FLW-EC-07']}
             action={{ label: U['AVK-U03-HN-08'], href: LIVING_WORLDS_HREF }}
             media={<WorldWell />}
+            footer={
+              // AVK-ECOSYSTEM-WORLDK-02R: EC-10 (inert, never a link) and EC-09 sit inside the WorldK panel,
+              // below its action, so WorldK-specific content stays within WorldK. Text unchanged.
+              <div data-testid="worldk-panel-footer" className="flex flex-col items-start gap-3">
+                <span
+                  data-testid="living-forest-inert-pill"
+                  className="inline-block rounded-full border px-4 py-1.5 text-sm font-semibold"
+                  style={{ borderColor: 'var(--paper-line)', color: 'var(--ink-dim)' }}
+                >
+                  {L['AVK-FLW-EC-10']}
+                </span>
+                <p className="text-sm leading-6" style={{ color: 'var(--ink-dim)' }}>
+                  {L['AVK-FLW-EC-09']}
+                </p>
+              </div>
+            }
           />
         </RevealOnView>
-
-        <div className="mx-auto mt-8 flex max-w-2xl flex-col items-center gap-4 text-center">
-          <span
-            data-testid="living-forest-inert-pill"
-            className="inline-block rounded-full border px-4 py-1.5 text-sm font-semibold"
-            style={{ borderColor: 'var(--paper-line)', color: 'var(--ink-dim)' }}
-          >
-            {L['AVK-FLW-EC-10']}
-          </span>
-          <p className="text-sm leading-6" style={{ color: 'var(--ink-dim)' }}>
-            {L['AVK-FLW-EC-09']}
-          </p>
-        </div>
       </SectionContainer>
     </section>
   )

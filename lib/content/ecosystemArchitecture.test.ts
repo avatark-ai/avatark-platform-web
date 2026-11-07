@@ -106,3 +106,22 @@ test('T-9 product destination restrictions unchanged (file byte-identical to 3f0
   assert.equal(sha(read('lib', 'release', 'productDestinations.ts')), 'bdb6adfd31ded7aae3153ece47f3f7cfe8bdcad99a30efac107be70b219e2fd5')
   assert.deepEqual([...SCOPE_I_CLICKABLE_PRODUCT_URLS.keys()].sort(), ['arenak', 'prometheusk', 'streamk'])
 })
+
+test('T-10 (02R) EC-10 inert pill and EC-09 sit inside the WorldK panel, below its action; Echo panel has neither', () => {
+  const echo = SYS.slice(SYS.indexOf('id="echo"'), SYS.indexOf('id="worldk"'))
+  const worldk = SYS.slice(SYS.indexOf('id="worldk"'), SYS.indexOf('</RevealOnView>'))
+  assert.ok(!/footer=|AVK-FLW-EC-09|AVK-FLW-EC-10/.test(echo), 'Echo panel unchanged')
+  assert.match(worldk, /action=\{\{ label: U\['AVK-U03-HN-08'\], href: LIVING_WORLDS_HREF \}\}[\s\S]*footer=\{[\s\S]*data-testid="living-forest-inert-pill"[\s\S]*\{L\['AVK-FLW-EC-10'\]\}[\s\S]*\{L\['AVK-FLW-EC-09'\]\}/)
+  // The pill stays an inert <span>: no link element, no href, no handler anywhere in the footer.
+  const footer = worldk.slice(worldk.indexOf('footer={'))
+  assert.match(footer, /<span\s+data-testid="living-forest-inert-pill"/)
+  assert.ok(!/<a\b|<Link\b|href|onClick|tabIndex|role=/.test(footer))
+  // Nothing remains below the twin grid; each string is rendered exactly once.
+  assert.equal(SYS.slice(SYS.indexOf('</RevealOnView>')).replace(/\s+/g, ''), '</RevealOnView></SectionContainer></section>)}')
+  for (const id of ['AVK-FLW-EC-09', 'AVK-FLW-EC-10']) assert.equal(SYS.split(`L['${id}']`).length - 1, 1, id)
+  // The shared card only gains an optional slot, rendered after the action; absent everywhere else.
+  const card = read('components', 'foundation', 'sections', 'ExperienceCard.tsx')
+  assert.match(card, /footer\?: React\.ReactNode/)
+  assert.match(card, /\)\}\n\s+\{footer\}\n\s+<\/div>\n\s+<\/article>/)
+  for (const f of [['components', 'foundation', 'sections', 'FeaturedExperiences.tsx'], ['components', 'foundation', 'livingWorlds', 'WorldGallery.tsx']]) assert.ok(!/footer=/.test(read(...f)), f.join('/'))
+})
