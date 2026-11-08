@@ -5,6 +5,8 @@
 // pins every value. A `{productId}` token is rendered as that product's name, linked only when the Scope I
 // destination policy (lib/release/productDestinations.ts) allows it.
 
+import { DT4H_SETPOINT_COPY } from './dt4hSetpointCopy.ts'
+
 export const ECOSYSTEM_04_COPY = {
   "AVK-E04-SK-01": "Creation & Modeling Engine",
   "AVK-E04-SK-02": "The creation and modeling engine for Living Worlds — combining procedural environments, simulation, cinematic production and adaptive storytelling.",
@@ -28,7 +30,8 @@ export const ECOSYSTEM_04_COPY_SHA256: Record<Ecosystem04CopyId, string> = {
 export const FOURTH_GROWTH_ENGINE_ID = 'studiok'
 
 // E04-3: the section that held "Creator & Intelligence" now holds SetpointK only.
-export const INTELLIGENCE_SECTION_HEADING = 'Intelligence'
+// AVK-DT4H-SETPOINT-01 (PROPOSED, separable commit): renamed to reflect SETPOINT's execution role (AVK-DS-SEC-01).
+export const INTELLIGENCE_SECTION_HEADING = DT4H_SETPOINT_COPY['AVK-DS-SEC-01']
 
 // StudioK feature chips, from the AVK-ECOSYSTEM-04 §1 capability list.
 export const STUDIOK_CAPABILITY_CHIPS = ['World Construction', 'Procedural Generation', 'Simulation', 'Cinematic Production'] as const

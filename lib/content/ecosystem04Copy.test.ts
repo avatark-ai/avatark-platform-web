@@ -99,7 +99,7 @@ test('E04-7 registry journey edges: only PrometheusK continues into ArenaK; diag
 // ---- AVK-ECOSYSTEM-04-PREVIEW: the seven approved presentation decisions ----
 
 test('PV-E04-3 Creator & Intelligence renamed Intelligence; SetpointK only', () => {
-  assert.equal(INTELLIGENCE_SECTION_HEADING, 'Intelligence')
+  assert.equal(INTELLIGENCE_SECTION_HEADING, 'Adaptive Execution') // AVK-DT4H-SETPOINT-01 (AVK-DS-SEC-01)
   assert.match(ARCH, />\s*\{INTELLIGENCE_SECTION_HEADING\}\s*<\/h2>/)
   assert.ok(!/Creator/.test(ARCH), 'no "Creator" heading left')
   assert.match(ARCH, /const INTELLIGENCE_COPY[^=]*= \{\s*setpointk: \{[^}]*\},\s*\}/)
