@@ -4,6 +4,7 @@ import { PROD_SCOPE_I_COPY as P } from '@/lib/content/prodScopeICopy'
 import { isInstitutionalScope } from '@/lib/release/scope'
 import { ECOSYSTEM_WORLDK_COPY as E } from '@/lib/content/ecosystemWorldkCopy'
 import { ECOSYSTEM_04_COPY as G, FOURTH_GROWTH_ENGINE_ID, INTELLIGENCE_SECTION_HEADING, STUDIOK_CAPABILITY_CHIPS, splitRelationTokens, type Ecosystem04CopyId } from '@/lib/content/ecosystem04Copy'
+import { DT4H_SETPOINT_COPY as D } from '@/lib/content/dt4hSetpointCopy'
 import { getGrowthEngines, getPlatformNode, distinctMaturityLabel, type PlatformNode } from '@/lib/products/platformGraph'
 import { PlatformDiagram } from './PlatformDiagram'
 import { GrowthEngineCard } from './GrowthEngineCard'
@@ -74,9 +75,12 @@ function relationParts(id: Ecosystem04CopyId | undefined) {
 // measure the ecosystem above rather than being another step in it. (AVK-ECOSYSTEM-04: StudioK moved out.) Reuses
 // getPlatformNode() (works for any registry id, journeyRole or not) and the
 // same GrowthEngineCard shape as every other card on this page, just with
-// no feature chips and no relation line, since neither applies here.
-const INTELLIGENCE_COPY: Record<string, { descriptor: string; ctaLabel: string }> = {
-  setpointk: { descriptor: 'Intelligence Layer', ctaLabel: 'Open SetpointK' },
+// no feature chips (AVK-DT4H-SETPOINT-01: SetpointK now carries one plain-text relation line, "Built on DT4H").
+// AVK-DT4H-SETPOINT-01 (PROPOSED): SetpointK is SETPOINT, the execution and adaptation engine built on DT4H (Digital
+// Twin for Health). Descriptor, description and relation come from lib/content/dt4hSetpointCopy.ts instead of the
+// registry tagline, which credits SetpointK with DT4H's digital-twin modeling. Status/maturity stay registry-derived.
+const INTELLIGENCE_COPY: Record<string, { descriptor: string; description: string; relation: string; ctaLabel: string }> = {
+  setpointk: { descriptor: D['AVK-DS-SP-01'], description: D['AVK-DS-SP-02'], relation: D['AVK-DS-SP-03'], ctaLabel: 'Open SetpointK' },
 }
 
 function getIntelligenceNodes() {
@@ -211,8 +215,9 @@ export function PlatformArchitecture() {
                   descriptor={copy.descriptor}
                   status={node.status}
                   maturityLabel={distinctMaturityLabel(node)}
-                  description={node.purpose ?? ''}
+                  description={copy.description}
                   features={[]}
+                  relation={[{ text: copy.relation }]}
                   ctaLabel={copy.ctaLabel}
                   href={node.href}
                 />

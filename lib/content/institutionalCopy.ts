@@ -2,6 +2,9 @@
 // Generated verbatim from _claude_reports/AVK_UNIFICATION_02A/tools/approved-editorial-register.json
 // (AVK-FACE-REFRESH-02 register + AVK-UNIFICATION-02A amendment FR-083-A). Do not edit a string here
 // without a register amendment: institutionalCopy.test.ts pins every value to its SHA-256.
+// AVK-DT4H-SETPOINT-01 (PROPOSED, owner approval pending): FR-032-A, FR-034-A and FR-035-A amend FR-032/034/035 --
+// DT4H is Digital Twin for Health (owner clarification), so the band no longer calls all four pillars
+// "digital transformation". DT4I, DT4M and DT4C are unchanged.
 
 export const APPROVED_COPY = {
   "AVK-FR-003": "Living Worlds",
@@ -15,10 +18,10 @@ export const APPROVED_COPY = {
   "AVK-FR-027": "WorldK is an AvatarK product.",
   "AVK-FR-030": "AvatarK Holdings",
   "AVK-FR-031": "Four pillars. One architecture.",
-  "AVK-FR-032": "AvatarK Holdings works across four pillars of digital transformation. Products and creative worlds are built to serve them.",
+  "AVK-FR-032-A": "AvatarK Holdings works across four pillars. Products and creative worlds are built to serve them.",
   "AVK-FR-033": "DT4H",
-  "AVK-FR-034": "Digital Transformation for Humanity",
-  "AVK-FR-035": "Health, practice and human development.",
+  "AVK-FR-034-A": "Digital Twin for Health",
+  "AVK-FR-035-A": "Modeling, calibration and human digital-twin intelligence.",
   "AVK-FR-036": "DT4I",
   "AVK-FR-037": "Digital Transformation for Industry",
   "AVK-FR-038": "Operations, knowledge and intelligence for organizations.",
@@ -48,10 +51,10 @@ export const APPROVED_COPY_SHA256: Record<ApprovedCopyId, string> = {
   "AVK-FR-027": "7766ba68dfa914af8bc0f055728986581b929957db81bbd34d86070364bcb98a",
   "AVK-FR-030": "0ea134d923e9f1d031cc48ccedb593f4419259b634d61be05dfd9ae82492ff21",
   "AVK-FR-031": "fddbe2ed9c1c05ff6c0fd1a3b1f3c9b4b66b83f6c84b72f5cc77af8f2e278187",
-  "AVK-FR-032": "d71031c14b5baf6cc8bac18dbc691c5479613a07988e81853ca82210d2ab6aec",
+  "AVK-FR-032-A": "467e065441473958a3593071ec6a7939b1b0ae619085ccb983c41f85c2f31fe8",
   "AVK-FR-033": "324378b5d340e5615c113dfe974726e21bbfd781f96079fb765c4196807d0659",
-  "AVK-FR-034": "e882fd9d1dc28724ff646e540b5ffb5caa13a5b5ec31e2cdce357252f031e324",
-  "AVK-FR-035": "0c8ca97c5505faa4e277ac952921d135d56a9a7751b697e7294767291ca14219",
+  "AVK-FR-034-A": "2540e56cdd2734982f0119646f371c523fcb28235e78f076cdc32e4b45f091e7",
+  "AVK-FR-035-A": "0803db58875d18660cae7f2f7f19a28686640f3c77cdd058dec795c03ae51a4a",
   "AVK-FR-036": "bf661e4c07abbd89cb0eb352987f9d0b00a318c45b9b683850750f4c971c3263",
   "AVK-FR-037": "bd604d917ffb035f32d6ed1563de404cfcfd3cf3afddc5b3fc2f3ec59caa26eb",
   "AVK-FR-038": "cdb4abef25baefbfc065d3ba738073a9ec26bd6f78345c59bc240d2c956373b5",
