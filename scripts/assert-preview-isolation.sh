@@ -7,9 +7,10 @@
 # Google OAuth off. Anything else -- including any other VERCEL_ENV -- exits 1 before any dependency
 # is installed, so this build can never install against real Supabase values.
 # Prints only per-condition ok / mismatch / unset / set. Never prints values.
-B=release/avatark-institutional-01; PB=platform/foundation-20260714; F=0
+# AVK-ECOSYSTEM-04-PREVIEW: Preview also admits exactly feature/avk-ecosystem-04, with the same placeholder contract.
+B=release/avatark-institutional-01; E04=feature/avk-ecosystem-04; PB=platform/foundation-20260714; F=0
 case "$VERCEL_ENV" in
-  preview) T=AVK-U02; R=$B; P=https://preview-placeholder.invalid; K=preview-placeholder-not-a-key ;;
+  preview) T=AVK-U02; R=$B; [ "$VERCEL_GIT_COMMIT_REF" = "$E04" ] && R=$E04; P=https://preview-placeholder.invalid; K=preview-placeholder-not-a-key ;;
   production) T=AVK-PROD; R=$PB; P=https://production-placeholder.invalid; K=production-placeholder-not-a-key ;;
   *) echo 'AVK-PROD assert: VERCEL_ENV not preview/production, failing before install'; exit 1 ;;
 esac

@@ -14,6 +14,7 @@ const PB = 'platform/foundation-20260714'
 const U03 = 'integration/avk-unification-03' // accepted baseline; no longer approved on this commit line
 const U02 = 'integration/avk-unification-02'
 const FLW02 = 'integration/avk-founder-living-worlds-02'
+const E04 = 'feature/avk-ecosystem-04' // AVK-ECOSYSTEM-04-PREVIEW: second approved Preview branch
 const ISOLATED = {
   VERCEL_ENV: 'preview',
   VERCEL_GIT_COMMIT_REF: B,
@@ -108,4 +109,28 @@ test('assert: any VERCEL_ENV other than preview/production fails closed', () => 
     assert.equal(run(A, { ...PROD_ISOLATED, VERCEL_ENV: env }).code, 1, `VERCEL_ENV=${JSON.stringify(env)}`)
   }
   assert.equal(run(A, {}).code, 1)
+})
+
+test('E04 guards: feature/avk-ecosystem-04 previews like the release branch (same placeholders), nowhere else', () => {
+  const s = 'scripts/vercel-ignore-build.sh'
+  assert.equal(run(s, { VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: E04 }).code, 1)
+  for (const ref of [`${E04}-copy`, 'feature/avk-ecosystem-05', 'Feature/avk-ecosystem-04', `${E04} `, `refs/heads/${E04}`, 'feature/avk-ecosystem', 'feature/avk-ecosystem-04/x']) {
+    assert.equal(run(s, { VERCEL_ENV: 'preview', VERCEL_GIT_COMMIT_REF: ref }).code, 0, `preview ${ref}`)
+    assert.equal(run(A, { ...ISOLATED, VERCEL_GIT_COMMIT_REF: ref }).code, 1, `assert ${ref}`)
+  }
+  assert.equal(run(s, { VERCEL_ENV: 'development', VERCEL_GIT_COMMIT_REF: E04 }).code, 0)
+  const ok = run(A, { ...ISOLATED, VERCEL_GIT_COMMIT_REF: E04 })
+  assert.equal(ok.code, 0)
+  assert.match(ok.out, /AVK-U02 assert: VERCEL_GIT_COMMIT_REF=ok/)
+  // every isolation deviation still fails closed on the E04 branch
+  const deviations: Record<string, string>[] = [{ NEXT_PUBLIC_SUPABASE_URL: SENTINELS[0] }, { NEXT_PUBLIC_SUPABASE_ANON_KEY: SENTINELS[1] }, { NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: SENTINELS[2] },
+    { NEXT_PUBLIC_ACCOUNT_MOUNT_ENABLED: 'true' }, { SUPABASE_SERVICE_ROLE_KEY: SENTINELS[3] }, { ONBOARDING_RECEIPT_SECRET: SENTINELS[3] },
+    { NEXT_PUBLIC_INSTITUTIONAL_SIGNIN_ENABLED: 'true' }, { NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED: 'true' }]
+  for (const bad of deviations) {
+    const r = run(A, { ...ISOLATED, VERCEL_GIT_COMMIT_REF: E04, ...bad })
+    assert.equal(r.code, 1, JSON.stringify(Object.keys(bad)))
+    assert.ok(noValuesPrinted(r.out))
+  }
+  // the E04 branch can never satisfy the Production assertion
+  assert.equal(run(A, { ...PROD_ISOLATED, VERCEL_GIT_COMMIT_REF: E04 }).code, 1)
 })
