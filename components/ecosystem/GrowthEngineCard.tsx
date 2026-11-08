@@ -54,7 +54,9 @@ export function GrowthEngineCard({
       className="flex flex-col rounded-lg border p-6"
       style={{ borderColor: 'var(--paper-line)', background: 'var(--surface-card)' }}
     >
-      <div className="flex items-start justify-between gap-3">
+      {/* AVK-ECOSYSTEM-04: flex-wrap so a nowrap status badge (e.g. GameK "IN DEVELOPMENT") moves under the
+          descriptor instead of overflowing the card when four cards share a row (~257px each at xl). */}
+      <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
         <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           {descriptor}
         </p>

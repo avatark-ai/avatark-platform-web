@@ -74,6 +74,7 @@ test('E04-5 StudioK: fourth Growth Engine card, non-clickable, registry unchange
 test('E04-6 responsive grid: 1 / 2 (sm) / 4 (xl) columns', () => {
   assert.match(ARCH, /grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4/)
   assert.ok(!/lg:grid-cols-3/.test(ARCH))
+  assert.match(CARD, /className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1"/, 'card header wraps instead of overflowing')
 })
 
 test('E04-7 registry journey edges untouched (diagram and EW-08 path unchanged)', () => {
