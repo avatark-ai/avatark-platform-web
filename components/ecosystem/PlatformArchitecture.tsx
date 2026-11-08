@@ -3,7 +3,8 @@ import { RevealOnView } from '@avatark/motion'
 import { PROD_SCOPE_I_COPY as P } from '@/lib/content/prodScopeICopy'
 import { isInstitutionalScope } from '@/lib/release/scope'
 import { ECOSYSTEM_WORLDK_COPY as E } from '@/lib/content/ecosystemWorldkCopy'
-import { getGrowthEngines, getJourneyTransitions, getPlatformNode, distinctMaturityLabel } from '@/lib/products/platformGraph'
+import { ECOSYSTEM_04_COPY as G, STUDIOK_CAPABILITY_CHIPS, splitRelationTokens, type Ecosystem04CopyId } from '@/lib/content/ecosystem04Copy'
+import { getGrowthEngines, getPlatformNode, distinctMaturityLabel, type PlatformNode } from '@/lib/products/platformGraph'
 import { PlatformDiagram } from './PlatformDiagram'
 import { GrowthEngineCard } from './GrowthEngineCard'
 import { PlatformServices } from './PlatformServices'
@@ -21,11 +22,14 @@ import { ContinueYourJourney } from './ContinueYourJourney'
 // being duplicated here; only descriptor/description/ctaLabel/fallback
 // feature bullets remain curated prose, since those are this page's own
 // editorial framing, not portable platform metadata.
-const ENGINE_COPY: Record<string, { descriptor: string; description: string; ctaLabel: string; featuresLabel?: string; fallbackFeatures: string[] }> = {
+// AVK-ECOSYSTEM-04: `relationId` replaces the registry-derived "Continues to ArenaK" line. Only PrometheusK has
+// a documented relationship (arenak-web ARENAK_PROMETHEUS_BOUNDARY.md); GameK and Atlas have none, so no line.
+const ENGINE_COPY: Record<string, { descriptor: string; description: string; ctaLabel: string; featuresLabel?: string; fallbackFeatures: string[]; relationId?: Ecosystem04CopyId }> = {
   prometheusk: {
     descriptor: 'Practice Engine',
     description: 'Structured practices that change behavior.',
     ctaLabel: 'Open PrometheusK',
+    relationId: 'AVK-E04-PK-REL',
     fallbackFeatures: ['Practice Engine', 'Featured Practice', 'Practice Library', 'Living Echo'],
   },
   gamek: {
@@ -43,14 +47,35 @@ const ENGINE_COPY: Record<string, { descriptor: string; description: string; cta
   },
 }
 
-// StudioK/SetpointK: real registry products, but not on the AvatarK -> Echo
+// AVK-ECOSYSTEM-04 (owner-approved architecture): StudioK is the fourth Growth Engine card -- Creation & Modeling
+// Engine, organizationally under DT4M. Presentation only: the registry is unchanged (StudioK has no journeyRole,
+// so it is not on Echo's journey graph, the diagram or Continue Your Journey) and its destination stays plain
+// text (productDestinations.ts ALWAYS_PLAIN_TEXT) until separately approved.
+const STUDIOK_ENGINE = {
+  id: 'studiok',
+  descriptor: G['AVK-E04-SK-01'],
+  description: G['AVK-E04-SK-02'],
+  features: [...STUDIOK_CAPABILITY_CHIPS],
+  ctaLabel: 'Open StudioK',
+  relationId: 'AVK-E04-SK-03' as Ecosystem04CopyId,
+}
+
+function relationParts(id: Ecosystem04CopyId | undefined) {
+  if (!id) return undefined
+  return splitRelationTokens(G[id]).map((part) => {
+    if ('text' in part) return part
+    const node: PlatformNode | null = getPlatformNode(part.productId)
+    return { name: node?.name ?? part.productId, href: node?.href ?? null }
+  })
+}
+
+// SetpointK: real registry products, but not on the AvatarK -> Echo
 // -> ... -> CinemaK journey chain itself (no journeyRole) -- they build and
-// measure the ecosystem above rather than being another step in it. Reuses
+// measure the ecosystem above rather than being another step in it. (AVK-ECOSYSTEM-04: StudioK moved out.) Reuses
 // getPlatformNode() (works for any registry id, journeyRole or not) and the
 // same GrowthEngineCard shape as every other card on this page, just with
 // no feature chips and no "Continues to" line, since neither applies here.
 const CREATOR_INTELLIGENCE_COPY: Record<string, { descriptor: string; ctaLabel: string }> = {
-  studiok: { descriptor: 'Creation Engine', ctaLabel: 'Open StudioK' },
   setpointk: { descriptor: 'Intelligence Layer', ctaLabel: 'Open SetpointK' },
 }
 
@@ -96,12 +121,10 @@ export function PlatformArchitecture() {
             Growth Engines
           </h2>
 
-          <RevealOnView className="motion-emerge-stagger mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {/* AVK-ECOSYSTEM-04: four cards -- 1 column, 2 from sm, 4 from xl (1280px; at lg each card would be ~225px). */}
+          <RevealOnView className="motion-emerge-stagger mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
             {getGrowthEngines().map((engine) => {
               const copy = ENGINE_COPY[engine.id]
-              const nextProducts = getJourneyTransitions()
-                .find((t) => t.sources.some((s) => s.id === engine.id))
-                ?.targets.map((target) => ({ name: target.name, href: target.href }))
               return (
                 <GrowthEngineCard
                   key={engine.id}
@@ -114,10 +137,28 @@ export function PlatformArchitecture() {
                   featuresLabel={copy.featuresLabel}
                   ctaLabel={copy.ctaLabel}
                   href={engine.href}
-                  nextProducts={nextProducts}
+                  relation={relationParts(copy.relationId)}
                 />
               )
             })}
+            {(() => {
+              const node = getPlatformNode(STUDIOK_ENGINE.id)
+              if (!node) return null
+              return (
+                <GrowthEngineCard
+                  key={node.id}
+                  engineName={node.name}
+                  descriptor={STUDIOK_ENGINE.descriptor}
+                  status={node.status}
+                  maturityLabel={distinctMaturityLabel(node)}
+                  description={STUDIOK_ENGINE.description}
+                  features={STUDIOK_ENGINE.features}
+                  ctaLabel={STUDIOK_ENGINE.ctaLabel}
+                  href={node.href}
+                  relation={relationParts(STUDIOK_ENGINE.relationId)}
+                />
+              )
+            })()}
           </RevealOnView>
         </SectionContainer>
       </section>
@@ -157,7 +198,8 @@ export function PlatformArchitecture() {
           <h2 className="mt-8 text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-dim)' }}>
             Creator & Intelligence
           </h2>
-          <RevealOnView className="motion-emerge-stagger mx-auto mt-5 grid max-w-2xl grid-cols-1 gap-5 sm:grid-cols-2">
+          {/* AVK-ECOSYSTEM-04: StudioK moved to Growth Engines, so this grid holds one card (SetpointK). */}
+          <RevealOnView className="motion-emerge-stagger mx-auto mt-5 grid max-w-sm grid-cols-1 gap-5">
             {getCreatorIntelligenceNodes().map((node) => {
               const copy = CREATOR_INTELLIGENCE_COPY[node.id]
               return (

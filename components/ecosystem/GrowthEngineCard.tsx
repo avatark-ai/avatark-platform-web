@@ -3,8 +3,8 @@ import { DepartureLink } from '@avatark/motion'
 import { StatusBadge, type PlatformStatus } from './StatusBadge'
 import { isInstitutionalScope } from '@/lib/release/scope'
 
-// One of the three equal Growth Engine cards (PrometheusK, GameK, AtlasK).
-// `href` and `nextProducts` are always resolved by the caller from
+// One of the four equal Growth Engine cards (PrometheusK, GameK, Atlas, StudioK -- AVK-ECOSYSTEM-04).
+// `href` and `relation` product hrefs are always resolved by the caller from
 // lib/products/platformGraph.ts (itself reading @avatark/product-registry)
 // so this card never fabricates a destination or a relationship -- same
 // resolver the pre-existing /ecosystem grid and the homepage's
@@ -25,7 +25,7 @@ export function GrowthEngineCard({
   featuresLabel,
   href,
   ctaLabel,
-  nextProducts,
+  relation,
 }: {
   engineName: string
   descriptor: string
@@ -43,10 +43,9 @@ export function GrowthEngineCard({
   featuresLabel?: string
   href: string | null
   ctaLabel: string
-  // Recommended next product(s) this engine's journey typically continues
-  // into (e.g. PrometheusK -> ArenaK). Empty when this engine has no
-  // confirmed next step yet.
-  nextProducts?: { name: string; href: string | null }[]
+  // AVK-ECOSYSTEM-04: product-specific relationship line, as text and
+  // product segments (href already resolved through the Scope I policy).
+  relation?: ({ text: string } | { name: string; href: string | null })[]
 }) {
   const external = href?.startsWith('http') ?? false
 
@@ -94,27 +93,28 @@ export function GrowthEngineCard({
         </div>
       )}
 
-      {nextProducts && nextProducts.length > 0 && (
-        <p className="mt-4 text-xs" style={{ color: 'var(--ink-dim)' }}>
-          Continues to{' '}
-          {nextProducts.map((product, index) => {
-            const nextExternal = product.href?.startsWith('http') ?? false
-            return (
-              <span key={product.name}>
-                {index > 0 && ', '}
-                {product.href ? (
-                  nextExternal ? (
-                    <DepartureLink href={product.href} className="link-underline-draw font-semibold" style={{ color: 'var(--ink)' }}>
-                      {product.name}
-                    </DepartureLink>
-                  ) : (
-                    <Link href={product.href} className="link-underline-draw font-semibold" style={{ color: 'var(--ink)' }}>
-                      {product.name}
-                    </Link>
-                  )
-                ) : (
-                  <span className="font-semibold">{product.name}</span>
-                )}
+      {/* AVK-ECOSYSTEM-04: a product-specific relationship line (register lib/content/ecosystem04Copy.ts, PROPOSED) in place
+          of the generic "Continues to <next product>" line, which no architectural contract supported for
+          GameK or Atlas. Omitted when an engine has no documented relationship. Product segments keep the
+          Scope I destination policy: linked only when their resolved href is non-null. */}
+      {relation && relation.length > 0 && (
+        <p data-testid="engine-relation" className="mt-4 text-xs" style={{ color: 'var(--ink-dim)' }}>
+          {relation.map((part, index) => {
+            if ('text' in part) return <span key={index}>{part.text}</span>
+            const partExternal = part.href?.startsWith('http') ?? false
+            return part.href ? (
+              partExternal ? (
+                <DepartureLink key={index} href={part.href} className="link-underline-draw font-semibold" style={{ color: 'var(--ink)' }}>
+                  {part.name}
+                </DepartureLink>
+              ) : (
+                <Link key={index} href={part.href} className="link-underline-draw font-semibold" style={{ color: 'var(--ink)' }}>
+                  {part.name}
+                </Link>
+              )
+            ) : (
+              <span key={index} className="font-semibold">
+                {part.name}
               </span>
             )
           })}
