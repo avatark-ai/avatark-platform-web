@@ -147,7 +147,9 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     // yet 'live'. integrationStatus tracks platform integration, not
     // product maturity -- the two are allowed to diverge.
     integrationStatus: 'live',
-    nextProductIds: ['arenak'],
+    // AVK-ECOSYSTEM-04-PREVIEW (E04-4): no documented GameK -> ArenaK handoff (gamek-web
+    // GAMEK_PRODUCT_STATUS_MATRIX.md marks it unavailable), so no journey edge.
+    nextProductIds: [],
     // FlowK/PathK/GeometriK/ChronicleK: GameK's own learning experiences
     // (confirmed via gamek-web's site structure, e.g. its `flowk` Vercel
     // project at gamek.ai/flowk) -- named here once so any surface listing
@@ -316,7 +318,8 @@ export const PRODUCT_REGISTRY: AvatarKProduct[] = [
     journeyRole: 'growth-engine',
     journeyOrder: 3,
     integrationStatus: 'preview',
-    nextProductIds: ['arenak'],
+    // AVK-ECOSYSTEM-04-PREVIEW (E04-4): no Atlas <-> ArenaK contract exists, so no journey edge.
+    nextProductIds: [],
   },
   {
     id: 'setpointk',

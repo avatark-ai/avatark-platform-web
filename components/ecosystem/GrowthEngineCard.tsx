@@ -54,9 +54,10 @@ export function GrowthEngineCard({
       className="flex flex-col rounded-lg border p-6"
       style={{ borderColor: 'var(--paper-line)', background: 'var(--surface-card)' }}
     >
-      {/* AVK-ECOSYSTEM-04: flex-wrap so a nowrap status badge (e.g. GameK "IN DEVELOPMENT") moves under the
-          descriptor instead of overflowing the card when four cards share a row (~257px each at xl). */}
-      <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
+      {/* AVK-ECOSYSTEM-04-PREVIEW (E04-7): the status badge always sits on its own row under the descriptor, so
+          every card places it identically at every width (previously it wrapped only on long descriptors) and a
+          nowrap badge can never collide with or overflow past the descriptor. DOM order unchanged. */}
+      <div className="flex flex-col items-start gap-1.5">
         <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--gold-ink)' }}>
           {descriptor}
         </p>

@@ -3,7 +3,7 @@ import { RevealOnView } from '@avatark/motion'
 import { PROD_SCOPE_I_COPY as P } from '@/lib/content/prodScopeICopy'
 import { isInstitutionalScope } from '@/lib/release/scope'
 import { ECOSYSTEM_WORLDK_COPY as E } from '@/lib/content/ecosystemWorldkCopy'
-import { ECOSYSTEM_04_COPY as G, STUDIOK_CAPABILITY_CHIPS, splitRelationTokens, type Ecosystem04CopyId } from '@/lib/content/ecosystem04Copy'
+import { ECOSYSTEM_04_COPY as G, FOURTH_GROWTH_ENGINE_ID, INTELLIGENCE_SECTION_HEADING, STUDIOK_CAPABILITY_CHIPS, splitRelationTokens, type Ecosystem04CopyId } from '@/lib/content/ecosystem04Copy'
 import { getGrowthEngines, getPlatformNode, distinctMaturityLabel, type PlatformNode } from '@/lib/products/platformGraph'
 import { PlatformDiagram } from './PlatformDiagram'
 import { GrowthEngineCard } from './GrowthEngineCard'
@@ -13,7 +13,7 @@ import { ContinueYourJourney } from './ContinueYourJourney'
 
 // Growth Engine editorial copy, kept here rather than in content/foundation/
 // *.md -- this is a distinct, curated architecture narrative (AvatarK ->
-// Echo -> three Growth Engines -> Expression Layer), not the registry-driven
+// Echo -> four Growth Engines -> Expression Layer), not the registry-driven
 // Begin/Practice/Play/.../Care grid ecosystem.md already owns (that content
 // still feeds the nav dropdown, footer, and homepage teaser unchanged).
 // Every fact this narrative can get from the registry -- maturity,
@@ -52,7 +52,7 @@ const ENGINE_COPY: Record<string, { descriptor: string; description: string; cta
 // so it is not on Echo's journey graph, the diagram or Continue Your Journey) and its destination stays plain
 // text (productDestinations.ts ALWAYS_PLAIN_TEXT) until separately approved.
 const STUDIOK_ENGINE = {
-  id: 'studiok',
+  id: FOURTH_GROWTH_ENGINE_ID,
   descriptor: G['AVK-E04-SK-01'],
   description: G['AVK-E04-SK-02'],
   features: [...STUDIOK_CAPABILITY_CHIPS],
@@ -69,18 +69,18 @@ function relationParts(id: Ecosystem04CopyId | undefined) {
   })
 }
 
-// SetpointK: real registry products, but not on the AvatarK -> Echo
+// SetpointK (E04-3: section renamed "Intelligence"): a real registry product, but not on the AvatarK -> Echo
 // -> ... -> CinemaK journey chain itself (no journeyRole) -- they build and
 // measure the ecosystem above rather than being another step in it. (AVK-ECOSYSTEM-04: StudioK moved out.) Reuses
 // getPlatformNode() (works for any registry id, journeyRole or not) and the
 // same GrowthEngineCard shape as every other card on this page, just with
-// no feature chips and no "Continues to" line, since neither applies here.
-const CREATOR_INTELLIGENCE_COPY: Record<string, { descriptor: string; ctaLabel: string }> = {
+// no feature chips and no relation line, since neither applies here.
+const INTELLIGENCE_COPY: Record<string, { descriptor: string; ctaLabel: string }> = {
   setpointk: { descriptor: 'Intelligence Layer', ctaLabel: 'Open SetpointK' },
 }
 
-function getCreatorIntelligenceNodes() {
-  return Object.keys(CREATOR_INTELLIGENCE_COPY)
+function getIntelligenceNodes() {
+  return Object.keys(INTELLIGENCE_COPY)
     .map((id) => getPlatformNode(id))
     .filter((node) => node !== null)
 }
@@ -150,7 +150,9 @@ export function PlatformArchitecture() {
                   engineName={node.name}
                   descriptor={STUDIOK_ENGINE.descriptor}
                   status={node.status}
-                  maturityLabel={distinctMaturityLabel(node)}
+                  // E04-6: one indicator only -- the VISION badge; the registry's "Preview" (alpha) maturity
+                  // label is not shown, so the card cannot read as a publicly available creation platform.
+                  maturityLabel={null}
                   description={STUDIOK_ENGINE.description}
                   features={STUDIOK_ENGINE.features}
                   ctaLabel={STUDIOK_ENGINE.ctaLabel}
@@ -176,7 +178,7 @@ export function PlatformArchitecture() {
         </SectionContainer>
       </section>
 
-      {/* Platform Services + Creator & Intelligence share one section --
+      {/* Platform Services + Intelligence share one section --
           both explain what sits *underneath* or *alongside* the journey
           chain above, rather than being another step in it. */}
       <section className="border-b" style={{ borderColor: 'var(--paper-line)' }}>
@@ -196,12 +198,12 @@ export function PlatformArchitecture() {
           </div>
 
           <h2 className="mt-8 text-center text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-dim)' }}>
-            Creator & Intelligence
+            {INTELLIGENCE_SECTION_HEADING}
           </h2>
           {/* AVK-ECOSYSTEM-04: StudioK moved to Growth Engines, so this grid holds one card (SetpointK). */}
           <RevealOnView className="motion-emerge-stagger mx-auto mt-5 grid max-w-sm grid-cols-1 gap-5">
-            {getCreatorIntelligenceNodes().map((node) => {
-              const copy = CREATOR_INTELLIGENCE_COPY[node.id]
+            {getIntelligenceNodes().map((node) => {
+              const copy = INTELLIGENCE_COPY[node.id]
               return (
                 <GrowthEngineCard
                   key={node.id}

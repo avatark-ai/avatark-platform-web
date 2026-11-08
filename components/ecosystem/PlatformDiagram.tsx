@@ -1,10 +1,11 @@
 import { RevealOnView, type Point } from '@avatark/motion'
 import { ConnectionLine } from './ConnectionLine'
-import { ECOSYSTEM_WORLDK_COPY as E } from '@/lib/content/ecosystemWorldkCopy'
+import { ECOSYSTEM_04_COPY as G } from '@/lib/content/ecosystem04Copy'
 
 // The one-page mental model for the whole ecosystem: AvatarK (institutional
-// home) -> Echo (consumer entry) -> three equal Growth Engines -> ArenaK ->
-// StreamK -> CinemaK (the Expression Layer). Two independently laid-out
+// home) -> Echo (consumer entry) -> three of the four Growth Engines (StudioK,
+// the fourth, is not on Echo's path) -> PrometheusK -> ArenaK -> StreamK ->
+// CinemaK (the Expression Layer). Two independently laid-out
 // SVGs, gated by the same `hidden sm:block` / `sm:hidden` convention Canon.tsx
 // already uses for its desktop-tabs/mobile-accordion split, rather than one
 // SVG rescaled -- the brief asks for a genuinely different arrangement
@@ -14,7 +15,7 @@ import { ECOSYSTEM_WORLDK_COPY as E } from '@/lib/content/ecosystemWorldkCopy'
 //
 // Motion (plays once, when scrolled into view): AvatarK emerges -> line
 // draws to Echo -> Echo emerges -> lines fan out to the three Growth
-// Engines -> the three emerge together -> lines converge into ArenaK ->
+// Engines -> the three emerge together -> PrometheusK's line into ArenaK ->
 // ArenaK emerges -> line to StreamK -> StreamK emerges -> line to CinemaK ->
 // CinemaK emerges. Entirely staged off the shared EMERGE/DRAW primitives via
 // --motion-delay, same technique as FourAxesGeometry/LivingSpiral. Settles
@@ -63,14 +64,15 @@ const NODES: DiagramNode[] = [
   { id: 'cinemak', label: 'CinemaK', stage: 'cinema' },
 ]
 
+// AVK-ECOSYSTEM-04-PREVIEW (E04-4): only PrometheusK -> ArenaK remains of the former three-way convergence --
+// GameK and Atlas have no documented ArenaK relationship (registry nextProductIds now []). Nodes, positions and
+// motion timing are unchanged; the diagram stays one illustrative path, not a map of product integrations.
 const EDGES: { from: string; to: string; stage: StageKey }[] = [
   { from: 'avatark', to: 'echo', stage: 'lineAvatarkEcho' },
   { from: 'echo', to: 'prometheusk', stage: 'linesEchoEngines' },
   { from: 'echo', to: 'gamek', stage: 'linesEchoEngines' },
   { from: 'echo', to: 'atlask', stage: 'linesEchoEngines' },
   { from: 'prometheusk', to: 'arenak', stage: 'linesEnginesArena' },
-  { from: 'gamek', to: 'arenak', stage: 'linesEnginesArena' },
-  { from: 'atlask', to: 'arenak', stage: 'linesEnginesArena' },
   { from: 'arenak', to: 'streamk', stage: 'lineArenaStream' },
   { from: 'streamk', to: 'cinemak', stage: 'lineStreamCinema' },
 ]
@@ -145,9 +147,10 @@ function renderDiagram(positions: Record<string, Point>, radius: number) {
   )
 }
 
-// AVK-ECOSYSTEM-WORLDK-02 (OD-EW-7): accessible name = approved AVK-EW-08 (a path, not an ownership chart).
-// Nodes, edges, positions and motion above are unchanged.
-const DIAGRAM_ARIA_LABEL = E['AVK-EW-08']
+// AVK-ECOSYSTEM-WORLDK-02 (OD-EW-7): accessible name describes a path, not an ownership chart.
+// AVK-ECOSYSTEM-04-PREVIEW (E04-4): AVK-E04-EW-08 supersedes AVK-EW-08 (four Growth Engines; only practice continues
+// into ArenaK), matching the edges above.
+const DIAGRAM_ARIA_LABEL = G['AVK-E04-EW-08']
 
 export function PlatformDiagram() {
   return (

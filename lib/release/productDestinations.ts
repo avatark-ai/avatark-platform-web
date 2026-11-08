@@ -25,7 +25,10 @@ export interface DestinationAudit {
 export const X1_DESTINATION_AUDIT: readonly DestinationAudit[] = [
   { id: 'prometheusk', url: 'https://prometheusk.avatark.io', classification: 'VERIFIED_PUBLIC', basis: 'HTTPS 200, no redirect; public landing, optional sign-in; registry public / live' },
   { id: 'gamek', url: 'https://gamek.ai', classification: 'UNAVAILABLE', basis: 'redirects to /preview access-code wall ("private preview", noindex); not reachable by public visitors' },
-  { id: 'arenak', url: 'https://arenak.ai', classification: 'VERIFIED_PUBLIC', basis: 'HTTPS 200 via www redirect; public landing, no auth wall; registry public / coming online' },
+  // AVK-ECOSYSTEM-04-PREVIEW (E04-5): reclassified from VERIFIED_PUBLIC. arenak.ai serves the legacy
+  // arenak-systems-web site (placeholder Privacy/Terms), not the community product this site describes, so
+  // it is not "consistent with the approved product status". Temporary: plain text until ArenaK AE-7 cutover.
+  { id: 'arenak', url: 'https://arenak.ai', classification: 'REQUIRES_OWNER_REVIEW', basis: 'AVK-ECOSYSTEM-04 assessment (2026-11-08): arenak.ai is the legacy arenak-systems-web deployment, not the ArenaK community product; plain text until AE-7' },
   { id: 'streamk', url: 'https://streamk.ai', classification: 'VERIFIED_PUBLIC', basis: 'HTTPS 200 via www redirect; public landing, no auth wall; registry public / in development' },
   { id: 'cinemak', url: 'https://cinemak.ai', classification: 'REQUIRES_OWNER_REVIEW', basis: 'HTTPS 200 public landing, but registry visibility internal / vision: no prior public approval' },
   { id: 'atlas', url: 'https://atlas.dt4i.ai', classification: 'REQUIRES_OWNER_REVIEW', basis: 'HTTPS 200; registry visibility internal; no prior public approval' },

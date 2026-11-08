@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { DepartureLink, RevealOnView } from '@avatark/motion'
-import { getPlatformNode, getJourneyTransitions } from '@/lib/products/platformGraph'
+import { getPlatformNode, getJourneyTransitions, getGrowthEngines } from '@/lib/products/platformGraph'
+import { FOURTH_GROWTH_ENGINE_ID } from '@/lib/content/ecosystem04Copy'
 
 // RC4 final polish: still fully computed from the platform journey graph
 // (lib/products/platformGraph.ts) -- same getJourneyTransitions() RC3
@@ -12,7 +13,7 @@ import { getPlatformNode, getJourneyTransitions } from '@/lib/products/platformG
 // actually do next" rather than repeating "what connects to what."
 // ACTION_COPY is keyed by the transition's single target id when there is
 // one; a transition with several targets (today, only Echo's fan-out into
-// the three Growth Engines) always reads as a choice, regardless of which
+// the Growth Engines) always reads as a choice, regardless of which
 // or how many products are in that set -- so a future fourth Growth Engine
 // needs no copy change here.
 const ACTION_COPY: Record<string, string> = {
@@ -21,6 +22,17 @@ const ACTION_COPY: Record<string, string> = {
   cinemak: 'Preserve Knowledge',
 }
 const CHOICE_ACTION = 'Choose Your Growth Engine'
+
+// AVK-ECOSYSTEM-04-PREVIEW (E04-4): the Growth Engine choice lists all four engines, the same four as the
+// Growth Engines grid -- StudioK is appended for presentation only (no journey edge from Echo; plain text in
+// Scope I). A step whose single source is a Growth Engine names that source ("From PrometheusK"), so the page
+// no longer implies every engine continues into ArenaK. GameK and Atlas have no onward step (registry []).
+const GROWTH_ENGINE_IDS = new Set(getGrowthEngines().map((n) => n.id))
+
+function withFourthGrowthEngine<T extends { id: string }>(targets: T[], fourth: T | null): T[] {
+  const isEngineChoice = targets.length > 1 && targets.every((t) => GROWTH_ENGINE_IDS.has(t.id))
+  return isEngineChoice && fourth && !targets.some((t) => t.id === fourth.id) ? [...targets, fourth] : targets
+}
 
 function TargetLink({ name, href }: { name: string; href: string | null }) {
   const external = href?.startsWith('http') ?? false
@@ -36,6 +48,7 @@ function TargetLink({ name, href }: { name: string; href: string | null }) {
 export function ContinueYourJourney() {
   const echo = getPlatformNode('echo')
   const transitions = getJourneyTransitions()
+  const fourthEngine = getPlatformNode(FOURTH_GROWTH_ENGINE_ID)
 
   return (
     <RevealOnView className="motion-emerge-stagger flex flex-col items-center gap-6">
@@ -52,17 +65,24 @@ export function ContinueYourJourney() {
       )}
 
       {transitions.map((transition) => {
-        const key = transition.targets.map((t) => t.id).join('+')
-        const actionLabel = transition.targets.length > 1 ? CHOICE_ACTION : (ACTION_COPY[transition.targets[0].id] ?? `Continue to ${transition.targets[0].name}`)
+        const targets = withFourthGrowthEngine(transition.targets, fourthEngine)
+        const key = targets.map((t) => t.id).join('+')
+        const actionLabel = targets.length > 1 ? CHOICE_ACTION : (ACTION_COPY[targets[0].id] ?? `Continue to ${targets[0].name}`)
+        const engineSource = transition.sources.length === 1 && GROWTH_ENGINE_IDS.has(transition.sources[0].id) ? transition.sources[0] : null
 
         return (
           <div key={key} className="flex flex-col items-center gap-2 text-center">
+            {engineSource && (
+              <p data-testid="journey-source" className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-dim)' }}>
+                From {engineSource.name}
+              </p>
+            )}
             <p className="text-lg font-medium" style={{ color: 'var(--ink)' }}>
               {actionLabel} →
             </p>
-            {transition.targets.length > 1 ? (
+            {targets.length > 1 ? (
               <ul className="flex flex-col items-center gap-1">
-                {transition.targets.map((target) => (
+                {targets.map((target) => (
                   <li key={target.id} className="text-base font-semibold">
                     <TargetLink name={target.name} href={target.href} />
                   </li>
@@ -70,7 +90,7 @@ export function ContinueYourJourney() {
               </ul>
             ) : (
               <p className="text-base font-semibold">
-                <TargetLink name={transition.targets[0].name} href={transition.targets[0].href} />
+                <TargetLink name={targets[0].name} href={targets[0].href} />
               </p>
             )}
           </div>

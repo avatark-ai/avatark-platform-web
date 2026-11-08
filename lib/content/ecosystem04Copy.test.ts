@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
-import { ECOSYSTEM_04_COPY, ECOSYSTEM_04_COPY_SHA256, STUDIOK_CAPABILITY_CHIPS, splitRelationTokens, type Ecosystem04CopyId } from './ecosystem04Copy.ts'
+import { ECOSYSTEM_04_COPY, ECOSYSTEM_04_COPY_SHA256, FOURTH_GROWTH_ENGINE_ID, INTELLIGENCE_SECTION_HEADING, STUDIOK_CAPABILITY_CHIPS, splitRelationTokens, type Ecosystem04CopyId } from './ecosystem04Copy.ts'
 import { SCOPE_I_CLICKABLE_PRODUCT_URLS, scopeIProductHref } from '../release/productDestinations.ts'
 import { PRODUCT_REGISTRY } from '../../packages/product-registry/src/registry.ts'
 
@@ -18,12 +18,15 @@ const REGISTER_SHA256: Record<string, string> = {
   'AVK-E04-SK-02': '03987fbbd4fa5f5fb13f575932604c87cf98cdfaff3ba69432fd7469dcc5dadb',
   'AVK-E04-SK-03': 'f6e62460229968ee5abf7465dab840ccaee13fb5f42f7ef9816121663aff4bfa',
   'AVK-E04-PK-REL': '6d6415fbe7c7b82bc06a92a8f96ecb1c58d5c091018d1a0efe60b61a34991b44',
+  'AVK-E04-EW-08': '9fe212f2d6a9e431b9c4658a72add7ba86732ed5999e103b57c0207c0040b439',
 }
 
 const ARCH = code('components', 'ecosystem', 'PlatformArchitecture.tsx')
 const CARD = code('components', 'ecosystem', 'GrowthEngineCard.tsx')
+const CYJ = code('components', 'ecosystem', 'ContinueYourJourney.tsx')
+const DIAGRAM = read('components', 'ecosystem', 'PlatformDiagram.tsx')
 
-test('E04-1 copy: exactly the four register IDs, each matching its SHA-256', () => {
+test('E04-1 copy: exactly the five register IDs (r1), each matching its SHA-256', () => {
   const ids = Object.keys(ECOSYSTEM_04_COPY) as Ecosystem04CopyId[]
   assert.deepEqual([...ids].sort(), Object.keys(REGISTER_SHA256).sort())
   for (const id of ids) {
@@ -35,7 +38,7 @@ test('E04-1 copy: exactly the four register IDs, each matching its SHA-256', () 
 test('E04-2 no generic continuation claim on Growth Engine cards', () => {
   assert.ok(!/Continues to/.test(CARD), 'card no longer renders "Continues to"')
   assert.ok(!/nextProducts|getJourneyTransitions/.test(ARCH), 'engine cards no longer derive a next product')
-  for (const v of Object.values(ECOSYSTEM_04_COPY)) assert.ok(!/continues? (in)?to/i.test(v), v)
+  for (const [id, v] of Object.entries(ECOSYSTEM_04_COPY)) if (id !== 'AVK-E04-EW-08') assert.ok(!/continues? (in)?to/i.test(v), v)
 })
 
 test('E04-3 only PrometheusK and StudioK carry a relation line; GameK and Atlas have none', () => {
@@ -67,18 +70,55 @@ test('E04-5 StudioK: fourth Growth Engine card, non-clickable, registry unchange
   assert.equal(SCOPE_I_CLICKABLE_PRODUCT_URLS.has('studiok'), false)
   const studiok = PRODUCT_REGISTRY.find((p) => p.id === 'studiok')!
   assert.equal(studiok.journeyRole, undefined, 'StudioK stays off the Echo journey graph')
-  assert.ok(!/studiok:/.test(ARCH.slice(ARCH.indexOf('CREATOR_INTELLIGENCE_COPY'))), 'StudioK removed from Creator & Intelligence')
+  assert.ok(!/studiok:/.test(ARCH.slice(ARCH.indexOf('INTELLIGENCE_COPY'))), 'StudioK not in the Intelligence section')
+  assert.equal(FOURTH_GROWTH_ENGINE_ID, 'studiok')
+  assert.match(ARCH, /id: FOURTH_GROWTH_ENGINE_ID,/)
   assert.deepEqual([...STUDIOK_CAPABILITY_CHIPS], ['World Construction', 'Procedural Generation', 'Simulation', 'Cinematic Production'])
 })
 
 test('E04-6 responsive grid: 1 / 2 (sm) / 4 (xl) columns', () => {
   assert.match(ARCH, /grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4/)
   assert.ok(!/lg:grid-cols-3/.test(ARCH))
-  assert.match(CARD, /className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1"/, 'card header wraps instead of overflowing')
+  // E04-7: badge always on its own row under the descriptor (no side-by-side variant left).
+  assert.match(CARD, /<div className="flex flex-col items-start gap-1\.5">\s*<p className="text-xs font-semibold uppercase tracking-wider"[^>]*>\s*\{descriptor\}\s*<\/p>\s*<StatusBadge status=\{status\} \/>\s*<\/div>/)
+  assert.ok(!/justify-between/.test(CARD), 'no side-by-side header variant')
 })
 
-test('E04-7 registry journey edges untouched (diagram and EW-08 path unchanged)', () => {
-  for (const id of ['prometheusk', 'gamek', 'atlas']) {
-    assert.deepEqual(PRODUCT_REGISTRY.find((p) => p.id === id)!.nextProductIds, ['arenak'], id)
-  }
+test('E04-7 registry journey edges: only PrometheusK continues into ArenaK; diagram edges match the registry', () => {
+  const next = (id: string) => PRODUCT_REGISTRY.find((p) => p.id === id)!.nextProductIds
+  assert.deepEqual(next('prometheusk'), ['arenak'])
+  assert.deepEqual(next('gamek'), [])
+  assert.deepEqual(next('atlas'), [])
+  assert.deepEqual(next('arenak'), ['streamk'])
+  assert.deepEqual(next('streamk'), ['cinemak'])
+  const edges = [...DIAGRAM.matchAll(/\{ from: '([a-z]+)', to: '([a-z]+)'/g)].map((m) => `${m[1]}->${m[2]}`)
+  assert.deepEqual(edges.filter((e) => e.endsWith('->arenak')), ['prometheusk->arenak'])
+  assert.ok(!edges.some((e) => /studiok/.test(e)), 'no StudioK edge introduced')
+})
+
+// ---- AVK-ECOSYSTEM-04-PREVIEW: the seven approved presentation decisions ----
+
+test('PV-E04-3 Creator & Intelligence renamed Intelligence; SetpointK only', () => {
+  assert.equal(INTELLIGENCE_SECTION_HEADING, 'Intelligence')
+  assert.match(ARCH, />\s*\{INTELLIGENCE_SECTION_HEADING\}\s*<\/h2>/)
+  assert.ok(!/Creator/.test(ARCH), 'no "Creator" heading left')
+  assert.match(ARCH, /const INTELLIGENCE_COPY[^=]*= \{\s*setpointk: \{[^}]*\},\s*\}/)
+})
+
+test('PV-E04-4 EW-08 amendment: four engines, only practice continues into ArenaK, not an integration map', () => {
+  const t = ECOSYSTEM_04_COPY['AVK-E04-EW-08']
+  assert.match(t, /four Growth Engines/)
+  for (const p of ['PrometheusK', 'GameK', 'Atlas', 'StudioK', 'ArenaK']) assert.ok(t.includes(p), p)
+  assert.ok(!/Each can continue/.test(t) && !/onto three Growth Engines/.test(t), 'old claims gone')
+  assert.match(t, /From practice, a journey can continue into ArenaK/)
+  assert.match(t, /not an ownership chart or a map of product integrations/)
+  // Continue Your Journey: four-engine choice, StudioK appended for presentation, source named on engine steps.
+  assert.match(CYJ, /FOURTH_GROWTH_ENGINE_ID/)
+  assert.match(CYJ, /data-testid="journey-source"[\s\S]*?From \{engineSource\.name\}/)
+  assert.ok(!/Continues to/.test(CYJ))
+})
+
+test('PV-E04-6 StudioK card shows one maturity indicator (badge only)', () => {
+  const studiokCard = ARCH.slice(ARCH.indexOf('getPlatformNode(STUDIOK_ENGINE.id)'))
+  assert.match(studiokCard.slice(0, studiokCard.indexOf('/>')), /maturityLabel=\{null\}/)
 })

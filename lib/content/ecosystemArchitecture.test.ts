@@ -75,13 +75,23 @@ test('T-4 Echo and WorldK panels: same component, variants, ids and motifs', () 
   assert.match(SYS, /lg:grid-cols-2/)
 })
 
-test('T-5 journey diagram geometry, nodes, edges, motion and markup are byte-identical to 3f073a3', () => {
+// AVK-ECOSYSTEM-04-PREVIEW (E04-4) rebaseline: the only approved diagram change is removing the GameK -> ArenaK and
+// Atlas -> ArenaK edges (plus their 3-line comment). Re-inserting exactly those must reproduce the 3f073a3 bytes,
+// so every node, position, timing and the remaining edges stay pinned.
+const E04_EDGES_COMMENT = DIAGRAM.slice(DIAGRAM.indexOf('// AVK-ECOSYSTEM-04-PREVIEW (E04-4): only PrometheusK'), DIAGRAM.indexOf('const EDGES:'))
+const E04_REMOVED_EDGES = "  { from: 'gamek', to: 'arenak', stage: 'linesEnginesArena' },\n  { from: 'atlask', to: 'arenak', stage: 'linesEnginesArena' },\n"
+const PK_ARENA_EDGE = "  { from: 'prometheusk', to: 'arenak', stage: 'linesEnginesArena' },\n"
+
+test('T-5 journey diagram geometry, nodes, motion and markup are 3f073a3 minus exactly the two E04-4 edges', () => {
   const a = DIAGRAM.indexOf('const NODE_EMERGE_MS')
   const geometry = DIAGRAM.slice(a, DIAGRAM.indexOf('// AVK-ECOSYSTEM-WORLDK-02 (OD-EW-7)', a))
-  assert.equal(sha(geometry), 'd3404147b994cdf82ad2dbddce69834fa16c48f57fc4419d0786108381a5a69b')
+  assert.equal(E04_EDGES_COMMENT.split('\n').length - 1, 3, 'E04-4 comment is three lines')
+  assert.equal((geometry.match(/stage: 'linesEnginesArena'/g) ?? []).length, 1, 'one edge into ArenaK')
+  const restored = geometry.replace(E04_EDGES_COMMENT, '').replace(PK_ARENA_EDGE, PK_ARENA_EDGE + E04_REMOVED_EDGES)
+  assert.equal(sha(restored), 'd3404147b994cdf82ad2dbddce69834fa16c48f57fc4419d0786108381a5a69b')
   assert.equal(sha(DIAGRAM.slice(DIAGRAM.indexOf('export function PlatformDiagram'))), '9af71d794525fa574392f1ff298b217ff1a7db546a62dd81ce004ac97a422c10')
-  assert.match(DIAGRAM, /const DIAGRAM_ARIA_LABEL = E\['AVK-EW-08'\]/)
-  assert.equal((DIAGRAM.match(/aria-label=\{DIAGRAM_ARIA_LABEL\}/g) ?? []).length, 2, 'desktop and mobile SVG share EW-08')
+  assert.match(DIAGRAM, /const DIAGRAM_ARIA_LABEL = G\['AVK-E04-EW-08'\]/)
+  assert.equal((DIAGRAM.match(/aria-label=\{DIAGRAM_ARIA_LABEL\}/g) ?? []).length, 2, 'desktop and mobile SVG share the accessible name')
 })
 
 test('T-6 the Echo-rooted heading is gone; journey heading, caption and h2 eyebrows', () => {
@@ -94,7 +104,8 @@ test('T-6 the Echo-rooted heading is gone; journey heading, caption and h2 eyebr
 
 test('T-7 every EW string used on the page exists in the approved module', () => {
   const used = new Set([...[ARCH, REL, SYS, DIAGRAM].join('\n').matchAll(/E\['(AVK-EW-\d\d)'\]/g)].map((m) => m[1]))
-  assert.deepEqual([...used].sort(), Object.keys(ECOSYSTEM_WORLDK_COPY).sort(), 'all eight approved strings used, no others')
+  // AVK-ECOSYSTEM-04-PREVIEW (E04-4): EW-08 is superseded by AVK-E04-EW-08 and no longer rendered.
+  assert.deepEqual([...used].sort(), Object.keys(ECOSYSTEM_WORLDK_COPY).filter((id) => id !== 'AVK-EW-08').sort(), 'the other seven approved strings used, no others')
 })
 
 test('T-8 Discover Echo targets the #echo panel', () => {
@@ -102,9 +113,18 @@ test('T-8 Discover Echo targets the #echo panel', () => {
   assert.match(SYS, /id="echo"/)
 })
 
-test('T-9 product destination restrictions unchanged (file byte-identical to 3f073a3; X-1 set)', () => {
-  assert.equal(sha(read('lib', 'release', 'productDestinations.ts')), 'bdb6adfd31ded7aae3153ece47f3f7cfe8bdcad99a30efac107be70b219e2fd5')
-  assert.deepEqual([...SCOPE_I_CLICKABLE_PRODUCT_URLS.keys()].sort(), ['arenak', 'prometheusk', 'streamk'])
+// AVK-ECOSYSTEM-04-PREVIEW (E04-5) rebaseline: the only approved change is the ArenaK audit row (comment + reclassified
+// entry). Restoring the 3f073a3 row must reproduce the 3f073a3 bytes, so everything else stays pinned.
+const E04_ARENAK_OLD_ROW = "  { id: 'arenak', url: 'https://arenak.ai', classification: 'VERIFIED_PUBLIC', basis: 'HTTPS 200 via www redirect; public landing, no auth wall; registry public / coming online' },\n"
+
+test('T-9 product destination restrictions: 3f073a3 except the E04-5 ArenaK row; X-1 set', () => {
+  const src = read('lib', 'release', 'productDestinations.ts')
+  const a = src.indexOf('  // AVK-ECOSYSTEM-04-PREVIEW (E04-5)')
+  const b = src.indexOf('\n', src.indexOf("{ id: 'arenak'", a)) + 1
+  assert.ok(a > 0 && b > a)
+  assert.equal(src.slice(a, b).split('\n').length - 1, 4, 'three comment lines + one row')
+  assert.equal(sha(src.slice(0, a) + E04_ARENAK_OLD_ROW + src.slice(b)), 'bdb6adfd31ded7aae3153ece47f3f7cfe8bdcad99a30efac107be70b219e2fd5')
+  assert.deepEqual([...SCOPE_I_CLICKABLE_PRODUCT_URLS.keys()].sort(), ['prometheusk', 'streamk'])
 })
 
 test('T-10 (02R) EC-10 inert pill and EC-09 sit inside the WorldK panel, below its action; Echo panel has neither', () => {

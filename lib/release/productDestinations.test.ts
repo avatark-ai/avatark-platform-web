@@ -7,7 +7,7 @@ import { getPlatformNode } from '../products/platformGraph.ts'
 
 // AVK-PROD-03B (X-1): the Scope I external product destination allowlist.
 const EIGHT = ['prometheusk', 'gamek', 'arenak', 'streamk', 'cinemak', 'atlas', 'setpointk', 'studiok']
-const CLICKABLE = ['prometheusk', 'arenak', 'streamk']
+const CLICKABLE = ['prometheusk', 'streamk'] // AVK-ECOSYSTEM-04-PREVIEW E04-5: ArenaK withheld (legacy arenak.ai)
 
 test('the audit covers exactly the eight AVK-PROD-02R X-1 destinations, at their registry URLs', () => {
   assert.deepEqual(X1_DESTINATION_AUDIT.map((d) => d.id).sort(), [...EIGHT].sort())
@@ -47,4 +47,17 @@ test('institutional resolvers (footer/overview and the ecosystem graph) apply th
     if (node) assert.equal(node.href, expected, `getPlatformNode ${id}`)
   }
   assert.equal(resolveEcosystemProduct('echo').href, null)
+})
+
+test('E04-5 ArenaK legacy destination is plain text in Scope I only; URL and Scope II unchanged', () => {
+  const a = X1_DESTINATION_AUDIT.find((d) => d.id === 'arenak')!
+  assert.equal(a.url, 'https://arenak.ai')
+  assert.equal(a.classification, 'REQUIRES_OWNER_REVIEW')
+  assert.equal(scopeIProductHref('arenak', 'https://arenak.ai', 'institutional'), null)
+  // no silent substitute destination
+  for (const alt of ['https://arenak-web-gold.vercel.app', 'https://next.arenak.ai', 'https://practice.arenak.ai', 'https://www.arenak.ai']) {
+    assert.equal(scopeIProductHref('arenak', alt, 'institutional'), null, alt)
+  }
+  assert.equal(scopeIProductHref('arenak', 'https://arenak.ai', 'platform'), 'https://arenak.ai')
+  assert.deepEqual([...SCOPE_I_CLICKABLE_PRODUCT_URLS.values()].sort(), ['https://prometheusk.avatark.io', 'https://streamk.ai'])
 })

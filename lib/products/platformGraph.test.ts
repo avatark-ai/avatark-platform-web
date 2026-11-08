@@ -90,14 +90,15 @@ test('getJourneyTransitions collapses Echo fan-out into one transition', () => {
   )
 })
 
-test('getJourneyTransitions collapses the three Growth Engines converging on ArenaK', () => {
+// AVK-ECOSYSTEM-04-PREVIEW (E04-4): GameK and Atlas no longer have an ArenaK edge; only PrometheusK continues.
+test('getJourneyTransitions: only PrometheusK continues into ArenaK (GameK and Atlas have no onward step)', () => {
   const transitions = getJourneyTransitions()
-  const arenaTransition = transitions.find((t) => t.targets.some((tg) => tg.id === 'arenak'))
-  assert.ok(arenaTransition)
-  assert.deepEqual(
-    arenaTransition.sources.map((s) => s.id).sort(),
-    ['atlas', 'gamek', 'prometheusk']
-  )
+  const arenaTransitions = transitions.filter((t) => t.targets.some((tg) => tg.id === 'arenak'))
+  assert.equal(arenaTransitions.length, 1)
+  assert.deepEqual(arenaTransitions[0].sources.map((s) => s.id), ['prometheusk'])
+  for (const id of ['gamek', 'atlas']) {
+    assert.ok(!transitions.some((t) => t.sources.some((s) => s.id === id)), `${id} has no onward transition`)
+  }
 })
 
 test('getJourneyTransitions produces simple 1:1 transitions for ArenaK->StreamK and StreamK->CinemaK', () => {
