@@ -61,7 +61,7 @@ export const UNIFICATION_COPY = {
   "AVK-U03-EV-21": "Where worlds, stories and experiences are made.",
   "AVK-U03-EV-31": "Where understanding is gathered, connected and measured.",
   "AVK-U03-EV-40": "How the parts relate",
-  "AVK-U03-EV-41": "AvatarK Holdings works across four pillars. The AvatarK Platform is the shared foundation each product is built on.",
+  "AVK-U03-EV-41": "AvatarK Holdings works across four pillars. The AvatarK Platform is being built as the shared foundation for each product.",
   "AVK-U03-EV-42": "These groupings explain how the products relate. They do not change what each product is or who is responsible for it.",
   "AVK-U03-EV-43": "AvatarK Platform"
 } as const
@@ -120,7 +120,7 @@ export const UNIFICATION_COPY_SHA256: Record<UnificationCopyId, string> = {
   "AVK-U03-EV-21": "6fe4cfca0da816910f5753a61b94ead6be0b1fe36ddcdc987caaf3cf50dbfea1",
   "AVK-U03-EV-31": "e2061636a9113ab4a27c1fe19fc5a39d7f2fbaeeec3d52b9fc51b3e1081f5cc9",
   "AVK-U03-EV-40": "9dc2794174d38524a2d1408e52d76d27815cf0594bcae70726c7ee9e54e0f500",
-  "AVK-U03-EV-41": "cf5640ca9afe7d994834c9d9c1d96f9f4b1c2912675df159c173659b5de0d82b",
+  "AVK-U03-EV-41": "e2aa0cf8f52c8a0c198eaa9d3a4182a8da891a5b5a59bf72821f8852c88a2753",
   "AVK-U03-EV-42": "17b6bed77270cc0a124bbbeb2048c42e933eb59a1270156d992cf1a924b362a6",
   "AVK-U03-EV-43": "a5a21054d454940352072d73e0f45ef990641eeb672435e4383a34fa7e083cbd"
 }

@@ -4,6 +4,8 @@ import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { UNIFICATION_COPY, UNIFICATION_COPY_SHA256, type UnificationCopyId } from './unificationCopy.ts'
+import { GO_C2_RC_COPY, GO_C2_RC_COPY_SHA256, type GoC2RcCopyId } from './goC2RcCopy.ts'
+import { readdirSync, statSync } from 'node:fs'
 import { APPROVED_COPY } from './institutionalCopy.ts'
 import { LIVING_WORLDS_COPY } from './livingWorldsCopy.ts'
 import { FOUNDER_SCIENCE_COPY } from './founderScienceCopy.ts'
@@ -106,7 +108,8 @@ const REGISTER_SHA256: Record<string, string> = {
   'AVK-U03-EV-21': '6fe4cfca0da816910f5753a61b94ead6be0b1fe36ddcdc987caaf3cf50dbfea1',
   'AVK-U03-EV-31': 'e2061636a9113ab4a27c1fe19fc5a39d7f2fbaeeec3d52b9fc51b3e1081f5cc9',
   'AVK-U03-EV-40': '9dc2794174d38524a2d1408e52d76d27815cf0594bcae70726c7ee9e54e0f500',
-  'AVK-U03-EV-41': 'cf5640ca9afe7d994834c9d9c1d96f9f4b1c2912675df159c173659b5de0d82b',
+  // AVK-GO-C2-RC-BUILD (OD-C2-3): amended to future-state wording; the old cf5640ca… value is in RC_SUPERSEDED_SHA256
+  'AVK-U03-EV-41': 'e2aa0cf8f52c8a0c198eaa9d3a4182a8da891a5b5a59bf72821f8852c88a2753',
   'AVK-U03-EV-42': '17b6bed77270cc0a124bbbeb2048c42e933eb59a1270156d992cf1a924b362a6',
   // AVK-ECOSYSTEM-WORLDK-02 (OD-EW-3, 2026-11-07): Level 2 Platform tier label, owner-approved and rendered
   'AVK-U03-EV-43': 'a5a21054d454940352072d73e0f45ef990641eeb672435e4383a34fa7e083cbd',
@@ -189,4 +192,74 @@ test('U-03D: superseded and pending Ecosystem strings are not in the module', ()
   assert.equal(UNIFICATION_COPY['AVK-U03-EV-01-R'], 'One architecture. Many experiences.')
   assert.equal(UNIFICATION_COPY['AVK-U03-EV-20-R'], 'Making')
   assert.equal(UNIFICATION_COPY['AVK-U03-LW-M1'], 'Living Worlds — AvatarK')
+})
+
+// ---------------------------------------------------------------------------------------------------------------
+// AVK-GO-C2-RC-BUILD (OD-C2-1 / OD-C2-3): institutional claims accuracy. Register: goC2RcCopy.ts.
+const RC_REGISTER_SHA256: Record<string, string> = {
+  'AVK-RC-PS-00': '7251cb5da1d6a1c350ad51ecb256396f68f201088791517cc2edff8ef4e6b95f',
+  'AVK-RC-PS-01': '2e72be772667ce833c378e66da0bfc4e1a85621feec83238c0dd20efd4f722ad',
+  'AVK-RC-PS-02': 'd3e2d1ae69ed33b83bbacc6f83347752d8074bae05dcac251db236a898e95724',
+  'AVK-RC-PS-03': '1a4ed13138f426ced5854081120bb87d1533f49de0b6b390215fc62111be7a7a',
+  'AVK-RC-PS-04': 'ff455ec849ff391e5d873af8e88515367d1feff4c8a200db01eb349dd3df0634',
+  'AVK-RC-PS-05': '7e5942258547e0f54c90d5193fe73da87de404459add8eda706fe1c0ded8f55e',
+}
+// The unsupported present-tense claims these replace (F-4). They must not appear in any shipped source.
+const RC_SUPERSEDED: readonly string[] = [
+  'Every product above is one surface of a single platform',
+  'These are the services it shares.',
+  'One identity carried across every product in the ecosystem.',
+  'Shared profile, preferences and privacy controls.',
+  'Gated entry between products, honored consistently.',
+  'What to do next, computed from where you are.',
+  'The AvatarK Platform is the shared foundation each product is built on.',
+]
+const RC_SUPERSEDED_SHA256 = new Set(['cf5640ca9afe7d994834c9d9c1d96f9f4b1c2912675df159c173659b5de0d82b']) // old AVK-U03-EV-41
+
+function rcSources(): string[] {
+  const out: string[] = []
+  const walk = (d: string) => {
+    for (const n of readdirSync(d)) {
+      const p = path.join(d, n)
+      if (statSync(p).isDirectory()) { if (n !== 'node_modules' && !n.startsWith('.')) walk(p) }
+      else if (/\.(tsx?|mjs|md|json)$/.test(n) && !/\.test\.ts$/.test(n)) out.push(p)
+    }
+  }
+  for (const d of ['app', 'components', 'lib', 'content']) walk(path.join(process.cwd(), d))
+  return out
+}
+
+test('RC: every claims-accuracy string matches its approved register SHA-256 (exact Central Command wording)', () => {
+  assert.deepEqual(Object.keys(GO_C2_RC_COPY).sort(), Object.keys(RC_REGISTER_SHA256).sort())
+  for (const id of Object.keys(GO_C2_RC_COPY) as GoC2RcCopyId[]) {
+    assert.equal(sha(GO_C2_RC_COPY[id]), RC_REGISTER_SHA256[id], id)
+    assert.equal(GO_C2_RC_COPY_SHA256[id], RC_REGISTER_SHA256[id], id)
+  }
+  assert.equal(GO_C2_RC_COPY['AVK-RC-PS-01'], 'A unified AvatarK identity across products is in development.')
+  assert.equal(UNIFICATION_COPY['AVK-U03-EV-41'], 'AvatarK Holdings works across four pillars. The AvatarK Platform is being built as the shared foundation for each product.')
+  for (const v of Object.values(UNIFICATION_COPY)) assert.ok(!RC_SUPERSEDED_SHA256.has(sha(v)), v)
+})
+
+test('RC: superseded shared-identity claims are absent from every shipped source', () => {
+  const hits: string[] = []
+  for (const f of rcSources()) { const s = readFileSync(f, 'utf-8').replace(/\s+/g, ' '); for (const c of RC_SUPERSEDED) if (s.includes(c)) hits.push(`${path.relative(process.cwd(), f)}: ${c}`) }
+  assert.deepEqual(hits, [])
+})
+
+test('RC: Platform Services render the register; Navigation and Motion are unchanged; intro comes from the register', () => {
+  const svc = readFileSync(path.join(process.cwd(), 'components/ecosystem/PlatformServices.tsx'), 'utf-8')
+  for (const [id, key] of [['identity', 'AVK-RC-PS-01'], ['account', 'AVK-RC-PS-02'], ['invitations', 'AVK-RC-PS-03'], ['recommendations', 'AVK-RC-PS-04'], ['living-echo', 'AVK-RC-PS-05']])
+    assert.ok(svc.includes(`id: '${id}'`) && svc.includes(`description: R['${key}']`), id)
+  assert.ok(svc.includes("{ id: 'navigation', name: 'Navigation', description: 'One consistent way to move between products.' }"))
+  assert.ok(svc.includes("{ id: 'motion', name: 'Motion', description: 'The same visual language and interaction rhythm everywhere.' }"))
+  const arch = readFileSync(path.join(process.cwd(), 'components/ecosystem/PlatformArchitecture.tsx'), 'utf-8')
+  assert.ok(arch.includes("{R['AVK-RC-PS-00']}"))
+})
+
+test('RC: no SSO, MFA, passkey, single-sign-on or availability claim in the claims register', () => {
+  for (const v of Object.values(GO_C2_RC_COPY)) {
+    assert.ok(!/\b(SSO|MFA|passkey|single sign|sign in once|one login|available now|is live|launched)\b/i.test(v), v)
+    assert.ok(!/https?:|\.ai\b|\.io\b/.test(v), v)
+  }
+  assert.match(GO_C2_RC_COPY['AVK-RC-PS-00'], /Connected products currently sign in separately\.$/)
 })

@@ -253,3 +253,13 @@ test('EchoShell treats the three legal routes as institutional-only', () => {
   const src = readFileSync(join(root, 'components/echo/shell/EchoShell.tsx'), 'utf8')
   for (const p of LEGAL_ROUTE_PATHS) assert.ok(src.includes(`pathname === "${p}"`), p)
 })
+
+test('AVK-GO-C2-RC-BUILD (OD-C2-2): Scope I hides the inert Privacy/Terms/Trust labels; Contact mailto and entity text unchanged', () => {
+  const src = readFileSync(join(root, 'components/foundation/InstitutionalFooter.tsx'), 'utf8')
+  assert.match(src, /const INERT_LEGAL_LABELS: ReadonlySet<string> = new Set\(\['Privacy', 'Terms', 'Trust'\]\)/)
+  assert.match(src, /const companyLinks: FooterLink\[\] = isInstitutionalScope\(\)\n\s+\? allCompanyLinks\.filter\(\(l\) => !\(INERT_LEGAL_LABELS\.has\(l\.label\) && l\.href === null\)\)\n\s+: allCompanyLinks/)
+  assert.match(src, /links=\{companyLinks\}/)
+  assert.match(src, /© \{new Date\(\)\.getFullYear\(\)\} AvatarK/)
+  // While the register is empty no legal label has an href in Scope I, so the filter removes all three.
+  assert.equal(LEGAL_APPROVAL_REGISTER.length, 0)
+})

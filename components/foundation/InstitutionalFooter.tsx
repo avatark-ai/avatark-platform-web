@@ -97,6 +97,9 @@ function ecosystemFooterLink(id: string): FooterLink {
   return { label: product.name, href: product.href, departure: isCrossDomain }
 }
 
+// AVK-GO-C2-RC-BUILD (OD-C2-2): legal labels hidden in Scope I while they have no approved destination.
+const INERT_LEGAL_LABELS: ReadonlySet<string> = new Set(['Privacy', 'Terms', 'Trust'])
+
 export function InstitutionalFooter() {
   const avatark = getProductById('avatark')
   const supportEmail = avatark?.supportEmail ?? null
@@ -129,7 +132,7 @@ export function InstitutionalFooter() {
     { label: C['AVK-FR-055'], href: null, status: L['AVK-FLW-ST-01'] },
   ]
 
-  const companyLinks: FooterLink[] = [
+  const allCompanyLinks: FooterLink[] = [
     { label: 'Contact', href: supportEmail ? `mailto:${supportEmail}` : null, external: true },
     // AVK-UNIFICATION-02 (ODR-4): this Privacy link opens the signed-in
     // account tab, so it is only a link while institutional Sign In is on.
@@ -144,6 +147,12 @@ export function InstitutionalFooter() {
     { label: 'Terms', href: null },
     { label: 'Trust', href: null },
   ]
+  // AVK-GO-C2-RC-BUILD (OD-C2-2): in Scope I the inert legal labels are not rendered at all until CK-3 registers an
+  // approved document (lib/release/legalGate.ts) and a separately authorized gate gives them a destination. Contact
+  // keeps its mailto (C-3). Outside Scope I the list is unchanged.
+  const companyLinks: FooterLink[] = isInstitutionalScope()
+    ? allCompanyLinks.filter((l) => !(INERT_LEGAL_LABELS.has(l.label) && l.href === null))
+    : allCompanyLinks
 
   return (
     <footer className="avk-dark-surface" style={{ borderTop: '1px solid var(--surface-line)', background: 'var(--midnight)' }}>

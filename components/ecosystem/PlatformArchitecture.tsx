@@ -5,6 +5,7 @@ import { isInstitutionalScope } from '@/lib/release/scope'
 import { ECOSYSTEM_WORLDK_COPY as E } from '@/lib/content/ecosystemWorldkCopy'
 import { ECOSYSTEM_04_COPY as G, FOURTH_GROWTH_ENGINE_ID, INTELLIGENCE_SECTION_HEADING, STUDIOK_CAPABILITY_CHIPS, splitRelationTokens, type Ecosystem04CopyId } from '@/lib/content/ecosystem04Copy'
 import { DT4H_SETPOINT_COPY as D } from '@/lib/content/dt4hSetpointCopy'
+import { GO_C2_RC_COPY as R } from '@/lib/content/goC2RcCopy'
 import { getGrowthEngines, getPlatformNode, distinctMaturityLabel, type PlatformNode } from '@/lib/products/platformGraph'
 import { PlatformDiagram } from './PlatformDiagram'
 import { GrowthEngineCard } from './GrowthEngineCard'
@@ -194,8 +195,8 @@ export function PlatformArchitecture() {
             Platform Services
           </h2>
           <p className="mx-auto mt-2 max-w-lg text-center text-sm leading-6" style={{ color: 'var(--ink-dim)' }}>
-            Every product above is one surface of a single platform, not a separate product that happens to sit
-            next to the others. These are the services it shares.
+            {/* AVK-GO-C2-RC-BUILD (OD-C2-1): architectural direction, not an operational claim. */}
+            {R['AVK-RC-PS-00']}
           </p>
           <div className="mt-5">
             <PlatformServices />
