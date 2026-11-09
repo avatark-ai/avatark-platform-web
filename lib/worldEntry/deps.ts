@@ -7,6 +7,7 @@ import { MACHINE_INGRESS_HOST } from "../worldConsumer/machineIngress.ts"
 import { getWorldConsumerDeps } from "../worldConsumer/runtimeDeps.ts"
 import { ENTRY_AUTHORITY_DATABASE_URL_ENV, PgEntryAuthorityDb } from "./authorityDb.ts"
 import type { GatewayDeps } from "./gateway.ts"
+import { parseWorldKConsumerOrigin, WORLDK_CONSUMER_ORIGIN_ENV } from "./returnDestination.ts"
 import type { WorldEntryDeps } from "./resolver.ts"
 import type { RuntimeIngressDeps } from "./runtimeIngress.ts"
 import type { StreamCapabilityDeps } from "./streamCapability.ts"
@@ -36,7 +37,12 @@ export function getWorldEntryDeps(): WorldEntryDeps {
 }
 
 export function getGatewayDeps(): GatewayDeps {
-  return { db: getEntryAuthorityDb(), bindings: getWorldConsumerDeps().bindings }
+  return {
+    db: getEntryAuthorityDb(),
+    bindings: getWorldConsumerDeps().bindings,
+    // WORLDK-RETURN-NAV-01: validated against an exact host allowlist; invalid -> null (no link).
+    worldkConsumerOrigin: parseWorldKConsumerOrigin(process.env[WORLDK_CONSUMER_ORIGIN_ENV]),
+  }
 }
 
 export function getRuntimeIngressDeps(): RuntimeIngressDeps {

@@ -16,6 +16,7 @@
 import { WORLD_BINDINGS, type WorldBinding } from "../worldConsumer/bindings.ts"
 import type { EntryAuthorityDb, SessionViewState } from "./authorityDb.ts"
 import { isSecretFormat, newTicket, sha256 } from "./credentials.ts"
+import { worldKHomeHref, worldReturnHref } from "./returnDestination.ts"
 
 export const SESSION_COOKIE = "__Host-wk-entry"
 export const SESSION_PATH = "/world-entry/session"
@@ -24,6 +25,12 @@ export const LEAVE_PATH = "/world-entry/session/leave"
 export interface GatewayDeps {
   db: EntryAuthorityDb | null
   bindings?: readonly WorldBinding[]
+  /**
+   * WORLDK-RETURN-NAV-01: the validated WorldK consumer origin
+   * (returnDestination.ts parseWorldKConsumerOrigin), or null/undefined when
+   * not configured. Never derived from the request.
+   */
+  worldkConsumerOrigin?: string | null
 }
 
 const PAGE_HEADERS = {
@@ -48,7 +55,7 @@ const STATUS_PAGE_HEADERS = { ...PAGE_HEADERS, "Referrer-Policy": "same-origin" 
 function page(title: string, body: string, status: number, refreshSeconds?: number, headers: Record<string, string> = PAGE_HEADERS): Response {
   const refresh = refreshSeconds ? `<meta http-equiv="refresh" content="${refreshSeconds}">` : ""
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${refresh}<title>${esc(title)}</title>
-<style>body{font:16px/1.5 system-ui,sans-serif;max-width:36rem;margin:3rem auto;padding:0 1rem;color:#1d2b22;background:#f6f4ee}h1{font-size:1.4rem}.meta{color:#55635a;font-size:.9rem}button{font:inherit;padding:.5rem 1rem}</style>
+<style>body{font:16px/1.5 system-ui,sans-serif;max-width:36rem;margin:3rem auto;padding:0 1rem;color:#1d2b22;background:#f6f4ee}h1{font-size:1.4rem}.meta{color:#55635a;font-size:.9rem}button{font:inherit;padding:.5rem 1rem}a.return{display:inline-block;margin-top:1rem;padding:.6rem 1.1rem;border-radius:.4rem;background:#1d2b22;color:#f6f4ee;font-weight:600;text-decoration:none}a.return:hover{text-decoration:underline}a.return:focus-visible{outline:3px solid #1d2b22;outline-offset:3px}</style>
 </head><body>${body}</body></html>`
   return new Response(html, { status, headers })
 }
@@ -56,6 +63,17 @@ function page(title: string, body: string, status: number, refreshSeconds?: numb
 function worldName(worldId: string, bindings: readonly WorldBinding[]): string {
   return bindings.find((b) => b.consumerWorldId === worldId)?.displayName ?? "the world"
 }
+
+// WORLDK-RETURN-NAV-01: an ordinary server-rendered anchor; the href is
+// server-generated (never from the request) and escaped. No redirect.
+function returnLink(href: string | null, label: string): string {
+  return href ? `<p><a class="return" href="${esc(href)}" rel="noreferrer">${esc(label)}</a></p>` : ""
+}
+
+const homeLink = (deps: GatewayDeps | undefined) => returnLink(worldKHomeHref(deps?.worldkConsumerOrigin), "Return to WorldK")
+
+const noSession = (deps: GatewayDeps) =>
+  page("No session", `<h1>No world session</h1><p>Go back to WorldK and choose Enter.</p>${homeLink(deps)}`, 404)
 
 function readCookie(request: Request, name: string): string | null {
   const raw = request.headers.get("cookie")
@@ -67,19 +85,19 @@ function readCookie(request: Request, name: string): string | null {
   return null
 }
 
-const unavailable = () =>
-  page("Entry unavailable", `<h1>This entry link can't be used</h1><p>It has expired, was already used, or the world is no longer ready for you. Go back to WorldK and choose Enter again.</p>`, 410)
+const unavailable = (deps: GatewayDeps) =>
+  page("Entry unavailable", `<h1>This entry link can't be used</h1><p>It has expired, was already used, or the world is no longer ready for you. Go back to WorldK and choose Enter again.</p>${homeLink(deps)}`, 410)
 
 export async function handleHandoff(ticket: string, deps: GatewayDeps): Promise<Response> {
-  if (!deps.db || !isSecretFormat(ticket)) return unavailable()
+  if (!deps.db || !isSecretFormat(ticket)) return unavailable(deps)
   const view = newTicket()
   let r
   try {
     r = await deps.db.redeemTicket(sha256(ticket), view.sha256)
   } catch {
-    return unavailable()
+    return unavailable(deps)
   }
-  if (r.outcome !== "REDEEMED") return unavailable()
+  if (r.outcome !== "REDEEMED") return unavailable(deps)
   // 303 away from the ticket URL so it never stays in history or referrers.
   return new Response(null, {
     status: 303,
@@ -92,27 +110,31 @@ export async function handleHandoff(ticket: string, deps: GatewayDeps): Promise<
   })
 }
 
-const COPY: Record<SessionViewState, { title: (w: string) => string; body: (w: string) => string; refresh?: number; leave?: boolean }> = {
+const COPY: Record<SessionViewState, { title: (w: string) => string; body: (w: string) => string; refresh?: number; leave?: boolean; returnToWorld?: boolean }> = {
   WAITING: { title: (w) => `Entering ${w}`, body: (w) => `<p>Preparing your way into ${esc(w)}…</p><p class="meta">This page updates on its own.</p>`, refresh: 3 },
   IN_WORLD: { title: (w) => `In ${w}`, body: (w) => `<p>You are in ${esc(w)}.</p><p class="meta">Preview reference runtime: nothing is rendered here. The world continues whether or not you stay.</p>`, refresh: 15, leave: true },
   LEAVING: { title: (w) => `Leaving ${w}`, body: (w) => `<p>Leaving ${esc(w)}…</p><p class="meta">This page updates on its own.</p>`, refresh: 3 },
-  LEFT: { title: (w) => `You left ${w}`, body: (w) => `<p>You have left ${esc(w)}. It continues without you.</p><p class="meta">Return to WorldK to see what changes while you are away.</p>` },
-  ENDED: { title: (w) => `${w}`, body: (w) => `<p>This session with ${esc(w)} has ended.</p><p class="meta">If you are still inside, your newer session continues; otherwise return to WorldK.</p>` },
+  LEFT: { title: (w) => `You left ${w}`, body: (w) => `<p>You have left ${esc(w)}. It continues without you.</p><p class="meta">Return to WorldK to see what changes while you are away.</p>`, returnToWorld: true },
+  ENDED: { title: (w) => `${w}`, body: (w) => `<p>This session with ${esc(w)} has ended.</p><p class="meta">If you are still inside, your newer session continues; otherwise return to WorldK.</p>`, returnToWorld: true },
 }
 
 export async function handleSessionView(request: Request, deps: GatewayDeps): Promise<Response> {
   const view = readCookie(request, SESSION_COOKIE)
-  if (!deps.db || !isSecretFormat(view)) return page("No session", `<h1>No world session</h1><p>Go back to WorldK and choose Enter.</p>`, 404)
+  if (!deps.db || !isSecretFormat(view)) return noSession(deps)
   let v
   try {
     v = await deps.db.sessionView(sha256(view))
   } catch {
-    return page("No session", `<h1>No world session</h1><p>Go back to WorldK and choose Enter.</p>`, 404)
+    return noSession(deps)
   }
-  const w = worldName(v.worldId, deps.bindings ?? WORLD_BINDINGS)
+  const bindings = deps.bindings ?? WORLD_BINDINGS
+  const w = worldName(v.worldId, bindings)
   const c = COPY[v.state]
   const leave = c.leave ? `<form method="post" action="${LEAVE_PATH}"><button type="submit">Leave ${esc(w)}</button></form>` : ""
-  return page(c.title(w), `<h1>${esc(c.title(w))}</h1>${c.body(w)}${leave}`, 200, c.refresh, STATUS_PAGE_HEADERS)
+  // Only after the visit is over (LEFT/ENDED), and only for a trusted binding.
+  const binding = bindings.find((b) => b.consumerWorldId === v.worldId) ?? null
+  const back = c.returnToWorld && binding ? returnLink(worldReturnHref(deps.worldkConsumerOrigin, binding), `Return to ${binding.displayName}`) : ""
+  return page(c.title(w), `<h1>${esc(c.title(w))}</h1>${c.body(w)}${back}${leave}`, 200, c.refresh, STATUS_PAGE_HEADERS)
 }
 
 /** Same-origin POST only; the cookie is SameSite=Lax as well. */
@@ -122,11 +144,11 @@ export async function handleLeave(request: Request, deps: GatewayDeps): Promise<
   const self = new URL(request.url).origin
   if ((site && site !== "same-origin") || (origin && origin !== self)) return page("Refused", `<h1>Refused</h1>`, 403)
   const view = readCookie(request, SESSION_COOKIE)
-  if (!deps.db || !isSecretFormat(view)) return page("No session", `<h1>No world session</h1>`, 404)
+  if (!deps.db || !isSecretFormat(view)) return page("No session", `<h1>No world session</h1>${homeLink(deps)}`, 404)
   try {
     await deps.db.requestLeave(sha256(view))
   } catch {
-    return page("No session", `<h1>No world session</h1>`, 404)
+    return page("No session", `<h1>No world session</h1>${homeLink(deps)}`, 404)
   }
   return new Response(null, { status: 303, headers: { Location: SESSION_PATH, "Cache-Control": "private, no-store" } })
 }
